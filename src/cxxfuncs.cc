@@ -7,7 +7,7 @@ This file contains all of the code that deals with C++ libraries.
 
 extern "C" 
 {
-  #include "libsingular.h"
+  #include "libsing.h"
 }
 
 #include <string>

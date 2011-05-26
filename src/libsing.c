@@ -1,13 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////
 /**
-@file libsingular.c
+@file libsing.c
 This file contains all of the pure C code that deals with GAP.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
   
-#include "libsingular.h"
+#include "libsing.h"
 
 
 /******************** Helper functions ***************/

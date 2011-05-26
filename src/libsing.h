@@ -1,11 +1,11 @@
-#ifndef LIBSINGULAR_H
-#define LIBSINGULAR_H
+#ifndef LIBSING_H
+#define LIBSING_H
 
 #include <src/compiled.h>
 
 //////////////////////////////////////////////////////////////////////////////
 /**
-@file libsingular.h
+@file libsing.h
 This C header file file contains all of declarations for C++ functions that 
 are to be called from C, or vice-versa.
 **/
@@ -83,4 +83,4 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
 void PrintGAPError(const char* message);
 
 
-#endif //#define LIBSINGULAR_H
+#endif //#define LIBSING_H
