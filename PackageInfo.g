@@ -286,7 +286,7 @@ AvailabilityTest := function()
     # test for existence of the compiled binary
     path := DirectoriesPackagePrograms("libsingular");
     if not "libsingular" in SHOW_STAT() and 
-       Filename(path, "libsingular.so") = fail then
+       Filename(path, "libsing.so") = fail then
       Info(InfoWarning, 1, "libsingular: compiled kernel module not present.");
     fi;
     return true;

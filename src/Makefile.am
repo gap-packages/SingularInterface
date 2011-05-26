@@ -4,9 +4,9 @@ GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
 lib_LTLIBRARIES = libsing.la
      
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
-libsing_la_LDFLAGS = -module -avoid-version -L../../Singular-`cat ../SINGULARVERSION`/x86_64-Linux/lib -lsingular
+libsing_la_LDFLAGS = -module -avoid-version -L../Singular-`cat ../SINGULARVERSION`/Singular -lsingular
 libsing_la_LIBADD = 
-libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../../Singular-`cat ../SINGULARVERSION`/x86_64-Linux/include
+libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../Singular-`cat ../SINGULARVERSION`/x86_64-Linux/include
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
