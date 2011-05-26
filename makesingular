@@ -1,0 +1,8 @@
+#!/bin/sh
+SINGULARVERSION=`cat SINGULARVERSION`
+tar xzvf Singular-${SINGULARVERSION}.tar.gz
+export CC="gcc -fpic -DPIC -DLIBSINGULAR"
+export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
+cd Singular-$SINGULARVERSION
+./configure --without-dynamic-kernel
+make install-libsingular
