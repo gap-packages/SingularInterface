@@ -163,6 +163,83 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
     return res;
 }
 
+extern "C"
+Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path)
+{
+    // init path names etc.
+    siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
+    currentVoice=feInitStdin(NULL);
+}
+
+extern "C"
+Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st)
+{
+    UInt len = GET_LEN_STRING(st);
+    char *ost = (char *) omalloc((size_t) len + 10);
+    memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
+    memcpy(ost+len,"return();",10);
+    Int err = (Int) iiEStart(ost,NULL);
+    // Note that iiEStart uses omFree internally to free the string
+    return ObjInt_Int((Int) err);
+}
+
+extern "C"
+Obj FuncValueOfSingularVar(Obj self, Obj name)
+{
+    UInt len;
+    Obj tmp,tmp2;
+    intvec *v;
+    int i,j,k;
+    UInt rows, cols;
+    number n;
+
+    idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
+    if (h == NULL) return Fail;
+    switch (IDTYP(h)) {
+        case INT_CMD:
+            return ObjInt_Int( (Int) (IDINT(h)) );
+        case STRING_CMD:
+            len = (UInt) strlen(IDSTRING(h));
+            tmp = NEW_STRING(len);
+            SET_LEN_STRING(tmp,len);
+            strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),IDSTRING(h));
+            return tmp;
+        case INTVEC_CMD:
+            v = IDINTVEC(h);
+            len = (UInt) v->length();
+            tmp = NEW_PLIST(T_PLIST_CYC,len);
+            SET_LEN_PLIST(tmp,len);
+            for (i = 0; i < len;i++) {
+                SET_ELM_PLIST(tmp,i+1,ObjInt_Int( (Int) ((*v)[i]) ));
+                CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
+            }
+            return tmp;
+        case INTMAT_CMD:
+            v = IDINTVEC(h);
+            rows = (UInt) v->rows();
+            cols = (UInt) v->cols();
+            tmp = NEW_PLIST(T_PLIST_DENSE,rows);
+            SET_LEN_PLIST(tmp,rows);
+            k = 0;
+            for (i = 0; i < rows;i++) {
+                tmp2 = NEW_PLIST(T_PLIST_CYC,cols);
+                SET_LEN_PLIST(tmp2,cols);
+                SET_ELM_PLIST(tmp,i+1,tmp2);
+                CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
+                for (j = 0; j < cols;j++) {
+                    SET_ELM_PLIST(tmp2,j+1,ObjInt_Int( (Int) ((*v)[k++])));
+                    CHANGED_BAG(tmp2);
+                }
+            }
+            return tmp;
+        case BIGINT_CMD:
+            n = IDBIGINT(h);
+            return Fail;
+        default:
+            return Fail;
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 

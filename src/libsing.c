@@ -53,6 +53,21 @@ static StructGVarFunc GVarFuncs[] =
    "ring", FuncIndeterminatesOfSingularRing,
    "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
 
+  {"INIT_SINGULAR_INTERPRETER", 1, 
+   "path",
+   FuncINIT_SINGULAR_INTERPRETER,
+   "cxx-funcs.cc:FuncINIT_SINGULAR_INTERPRETER" },
+
+  {"EVALUATE_IN_SINGULAR", 1, 
+   "st",
+   FuncEVALUATE_IN_SINGULAR,
+   "cxx-funcs.cc:FuncEVALUATE_IN_SINGULAR" },
+
+  {"ValueOfSingularVar", 1, 
+   "name",
+   FuncValueOfSingularVar,
+   "cxx-funcs.cc:FuncValueOfSingularVar" },
+
   { 0 } /* Finish with an empty entry */
 };
 

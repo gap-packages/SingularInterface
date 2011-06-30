@@ -23,3 +23,9 @@ InstallMethod( ViewObj, "for a singular poly",
   function( r )
     Print("<singular polynomial>");
   end );
+
+DeclareGlobalFunction( "InitSingularInterpreter" );
+# This is called automatically from libsingular.gi, no need for the user to call it.
+
+DeclareOperation( "Singular", [IsStringRep] );
+DeclareOperation( "Singular", [] );

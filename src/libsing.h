@@ -76,7 +76,9 @@ Obj TypeSingularObj(Obj o);
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
                                     Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
-
+Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
+Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
+Obj FuncValueOfSingularVar(Obj self, Obj name);
 
 //////////////// C functions to be called from C++ ////////////////////
 
