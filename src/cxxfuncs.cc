@@ -17,81 +17,6 @@ extern "C"
 using namespace std;
 
 
-/// GAP kernel C handler to concatenate two strings
-/// @param self The usual GAP first parameter
-/// @param a The first string
-/// @param b The second string
-/// @return The rank of the matrix
-extern "C"
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b)
-{
-  if(!IS_STRING(a))
-    PrintGAPError("The first argument must be a string");
-
-  if(!IS_STRING(b))
-    PrintGAPError("The second argument must be a string");
-    
-  string str_a = reinterpret_cast<char*>(CHARS_STRING(a));
-  string str_b = reinterpret_cast<char*>(CHARS_STRING(b));
-  string str = str_a + "-" + str_b;
-
-  unsigned int len = str.length();
-  Obj GAPstring = NEW_STRING(len);
-  memcpy( CHARS_STRING(GAPstring), str.c_str(), len );
-  return GAPstring;
-}
-
-extern "C"
-Obj FuncSingularTest(Obj self)
-{
-  // init path names etc.
-  siInit((char
-*)"/scratch/neunhoef/4.0/pkg/libsingular/Singular-3-1-3/Singular/libsingular.so");
-
-  // construct the ring Z/32003[x,y,z]
-  // the variable names
-  char **n=(char**)omalloc(3*sizeof(char*));
-  n[0]=omStrDup("x");
-  n[1]=omStrDup("y");
-  n[2]=omStrDup("z2");
-
-  ring R=rDefault(32003,3,n);
-  // make R the default ring:
-  rChangeCurrRing(R);
-
-  // create the polynomial 1
-  poly p1=p_ISet(1,R);
-
-  // create tthe polynomial 2*x^3*z^2
-  poly p2=p_ISet(2,R);
-  pSetExp(p2,1,3);
-  pSetExp(p2,3,2);
-  pSetm(p2);
-
-  // print p1 + p2
-  pWrite(p1); printf(" + \n"); pWrite(p2); printf("\n");
-
-  // compute p1+p2
-  p1=p_Add_q(p1,p2,R); p2=NULL;
-  pWrite(p1); 
-
-  // cleanup:
-  pDelete(&p1);
-  rKill(R);
-
-  currentVoice=feInitStdin(NULL);
-  int err=iiEStart(omStrDup("int ver=system(\"version\");export ver;return();\n"),NULL);
-  // if (err) errorreported = inerror = cmdtok = 0; // reset error handling
-  printf("interpreter returns %d\n",err);
-  idhdl h=ggetid("ver");
-  if (h!=NULL)
-    printf("singular variable ver contains %d\n",IDINT(h));
-  else
-    printf("variable ver does not exist\n");
-  return 0;
-
-}
-
 extern "C"
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
                                     Obj names)
@@ -107,7 +32,7 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
         array[i] = omStrDup(CSTR_STRING(ELM_PLIST(names,i+1)));
 
     ring r = rDefault(INT_INTOBJ(charact),nrvars,array);
-    tmp = NEW_SINGOBJ_TYPE(NULL,SINGTYPE_RING,r);
+    tmp = NEW_SINGOBJ(SINGTYPE_RING,r);
     return tmp;
 }
 
@@ -128,7 +53,21 @@ void SingularFreeFunc(Obj o)
             SET_CXX_SINGOBJ(o,NULL);
             printf("Freed a polynomial.\n");
             break;
+    }
+}
 
+extern "C"
+void SingularObjMarkFunc(Bag o)
+{
+    Bag *ptr;
+    Bag sub;
+    UInt i;
+    if (SIZE_BAG(o) > 2*sizeof(Bag)) {
+        ptr = PTR_BAG(o);
+        for (i = 2;i < SIZE_BAG(o)/sizeof(Bag);i++) {
+            sub = ptr[i];
+            MARK_BAG( sub );
+        }
     }
 }
 
@@ -154,7 +93,7 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
         poly p = p_ISet(1,r);
         pSetExp(p,i,1);
         pSetm(p);
-        tmp = NEW_SINGOBJ_TYPE(rr,SINGTYPE_POLY,p);
+        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
         SET_ELM_PLIST(res,i,tmp);
         CHANGED_BAG(res);
     }
@@ -242,4 +181,81 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
 
 
 //////////////////////////////////////////////////////////////////////////////
+
+// The rest will eventually go:
+
+/// GAP kernel C handler to concatenate two strings
+/// @param self The usual GAP first parameter
+/// @param a The first string
+/// @param b The second string
+/// @return The rank of the matrix
+extern "C"
+Obj FuncCONCATENATE(Obj self, Obj a, Obj b)
+{
+  if(!IS_STRING(a))
+    PrintGAPError("The first argument must be a string");
+
+  if(!IS_STRING(b))
+    PrintGAPError("The second argument must be a string");
+    
+  string str_a = reinterpret_cast<char*>(CHARS_STRING(a));
+  string str_b = reinterpret_cast<char*>(CHARS_STRING(b));
+  string str = str_a + "-" + str_b;
+
+  unsigned int len = str.length();
+  Obj GAPstring = NEW_STRING(len);
+  memcpy( CHARS_STRING(GAPstring), str.c_str(), len );
+  return GAPstring;
+}
+
+extern "C"
+Obj FuncSingularTest(Obj self)
+{
+  // init path names etc.
+  siInit((char
+*)"/scratch/neunhoef/4.0/pkg/libsingular/Singular-3-1-3/Singular/libsingular.so");
+
+  // construct the ring Z/32003[x,y,z]
+  // the variable names
+  char **n=(char**)omalloc(3*sizeof(char*));
+  n[0]=omStrDup("x");
+  n[1]=omStrDup("y");
+  n[2]=omStrDup("z2");
+
+  ring R=rDefault(32003,3,n);
+  // make R the default ring:
+  rChangeCurrRing(R);
+
+  // create the polynomial 1
+  poly p1=p_ISet(1,R);
+
+  // create tthe polynomial 2*x^3*z^2
+  poly p2=p_ISet(2,R);
+  pSetExp(p2,1,3);
+  pSetExp(p2,3,2);
+  pSetm(p2);
+
+  // print p1 + p2
+  pWrite(p1); printf(" + \n"); pWrite(p2); printf("\n");
+
+  // compute p1+p2
+  p1=p_Add_q(p1,p2,R); p2=NULL;
+  pWrite(p1); 
+
+  // cleanup:
+  pDelete(&p1);
+  rKill(R);
+
+  currentVoice=feInitStdin(NULL);
+  int err=iiEStart(omStrDup("int ver=system(\"version\");export ver;return();\n"),NULL);
+  // if (err) errorreported = inerror = cmdtok = 0; // reset error handling
+  printf("interpreter returns %d\n",err);
+  idhdl h=ggetid("ver");
+  if (h!=NULL)
+    printf("singular variable ver contains %d\n",IDINT(h));
+  else
+    printf("variable ver does not exist\n");
+  return 0;
+
+}
 

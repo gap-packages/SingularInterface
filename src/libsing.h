@@ -12,31 +12,32 @@ are to be called from C, or vice-versa.
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
-// 3 words: 
-// First is the GAP type
+// 2 or 3 words: 
+// First is the GAP type as a small integer pointing into a plain list
 // Second is a pointer to a C++ singular object
 // Third is a pointer to a GAP object representing the ring (only if needed)
 
-#define RING_SINGOBJ( obj ) ADDR_OBJ(obj)[0]
-#define SET_RING_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[0] = (val))
-#define TYPE_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[1])
-#define SET_TYPE_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[1] = ((Bag) val))
-#define CXX_SINGOBJ( obj ) ((void *) ADDR_OBJ(obj)[2])
-#define SET_CXX_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[2] = ((Obj) val))
+#define TYPE_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[0])
+#define SET_TYPE_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[0] = ((Bag) val))
+#define CXX_SINGOBJ( obj ) ((void *) ADDR_OBJ(obj)[1])
+#define SET_CXX_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[1] = ((Obj) val))
+#define RING_SINGOBJ( obj ) ADDR_OBJ(obj)[2]
+#define SET_RING_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[2] = (val))
 
-static inline Obj NEW_SINGOBJ(void *cxx)
+static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
-    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
+    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
     return tmp;
 }
 
-static inline Obj NEW_SINGOBJ_TYPE(Obj ring, UInt type, void *cxx)
+static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 {
     Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
-    SET_RING_SINGOBJ(tmp,ring);
     SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
+    SET_RING_SINGOBJ(tmp,ring);
     return tmp;
 }
 
@@ -69,8 +70,7 @@ Obj SingularTypes;   /* A kernel copy of a plain list of types */
 //////////////// C++ functions to be called from C ////////////////////
 
 
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b);
-Obj FuncSingularTest(Obj self);
+void SingularObjMarkFunc(Bag o);
 void SingularFreeFunc(Obj o);
 Obj TypeSingularObj(Obj o);
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
@@ -80,9 +80,15 @@ Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
 
+
 //////////////// C functions to be called from C++ ////////////////////
 
 void PrintGAPError(const char* message);
 
+
+//////////////// old stuff which will eventually go ///////////////////
+
+Obj FuncCONCATENATE(Obj self, Obj a, Obj b);
+Obj FuncSingularTest(Obj self);
 
 #endif //#define LIBSING_H

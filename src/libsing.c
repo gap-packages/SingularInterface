@@ -84,6 +84,7 @@ static Int InitKernel(StructInitInfo* module)
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
   InitFreeFuncBag(T_SINGULAR,&SingularFreeFunc);
+  InitMarkFuncBags(T_SINGULAR,&SingularObjMarkFunc);
   tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
   AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
   AssPRec(tmp,RNamName("SINGTYPE_RING"), INTOBJ_INT(SINGTYPE_RING));
