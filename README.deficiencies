@@ -3,11 +3,6 @@ The following is not (yet) so nice:
 src/Makefile.am has "x86_64-Linux" hard-wired in it to find header
 files of singular, how can this be avoided/deteced?
 
-src/cxxfuncs.cc has the absolute path hard-wired in it to find
-the singular library. This could be avoided since on the GAP
-level we know the absolute path and could hand it down to a
-libsingular initialisation routine.
-
 After compiling and linking, the LD_LIBRARY_PATH (or corresponding
 feature on other system than linux) has to be set such that
   libsingular.so
