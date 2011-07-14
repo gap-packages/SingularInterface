@@ -18,12 +18,11 @@ using namespace std;
 
 
 extern "C"
-Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
-                                    Obj names)
+Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
 {
     char **array;
     char *p;
-    UInt nrvars = INT_INTOBJ(numberinvs);
+    UInt nrvars = LEN_PLIST(names);
     UInt i;
     Obj tmp;
     
@@ -32,7 +31,10 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
         array[i] = omStrDup(CSTR_STRING(ELM_PLIST(names,i+1)));
 
     ring r = rDefault(INT_INTOBJ(charact),nrvars,array);
-    tmp = NEW_SINGOBJ(SINGTYPE_RING,r);
+    i = LEN_LIST(SingularRings)+1;
+    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
+    ASS_LIST(SingularRings,i,tmp);
+    ASS_LIST(SingularElCounts,i,INTOBJ_INT(0));
     return tmp;
 }
 
@@ -45,13 +47,15 @@ void SingularFreeFunc(Obj o)
         case SINGTYPE_RING:
             rKill( (ring) CXX_SINGOBJ(o) );
             SET_CXX_SINGOBJ(o,NULL);
-            printf("Freed a ring.\n");
+            SET_RING_SINGOBJ(o,NULL);
             break;
         case SINGTYPE_POLY:
             poly p = (poly) CXX_SINGOBJ(o);
-            p_Delete( &p, (ring) CXX_SINGOBJ(RING_SINGOBJ(o)) );
+            UInt rnr = RING_SINGOBJ(o);
+            p_Delete( &p, (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr)) );
             SET_CXX_SINGOBJ(o,NULL);
-            printf("Freed a polynomial.\n");
+            SET_RING_SINGOBJ(o,NULL);
+            DEC_REFCOUNT( rnr );
             break;
     }
 }
@@ -59,6 +63,8 @@ void SingularFreeFunc(Obj o)
 extern "C"
 void SingularObjMarkFunc(Bag o)
 {
+#if 0
+    // Not necessary, since singular objects do not have GAP subobjects!
     Bag *ptr;
     Bag sub;
     UInt i;
@@ -69,6 +75,7 @@ void SingularObjMarkFunc(Bag o)
             MARK_BAG( sub );
         }
     }
+#endif
 }
 
 extern "C"
@@ -82,6 +89,7 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
 {
     Obj res;
     ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
     UInt nrvars = rVar(r);
     UInt i;
     Obj tmp;
@@ -91,15 +99,63 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
     res = NEW_PLIST(T_PLIST_DENSE,nrvars);
     for (i = 1;i <= nrvars;i++) {
         poly p = p_ISet(1,r);
+        INC_REFCOUNT( rnr );
         pSetExp(p,i,1);
         pSetm(p);
-        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
+        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
         SET_ELM_PLIST(res,i,tmp);
         CHANGED_BAG(res);
     }
     SET_LEN_PLIST(res,nrvars);
 
     return res;
+}
+
+extern "C"
+Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
+{
+    ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
+    UInt nrvars = rVar(r);
+    UInt i;
+    UInt len;
+    if (r != currRing) rChangeCurrRing(r);
+    poly p = p_ISet(INT_INTOBJ(coeff),r);
+    len = LEN_LIST(exps);
+    if (len < nrvars) nrvars = len;
+    for (i = 1;i <= nrvars;i++)
+        pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
+    pSetm(p);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
+    INC_REFCOUNT(rnr);
+    return tmp;
+}
+
+extern "C"
+Obj FuncPRINT_POLY(Obj self, Obj po)
+{
+    UInt rnr = RING_SINGOBJ(po);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);
+    poly p = (poly) CXX_SINGOBJ(po);
+    pWrite(p);
+    return 0;
+}
+
+extern "C"
+Obj FuncADD_POLYS(Obj self, Obj a, Obj b)
+{
+    UInt rnr = RING_SINGOBJ(a);
+    if (rnr != RING_SINGOBJ(b))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);
+    poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
+    poly bb = p_Copy((poly) CXX_SINGOBJ(b),r);
+    aa = p_Add_q(aa,bb,r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    INC_REFCOUNT(rnr);
+    return tmp;
 }
 
 extern "C"

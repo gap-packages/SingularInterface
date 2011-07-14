@@ -30,28 +30,26 @@ This is used in InitKernel() and InitLibrary()
 */
 static StructGVarFunc GVarFuncs[] = 
 {
-  {"CXXAddStrings", /* GAP function name */
-   2,               /* Number of parameters */
-   "a, b",          /* String for GAP to display list of parameter names */
-   FuncCONCATENATE, /* C function to call */
-   "cxx-funcs.cc:FuncCONCATENATE" /* String to display function location */
-  }, 
-
-  {"FuncSingularTest", /* GAP function name */
-   0,               /* Number of parameters */
-   "",          /* String for GAP to display list of parameter names */
-   FuncSingularTest, /* C function to call */
-   "cxx-funcs.cc:FuncSingularTest" /* String to display function location */
-  },
-
-  {"SingularRingWithoutOrdering", 3,
-   "characteristic, numberinvs, names",
+  {"SingularRingWithoutOrdering", 2,
+   "characteristic, names",
    FuncSingularRingWithoutOrdering,
    "cxx-funcs.cc:FuncSingularRingWithoutOrdering" }, 
 
   {"IndeterminatesOfSingularRing", 1,
    "ring", FuncIndeterminatesOfSingularRing,
    "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
+
+  {"SINGULAR_MONOMIAL", 3,
+   "ring, coeff, exponents", FuncSINGULAR_MONOMIAL,
+   "cxx-funcs.cc:FuncSINGULAR_MONOMIAL" }, 
+
+  {"PRINT_POLY", 1,
+   "poly", FuncPRINT_POLY,
+   "cxx-funcs.cc:FuncPRINT_POLY" }, 
+
+  {"ADD_POLYS", 2,
+   "a, b", FuncADD_POLYS,
+   "cxx-funcs.cc:FuncADD_POLYS" }, 
 
   {"INIT_SINGULAR_INTERPRETER", 1, 
    "path",
@@ -67,6 +65,22 @@ static StructGVarFunc GVarFuncs[] =
    "name",
    FuncValueOfSingularVar,
    "cxx-funcs.cc:FuncValueOfSingularVar" },
+
+  /* The rest will eventually go: */
+
+  {"CXXAddStrings", /* GAP function name */
+   2,               /* Number of parameters */
+   "a, b",          /* String for GAP to display list of parameter names */
+   FuncCONCATENATE, /* C function to call */
+   "cxx-funcs.cc:FuncCONCATENATE" /* String to display function location */
+  }, 
+
+  {"FuncSingularTest", /* GAP function name */
+   0,               /* Number of parameters */
+   "",          /* String for GAP to display list of parameter names */
+   FuncSingularTest, /* C function to call */
+   "cxx-funcs.cc:FuncSingularTest" /* String to display function location */
+  },
 
   { 0 } /* Finish with an empty entry */
 };
@@ -95,6 +109,8 @@ static Int InitKernel(StructInitInfo* module)
   MakeReadOnlyGVar(gvar);
 
   InitCopyGVar("SingularTypes", &SingularTypes);
+  InitCopyGVar("SingularRings", &SingularRings);
+  InitCopyGVar("SingularElCounts", &SingularElCounts);
   
   TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
 
@@ -127,7 +143,7 @@ static StructInitInfo module = {
 #else
  /* type        = */ MODULE_DYNAMIC,
 #endif
- /* name        = */ "simple C++ interface",
+ /* name        = */ "libsingular interface",
  /* revision_c  = */ 0,
  /* revision_h  = */ 0,
  /* version     = */ 0,
@@ -151,7 +167,7 @@ StructInitInfo * Init__Dynamic (void)
  return &module;
 }
 #endif
-StructInitInfo * Init__linbox(void)
+StructInitInfo * Init__libsing(void)
 {
   return &module;
 }

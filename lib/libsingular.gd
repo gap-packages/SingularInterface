@@ -11,6 +11,8 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RING]
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_POLY]
    := NewType(SingularFamily,IsSingularPoly);
 
+SingularRings := [];
+SingularElCounts := [];
 
 InstallMethod( ViewObj, "for a singular ring",
   [ IsSingularRing ],

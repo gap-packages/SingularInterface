@@ -11,18 +11,37 @@ are to be called from C, or vice-versa.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
+Obj SingularTypes;    /* A kernel copy of a plain list of types */
+Obj SingularRings;    /* A kernel copy of a plain list of rings */
+Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
+
 //////////////// Layout of the T_SINGULAR objects /////////////////////
-// 2 or 3 words: 
+// 3 words: 
 // First is the GAP type as a small integer pointing into a plain list
 // Second is a pointer to a C++ singular object
-// Third is a pointer to a GAP object representing the ring (only if needed)
+// The third is an index into the list of all singular rings and the
+// corresponding reference counting list.
 
 #define TYPE_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[0])
-#define SET_TYPE_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[0] = ((Bag) val))
+#define SET_TYPE_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[0] = ((Obj) (val)))
 #define CXX_SINGOBJ( obj ) ((void *) ADDR_OBJ(obj)[1])
-#define SET_CXX_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[1] = ((Obj) val))
-#define RING_SINGOBJ( obj ) ADDR_OBJ(obj)[2]
-#define SET_RING_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[2] = (val))
+#define SET_CXX_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[1] = ((Obj) (val)))
+#define RING_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[2])
+#define SET_RING_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[2] = ((Obj) (val)))
+
+inline void INC_REFCOUNT( UInt ring )
+{
+    Int count = INT_INTOBJ(ELM_PLIST(SingularElCounts,ring));
+    count++;
+    SET_ELM_PLIST(SingularElCounts,ring,INTOBJ_INT(count));
+}
+
+inline void DEC_REFCOUNT( UInt ring )
+{
+    Int count = INT_INTOBJ(ELM_PLIST(SingularElCounts,ring));
+    count--;
+    SET_ELM_PLIST(SingularElCounts,ring,INTOBJ_INT(count));
+}
 
 static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
@@ -32,7 +51,7 @@ static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
     return tmp;
 }
 
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
+static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 {
     Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
@@ -65,17 +84,17 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 #define SINGTYPE_PYOBJECT      22 
 #define SINGTYPE_LASTNUMBER    22
 
-Obj SingularTypes;   /* A kernel copy of a plain list of types */
-
 //////////////// C++ functions to be called from C ////////////////////
 
 
 void SingularObjMarkFunc(Bag o);
 void SingularFreeFunc(Obj o);
 Obj TypeSingularObj(Obj o);
-Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj numberinvs,
-                                    Obj names);
+Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
+Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
+Obj FuncPRINT_POLY(Obj self, Obj po);
+Obj FuncADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
@@ -92,3 +111,4 @@ Obj FuncCONCATENATE(Obj self, Obj a, Obj b);
 Obj FuncSingularTest(Obj self);
 
 #endif //#define LIBSING_H
+

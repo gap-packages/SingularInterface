@@ -3,9 +3,3 @@ The following is not (yet) so nice:
 src/Makefile.am has "x86_64-Linux" hard-wired in it to find header
 files of singular, how can this be avoided/deteced?
 
-After compiling and linking, the LD_LIBRARY_PATH (or corresponding
-feature on other system than linux) has to be set such that
-  libsingular.so
-is found. You can check the success of this with
-  ldd bin/x86_64-unknown-linux-gnu-gcc/64-bit/libsing.so 
-
