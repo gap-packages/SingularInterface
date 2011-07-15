@@ -22,12 +22,15 @@ extern Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
 // The third is an index into the list of all singular rings and the
 // corresponding reference counting list.
 
-#define TYPE_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[0])
-#define SET_TYPE_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[0] = ((Obj) (val)))
-#define CXX_SINGOBJ( obj ) ((void *) ADDR_OBJ(obj)[1])
-#define SET_CXX_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[1] = ((Obj) (val)))
-#define RING_SINGOBJ( obj ) ((UInt) ADDR_OBJ(obj)[2])
-#define SET_RING_SINGOBJ( obj,val ) (ADDR_OBJ(obj)[2] = ((Obj) (val)))
+inline UInt TYPE_SINGOBJ( Obj obj ) { return (UInt) ADDR_OBJ(obj)[0]; }
+inline void SET_TYPE_SINGOBJ( Obj obj, UInt val )
+{ ADDR_OBJ(obj)[0] = (Obj) val; }
+inline void *CXX_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[1]; }
+inline void SET_CXX_SINGOBJ( Obj obj, void *val )
+{ ADDR_OBJ(obj)[1] = (Obj) val; }
+inline UInt RING_SINGOBJ( Obj obj ) { return (UInt) ADDR_OBJ(obj)[2]; }
+inline void SET_RING_SINGOBJ( Obj obj, UInt val )
+{ ADDR_OBJ(obj)[2] = (Obj) val; }
 
 inline void INC_REFCOUNT( UInt ring )
 {

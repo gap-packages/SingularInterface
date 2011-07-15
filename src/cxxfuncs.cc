@@ -10,6 +10,10 @@ extern "C"
   #include "libsing.h"
 }
 
+// Prevent inline code from using tests which are not in libsingular:
+#define NDEBUG 1
+#define OM_NDEBUG 1
+
 #include <string>
 #include <libsingular.h>
 
@@ -48,6 +52,7 @@ void SingularFreeFunc(Obj o)
             rKill( (ring) CXX_SINGOBJ(o) );
             SET_CXX_SINGOBJ(o,NULL);
             SET_RING_SINGOBJ(o,NULL);
+            // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
             poly p = (poly) CXX_SINGOBJ(o);
@@ -56,6 +61,7 @@ void SingularFreeFunc(Obj o)
             SET_CXX_SINGOBJ(o,NULL);
             SET_RING_SINGOBJ(o,NULL);
             DEC_REFCOUNT( rnr );
+            // Pr("killed a ring element\n",0L,0L);
             break;
     }
 }
@@ -99,12 +105,12 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
     res = NEW_PLIST(T_PLIST_DENSE,nrvars);
     for (i = 1;i <= nrvars;i++) {
         poly p = p_ISet(1,r);
-        INC_REFCOUNT( rnr );
         pSetExp(p,i,1);
         pSetm(p);
         tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
         SET_ELM_PLIST(res,i,tmp);
         CHANGED_BAG(res);
+        INC_REFCOUNT( rnr );
     }
     SET_LEN_PLIST(res,nrvars);
 

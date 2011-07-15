@@ -1,3 +1,14 @@
+InstallGlobalFunction( CleanupSingularRings,
+  function()
+    local i;
+    for i in [1..Length(SingularRings)] do
+        if IsBound(SingularRings[i]) and SingularElCounts[i] = 0 then
+            Unbind(SingularRings[i]);
+            Unbind(SingularElCounts[i]);
+        fi;
+    od;
+  end );
+  
 InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;

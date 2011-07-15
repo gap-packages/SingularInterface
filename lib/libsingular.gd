@@ -14,6 +14,8 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_POLY]
 SingularRings := [];
 SingularElCounts := [];
 
+DeclareGlobalFunction( "CleanupSingularRings" );
+
 InstallMethod( ViewObj, "for a singular ring",
   [ IsSingularRing ],
   function( r )
@@ -31,3 +33,4 @@ DeclareGlobalFunction( "InitSingularInterpreter" );
 
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [] );
+
