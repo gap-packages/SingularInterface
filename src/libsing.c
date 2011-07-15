@@ -85,7 +85,9 @@ static StructGVarFunc GVarFuncs[] =
   { 0 } /* Finish with an empty entry */
 };
 
-
+Obj SingularTypes;    /* A kernel copy of a plain list of types */
+Obj SingularRings;    /* A kernel copy of a plain list of rings */
+Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
 
 /**
 The first function to be called when the library is loaded by the kernel.
