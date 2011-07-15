@@ -60,6 +60,7 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
     SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
+    INC_REFCOUNT(ring);
     return tmp;
 }
 

@@ -110,7 +110,6 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
         tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
         SET_ELM_PLIST(res,i,tmp);
         CHANGED_BAG(res);
-        INC_REFCOUNT( rnr );
     }
     SET_LEN_PLIST(res,nrvars);
 
@@ -133,7 +132,6 @@ Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
         pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
     pSetm(p);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
-    INC_REFCOUNT(rnr);
     return tmp;
 }
 
@@ -160,7 +158,6 @@ Obj FuncADD_POLYS(Obj self, Obj a, Obj b)
     poly bb = p_Copy((poly) CXX_SINGOBJ(b),r);
     aa = p_Add_q(aa,bb,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
-    INC_REFCOUNT(rnr);
     return tmp;
 }
 
