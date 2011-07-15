@@ -16,18 +16,6 @@ SingularElCounts := [];
 
 DeclareGlobalFunction( "CleanupSingularRings" );
 
-InstallMethod( ViewObj, "for a singular ring",
-  [ IsSingularRing ],
-  function( r )
-    Print("<singular ring>");
-  end );
-
-InstallMethod( ViewObj, "for a singular poly",
-  [ IsSingularPoly ],
-  function( r )
-    Print("<singular polynomial>");
-  end );
-
 DeclareGlobalFunction( "InitSingularInterpreter" );
 # This is called automatically from libsingular.gi, no need for the user to call it.
 

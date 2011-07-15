@@ -97,7 +97,7 @@ Obj TypeSingularObj(Obj o);
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
 Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
-Obj FuncPRINT_POLY(Obj self, Obj po);
+Obj FuncSTRING_POLY(Obj self, Obj po);
 Obj FuncADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);

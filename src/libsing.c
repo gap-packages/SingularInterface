@@ -43,9 +43,9 @@ static StructGVarFunc GVarFuncs[] =
    "ring, coeff, exponents", FuncSINGULAR_MONOMIAL,
    "cxx-funcs.cc:FuncSINGULAR_MONOMIAL" }, 
 
-  {"PRINT_POLY", 1,
-   "poly", FuncPRINT_POLY,
-   "cxx-funcs.cc:FuncPRINT_POLY" }, 
+  {"STRING_POLY", 1,
+   "poly", FuncSTRING_POLY,
+   "cxx-funcs.cc:FuncSTRING_POLY" }, 
 
   {"ADD_POLYS", 2,
    "a, b", FuncADD_POLYS,

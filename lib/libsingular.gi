@@ -9,6 +9,18 @@ InstallGlobalFunction( CleanupSingularRings,
     od;
   end );
   
+InstallMethod( ViewObj, "for a singular ring",
+  [ IsSingularRing ],
+  function( r )
+    Print("<singular ring>");
+  end );
+
+InstallMethod( ViewObj, "for a singular poly",
+  [ IsSingularPoly ],
+  function( r )
+    Print("<singular poly:",STRING_POLY(r),">");
+  end );
+
 InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;

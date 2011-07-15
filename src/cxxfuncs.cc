@@ -136,14 +136,18 @@ Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 }
 
 extern "C"
-Obj FuncPRINT_POLY(Obj self, Obj po)
+Obj FuncSTRING_POLY(Obj self, Obj po)
 {
     UInt rnr = RING_SINGOBJ(po);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
     if (r != currRing) rChangeCurrRing(r);
     poly p = (poly) CXX_SINGOBJ(po);
-    pWrite(p);
-    return 0;
+    char *st = p_String(p,r);
+    UInt len = (UInt) strlen(st);
+    Obj tmp = NEW_STRING(len);
+    SET_LEN_STRING(tmp,len);
+    strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
+    return tmp;
 }
 
 extern "C"
