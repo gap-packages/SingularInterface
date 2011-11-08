@@ -7,3 +7,4 @@ export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
 cd Singular-$SINGULARVERSION
 ./configure --without-dynamic-kernel
 make install-libsingular
+./singuname.sh >../SINGARCHNAME

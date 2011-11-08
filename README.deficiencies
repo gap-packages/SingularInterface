@@ -1,5 +1,0 @@
-The following is not (yet) so nice:
-
-src/Makefile.am has "x86_64-Linux" hard-wired in it to find header
-files of singular, how can this be avoided/deteced?
-
