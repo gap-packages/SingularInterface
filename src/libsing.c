@@ -66,6 +66,11 @@ static StructGVarFunc GVarFuncs[] =
    FuncValueOfSingularVar,
    "cxx-funcs.cc:FuncValueOfSingularVar" },
 
+  {"LastSingularOutput", 0,
+   "",
+   FuncLastSingularOutput,
+   "cxx-funcs.cc:FuncLastSingularOutput" },
+
   /* The rest will eventually go: */
 
   {"CXXAddStrings", /* GAP function name */

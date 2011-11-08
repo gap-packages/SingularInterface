@@ -51,7 +51,7 @@ void SingularFreeFunc(Obj o)
         case SINGTYPE_RING:
             rKill( (ring) CXX_SINGOBJ(o) );
             SET_CXX_SINGOBJ(o,NULL);
-            SET_RING_SINGOBJ(o,NULL);
+            SET_RING_SINGOBJ(o,0);
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
@@ -59,7 +59,7 @@ void SingularFreeFunc(Obj o)
             UInt rnr = RING_SINGOBJ(o);
             p_Delete( &p, (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr)) );
             SET_CXX_SINGOBJ(o,NULL);
-            SET_RING_SINGOBJ(o,NULL);
+            SET_RING_SINGOBJ(o,0);
             DEC_REFCOUNT( rnr );
             // Pr("killed a ring element\n",0L,0L);
             break;
@@ -173,6 +173,22 @@ Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path)
     currentVoice=feInitStdin(NULL);
 }
 
+char *LastSingularOutput = NULL;
+
+extern "C"
+Obj FuncLastSingularOutput(Obj self)
+{
+    if (LastSingularOutput) {
+        UInt len = (UInt) strlen(LastSingularOutput);
+        Obj tmp = NEW_STRING(len);
+        SET_LEN_STRING(tmp,len);
+        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),LastSingularOutput);
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+        return tmp;
+    } else return Fail;
+}
+
 extern "C"
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st)
 {
@@ -180,8 +196,15 @@ Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st)
     char *ost = (char *) omalloc((size_t) len + 10);
     memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
     memcpy(ost+len,"return();",10);
-    Int err = (Int) iiEStart(ost,NULL);
-    // Note that iiEStart uses omFree internally to free the string
+    if (LastSingularOutput) {
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+    }
+    SPrintStart();
+    // Int err = (Int) iiEStart(ost,NULL);
+    Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
+    LastSingularOutput = SPrintEnd();
+    // Note that iiEStart uses omFree internally to free the string ost
     return ObjInt_Int((Int) err);
 }
 

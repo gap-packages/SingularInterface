@@ -102,6 +102,7 @@ Obj FuncADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
+Obj FuncLastSingularOutput(Obj self);
 
 
 //////////////// C functions to be called from C++ ////////////////////
