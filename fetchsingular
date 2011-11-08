@@ -1,3 +1,4 @@
 #!/bin/sh
 SINGULARVERSION=`cat SINGULARVERSION`
+rm Singular-${SINGULARVERSION}.tar.gz
 wget ftp://www.mathematik.uni-kl.de/pub/Math/Singular/UNIX/nightly_builds/Singular-${SINGULARVERSION}.tar.gz
