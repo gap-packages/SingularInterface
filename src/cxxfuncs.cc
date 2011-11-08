@@ -157,12 +157,47 @@ Obj FuncADD_POLYS(Obj self, Obj a, Obj b)
     if (rnr != RING_SINGOBJ(b))
         ErrorQuit("Elements not over the same ring\n",0L,0L);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    if (r != currRing) rChangeCurrRing(r);  // necessary?
     poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
     poly bb = p_Copy((poly) CXX_SINGOBJ(b),r);
     aa = p_Add_q(aa,bb,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
     return tmp;
+}
+
+extern "C"
+Obj FuncNEG_POLY(Obj self, Obj a)
+{
+    UInt rnr = RING_SINGOBJ(a);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);  // necessary?
+    poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
+    aa = p_Neg(aa,r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    return tmp;
+}
+
+extern "C"
+Obj FuncMULT_POLYS(Obj self, Obj a, Obj b)
+{
+    UInt rnr = RING_SINGOBJ(a);
+    if (rnr != RING_SINGOBJ(b))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);   // necessary?
+    poly aa = pp_Mult_qq((poly) CXX_SINGOBJ(a),(poly) CXX_SINGOBJ(b),r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    return tmp;
+}
+
+number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
+// This internal function converts a GAP number n into a coefficient
+// number for the ring r. n can be an immediate integer, a GMP integer
+// or a rational number. If anything goes wrong, NULL is returned.
+{
+    if (r != currRing) rChangeCurrRing(r);
+    number res;
+    return res;
 }
 
 extern "C"
