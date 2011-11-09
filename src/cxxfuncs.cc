@@ -21,6 +21,67 @@ extern "C"
 using namespace std;
 
 
+// The following should be in rational.h but isn't:
+#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
+#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+
+number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
+// This internal function converts a GAP number n into a coefficient
+// number for the ring r. n can be an immediate integer, a GMP integer
+// or a rational number. If anything goes wrong, NULL is returned.
+{
+    if (r != currRing) rChangeCurrRing(r);
+    if (IS_INTOBJ(n)) {   // a GAP immediate integer
+        Int i = INT_INTOBJ(n);
+        if (i >= -268435456 && i < 268435456) {
+            // Will always happen on 32-bit machine, but might not on 64-bit
+            // Fits into a Singular immediate integer
+            return INT_TO_SR(i);
+        }
+        // Does not fit into Singular immediate integer
+        return nlRInit(i);
+    } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG) {
+        // A long GAP integer
+        number res = ALLOC_RNUMBER();
+        UInt size = SIZE_INT(n);
+        mpz_init2(res->z,size);
+        memcpy(res->z->_mp_d,ADDR_INT(n),sizeof(mp_limb_t)*size);
+        res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int) size : - (Int)size;
+        res->s = 3;  // indicates an integer
+        return res;
+    } else if (TNUM_OBJ(n) == T_RAT) {
+        // A long GAP rational:
+        number res = ALLOC_RNUMBER();
+        res->s = 0;
+        Obj nn = NUM_RAT(n);
+        if (IS_INTOBJ(nn)) { // a GAP immediate integer
+            Int i = INT_INTOBJ(nn);
+            mpz_init_set_si(res->z,i);
+        } else {
+            UInt size = SIZE_INT(nn);
+            mpz_init2(res->z,size);
+            memcpy(res->z->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
+            res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
+                               ? (Int) size : - (Int)size;
+        }
+        nn = DEN_RAT(n);
+        if (IS_INTOBJ(nn)) { // a GAP immediate integer
+            Int i = INT_INTOBJ(nn);
+            mpz_init_set_si(res->n,i);
+        } else {
+            UInt size = SIZE_INT(nn);
+            mpz_init2(res->n,size);
+            memcpy(res->n->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
+            res->n->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
+                               ? (Int) size : - (Int)size;
+        }
+        return res;
+    } else {
+        ErrorQuit("Argument must be an integer or rational.\n",0L,0L);
+    }
+}
+
+
 extern "C"
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
 {
@@ -190,14 +251,17 @@ Obj FuncMULT_POLYS(Obj self, Obj a, Obj b)
     return tmp;
 }
 
-number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
-// This internal function converts a GAP number n into a coefficient
-// number for the ring r. n can be an immediate integer, a GMP integer
-// or a rational number. If anything goes wrong, NULL is returned.
+extern "C"
+Obj FuncMULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
-    if (r != currRing) rChangeCurrRing(r);
-    number res;
-    return res;
+    UInt rnr = RING_SINGOBJ(a);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);   // necessary?
+    number bb = NUMBER_FROM_GAP(self,r,b);
+    poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
+    nlDelete(&bb,r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    return tmp;
 }
 
 extern "C"

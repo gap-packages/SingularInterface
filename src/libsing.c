@@ -59,6 +59,10 @@ static StructGVarFunc GVarFuncs[] =
    "a, b", FuncMULT_POLYS,
    "cxx-funcs.cc:FuncMULT_POLYS" }, 
 
+  {"MULT_POLY_NUMBER", 2,
+   "a, b", FuncMULT_POLY_NUMBER,
+   "cxx-funcs.cc:FuncMULT_POLY_NUMBER" }, 
+
   {"INIT_SINGULAR_INTERPRETER", 1, 
    "path",
    FuncINIT_SINGULAR_INTERPRETER,

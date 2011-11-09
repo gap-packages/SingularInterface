@@ -101,6 +101,7 @@ Obj FuncSTRING_POLY(Obj self, Obj po);
 Obj FuncADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncNEG_POLY(Obj self, Obj a);
 Obj FuncMULT_POLYS(Obj self, Obj a, Obj b);
+Obj FuncMULT_POLY_NUMBER(Obj self, Obj a, Obj b);
 Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
 Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
