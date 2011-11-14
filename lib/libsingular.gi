@@ -25,7 +25,12 @@ InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;
     path := Filename(DirectoriesPackageLibrary("libsingular","")[1],
-                     "Singular-3-1-3/Singular/libsingular.so");
+                     "Singular-3-1-3/Singular/libsingular.");
+    if ARCH_IS_MAC_OS_X() then
+        Append(path,"dylib");
+    else
+        Append(path,"so");
+    fi;
     INIT_SINGULAR_INTERPRETER(path);
   end );
 InitSingularInterpreter();

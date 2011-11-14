@@ -5,6 +5,6 @@ tar xzvf Singular-${SINGULARVERSION}.tar.gz
 export CC="gcc -fpic -DPIC -DLIBSINGULAR"
 export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
 cd Singular-$SINGULARVERSION
-./configure --without-dynamic-kernel
+./configure --without-dynamic-kernel --without-MP
 make install-libsingular
 ./singuname.sh >../SINGARCHNAME
