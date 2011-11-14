@@ -1,7 +1,5 @@
 #!/bin/sh
 SINGULARVERSION=`cat SINGULARVERSION`
-rm -rf Singular-$SINGULARVERSION
-tar xzvf Singular-${SINGULARVERSION}.tar.gz
 export CC="gcc -fpic -DPIC -DLIBSINGULAR"
 export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
 cd Singular-$SINGULARVERSION
