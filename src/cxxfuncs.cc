@@ -31,6 +31,21 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
 // or a rational number. If anything goes wrong, NULL is returned.
 {
     if (r != currRing) rChangeCurrRing(r);
+    if (rField_is_Zp(r)) {
+        // We are in characteristic p, so number is just an integer:
+        if (IS_INTOBJ(n)) {
+            return reinterpret_cast<number>(INT_INTOBJ(n));
+        } 
+        // Maybe allow for finite field elements here, but check
+        // characteristic!
+        ErrorQuit("Argument must be an immediate integer.\n",0L,0L);
+        return NULL;  // never executed
+    } else if (!rField_is_Q(r)) {
+        // Other fields not yet supported
+        ErrorQuit("GAP numbers over this field not yet implemented.\n",0L,0L);
+        return NULL;  // never executed
+    }
+    // Here we know that the rationals are the coefficients:
     if (IS_INTOBJ(n)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(n);
         if (i >= -268435456 && i < 268435456) {
@@ -78,6 +93,7 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
         return res;
     } else {
         ErrorQuit("Argument must be an integer or rational.\n",0L,0L);
+        return NULL;  // never executed
     }
 }
 
@@ -259,7 +275,7 @@ Obj FuncMULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     if (r != currRing) rChangeCurrRing(r);   // necessary?
     number bb = NUMBER_FROM_GAP(self,r,b);
     poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
-    nlDelete(&bb,r);
+    if (rField_is_Q(r)) nlDelete(&bb,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
     return tmp;
 }
