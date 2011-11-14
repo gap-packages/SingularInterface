@@ -24,8 +24,9 @@ InstallMethod( ViewObj, "for a singular poly",
 InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;
-    path := Filename(DirectoriesPackageLibrary("libsingular","")[1],
-                     "Singular-3-1-3/Singular/libsingular.");
+    path := ShallowCopy(
+            Filename(DirectoriesPackageLibrary("libsingular","")[1],
+                     "Singular-3-1-3/Singular/libsingular."));
     if ARCH_IS_MAC_OS_X() then
         Append(path,"dylib");
     else
