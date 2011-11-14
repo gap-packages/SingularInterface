@@ -7,4 +7,9 @@ export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
 cd Singular-$SINGULARVERSION
 ./configure --without-dynamic-kernel --without-MP
 make install-libsingular
+if [ `uname` = "Darwin" ] ; then
+    echo "Setting libsingular.dylib load path (because of MacOS)"
+    install_name_tool -id $PWD/Singular-${SINGULARVERSION}/Singular/libsingular.dylib Singular-${SINGULARVERSION}/Singular/libsingular.dylib
+fi
 ./singuname.sh >../SINGARCHNAME
+
