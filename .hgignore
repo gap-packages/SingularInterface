@@ -1,0 +1,12 @@
+^Singular
+\.so$
+\.la$
+\.lo$
+Makefile$
+^config\.
+^SINGARCHNAME$
+^autom4te\.cache/
+^src/\.deps/
+^src/\.libs/
+^libtool$
+
