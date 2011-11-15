@@ -31,10 +31,22 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
 // or a rational number. If anything goes wrong, NULL is returned.
 {
     if (r != currRing) rChangeCurrRing(r);
+#ifdef SYS_IS_64_BIT
+    if (IS_INTOBJ(n)) {
+        Int i = INT_INTOBJ(n);
+        if (i >= -0x80000000L && i < 0x80000000L)
+            return n_Init(i,r);
+    }
+#else
+    if (IS_INTOBJ(n)) {
+        Int i = INT_INTOBJ(n);
+        return n_Init(i,r);
+    }
+#endif
     if (rField_is_Zp(r)) {
         // We are in characteristic p, so number is just an integer:
         if (IS_INTOBJ(n)) {
-            return reinterpret_cast<number>(INT_INTOBJ(n));
+            return n_Init((int) (INT_INTOBJ(n) % rChar(r)),r);
         } 
         // Maybe allow for finite field elements here, but check
         // characteristic!
@@ -48,12 +60,8 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
     // Here we know that the rationals are the coefficients:
     if (IS_INTOBJ(n)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(n);
-        if (i >= -268435456 && i < 268435456) {
-            // Will always happen on 32-bit machine, but might not on 64-bit
-            // Fits into a Singular immediate integer
-            return INT_TO_SR(i);
-        }
-        // Does not fit into Singular immediate integer
+        // Does not fit into Singular immediate integer or would have
+        // handled above already.
         return nlRInit(i);
     } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG) {
         // A long GAP integer
@@ -123,22 +131,29 @@ extern "C"
 void SingularFreeFunc(Obj o)
 {
     UInt type = TYPE_SINGOBJ(o);
+    poly p;
+    UInt rnr;
+    number n;
 
     switch (type) {
         case SINGTYPE_RING:
             rKill( (ring) CXX_SINGOBJ(o) );
-            SET_CXX_SINGOBJ(o,NULL);
-            SET_RING_SINGOBJ(o,0);
+            // SET_CXX_SINGOBJ(o,NULL);
+            // SET_RING_SINGOBJ(o,0);
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
-            poly p = (poly) CXX_SINGOBJ(o);
-            UInt rnr = RING_SINGOBJ(o);
+            p = (poly) CXX_SINGOBJ(o);
+            rnr = RING_SINGOBJ(o);
             p_Delete( &p, (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr)) );
-            SET_CXX_SINGOBJ(o,NULL);
-            SET_RING_SINGOBJ(o,0);
+            // SET_CXX_SINGOBJ(o,NULL);
+            // SET_RING_SINGOBJ(o,0);
             DEC_REFCOUNT( rnr );
             // Pr("killed a ring element\n",0L,0L);
+            break;
+        case SINGTYPE_BIGINT:
+            n = (number) CXX_SINGOBJ(o);
+            nlDelete(&n,NULL);
             break;
     }
 }
@@ -194,7 +209,7 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
 }
 
 extern "C"
-Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
+Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt rnr = RING_SINGOBJ(rr);
@@ -213,7 +228,7 @@ Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 }
 
 extern "C"
-Obj FuncSTRING_POLY(Obj self, Obj po)
+Obj FuncSI_STRING_POLY(Obj self, Obj po)
 {
     UInt rnr = RING_SINGOBJ(po);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
@@ -228,7 +243,7 @@ Obj FuncSTRING_POLY(Obj self, Obj po)
 }
 
 extern "C"
-Obj FuncADD_POLYS(Obj self, Obj a, Obj b)
+Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
 {
     UInt rnr = RING_SINGOBJ(a);
     if (rnr != RING_SINGOBJ(b))
@@ -243,7 +258,7 @@ Obj FuncADD_POLYS(Obj self, Obj a, Obj b)
 }
 
 extern "C"
-Obj FuncNEG_POLY(Obj self, Obj a)
+Obj FuncSI_NEG_POLY(Obj self, Obj a)
 {
     UInt rnr = RING_SINGOBJ(a);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
@@ -255,7 +270,7 @@ Obj FuncNEG_POLY(Obj self, Obj a)
 }
 
 extern "C"
-Obj FuncMULT_POLYS(Obj self, Obj a, Obj b)
+Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b)
 {
     UInt rnr = RING_SINGOBJ(a);
     if (rnr != RING_SINGOBJ(b))
@@ -268,20 +283,20 @@ Obj FuncMULT_POLYS(Obj self, Obj a, Obj b)
 }
 
 extern "C"
-Obj FuncMULT_POLY_NUMBER(Obj self, Obj a, Obj b)
+Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
     UInt rnr = RING_SINGOBJ(a);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
     if (r != currRing) rChangeCurrRing(r);   // necessary?
     number bb = NUMBER_FROM_GAP(self,r,b);
     poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
-    if (rField_is_Q(r)) nlDelete(&bb,r);
+    n_Delete(&bb,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
     return tmp;
 }
 
 extern "C"
-Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path)
+Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
 {
     // init path names etc.
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
@@ -305,7 +320,7 @@ Obj FuncLastSingularOutput(Obj self)
 }
 
 extern "C"
-Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st)
+Obj FuncSI_EVALUATE(Obj self, Obj st)
 {
     UInt len = GET_LEN_STRING(st);
     char *ost = (char *) omalloc((size_t) len + 10);
@@ -380,6 +395,56 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
     }
 }
 
+Obj FuncSI_bigint(Obj self, Obj nr)
+{
+    number n;
+    if (IS_INTOBJ(nr)) {   // a GAP immediate integer
+        Int i = INT_INTOBJ(nr);
+        if (i >= -268435456L && i < 268435456L)
+            n = nlInit((int) i,NULL);
+        else
+            n = nlRInit(i);
+    } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
+        // A long GAP integer
+        n = ALLOC_RNUMBER();
+        UInt size = SIZE_INT(nr);
+        mpz_init2(n->z,size);
+        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
+        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        n->s = 3;  // indicates an integer
+    } else {
+        ErrorQuit("Argument must be an integer.\n",0L,0L);
+    }
+    return NEW_SINGOBJ(SINGTYPE_BIGINT,n);
+}
+
+Obj FuncSI_Intbigint(Obj self, Obj nr)
+{
+    number n = (number) CXX_SINGOBJ(nr);
+    Obj res;
+    if (SR_HDL(n) & SR_INT) {
+        // an immediate integer
+        return INTOBJ_INT(SR_TO_INT(n));
+    } else {
+        Int size = n->z->_mp_size;
+        int sign = size > 0 ? 1 : -1;
+        size = abs(size);
+#ifdef SYS_IS_64_BIT
+        if (size == 1) {
+             if (sign > 0)
+                 return ObjInt_UInt(n->z->_mp_d[0]);
+             else
+                 return AINVInt(ObjInt_UInt(n->z->_mp_d[0]));
+        }
+#endif
+        if (sign > 0)
+            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
+        else
+            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
+        memcpy(ADDR_INT(res),n->z->_mp_d,size*sizeof(mp_limb_t));
+        return res;
+    }             
+}
 
 //////////////////////////////////////////////////////////////////////////////
 

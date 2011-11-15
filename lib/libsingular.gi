@@ -18,7 +18,13 @@ InstallMethod( ViewObj, "for a singular ring",
 InstallMethod( ViewObj, "for a singular poly",
   [ IsSingularPoly ],
   function( r )
-    Print("<singular poly:",STRING_POLY(r),">");
+    Print("<singular poly:",SI_STRING_POLY(r),">");
+  end );
+
+InstallMethod( ViewObj, "for a singular bigint",
+  [ IsSingularBigInt ],
+  function( r )
+    Print("<singular bigint:>");
   end );
 
 InstallGlobalFunction( InitSingularInterpreter,
@@ -32,12 +38,12 @@ InstallGlobalFunction( InitSingularInterpreter,
     else
         Append(path,"so");
     fi;
-    INIT_SINGULAR_INTERPRETER(path);
+    SI_INIT_INTERPRETER(path);
   end );
 InitSingularInterpreter();
 
 InstallMethod( Singular, "for a string in stringrep",
-  [ IsStringRep ], EVALUATE_IN_SINGULAR );
+  [ IsStringRep ], SI_EVALUATE );
 
 InstallMethod( Singular, "without arguments",
   [ ],
@@ -49,6 +55,7 @@ InstallMethod( Singular, "without arguments",
         s := ReadLine(i);
         if s = "\n" then break; fi;
         Singular(s);
+        Print(LastSingularOutput());
     od;
     CloseStream(i);
   end );

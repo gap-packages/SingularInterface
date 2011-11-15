@@ -5,11 +5,14 @@ SingularTypes := [];
 SingularFamily := NewFamily("SingularFamily");
 DeclareCategory( "IsSingularRing", IsObject );
 DeclareCategory( "IsSingularPoly", IsObject );
+DeclareCategory( "IsSingularBigInt", IsObject );
 
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RING] 
    := NewType(SingularFamily,IsSingularRing);
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_POLY]
    := NewType(SingularFamily,IsSingularPoly);
+SingularTypes[SINGULAR_TYPENRS.SINGTYPE_BIGINT]
+   := NewType(SingularFamily,IsSingularBigInt);
 
 SingularRings := [];
 SingularElCounts := [];

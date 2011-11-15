@@ -96,16 +96,19 @@ void SingularFreeFunc(Obj o);
 Obj TypeSingularObj(Obj o);
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
-Obj FuncSINGULAR_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
-Obj FuncSTRING_POLY(Obj self, Obj po);
-Obj FuncADD_POLYS(Obj self, Obj a, Obj b);
-Obj FuncNEG_POLY(Obj self, Obj a);
-Obj FuncMULT_POLYS(Obj self, Obj a, Obj b);
-Obj FuncMULT_POLY_NUMBER(Obj self, Obj a, Obj b);
-Obj FuncINIT_SINGULAR_INTERPRETER(Obj self, Obj path);
-Obj FuncEVALUATE_IN_SINGULAR(Obj self, Obj st);
+Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
+Obj FuncSI_STRING_POLY(Obj self, Obj po);
+Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b);
+Obj FuncSI_NEG_POLY(Obj self, Obj a);
+Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b);
+Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);
+Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path);
+Obj FuncSI_EVALUATE(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
 Obj FuncLastSingularOutput(Obj self);
+Obj FuncSI_bigint(Obj self, Obj nr);
+Obj FuncSI_Intbigint(Obj self, Obj b);
+
 
 
 //////////////// C functions to be called from C++ ////////////////////

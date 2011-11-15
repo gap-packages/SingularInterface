@@ -39,39 +39,39 @@ static StructGVarFunc GVarFuncs[] =
    "ring", FuncIndeterminatesOfSingularRing,
    "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
 
-  {"SINGULAR_MONOMIAL", 3,
-   "ring, coeff, exponents", FuncSINGULAR_MONOMIAL,
-   "cxx-funcs.cc:FuncSINGULAR_MONOMIAL" }, 
+  {"SI_MONOMIAL", 3,
+   "ring, coeff, exponents", FuncSI_MONOMIAL,
+   "cxx-funcs.cc:FuncSI_MONOMIAL" }, 
 
-  {"STRING_POLY", 1,
-   "poly", FuncSTRING_POLY,
-   "cxx-funcs.cc:FuncSTRING_POLY" }, 
+  {"SI_STRING_POLY", 1,
+   "poly", FuncSI_STRING_POLY,
+   "cxx-funcs.cc:FuncSI_STRING_POLY" }, 
 
-  {"ADD_POLYS", 2,
-   "a, b", FuncADD_POLYS,
-   "cxx-funcs.cc:FuncADD_POLYS" }, 
+  {"SI_ADD_POLYS", 2,
+   "a, b", FuncSI_ADD_POLYS,
+   "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
 
-  {"NEG_POLY", 1,
-   "a", FuncNEG_POLY,
-   "cxx-funcs.cc:FuncNEG_POLY" }, 
+  {"SI_NEG_POLY", 1,
+   "a", FuncSI_NEG_POLY,
+   "cxx-funcs.cc:FuncSI_NEG_POLY" }, 
 
-  {"MULT_POLYS", 2,
-   "a, b", FuncMULT_POLYS,
-   "cxx-funcs.cc:FuncMULT_POLYS" }, 
+  {"SI_MULT_POLYS", 2,
+   "a, b", FuncSI_MULT_POLYS,
+   "cxx-funcs.cc:FuncSI_MULT_POLYS" }, 
 
-  {"MULT_POLY_NUMBER", 2,
-   "a, b", FuncMULT_POLY_NUMBER,
-   "cxx-funcs.cc:FuncMULT_POLY_NUMBER" }, 
+  {"SI_MULT_POLY_NUMBER", 2,
+   "a, b", FuncSI_MULT_POLY_NUMBER,
+   "cxx-funcs.cc:FuncSI_MULT_POLY_NUMBER" }, 
 
-  {"INIT_SINGULAR_INTERPRETER", 1, 
+  {"SI_INIT_INTERPRETER", 1, 
    "path",
-   FuncINIT_SINGULAR_INTERPRETER,
-   "cxx-funcs.cc:FuncINIT_SINGULAR_INTERPRETER" },
+   FuncSI_INIT_INTERPRETER,
+   "cxx-funcs.cc:FuncSI_INIT_INTERPRETER" },
 
-  {"EVALUATE_IN_SINGULAR", 1, 
+  {"SI_EVALUATE", 1, 
    "st",
-   FuncEVALUATE_IN_SINGULAR,
-   "cxx-funcs.cc:FuncEVALUATE_IN_SINGULAR" },
+   FuncSI_EVALUATE,
+   "cxx-funcs.cc:FuncSI_EVALUATE" },
 
   {"ValueOfSingularVar", 1, 
    "name",
@@ -82,6 +82,16 @@ static StructGVarFunc GVarFuncs[] =
    "",
    FuncLastSingularOutput,
    "cxx-funcs.cc:FuncLastSingularOutput" },
+
+  {"SI_bigint", 1,
+   "nr",
+   FuncSI_bigint,
+   "cxx-funcs.cc:FuncSI_bigint" },
+
+  {"SI_Intbigint", 1,
+   "nr",
+   FuncSI_Intbigint,
+   "cxx-funcs.cc:FuncSI_Intbigint" },
 
   /* The rest will eventually go: */
 
