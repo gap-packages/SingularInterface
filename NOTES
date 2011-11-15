@@ -1,0 +1,116 @@
+Ziel:
+  * Planung der Weiterentwicklung von libsing (mittel- und langfristig)
+    - Ueberblick -> Max
+    - Fehlerbehandlung -> Max+Hans
+    - homalg's Wunschliste -> Mohamed
+    - welche Objekte aus Singular machen Sinn?
+    - Stresstests
+    - Integration von Singular objekten
+    - Singular libraries verwenden (Bsp: groebner)
+  * Parallelisierung
+
+bigint:
+  ist number
+  Fall rationale Zahl
+  nlDelete(n,NULL)
+
+ideal:
+  ideal i = idInit(int numbergens, int rank (1 fuer ideal, >= fuer modul) );
+  i->m    ist array [0]..[numbergens-1]
+  poly p2 = p_Copy(p1,r)
+  id_Delete(i,r);
+
+intvec:
+  intvec *iv = new intvec(int len);
+  intvec *iv = new intvec(int von, int bis);    [von,von+1,...,bis]
+  intvec *iv = new intvec(intvec *i);
+  (*iv)m[0..len-1]     ints
+  delete *iv
+
+intmat:
+  intvec *im = new intvec(int rows, int cols, int init);
+
+  (*im)[0..rows*cols-1]    ints, zeilenweise
+  IMATELEM(*im,i,j)   1-based
+  delete *im
+
+link:
+  si_link l = (si_link) (omAlloc0(sizeof(*l)))
+  slInit(l, ch);  macht kopie
+      char *ch
+  omFree(ch);
+  slKill(l);
+
+list:
+  lists l = new slists;
+  lInit(int len);
+  l->m[0..len-1]     of type sleftv
+  l->Clean(r)
+
+map:
+  typ ist map
+
+  anlegen:
+      mache ideal
+      caste auf map
+      setze map.preimage auf string
+  freigeben:
+      gib preimage frei
+      gib frei wie ideal
+
+matrix:
+  matrix ist pointer auf class ip_smatrix
+  matrix m = mpNew(int r, int c)   ergibt nullmatrix
+  MATELEM(mat,i,j)     lesen und schreiben (1-based)
+  Eintraege sind poly
+  mpDelete(m,r)
+
+module:
+  wie ideal, nur rank
+
+number:
+  n_Init(int i)
+  siehe NUMBER_FROM_GAP
+  n_Delete(&n,r)
+
+proc:
+  class procinfo
+  typedef procinfo *proc;
+  omAlloc0Bin()
+  iiInitSingularProcInfo
+    --> spaeter
+
+qring:
+  same as ring
+  setze zusaetzlich 
+    r->qideal  ist ein ideal
+
+resolution:
+  nicht erzeugen
+
+string:
+  char *
+  mit omAlloc anfordern
+
+vector:
+  wie poly, zusaetzliche Operationen
+    pGetComp
+    pSetComp
+
+user defined:
+  --> spaeter, wenn ueberhaupt
+
+
+Interpreter-wrapper:
+  class sleftv
+  typedef sleftv *leftv;
+  Einpacken:
+    leftv w = omAlloc0(sizeof(sleftv));
+    w->rtyp = xyz_CMD
+    w->data = (void *) obj
+
+  Freigeben:
+    w->cleanup(r);
+    omFree(w);
+
+

@@ -1,0 +1,231 @@
+Singular data types, and how to map them in GAP
+
+== bigint
+a gmp integer
+first idea: map the native singular bigint to GAP's and vice versa
+
+but: Singular uses the high level data structure, GAP the low level one,
+so this might be expensive. so maybe wrap them anyway.
+but are they used that often?
+wrapping is very easy, so let's do that for now, and decide later one whether
+we should do conversion to the "native" format
+
+but maybe we don't want to wrap it at all, but deal with "number" instead
+but "number" can be in any ring, e.g. Z/nZ, number fields, ...
+
+three levels:
+
+low level: we work with wrapped objects,  i.e. things stay on the singular level
+
+medium level:
+provide coercion functions that allow to explicitly convert e.g. a GAP integer
+ to a singular integer and vice versa, for users who know what they are doing
+
+high level:
+either allow user to e.g. add a GAP integer and a (wrapped) singular integer; the result would be either
+  (a) a GAP integer
+  (b) a Singular integer
+  (c) an error indicating how to do the addition on either singular or GAP side (by using coercion)
+  (d) a hybrid object containing both GAP and Singular data
+
+
+
+
+== def
+-> this is a bit like (void*), no need to wrap it / deal with it
+
+== ideal
+-> a set of polynomials with some attributes (list of attributes)
+should be wrapped, but on the GAP (high level)
+
+== int
+32bit integers (even in GAP)
+-> can be natively converted to machine word in GAP.
+used in intvec, intmat, for e.g. "dimension" of a module, etc.
+in 64bit, converting Singular->GAP is trivial, and the other direction might cause overflow,
+but ignore that for now (or create a bigint)?
+
+== intmat, intvec
+matrices and vectors of 32bit integers
+-> wrap ? or convert?
+
+== link
+used for I/O: to read from / write to  files, other processes, ...
+-> wrap as an opaque object, GAP need not know anything about it
+(except maybe a nice description string)
+
+
+== list
+a list of arbitrary elements; it depends on a ring if and only if it contains elements depending
+on a ring; but in that case, there can be only one ring (so not elements depending on two different elements)
+
+in singular there is no way to find the ring from an element; so on the GAP side we need to remember
+the right ring object.
+
+a list can contain a list, but not itself
+two lists cannot contain each other
+
+initial, the list would be wrapped; the object in it would not be.
+what if the user wants to do random access. if we create a wrapper for an element X
+in the list, then we now have two GAP objects referring to that object: both the list
+and the direct wrapper for X. If we free the list, then the direct wrapper would now
+refer to a freed object (unless we do ref counting)
+
+-> solution: accessing element 17 will create a copy (that is what singular does anyway)
+
+
+
+==== detour =====
+   a ring element does not know its ring
+   but a ring keeps a list of all ring elements, lists, etc. using it. Quote
+   from <http://www.singular.uni-kl.de/Manual/latest/sing_114.htm>
+   
+   "are arrays whose elements can be of different types (including ring and
+   qring). If one element belongs to a ring the whole list belongs to that ring.
+   This applies also to the special list #. The expression list() is the empty
+   list"
+   
+   as soon as you put a ring-dependent element into a list, that list becomes owned by the ring
+   (and hence is only "visible" if that ring is active)
+==== end detour =====
+
+
+potential solution: use special proxy objects: accessing the 3rd entry of a list L will return
+a proxy object which keeps a reference to "L" and "3", and any operations with that proxy object
+will map to the corresponding list element.
+
+remaining problem: how and when can we track whether list "belongs to" a ring or not...
+
+current proposal: when a list is wrapped, the currently active ring is assigned to it as "its ring"
+even if it does not contain an element that depends on the ring.
+
+remaining problem: if the list is ring free, and ring R is active; then R' becomes active, and
+an element of type R' is inserted in the list; than this is OK on the Singular level, but not
+on the GAP level.
+
+[[ Idea: we could try to force singular to associate the list to the active ring right away ]]
+
+[[ For GAP use, we also would want people to be able to pass in a GAP list, and then
+  automatically convert it to a Singular list ]]
+
+
+
+== map ==
+<QUOTE>
+Maps are ring maps from a preimage ring into the basering.
+
+Note:
+
+* The target of a map is ALWAYS the actual basering
+* The preimage ring has to be stored "by its name", that means, maps can only be
+  used in such contexts, where the name of the preimage ring can be resolved (this
+  has to be considered in subprocedures). See also Identifier resolution, Names in
+  procedures.
+
+Maps between rings with different coefficient fields are possible and listed below.
+</QUOTE>
+
+-> keeps reference to two rings, otherwise no major issue
+
+
+== matrix ==
+rectangular matrix of polynomials
+
+like a list, we need proxy objects if the user wants to do random access to say M[i][j].
+A bit easier than list, though, as matrices are homogenous
+
+
+== module ==
+like ideal, only that the elements can be thought og "vectors of polynomials"
+(but not actual Singular vector objects)
+another view point is to view them as a special type of matrix, but with sparsity improvements
+
+but it is special because a module ordering is involved
+
+again, use proxy objects to access subobjects, which then are "vector polynomials" or "term vectors"
+
+
+== number ==
+see gmpint; but depends on the ring, and is the type used for coefficients
+
+can be created from a (machine) int, from a string, from gmpint; for other things,
+one has to do special conversions
+
+asking a polynomial for a coefficient gives you a pointer to a number
+
+so we have to wrap them
+
+== package ==
+interpreter related, used to declare packages, can be ignored
+
+
+== poly ==
+already done, wrapped
+
+== proc ==
+a Singular procedure
+no reference to a current ring
+
+either a string containing the body of the procedure; or a place where to load the proc from.
+
+
+
+== qring ==
+a ring together with an ideal (which should be a Gröbner basis)
+it gets a copy of a ring, and a copy of the ideal
+
+you can ask it for its ring or its ideal -> proxy for that
+
+otherwise straight forward to wrap
+
+== resolution ==
+"black box for lazy computation"
+
+points to a ring
+simple wrapper 
+
+== ring ==
+DONE
+except for the orderings: need more constructors
+
+
+== string ==
+??
+
+== vector ==
+??
+
+== user defined types ==
+
+kind of records. internally implemented like lists, but can contain elements of different rings
+
+for elements depending on a ring, it stores also the ring
+this takes a pointer to the ring, and increments a reference counter on the ring
+
+== pyobject ==
+black box data in singular for accessing python objects
+
+
+
+-> going back to the start, we also want to wrap gmpint
+
+
+
+=====================================
+
+to the implementation in GAP
+
+* create wrapper objects for each type
+  - for now using a single T_NUM, plus a word that references an array containing suitable GAP types
+  - on the long run might want to use a few more T_NUMs
+* create the various proxy objects
+  - they keep a GAP reference to the wrapper of the "master" object, plus some extra "index" informatio
+    referencing the right subobject
+  - would be in pure GAP, and would share most of their code
+  - only the actual subject access differs
+  - use a separate T_NUM for them?
+  
+
+
+
+
