@@ -109,7 +109,10 @@ Obj FuncValueOfSingularVar(Obj self, Obj name);
 Obj FuncLastSingularOutput(Obj self);
 Obj FuncSI_bigint(Obj self, Obj nr);
 Obj FuncSI_Intbigint(Obj self, Obj b);
-
+Obj FuncSI_intvec(Obj self, Obj l);
+Obj FuncSI_Plistintvec(Obj self, Obj iv);
+Obj FuncSI_intmat(Obj self, Obj m);
+Obj FuncSI_Matintmat(Obj self, Obj im);
 
 
 //////////////// C functions to be called from C++ ////////////////////

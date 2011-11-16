@@ -93,6 +93,26 @@ static StructGVarFunc GVarFuncs[] =
    FuncSI_Intbigint,
    "cxx-funcs.cc:FuncSI_Intbigint" },
 
+  {"SI_intvec", 1,
+   "l",
+   FuncSI_intvec,
+   "cxx-funcs.cc:FuncSI_intvec" },
+   
+  {"SI_Plistintvec", 1,
+   "iv",
+   FuncSI_Plistintvec,
+   "cxx-funcs.cc:FuncSI_Plistintvec" },
+   
+  {"SI_intmat", 1,
+   "m",
+   FuncSI_intmat,
+   "cxx-funcs.cc:FuncSI_intmat" },
+   
+  {"SI_Matintmat", 1,
+   "im",
+   FuncSI_Matintmat,
+   "cxx-funcs.cc:FuncSI_Matintmat" },
+   
   /* The rest will eventually go: */
 
   {"CXXAddStrings", /* GAP function name */
@@ -131,6 +151,8 @@ static Int InitKernel(StructInitInfo* module)
   InitMarkFuncBags(T_SINGULAR,&SingularObjMarkFunc);
   tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
   AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
+  AssPRec(tmp,RNamName("SINGTYPE_INTVEC"), INTOBJ_INT(SINGTYPE_INTVEC));
+  AssPRec(tmp,RNamName("SINGTYPE_INTMAT"), INTOBJ_INT(SINGTYPE_INTMAT));
   AssPRec(tmp,RNamName("SINGTYPE_RING"), INTOBJ_INT(SINGTYPE_RING));
   AssPRec(tmp,RNamName("SINGTYPE_POLY"), INTOBJ_INT(SINGTYPE_POLY));
   gvar = GVarName("SINGULAR_TYPENRS");
