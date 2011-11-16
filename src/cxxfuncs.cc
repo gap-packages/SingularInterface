@@ -5,6 +5,11 @@ This file contains all of the code that deals with C++ libraries.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
+// Include gmp.h *before* libsing.h, because it detects when compiled from C++
+// and then does some things differently, which would cause an error if
+// called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
+#include <gmp.h>
+
 extern "C" 
 {
   #include "libsing.h"
@@ -31,18 +36,23 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
 // or a rational number. If anything goes wrong, NULL is returned.
 {
     if (r != currRing) rChangeCurrRing(r);
-#ifdef SYS_IS_64_BIT
+
+	// First check if n is a small integer that fits into a machine word;
+	// this is usually cheap to convert.
+	// However, GAP uses (32-4)=28 bit integers on 32bit machines, and (64-4)=60
+	// bit integers on 64 bit machine; whereas Singular always uses (32-4)=28
+	// bit integers, even on 64 bit systems. So we have to use different code in
+	// each case.
     if (IS_INTOBJ(n)) {
         Int i = INT_INTOBJ(n);
+#ifdef SYS_IS_64_BIT
         if (i >= -0x80000000L && i < 0x80000000L)
             return n_Init(i,r);
-    }
 #else
-    if (IS_INTOBJ(n)) {
-        Int i = INT_INTOBJ(n);
         return n_Init(i,r);
-    }
 #endif
+    }
+
     if (rField_is_Zp(r)) {
         // We are in characteristic p, so number is just an integer:
         if (IS_INTOBJ(n)) {
@@ -60,20 +70,22 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
     // Here we know that the rationals are the coefficients:
     if (IS_INTOBJ(n)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(n);
-        // Does not fit into Singular immediate integer or would have
-        // handled above already.
+        // Does not fit into a Singular immediate integer, or else it would have
+        // already been handled above.
         return nlRInit(i);
     } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG) {
-        // A long GAP integer
-        number res = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(n);
-        mpz_init2(res->z,size);
+        // n is a long GAP integer. Both GAP and Singular use GMP,
+        // but GAP uses the low-level mpn API (where data is stored as an mp_limb_t array), whereas
+        // Singular uses the high-level mpz API (using type mpz_t).
+        number res = ALLOC_RNUMBER(); // Allocated an empty Singular number object
+        UInt size = SIZE_INT(n);  // number of limbs
+        mpz_init2(res->z,GMP_NUMB_BITS*size);   // mpz_init2 expects a *bitcount* as size
         memcpy(res->z->_mp_d,ADDR_INT(n),sizeof(mp_limb_t)*size);
-        res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int) size : - (Int)size;
+        res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int)size : - (Int)size;
         res->s = 3;  // indicates an integer
         return res;
     } else if (TNUM_OBJ(n) == T_RAT) {
-        // A long GAP rational:
+        // n is a long GAP rational:
         number res = ALLOC_RNUMBER();
         res->s = 0;
         Obj nn = NUM_RAT(n);
@@ -82,7 +94,7 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
             mpz_init_set_si(res->z,i);
         } else {
             UInt size = SIZE_INT(nn);
-            mpz_init2(res->z,size);
+            mpz_init2(res->z,GMP_NUMB_BITS*size);
             memcpy(res->z->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
             res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
                                ? (Int) size : - (Int)size;
@@ -93,7 +105,7 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
             mpz_init_set_si(res->n,i);
         } else {
             UInt size = SIZE_INT(nn);
-            mpz_init2(res->n,size);
+            mpz_init2(res->n,GMP_NUMB_BITS*size);
             memcpy(res->n->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
             res->n->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
                                ? (Int) size : - (Int)size;
@@ -429,7 +441,7 @@ Obj FuncSI_bigint(Obj self, Obj nr)
         // A long GAP integer
         n = ALLOC_RNUMBER();
         UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size);
+        mpz_init2(n->z,GMP_NUMB_BITS*size);
         memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
         n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
         n->s = 3;  // indicates an integer
@@ -452,17 +464,17 @@ Obj FuncSI_Intbigint(Obj self, Obj nr)
         size = abs(size);
 #ifdef SYS_IS_64_BIT
         if (size == 1) {
-             if (sign > 0)
-                 return ObjInt_UInt(n->z->_mp_d[0]);
-             else
-                 return AINVInt(ObjInt_UInt(n->z->_mp_d[0]));
+            if (sign > 0)
+                return ObjInt_UInt(n->z->_mp_d[0]);
+            else
+                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
         }
 #endif
         if (sign > 0)
             res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
         else
             res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
-        memcpy(ADDR_INT(res),n->z->_mp_d,size*sizeof(mp_limb_t));
+        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
         return res;
     }             
 }
