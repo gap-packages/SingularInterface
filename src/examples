@@ -38,3 +38,15 @@ Unbind(aa);
 GASMAN("collect");
 CleanupSingularRings();
 GASMAN("collect");
+SingularElCounts;
+i:=SI_bigint(42);
+SI_Intbigint(i) = 42;
+i:=SI_bigint(42^42);
+SI_Intbigint(i) = 42^42;
+iv:=SI_intvec([1..100]);
+m:=List([1..10],i->List([1..10],j-> j*i));
+im:=SI_intmat(m);
+SI_Plistintvec(iv) = [1..100];
+SI_Matintmat(im) = m;
+
+
