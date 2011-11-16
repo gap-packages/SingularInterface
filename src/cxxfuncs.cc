@@ -77,9 +77,9 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
         // n is a long GAP integer. Both GAP and Singular use GMP,
         // but GAP uses the low-level mpn API (where data is stored as an mp_limb_t array), whereas
         // Singular uses the high-level mpz API (using type mpz_t).
-        number res = ALLOC_RNUMBER(); // Allocated an empty Singular number object
-        UInt size = SIZE_INT(n);  // number of limbs
-        mpz_init2(res->z,GMP_NUMB_BITS*size);   // mpz_init2 expects a *bitcount* as size
+        number res = ALLOC_RNUMBER();
+        UInt size = SIZE_INT(n);
+        mpz_init2(res->z,size*GMP_NUMB_BITS);
         memcpy(res->z->_mp_d,ADDR_INT(n),sizeof(mp_limb_t)*size);
         res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int)size : - (Int)size;
         res->s = 3;  // indicates an integer
@@ -94,7 +94,7 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
             mpz_init_set_si(res->z,i);
         } else {
             UInt size = SIZE_INT(nn);
-            mpz_init2(res->z,GMP_NUMB_BITS*size);
+            mpz_init2(res->z,size*GMP_NUMB_BITS);
             memcpy(res->z->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
             res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
                                ? (Int) size : - (Int)size;
@@ -105,7 +105,7 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
             mpz_init_set_si(res->n,i);
         } else {
             UInt size = SIZE_INT(nn);
-            mpz_init2(res->n,GMP_NUMB_BITS*size);
+            mpz_init2(res->n,size*GMP_NUMB_BITS);
             memcpy(res->n->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
             res->n->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
                                ? (Int) size : - (Int)size;
@@ -441,7 +441,7 @@ Obj FuncSI_bigint(Obj self, Obj nr)
         // A long GAP integer
         n = ALLOC_RNUMBER();
         UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,GMP_NUMB_BITS*size);
+        mpz_init2(n->z,size*GMP_NUMB_BITS);
         memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
         n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
         n->s = 3;  // indicates an integer
@@ -478,6 +478,112 @@ Obj FuncSI_Intbigint(Obj self, Obj nr)
         return res;
     }             
 }
+
+Obj FuncSI_intvec(Obj self, Obj l)
+{
+    if (!IS_LIST(l)) {
+        ErrorQuit("l must be a list",0L,0L);
+        return Fail;
+    }
+    UInt len = LEN_LIST(l);
+    UInt i;
+    intvec *iv = new intvec(len);
+    for (i = 1;i <= len;i++) {
+        Obj t = ELM_LIST(l,i);
+        if (!IS_INTOBJ(t)
+#ifdef SYS_IS_64_BIT
+            || (INT_INTOBJ(t) < -(1L << 31) || INT_INTOBJ(t) >= (1L << 31))
+#endif
+           ) {
+            delete iv;
+            ErrorQuit("l must contain small integers", 0L, 0L);
+        }
+        (*iv)[i-1] = (int) (INT_INTOBJ(t));
+    }
+    return NEW_SINGOBJ(SINGTYPE_INTVEC,iv);
+}
+
+Obj FuncSI_Plistintvec(Obj self, Obj iv)
+{
+    if (! (TNUM_OBJ(iv) == T_SINGULAR && 
+           TYPE_SINGOBJ(iv) == SINGTYPE_INTVEC) ) {
+        ErrorQuit("iv must be a singular intvec", 0L, 0L);
+        return Fail;
+    }
+    intvec *i = (intvec *) CXX_SINGOBJ(iv);
+    UInt len = i->length();
+    Obj ret = NEW_PLIST(T_PLIST_CYC,len);
+    UInt j;
+    for (j = 1;j <= len;j++) {
+        SET_ELM_PLIST(ret,j,ObjInt_Int( (Int) ((*i)[j-1])));
+        CHANGED_BAG(ret);
+    }
+    SET_LEN_PLIST(ret,len);
+    return ret;
+}
+
+Obj FuncSI_intmat(Obj self, Obj m)
+{
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
+           IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
+        ErrorQuit("m must be a list of lists",0L,0L);
+        return Fail;
+    }
+    UInt rows = LEN_LIST(m);
+    UInt cols = LEN_LIST(ELM_LIST(m,1));
+    UInt r,c;
+    Obj therow;
+    intvec *iv = new intvec(rows,cols,0);
+    for (r = 1;r <= rows;r++) {
+        therow = ELM_LIST(m,r);
+        if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
+            delete iv;
+            ErrorQuit("m must be a matrix",0L,0L);
+            return Fail;
+        }
+        for (c = 1; c <= cols; c++) {
+            Obj t = ELM_LIST(therow,c);
+            if (!IS_INTOBJ(t)
+#ifdef SYS_IS_64_BIT
+                || (INT_INTOBJ(t) < -(1L << 31) || INT_INTOBJ(t) >= (1L << 31))
+#endif
+               ) {
+                delete iv;
+                ErrorQuit("m must contain small integers", 0L, 0L);
+            }
+            IMATELEM(*iv,r,c) = (int) (INT_INTOBJ(t));
+        }
+    }
+    return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
+}
+
+Obj FuncSI_Matintmat(Obj self, Obj im)
+{
+    if (! (TNUM_OBJ(im) == T_SINGULAR && 
+           TYPE_SINGOBJ(im) == SINGTYPE_INTMAT) ) {
+        ErrorQuit("im must be a singular intmat", 0L, 0L);
+        return Fail;
+    }
+    intvec *i = (intvec *) CXX_SINGOBJ(im);
+    UInt rows = i->rows();
+    UInt cols = i->cols();
+    Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
+    SET_LEN_PLIST(ret,rows);
+    UInt r,c;
+    for (r = 1;r <= rows;r++) {
+        Obj tmp;
+        tmp = NEW_PLIST(T_PLIST_CYC,cols);
+        SET_ELM_PLIST(ret,r,tmp);
+        CHANGED_BAG(ret);
+        for (c = 1;c <= cols;c++) {
+            SET_ELM_PLIST(tmp,c,ObjInt_Int(IMATELEM(*i,r,c)));
+            CHANGED_BAG(tmp);
+        }
+        SET_LEN_PLIST(tmp,cols);
+    }
+    return ret;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 

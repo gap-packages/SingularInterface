@@ -24,7 +24,19 @@ InstallMethod( ViewObj, "for a singular poly",
 InstallMethod( ViewObj, "for a singular bigint",
   [ IsSingularBigInt ],
   function( r )
-    Print("<singular bigint:>");
+    Print("<singular bigint:",SI_Intbigint(r),">");
+  end );
+
+InstallMethod( ViewObj, "for a singular intvec",
+  [ IsSingularIntVec ],
+  function( i )
+    Print("<singular intvec:",SI_Plistintvec(i),">");
+  end );
+
+InstallMethod( ViewObj, "for a singular intmat",
+  [ IsSingularIntMat ],
+  function( i )
+    Print("<singular intmat:",SI_Matintmat(i),">");
   end );
 
 InstallGlobalFunction( InitSingularInterpreter,

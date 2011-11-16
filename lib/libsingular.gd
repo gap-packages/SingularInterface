@@ -6,6 +6,8 @@ SingularFamily := NewFamily("SingularFamily");
 DeclareCategory( "IsSingularRing", IsObject );
 DeclareCategory( "IsSingularPoly", IsObject );
 DeclareCategory( "IsSingularBigInt", IsObject );
+DeclareCategory( "IsSingularIntVec", IsObject );
+DeclareCategory( "IsSingularIntMat", IsObject );
 
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RING] 
    := NewType(SingularFamily,IsSingularRing);
@@ -13,6 +15,10 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_POLY]
    := NewType(SingularFamily,IsSingularPoly);
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_BIGINT]
    := NewType(SingularFamily,IsSingularBigInt);
+SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTVEC]
+   := NewType(SingularFamily,IsSingularIntVec);
+SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTMAT]
+   := NewType(SingularFamily,IsSingularIntMat);
 
 SingularRings := [];
 SingularElCounts := [];
