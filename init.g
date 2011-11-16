@@ -1,5 +1,6 @@
 # load kernel functions if possible
 # try the static module first
+
 if not IsBound(LIBSINGULAR) then
   if "libsing" in SHOW_STAT() then
     LoadStaticModule("libsing");

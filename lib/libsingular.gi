@@ -43,7 +43,16 @@ InstallGlobalFunction( InitSingularInterpreter,
 InitSingularInterpreter();
 
 InstallMethod( Singular, "for a string in stringrep",
-  [ IsStringRep ], SI_EVALUATE );
+  [ IsStringRep ], 
+  function( st )
+    local ret;
+    SingularErrors := "";
+    ret := SI_EVALUATE(st);
+    if Length(SingularErrors) > 0 then
+        Print(SingularErrors);
+    fi;
+    return ret;
+  end );
 
 InstallMethod( Singular, "without arguments",
   [ ],
@@ -51,7 +60,7 @@ InstallMethod( Singular, "without arguments",
     local i,s;
     i := InputTextUser();
     while true do
-        Print("\rS>\c");
+        Print("\rS> \c");
         s := ReadLine(i);
         if s = "\n" then break; fi;
         Singular(s);

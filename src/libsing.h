@@ -14,6 +14,7 @@ are to be called from C, or vice-versa.
 extern Obj SingularTypes;    /* A kernel copy of a plain list of types */
 extern Obj SingularRings;    /* A kernel copy of a plain list of rings */
 extern Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
+extern Obj SingularErrors;   /* A kernel copy of a string */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // 3 words: 

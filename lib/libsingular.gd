@@ -16,6 +16,7 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_BIGINT]
 
 SingularRings := [];
 SingularElCounts := [];
+SingularErrors := "";
 
 DeclareGlobalFunction( "CleanupSingularRings" );
 

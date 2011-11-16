@@ -319,6 +319,24 @@ Obj FuncLastSingularOutput(Obj self)
     } else return Fail;
 }
 
+extern int inerror;
+
+extern "C"
+void SingularErrorCallback(const char *st)
+{
+    UInt len = (UInt) strlen(st);
+    if (IS_STRING(SingularErrors)) {
+        char *p;
+        UInt oldlen = GET_LEN_STRING(SingularErrors);
+        GROW_STRING(SingularErrors,oldlen+len+2);
+        p = CSTR_STRING(SingularErrors);
+        memcpy(p+oldlen,st,len);
+        p[oldlen+len] = '\n';
+        p[oldlen+len+1] = 0;
+        SET_LEN_STRING(SingularErrors,oldlen+len+1);
+    }
+}
+
 extern "C"
 Obj FuncSI_EVALUATE(Obj self, Obj st)
 {
@@ -331,8 +349,11 @@ Obj FuncSI_EVALUATE(Obj self, Obj st)
         LastSingularOutput = NULL;
     }
     SPrintStart();
-    // Int err = (Int) iiEStart(ost,NULL);
+    myynest = 1;
+    WerrorS_callback = SingularErrorCallback;
     Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
+    inerror = 0;
+    errorreported = 0;
     LastSingularOutput = SPrintEnd();
     // Note that iiEStart uses omFree internally to free the string ost
     return ObjInt_Int((Int) err);

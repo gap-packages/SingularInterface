@@ -115,6 +115,7 @@ static StructGVarFunc GVarFuncs[] =
 Obj SingularTypes;    /* A kernel copy of a plain list of types */
 Obj SingularRings;    /* A kernel copy of a plain list of rings */
 Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
+Obj SingularErrors;   /* A kernel copy of a string */
 
 /**
 The first function to be called when the library is loaded by the kernel.
@@ -140,6 +141,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("SingularTypes", &SingularTypes);
   InitCopyGVar("SingularRings", &SingularRings);
   InitCopyGVar("SingularElCounts", &SingularElCounts);
+  InitCopyGVar("SingularErrors", &SingularErrors);
   
   TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
 
