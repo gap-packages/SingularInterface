@@ -44,11 +44,9 @@ InstallGlobalFunction( InitSingularInterpreter,
     local path;
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsingular","")[1],
-                     "Singular-3-1-3/Singular/libsingular."));
+                     "spielwiese/TARGET/bin/Singular"));
     if ARCH_IS_MAC_OS_X() then
-        Append(path,"dylib");
-    else
-        Append(path,"so");
+        Append(path,"exe!");
     fi;
     SI_INIT_INTERPRETER(path);
   end );

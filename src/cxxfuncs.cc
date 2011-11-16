@@ -20,11 +20,19 @@ extern "C"
 }
 
 // Prevent inline code from using tests which are not in libsingular:
-#define NDEBUG 1
-#define OM_NDEBUG 1
+// #define NDEBUG 1
+// #define OM_NDEBUG 1
 
 #include <string>
-#include <libsingular.h>
+
+#include <Singular/libsingular.h>
+#include <coeffs/longrat.h>
+
+#ifdef HAVE_FACTORY
+int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
+#endif
+
+extern void (*WerrorS_callback)(const char *s);
 
 /// The C++ Standard Library namespace
 using namespace std;
@@ -303,7 +311,8 @@ Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
     UInt rnr = RING_SINGOBJ(a);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);   // necessary?
+
+//     if (r != currRing) rChangeCurrRing(r);   // necessary?
     number bb = NUMBER_FROM_GAP(self,r,b);
     poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
     n_Delete(&bb,r);
@@ -621,8 +630,7 @@ extern "C"
 Obj FuncSingularTest(Obj self)
 {
   // init path names etc.
-  siInit((char
-*)"/scratch/neunhoef/4.0/pkg/libsingular/Singular-3-1-3/Singular/libsingular.so");
+  siInit((char*) LIBSINGULAR_HOME "/bin/Singular");
 
   // construct the ring Z/32003[x,y,z]
   // the variable names

@@ -1,4 +1,4 @@
-AC_INIT([libsingular], 0.1)
+AC_INIT([libsing], 0.1)
 AC_CONFIG_SRCDIR([src/libsing.h])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign])
@@ -33,6 +33,7 @@ AC_LIBTOOL_DLOPEN
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
+LB_CHECK_LIBSINGULAR
 AC_FIND_GAP
 
 AC_CONFIG_FILES([Makefile src/Makefile])

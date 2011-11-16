@@ -9,4 +9,4 @@ Makefile$
 ^src/\.deps/
 ^src/\.libs/
 ^libtool$
-
+^spielwiese/

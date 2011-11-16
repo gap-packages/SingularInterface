@@ -1,12 +1,12 @@
 // Example program how to use libsingular
 
-#include <libsingular.h>
+#include <Singular/libsingular.h>
 #include <unistd.h>
 
 main()
 {
   // init path names etc.
-  siInit((char *)"/scratch/neunhoef/Singular/Singular-3-1-3/Singular/p_Procs_FieldZp.so");
+  siInit((char *) "/Singular/p_Procs_FieldZp.so");
 
   // construct the ring Z/32003[x,y,z]
   // the variable names

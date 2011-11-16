@@ -1,14 +1,21 @@
+# TESTS_ENVIRONMENT = SINGULARPATH='$(LIB_HOME)/share/gftables'
+# TESTS_ENVIRONMENT += SINGULAR_ROOT_DIR='$(LIBSINGULARSINGULAR_HOME)' 
+
 BINARCHDIR = bin/$(GAPARCH)
 GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
-SINGULARNAME = Singular-`cat ../SINGULARVERSION`
-SINGARCHNAME = `cat ../SINGARCHNAME`
 
 lib_LTLIBRARIES = libsing.la
-     
+
+
+AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
+LDADD = $(LIBSINGULAR_LIBS)
+
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
-libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -lsingular
-libsing_la_LIBADD = 
-libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/spielwiese/TARGET/lib -R${abs_top_srcdir}/spielwiese/TARGET/lib/singular $(LIBSINGULAR_LIBS)
+# -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/ -lsingular
+libsing_la_LIBADD = $(LIBSINGULAR_LIBS)
+libsing_la_CPPFLAGS = $(GAP_CPPFLAGS)  $(LIBSINGULAR_CFLAGS)
+# -I../${SINGULARNAME}/${SINGARCHNAME}/include
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
