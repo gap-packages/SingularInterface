@@ -1,6 +1,12 @@
 #ifndef LIBSING_H
 #define LIBSING_H
 
+#if 1
+// HACK: Workaround #1 for version of GAP before 2011-11-16:
+// ensure USE_GMP is defined
+#define USE_GMP 1
+#endif
+
 #include <src/compiled.h>
 
 //////////////////////////////////////////////////////////////////////////////

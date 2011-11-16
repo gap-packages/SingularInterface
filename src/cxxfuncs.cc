@@ -13,6 +13,10 @@ This file contains all of the code that deals with C++ libraries.
 extern "C" 
 {
   #include "libsing.h"
+
+  // HACK: Workaround #2 for version of GAP before 2011-11-16:
+  // export AInvInt to global namespace
+  Obj AInvInt ( Obj gmp );
 }
 
 // Prevent inline code from using tests which are not in libsingular:
@@ -229,7 +233,7 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     UInt i;
     UInt len;
     if (r != currRing) rChangeCurrRing(r);
-    poly p = p_ISet(INT_INTOBJ(coeff),r);
+    poly p = p_NSet(NUMBER_FROM_GAP(self, r, coeff),r);
     len = LEN_LIST(exps);
     if (len < nrvars) nrvars = len;
     for (i = 1;i <= nrvars;i++)
