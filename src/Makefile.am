@@ -11,11 +11,9 @@ AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
 LDADD = $(LIBSINGULAR_LIBS)
 
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
-libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/spielwiese/TARGET/lib -R${abs_top_srcdir}/spielwiese/TARGET/lib/singular $(LIBSINGULAR_LIBS)
-# -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/ -lsingular
+libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular $(LIBSINGULAR_LIBS)
 libsing_la_LIBADD = $(LIBSINGULAR_LIBS)
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS)  $(LIBSINGULAR_CFLAGS)
-# -I../${SINGULARNAME}/${SINGARCHNAME}/include
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory

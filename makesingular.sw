@@ -4,10 +4,10 @@ cd spielwiese/src
 ./autogen.sh
 cd -
 
-mkdir -p spielwiese/build
+mkdir -p spielwiese/BUILD
 
-cd spielwiese/build
-../src/configure --without-dynamic-kernel --without-MP --prefix=`pwd`/../target
+cd spielwiese/BUILD
+../src/configure --without-dynamic-kernel --without-MP --prefix=`pwd`/../TARGET
 
 MAKE='make -j9'
 make
