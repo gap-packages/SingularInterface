@@ -47,6 +47,10 @@ static StructGVarFunc GVarFuncs[] =
    "poly", FuncSI_STRING_POLY,
    "cxx-funcs.cc:FuncSI_STRING_POLY" }, 
 
+  {"SI_COPY_POLY", 1,
+   "poly", FuncSI_COPY_POLY,
+   "cxx-funcs.cc:FuncSI_COPY_POLY" }, 
+
   {"SI_ADD_POLYS", 2,
    "a, b", FuncSI_ADD_POLYS,
    "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
@@ -113,21 +117,10 @@ static StructGVarFunc GVarFuncs[] =
    FuncSI_Matintmat,
    "cxx-funcs.cc:FuncSI_Matintmat" },
    
-  /* The rest will eventually go: */
-
-  {"CXXAddStrings", /* GAP function name */
-   2,               /* Number of parameters */
-   "a, b",          /* String for GAP to display list of parameter names */
-   FuncCONCATENATE, /* C function to call */
-   "cxx-funcs.cc:FuncCONCATENATE" /* String to display function location */
-  }, 
-
-  {"FuncSingularTest", /* GAP function name */
-   0,               /* Number of parameters */
-   "",          /* String for GAP to display list of parameter names */
-   FuncSingularTest, /* C function to call */
-   "cxx-funcs.cc:FuncSingularTest" /* String to display function location */
-  },
+  {"SI_ideal", 1,
+   "l",
+   FuncSI_ideal,
+   "cxx-funcs.cc:FuncSI_ideal" },
 
   { 0 } /* Finish with an empty entry */
 };
@@ -136,6 +129,7 @@ Obj SingularTypes;    /* A kernel copy of a plain list of types */
 Obj SingularRings;    /* A kernel copy of a plain list of rings */
 Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
 Obj SingularErrors;   /* A kernel copy of a string */
+Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
 /**
 The first function to be called when the library is loaded by the kernel.
@@ -151,10 +145,22 @@ static Int InitKernel(StructInitInfo* module)
   InitMarkFuncBags(T_SINGULAR,&SingularObjMarkFunc);
   tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
   AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
-  AssPRec(tmp,RNamName("SINGTYPE_INTVEC"), INTOBJ_INT(SINGTYPE_INTVEC));
+  AssPRec(tmp,RNamName("SINGTYPE_IDEAL"), INTOBJ_INT(SINGTYPE_IDEAL));
   AssPRec(tmp,RNamName("SINGTYPE_INTMAT"), INTOBJ_INT(SINGTYPE_INTMAT));
-  AssPRec(tmp,RNamName("SINGTYPE_RING"), INTOBJ_INT(SINGTYPE_RING));
+  AssPRec(tmp,RNamName("SINGTYPE_INTVEC"), INTOBJ_INT(SINGTYPE_INTVEC));
+  AssPRec(tmp,RNamName("SINGTYPE_LINK"), INTOBJ_INT(SINGTYPE_LINK));
+  AssPRec(tmp,RNamName("SINGTYPE_LIST"), INTOBJ_INT(SINGTYPE_LIST));
+  AssPRec(tmp,RNamName("SINGTYPE_MAP"), INTOBJ_INT(SINGTYPE_MAP));
+  AssPRec(tmp,RNamName("SINGTYPE_MATRIX"), INTOBJ_INT(SINGTYPE_MATRIX));
+  AssPRec(tmp,RNamName("SINGTYPE_MODULE"), INTOBJ_INT(SINGTYPE_MODULE));
+  AssPRec(tmp,RNamName("SINGTYPE_NUMBER"), INTOBJ_INT(SINGTYPE_NUMBER));
+  AssPRec(tmp,RNamName("SINGTYPE_PACKAGE"), INTOBJ_INT(SINGTYPE_PACKAGE));
   AssPRec(tmp,RNamName("SINGTYPE_POLY"), INTOBJ_INT(SINGTYPE_POLY));
+  AssPRec(tmp,RNamName("SINGTYPE_QRING"), INTOBJ_INT(SINGTYPE_QRING));
+  AssPRec(tmp,RNamName("SINGTYPE_RESOLUTION"), INTOBJ_INT(SINGTYPE_RESOLUTION));
+  AssPRec(tmp,RNamName("SINGTYPE_RING"), INTOBJ_INT(SINGTYPE_RING));
+  AssPRec(tmp,RNamName("SINGTYPE_STRING"), INTOBJ_INT(SINGTYPE_STRING));
+  AssPRec(tmp,RNamName("SINGTYPE_VECTOR"), INTOBJ_INT(SINGTYPE_VECTOR));
   gvar = GVarName("SINGULAR_TYPENRS");
   MakeReadWriteGVar(gvar);
   AssGVar(gvar,tmp);
@@ -164,6 +170,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("SingularRings", &SingularRings);
   InitCopyGVar("SingularElCounts", &SingularElCounts);
   InitCopyGVar("SingularErrors", &SingularErrors);
+  InitCopyGVar("SingularProxiesType", &SingularProxiesType);
   
   TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
 

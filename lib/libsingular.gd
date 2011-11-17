@@ -3,11 +3,14 @@
 SingularTypes := [];
 
 SingularFamily := NewFamily("SingularFamily");
-DeclareCategory( "IsSingularRing", IsObject );
-DeclareCategory( "IsSingularPoly", IsObject );
-DeclareCategory( "IsSingularBigInt", IsObject );
-DeclareCategory( "IsSingularIntVec", IsObject );
-DeclareCategory( "IsSingularIntMat", IsObject );
+DeclareCategory( "IsSingularObj", IsObject );
+DeclareCategory( "IsSingularRing", IsSingularObj );
+DeclareCategory( "IsSingularPoly", IsSingularObj );
+DeclareCategory( "IsSingularBigInt", IsSingularObj );
+DeclareCategory( "IsSingularIntVec", IsSingularObj );
+DeclareCategory( "IsSingularIntMat", IsSingularObj );
+DeclareCategory( "IsSingularIdeal", IsSingularObj );
+DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
 
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RING] 
    := NewType(SingularFamily,IsSingularRing);
@@ -19,6 +22,10 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTVEC]
    := NewType(SingularFamily,IsSingularIntVec);
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTMAT]
    := NewType(SingularFamily,IsSingularIntMat);
+SingularTypes[SINGULAR_TYPENRS.SINGTYPE_IDEAL]
+   := NewType(SingularFamily,IsSingularIdeal);
+
+BindGlobal("SingularProxiesType", NewType( SingularFamily, IsSingularProxy ));
 
 SingularRings := [];
 SingularElCounts := [];
@@ -32,3 +39,5 @@ DeclareGlobalFunction( "InitSingularInterpreter" );
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [] );
 
+DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt] );
+DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt, IsPosInt] );

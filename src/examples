@@ -48,5 +48,18 @@ m:=List([1..10],i->List([1..10],j-> j*i));
 im:=SI_intmat(m);
 SI_Plistintvec(iv) = [1..100];
 SI_Matintmat(im) = m;
-
+s := SingularRingWithoutOrdering(17,["a","b"]);
+ind := IndeterminatesOfSingularRing(s);
+id := SI_ideal(ind);
+x := SI_MONOMIAL(s,12,[2,3]);
+y := SI_MONOMIAL(s,2,[4,3]);
+SI_ADD_POLYS(x,y);
+id := SI_ideal([x,y]);
+p1 := SI_proxy(id,1);
+p2 := SI_proxy(id,2);
+SI_COPY_POLY(p1);
+SI_COPY_POLY(p2);
+SI_ADD_POLYS(x,p2);
+SI_ADD_POLYS(p2,y);
+SI_ADD_POLYS(p2,p1);
 

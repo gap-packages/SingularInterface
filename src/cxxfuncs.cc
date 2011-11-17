@@ -25,9 +25,19 @@ extern "C"
 
 #include <string>
 #include <libsingular.h>
+// To be removed later on:  (FIXME)
+#include <singular/lists.h>
 
 /// The C++ Standard Library namespace
 using namespace std;
+
+
+// Some convenience for C++:
+
+inline ring SINGRING_SINGOBJ( Obj obj )
+{
+    return (ring) CXX_SINGOBJ(ELM_PLIST( SingularRings, RING_SINGOBJ(obj)));
+}
 
 
 // The following should be in rational.h but isn't:
@@ -121,6 +131,52 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
     }
 }
 
+static poly GET_poly(Obj o, UInt &rnr)
+{
+    if (ISSINGOBJ(SINGTYPE_POLY,o)) {
+        rnr = RING_SINGOBJ(o);
+        return (poly) CXX_SINGOBJ(o);
+    } else if (TYPE_OBJ(o) == SingularProxiesType) {
+        Obj ob = ELM_PLIST(o,1);
+        if (ISSINGOBJ(SINGTYPE_IDEAL,ob)) {
+            rnr = RING_SINGOBJ(ob);
+            int index = INT_INTOBJ(ELM_PLIST(o,2));
+            ideal id = (ideal) CXX_SINGOBJ(ob);
+            if (index <= 0 || index > IDELEMS(id)) {
+                ErrorQuit("ideal index out of range",0L,0L);
+                return NULL;
+            }
+            return id->m[index-1];
+        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob)) {
+            rnr = RING_SINGOBJ(ob);
+            int row = INT_INTOBJ(ELM_PLIST(o,2));
+            int col = INT_INTOBJ(ELM_PLIST(o,3));
+            matrix mat = (matrix) CXX_SINGOBJ(ob);
+            if (row <= 0 || row > mat->nrows ||
+                col <= 0 || col > mat->ncols) {
+                ErrorQuit("matrix indices out of range",0L,0L);
+                return NULL;
+            }
+            return MATELEM(mat,row,col);
+        } else if (ISSINGOBJ(SINGTYPE_LIST,ob)) {
+            rnr = RING_SINGOBJ(ob);
+            int index = INT_INTOBJ(ELM_PLIST(o,2));
+            lists l = (lists) CXX_SINGOBJ(ob);
+            if (index <= 0 || index > l->nr+1 ) {
+                ErrorQuit("list index out of range",0L,0L);
+                return NULL;
+            }
+            if (l->m[index-1].Typ() != POLY_CMD) {
+                ErrorQuit("list entry is not a polynomial",0L,0L);
+                return NULL;
+            }
+            return (poly) (l->m[index-1].Data());
+        }
+    } else {
+        ErrorQuit("argument must be a singular polynomial (or proxy)",0L,0L);
+        return NULL;
+    }
+}
 
 extern "C"
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
@@ -148,28 +204,28 @@ void SingularFreeFunc(Obj o)
 {
     UInt type = TYPE_SINGOBJ(o);
     poly p;
-    UInt rnr;
     number n;
+    ideal id;
 
     switch (type) {
         case SINGTYPE_RING:
             rKill( (ring) CXX_SINGOBJ(o) );
-            // SET_CXX_SINGOBJ(o,NULL);
-            // SET_RING_SINGOBJ(o,0);
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
             p = (poly) CXX_SINGOBJ(o);
-            rnr = RING_SINGOBJ(o);
-            p_Delete( &p, (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr)) );
-            // SET_CXX_SINGOBJ(o,NULL);
-            // SET_RING_SINGOBJ(o,0);
-            DEC_REFCOUNT( rnr );
+            p_Delete( &p, SINGRING_SINGOBJ(o) );
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
             // Pr("killed a ring element\n",0L,0L);
             break;
         case SINGTYPE_BIGINT:
             n = (number) CXX_SINGOBJ(o);
             nlDelete(&n,NULL);
+            break;
+        case SINGTYPE_IDEAL:
+            id = (ideal) CXX_SINGOBJ(o);
+            id_Delete(&id,SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
     }
 }
@@ -246,8 +302,7 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 extern "C"
 Obj FuncSI_STRING_POLY(Obj self, Obj po)
 {
-    UInt rnr = RING_SINGOBJ(po);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    ring r = SINGRING_SINGOBJ(po);
     if (r != currRing) rChangeCurrRing(r);
     poly p = (poly) CXX_SINGOBJ(po);
     char *st = p_String(p,r);
@@ -259,55 +314,65 @@ Obj FuncSI_STRING_POLY(Obj self, Obj po)
 }
 
 extern "C"
-Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
+Obj FuncSI_COPY_POLY(Obj self, Obj po)
 {
-    UInt rnr = RING_SINGOBJ(a);
-    if (rnr != RING_SINGOBJ(b))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    UInt rnr;
+    poly p = GET_poly(po,rnr);
     ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
     if (r != currRing) rChangeCurrRing(r);  // necessary?
-    poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
-    poly bb = p_Copy((poly) CXX_SINGOBJ(b),r);
+    p = p_Copy(p,r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
+    return tmp;
+}
+
+extern "C"
+Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
+{
+    UInt ra,rb;
+    poly aa = GET_poly(a,ra);
+    poly bb = GET_poly(b,rb);
+    if (ra != rb) ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,ra));
+    if (r != currRing) rChangeCurrRing(r);  // necessary?
+    aa = p_Copy(aa,r);
+    bb = p_Copy(bb,r);
     aa = p_Add_q(aa,bb,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,ra);
     return tmp;
 }
 
 extern "C"
 Obj FuncSI_NEG_POLY(Obj self, Obj a)
 {
-    UInt rnr = RING_SINGOBJ(a);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
     aa = p_Neg(aa,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
 
 extern "C"
 Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b)
 {
-    UInt rnr = RING_SINGOBJ(a);
-    if (rnr != RING_SINGOBJ(b))
+    if (RING_SINGOBJ(a) != RING_SINGOBJ(b))
         ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);   // necessary?
     poly aa = pp_Mult_qq((poly) CXX_SINGOBJ(a),(poly) CXX_SINGOBJ(b),r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
 
 extern "C"
 Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
-    UInt rnr = RING_SINGOBJ(a);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);   // necessary?
     number bb = NUMBER_FROM_GAP(self,r,b);
     poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
     n_Delete(&bb,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
 
@@ -588,83 +653,60 @@ Obj FuncSI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
-
-// The rest will eventually go:
-
-/// GAP kernel C handler to concatenate two strings
-/// @param self The usual GAP first parameter
-/// @param a The first string
-/// @param b The second string
-/// @return The rank of the matrix
-extern "C"
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b)
+Obj FuncSI_ideal(Obj self, Obj l)
 {
-  if(!IS_STRING(a))
-    PrintGAPError("The first argument must be a string");
-
-  if(!IS_STRING(b))
-    PrintGAPError("The second argument must be a string");
-    
-  string str_a = reinterpret_cast<char*>(CHARS_STRING(a));
-  string str_b = reinterpret_cast<char*>(CHARS_STRING(b));
-  string str = str_a + "-" + str_b;
-
-  unsigned int len = str.length();
-  Obj GAPstring = NEW_STRING(len);
-  memcpy( CHARS_STRING(GAPstring), str.c_str(), len );
-  return GAPstring;
+    if (!IS_LIST(l)) {
+        ErrorQuit("l must be a list",0L,0L);
+        return Fail;
+    }
+    UInt len = LEN_LIST(l);
+    if (len == 0) {
+        ErrorQuit("l must contain at least one element",0L,0L);
+        return Fail;
+    }
+    ideal id;
+    UInt i;
+    Obj t;
+    ring r,r2;
+    for (i = 1;i <= len;i++) {
+        t = ELM_LIST(l,i);
+        if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
+            if (i > 1) id_Delete(&id,r);
+            ErrorQuit("l must only contain singular polynomials",0L,0L);
+            return Fail;
+        }
+        if (i == 1) {
+            r = SINGRING_SINGOBJ(t);
+            if (r != currRing) rChangeCurrRing(r);
+            id = idInit(len,1);
+        } else {
+            if (r != SINGRING_SINGOBJ(t)) {
+                id_Delete(&id,r);
+                ErrorQuit("all elements of l must have the same ring",0L,0L);
+                return Fail;
+            }
+        }
+        poly p = p_Copy((poly) CXX_SINGOBJ(t),r);
+        id->m[i-1] = p;
+    }
+    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
-extern "C"
-Obj FuncSingularTest(Obj self)
+static inline poly GET_IDEAL_ELM_PROXY_NC(Obj p)
 {
-  // init path names etc.
-  siInit((char
-*)"/scratch/neunhoef/4.0/pkg/libsingular/Singular-3-1-3/Singular/libsingular.so");
-
-  // construct the ring Z/32003[x,y,z]
-  // the variable names
-  char **n=(char**)omalloc(3*sizeof(char*));
-  n[0]=omStrDup("x");
-  n[1]=omStrDup("y");
-  n[2]=omStrDup("z2");
-
-  ring R=rDefault(32003,3,n);
-  // make R the default ring:
-  rChangeCurrRing(R);
-
-  // create the polynomial 1
-  poly p1=p_ISet(1,R);
-
-  // create tthe polynomial 2*x^3*z^2
-  poly p2=p_ISet(2,R);
-  pSetExp(p2,1,3);
-  pSetExp(p2,3,2);
-  pSetm(p2);
-
-  // print p1 + p2
-  pWrite(p1); printf(" + \n"); pWrite(p2); printf("\n");
-
-  // compute p1+p2
-  p1=p_Add_q(p1,p2,R); p2=NULL;
-  pWrite(p1); 
-
-  // cleanup:
-  pDelete(&p1);
-  rKill(R);
-
-  currentVoice=feInitStdin(NULL);
-  int err=iiEStart(omStrDup("int ver=system(\"version\");export ver;return();\n"),NULL);
-  // if (err) errorreported = inerror = cmdtok = 0; // reset error handling
-  printf("interpreter returns %d\n",err);
-  idhdl h=ggetid("ver");
-  if (h!=NULL)
-    printf("singular variable ver contains %d\n",IDINT(h));
-  else
-    printf("variable ver does not exist\n");
-  return 0;
-
+    Obj id = ELM_PLIST(p,1);
+    ideal ide = (ideal) CXX_SINGOBJ(id);
+    return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
 }
 
+static poly GET_IDEAL_ELM_PROXY(Obj p)
+{
+    if (TYPE_OBJ(p) != SingularProxiesType) {
+        ErrorQuit("p must be a singular proxy object",0L,0L);
+        return NULL;
+    }
+    Obj id = ELM_PLIST(p,1);
+    /*...*/
+    ideal ide = (ideal) CXX_SINGOBJ(id);
+    return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
+}

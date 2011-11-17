@@ -21,6 +21,7 @@ extern Obj SingularTypes;    /* A kernel copy of a plain list of types */
 extern Obj SingularRings;    /* A kernel copy of a plain list of rings */
 extern Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
 extern Obj SingularErrors;   /* A kernel copy of a string */
+extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // 3 words: 
@@ -71,6 +72,15 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
     return tmp;
 }
 
+static inline Obj NEW_SINGOBJ_RING_PROXY(UInt type, void *cxx, UInt ring, Obj ind)
+{
+    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_RING_SINGOBJ(tmp,ring);
+    INC_REFCOUNT(ring);
+    return tmp;
+}
 #define SINGTYPE_BIGINT         1
 #define SINGTYPE_DEF            2 
 #define SINGTYPE_IDEAL          3 
@@ -93,7 +103,23 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 #define SINGTYPE_VECTOR        20 
 #define SINGTYPE_USERDEF       21 
 #define SINGTYPE_PYOBJECT      22 
+
 #define SINGTYPE_LASTNUMBER    22
+
+#if 0
+proxies fuer:
+  ideal   ->  poly
+  list    ->  ?
+  matrix  ->  poly
+  module  ->  vector
+  qring   ->  ideal
+#endif
+
+inline int ISSINGOBJ(int typ, Obj obj)
+{
+    return TNUM_OBJ(obj) == T_SINGULAR && TYPE_SINGOBJ(obj) == typ;
+}
+
 
 //////////////// C++ functions to be called from C ////////////////////
 
@@ -105,6 +131,7 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
 Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj FuncSI_STRING_POLY(Obj self, Obj po);
+Obj FuncSI_COPY_POLY(Obj self, Obj po);
 Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncSI_NEG_POLY(Obj self, Obj a);
 Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b);
@@ -119,17 +146,12 @@ Obj FuncSI_intvec(Obj self, Obj l);
 Obj FuncSI_Plistintvec(Obj self, Obj iv);
 Obj FuncSI_intmat(Obj self, Obj m);
 Obj FuncSI_Matintmat(Obj self, Obj im);
+Obj FuncSI_ideal(Obj self, Obj l);
 
 
 //////////////// C functions to be called from C++ ////////////////////
 
 void PrintGAPError(const char* message);
-
-
-//////////////// old stuff which will eventually go ///////////////////
-
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b);
-Obj FuncSingularTest(Obj self);
 
 #endif //#define LIBSING_H
 

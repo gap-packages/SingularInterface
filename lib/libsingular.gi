@@ -39,6 +39,12 @@ InstallMethod( ViewObj, "for a singular intmat",
     Print("<singular intmat:",SI_Matintmat(i),">");
   end );
 
+InstallMethod( ViewObj, "for a singular ideal",
+  [ IsSingularIdeal ],
+  function( i )
+    Print("<singular ideal>");
+  end );
+
 InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;
@@ -79,5 +85,35 @@ InstallMethod( Singular, "without arguments",
         Print(LastSingularOutput());
     od;
     CloseStream(i);
+  end );
+
+InstallMethod(SI_proxy, "for a singular object and a positive integer",
+  [ IsSingularObj, IsPosInt ],
+  function( o, i )
+    local l;
+    l := [o,i];
+    Objectify(SingularProxiesType, l);
+    return l;
+  end );
+
+InstallMethod(SI_proxy, "for a singular object and two positive integers",
+  [ IsSingularObj, IsPosInt, IsPosInt ],
+  function( o, i, j)
+    local l;
+    l := [o,i,j];
+    Objectify(SingularProxiesType, l);
+    return l;
+  end );
+
+InstallMethod(ViewObj, "for a singular proxy object",
+  [ IsSingularProxy ],
+  function(p)
+    Print("<proxy for ");
+    ViewObj(p![1]);
+    Print("[",p![2]);
+    if IsBound(p![3]) then
+        Print(",",p![3]);
+    fi;
+    Print("]>");
   end );
 
