@@ -72,30 +72,32 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
     return tmp;
 }
 
-#define SINGTYPE_BIGINT         1
-#define SINGTYPE_DEF            2 
-#define SINGTYPE_IDEAL          3 
-#define SINGTYPE_INT            4 
-#define SINGTYPE_INTMAT         5 
-#define SINGTYPE_INTVEC         6 
-#define SINGTYPE_LINK           7 
-#define SINGTYPE_LIST           8 
-#define SINGTYPE_MAP            9 
-#define SINGTYPE_MATRIX        10 
-#define SINGTYPE_MODULE        11 
-#define SINGTYPE_NUMBER        12 
-#define SINGTYPE_PACKAGE       13 
-#define SINGTYPE_POLY          14 
-#define SINGTYPE_PROC          15 
-#define SINGTYPE_QRING         16 
-#define SINGTYPE_RESOLUTION    17 
-#define SINGTYPE_RING          18 
-#define SINGTYPE_STRING        19 
-#define SINGTYPE_VECTOR        20 
-#define SINGTYPE_USERDEF       21 
-#define SINGTYPE_PYOBJECT      22 
+enum {
+	SINGTYPE_BIGINT        =  1,
+	SINGTYPE_DEF           =  2,
+	SINGTYPE_IDEAL         =  3,
+	SINGTYPE_INT           =  4,
+	SINGTYPE_INTMAT        =  5,
+	SINGTYPE_INTVEC        =  6,
+	SINGTYPE_LINK          =  7,
+	SINGTYPE_LIST          =  8,
+	SINGTYPE_MAP           =  9,
+	SINGTYPE_MATRIX        = 10,
+	SINGTYPE_MODULE        = 11,
+	SINGTYPE_NUMBER        = 12,
+	SINGTYPE_PACKAGE       = 13,
+	SINGTYPE_POLY          = 14,
+	SINGTYPE_PROC          = 15,
+	SINGTYPE_QRING         = 16,
+	SINGTYPE_RESOLUTION    = 17,
+	SINGTYPE_RING          = 18,
+	SINGTYPE_STRING        = 19,
+	SINGTYPE_VECTOR        = 20,
+	SINGTYPE_USERDEF       = 21,
+	SINGTYPE_PYOBJECT      = 22,
 
-#define SINGTYPE_LASTNUMBER    22
+	SINGTYPE_LASTNUMBER    = 22
+};
 
 /* If you change these numbers, then also adjust the table TypeTable
  * in cxxfuncs.cc! */
