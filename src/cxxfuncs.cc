@@ -27,6 +27,7 @@ extern "C"
 #include <libsingular.h>
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
+#include <singular/syz.h>
 
 /// The C++ Standard Library namespace
 using namespace std;
@@ -51,12 +52,12 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
 {
     if (r != currRing) rChangeCurrRing(r);
 
-	// First check if n is a small integer that fits into a machine word;
-	// this is usually cheap to convert.
-	// However, GAP uses (32-4)=28 bit integers on 32bit machines, and (64-4)=60
-	// bit integers on 64 bit machine; whereas Singular always uses (32-4)=28
-	// bit integers, even on 64 bit systems. So we have to use different code in
-	// each case.
+    // First check if n is a small integer that fits into a machine word;
+    // this is usually cheap to convert.
+    // However, GAP uses (32-4)=28 bit integers on 32bit machines, and
+    // (64-4)=60 bit integers on 64 bit machine; whereas Singular always
+    // uses (32-4)=28 bit integers, even on 64 bit systems. So we have to
+    // use different code in each case.
     if (IS_INTOBJ(n)) {
         Int i = INT_INTOBJ(n);
 #ifdef SYS_IS_64_BIT
@@ -128,6 +129,55 @@ number NUMBER_FROM_GAP(Obj self, ring r, Obj n)
     } else {
         ErrorQuit("Argument must be an integer or rational.\n",0L,0L);
         return NULL;  // never executed
+    }
+}
+
+number BIGINT_FROM_GAP(Obj nr)
+{
+    number n;
+    if (IS_INTOBJ(nr)) {   // a GAP immediate integer
+        Int i = INT_INTOBJ(nr);
+        if (i >= -268435456L && i < 268435456L)
+            n = nlInit((int) i,NULL);
+        else
+            n = nlRInit(i);
+    } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
+        // A long GAP integer
+        n = ALLOC_RNUMBER();
+        UInt size = SIZE_INT(nr);
+        mpz_init2(n->z,size*GMP_NUMB_BITS);
+        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
+        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        n->s = 3;  // indicates an integer
+    } else {
+        ErrorQuit("Argument must be an integer.\n",0L,0L);
+    }
+    return n;
+}
+
+int INT_FROM_GAP(Obj nr)
+{
+    if (IS_INTOBJ(nr)) {    // a GAP immediate integer
+        Int i = INT_INTOBJ(nr);
+#ifdef SYS_IS_64_BIT
+        if (i < -1L << 31 || i >= 1L << 31) {
+            ErrorQuit("Argument must be a 32-bit integer",0L,0L);
+            return 0;
+        }
+#endif
+        return (int) i;
+    } else {   // a long GAP integer
+        UInt size = SIZE_INT(nr);
+        if (size * sizeof(mp_limb_t) > 4 ||
+            (size == 1 && ADDR_INT(nr)[0] > (1L << 31)) ||
+            (size == 1 && ADDR_INT(nr)[0] == (1L << 31) && 
+             TNUM_OBJ(nr) == T_INTPOS)) {
+            ErrorQuit("Argument must be a 32-bit integer",0L,0L);
+            return 0;
+        }
+        return TNUM_OBJ(nr) == T_INTPOS ?
+               (int) ADDR_INT(nr)[0] :
+               -(int) ADDR_INT(nr)[0];
     }
 }
 
@@ -499,25 +549,7 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
 
 Obj FuncSI_bigint(Obj self, Obj nr)
 {
-    number n;
-    if (IS_INTOBJ(nr)) {   // a GAP immediate integer
-        Int i = INT_INTOBJ(nr);
-        if (i >= -268435456L && i < 268435456L)
-            n = nlInit((int) i,NULL);
-        else
-            n = nlRInit(i);
-    } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
-        // A long GAP integer
-        n = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size*GMP_NUMB_BITS);
-        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
-        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
-        n->s = 3;  // indicates an integer
-    } else {
-        ErrorQuit("Argument must be an integer.\n",0L,0L);
-    }
-    return NEW_SINGOBJ(SINGTYPE_BIGINT,n);
+    return NEW_SINGOBJ(SINGTYPE_BIGINT,BIGINT_FROM_GAP(nr));
 }
 
 Obj FuncSI_Intbigint(Obj self, Obj nr)
@@ -710,3 +742,185 @@ static poly GET_IDEAL_ELM_PROXY(Obj p)
     ideal ide = (ideal) CXX_SINGOBJ(id);
     return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
 }
+
+void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
+{
+    rnr = 0;
+    if (IS_INTOBJ(input) || 
+        TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
+        type = INT_CMD;
+        return (void *) (INT_FROM_GAP(input));
+    }
+    if (TNUM_OBJ(input) == T_SINGULAR) {
+        switch (TYPE_SINGOBJ(input)) {
+          case SINGTYPE_BIGINT:
+            type = BIGINT_CMD;
+            return nlCopy((number) CXX_SINGOBJ(input));
+          case SINGTYPE_IDEAL:
+            type = IDEAL_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+          case SINGTYPE_INTMAT:
+            type = INTMAT_CMD;
+            return new intvec((intvec *) CXX_SINGOBJ(input));
+          case SINGTYPE_INTVEC:
+            type = INTVEC_CMD;
+            return new intvec((intvec *) CXX_SINGOBJ(input));
+          case SINGTYPE_LINK:
+            type = LINK_CMD;
+            return CXX_SINGOBJ(input);
+          case SINGTYPE_LIST:
+            type = LIST_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return lCopy( (lists) CXX_SINGOBJ(input) );
+          case SINGTYPE_MAP:
+            type = MAP_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return maCopy( (map) CXX_SINGOBJ(input) );
+          case SINGTYPE_MATRIX:
+            type = MATRIX_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return mpCopy( (matrix) CXX_SINGOBJ(input) );
+          case SINGTYPE_MODULE:
+            type = MODUL_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+          case SINGTYPE_NUMBER:
+            type = NUMBER_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return n_Copy((number)CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+          case SINGTYPE_POLY:
+            type = POLY_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+          case SINGTYPE_QRING:
+            type = QRING_CMD;
+            return CXX_SINGOBJ(input);
+          case SINGTYPE_RESOLUTION:
+            type = RESOLUTION_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return syCopy((syStrategy) CXX_SINGOBJ(input));
+          case SINGTYPE_RING:
+            type = RING_CMD;
+            return CXX_SINGOBJ(input);
+          case SINGTYPE_STRING:
+            type = STRING_CMD;
+            return omStrDup( (char *) CXX_SINGOBJ(input));
+          case SINGTYPE_VECTOR:
+            type = VECTOR_CMD;
+            rnr = RING_SINGOBJ(input);
+            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            if (r != currRing) rChangeCurrRing(r);
+            return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+        }
+    } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == SingularProxiesType) {
+        ErrorQuit("Argument to Singular call is no valid singular object",
+                  0L,0L);
+    } else {
+        ErrorQuit("Argument to Singular call is no valid singular object",
+                  0L,0L);
+    }
+}
+
+
+#if 0
+static int TypeTable[] =
+  { 0, BIGINT_CMD, 0, IDEAL_CMD, INT_CMD, INTMAT_CMD, INTVEC_CMD, LINK_CMD,
+    LIST_CMD, MAP_CMD, MATRIX_CMD, MODUL_CMD, NUMBER_CMD, 0 /* PACKAGE */,
+    POLY_CMD, 0 /* PROC */, QRING_CMD, RESOLUTION_CMD, RING_CMD, STRING_CMD,
+    VECTOR_CMD, 0 /* USERDEF */, 0 /* PYOBJECT */ };
+#endif
+
+leftv WRAP_SINGULAR(void *singobj, int type)
+{
+    leftv res = (leftv) omAlloc0(sizeof(sleftv));
+    res->rtyp = type;
+    res->data = singobj;
+    return res;
+}
+
+Obj UNWRAP_SINGULAR(leftv singres, UInt rnr, ring r)
+{
+    Obj result;
+
+    switch (singres->Typ()) {
+      case NONE:
+        return True;
+      case INT_CMD:
+        return ObjInt_Int((int) (singres->Data()));
+      case NUMBER_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,singres->Data(),rnr);
+      case POLY_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_POLY,singres->Data(),rnr);
+      case INTVEC_CMD:
+        return NEW_SINGOBJ(SINGTYPE_INTVEC,singres->Data());
+      case INTMAT_CMD:
+        return NEW_SINGOBJ(SINGTYPE_INTMAT,singres->Data());
+      case VECTOR_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,singres->Data(),rnr);
+      case IDEAL_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,singres->Data(),rnr);
+      case BIGINT_CMD:
+        return NEW_SINGOBJ(SINGTYPE_BIGINT,singres->Data());
+      case MATRIX_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,singres->Data(),rnr);
+      case LIST_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_LIST,singres->Data(),rnr);
+      case LINK_CMD:
+        return NEW_SINGOBJ(SINGTYPE_LINK,singres->Data());
+      case RING_CMD:
+        return NEW_SINGOBJ(SINGTYPE_RING,singres->Data());
+      case QRING_CMD:
+        return NEW_SINGOBJ(SINGTYPE_QRING,singres->Data());
+      case RESOLUTION_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,singres->Data(),rnr);
+      case STRING_CMD:
+        return NEW_SINGOBJ(SINGTYPE_STRING,singres->Data());
+      case MAP_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_MAP,singres->Data(),rnr);
+      case MODUL_CMD:
+        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,singres->Data(),rnr);
+      default:
+        singres->CleanUp(r);
+        return False;
+    }
+}
+
+Obj FuncCallSingFunc1(Obj self, Obj op, Obj input)
+{
+    int type;  /* Singular type like INT_CMD */
+    UInt rnr;
+    ring r;
+    void *sing = GET_SINGOBJ(input,type,rnr,r);
+    leftv singint = WRAP_SINGULAR(sing,type);
+    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    BOOLEAN ret = iiExprArith1(singres,singint,INT_INTOBJ(op));
+    if (type != LINK_CMD && type != RING_CMD && type != QRING_CMD) 
+        singint->CleanUp(r);
+    omFree(singint);
+    if (ret) {
+        singres->CleanUp(r);
+        omFree(singres);
+        return Fail;
+    }
+    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
+    omFree(singres);
+    return result;
+}
+

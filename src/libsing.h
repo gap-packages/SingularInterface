@@ -106,6 +106,9 @@ static inline Obj NEW_SINGOBJ_RING_PROXY(UInt type, void *cxx, UInt ring, Obj in
 
 #define SINGTYPE_LASTNUMBER    22
 
+/* If you change these numbers, then also adjust the table TypeTable
+ * in cxxfuncs.cc! */
+
 #if 0
 proxies fuer:
   ideal   ->  poly
