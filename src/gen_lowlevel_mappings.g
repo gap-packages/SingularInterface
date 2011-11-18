@@ -10,22 +10,37 @@
 # * Add mappings for more data types to SINGULAR_types.
 #
 
+# output streams:
+basename := "lowlevel_mappings";
+# - for the source file containing the wrapper functions
+stream_cc := OutputTextFile(Concatenation(basename, ".cc"), false);
+# - for the header file containing declarations for the wrappers
+stream_h := OutputTextFile(Concatenation(basename, ".h"), false);
+# - for the header file containing entries for the GVarFuncs table
+stream_table_h := OutputTextFile(Concatenation(basename, "_table.h"), false);
+
 # indention level
 indent := 0;
 
-# send all input into a GAP string
-output_str := "";
-stream := OutputTextString(output_str, false);
-#stream := OutputTextFile("lowlevel_mappings.cc", false);
-
-# helper function printing lines
+# Helper function for printing lines into the source file.
+# Taking indention level into account.
 PrintCXXLine := function(arg)
 	local i;
-	for i in [1..indent] do PrintTo(stream, "    "); od;
-	i := Concatenation([stream], arg);
+	for i in [1..indent] do PrintTo(stream_cc, "    "); od;
+	i := Concatenation([stream_cc], arg);
 	CallFuncList(PrintTo,i);
-	PrintTo(stream, "\n");
+	PrintTo(stream_cc, "\n");
 end;
+
+# Helper function for printing lines into the header file.
+# Ignores indention level.
+PrintHeaderLine := function(arg)
+	local i;
+	i := Concatenation([stream_h], arg);
+	CallFuncList(PrintTo,i);
+	PrintTo(stream_h, "\n");
+end;
+
 
 # Generate code for returning a string (where "name" is the name of a
 # C++ variable of type char*).
@@ -122,6 +137,7 @@ GenerateSingularWrapper := function (desc)
 		GetParamTypeName,
 		var_formatter,
 		retconv,
+		func_head,
 		i, j;
 
 	GetParamTypeName := function (i)
@@ -132,13 +148,33 @@ GenerateSingularWrapper := function (desc)
 	CXXArgName := i -> String(Concatenation("arg", String(i)));
 	CXXVarName := i -> String(Concatenation("var", String(i)));
 
-	# Generate the function name
-	PrintTo(stream, "extern \"C\"\n");  # TODO: Instead use a big global  extern "C" { ... } around things?
-	PrintTo(stream, "Obj FuncSI_", desc.name, "(Obj self");
+	#############################################
+	# Generate the function head
+	#############################################
+	func_head := Concatenation("Obj FuncSI_", desc.name, "(Obj self");
 	for i in [1 .. Length(desc.params) ] do
-		PrintTo(stream, ", Obj ", CXXArgName(i));
+		Append(func_head, ", Obj ");
+		Append(func_head, CXXArgName(i));
 	od;
-	PrintTo(stream, ") {\n");
+	Append(func_head, ")");
+
+	# add function head to source file
+	PrintTo(stream_cc, func_head, " {\n");
+
+	# add function declaration to header file
+	PrintTo(stream_h, func_head, ";\n");
+
+	# add function entry in table header file
+	
+	PrintTo(stream_table_h, "  {\"SI_", desc.name, "\", ", Length(desc.params), ",\n" );
+	PrintTo(stream_table_h, "  \"TODO\", FuncSI_", desc.name, ",\n" );
+	PrintTo(stream_table_h, "  \"", basename, ".cc:FuncSI_", desc.name, "\" },\n" );
+	PrintTo(stream_table_h, "\n" );
+
+
+#   {"SI_ADD_POLYS", 2,
+#    "a, b", FuncSI_ADD_POLYS,
+#    "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
 
 	#############################################
 	# begin function body
@@ -222,13 +258,41 @@ GenerateSingularWrapper := function (desc)
 	#############################################
 	# end function body
 	#############################################
-	PrintTo(stream, "}\n\n");
+	PrintTo(stream_cc, "}\n\n");
 end;
 
-# Convert one or all entries of
-#GenerateSingularWrapper(SINGULAR_funcs[1]);
+# Insert header into the generate files
+
+PrintCXXLine("#include \"lowlevel_mappings.h\"");
+PrintCXXLine("");
+
+extern_c_start := Concatenation(
+	"#ifdef __cplusplus\n",
+	"extern \"C\" {\n",
+	"#endif /* ifdef __cplusplus */\n",
+	"\n"
+);
+
+extern_c_end := Concatenation(
+	"\n",
+	"#ifdef __cplusplus\n",
+	"}\n",
+	"#endif /* ifdef __cplusplus */\n"
+);
+
+PrintTo(stream_cc, extern_c_start);
+PrintTo(stream_h, extern_c_start);
+
+# Generate the wrappers
 Perform(SINGULAR_funcs, GenerateSingularWrapper);
 
+PrintTo(stream_cc, extern_c_end);
+PrintTo(stream_h, extern_c_end);
 
-Print(output_str);
-PrintTo("lowlevel_mappings.cc", output_str);
+
+CloseStream(stream_cc);
+CloseStream(stream_h);
+CloseStream(stream_table_h);
+
+Display("Done!");
+

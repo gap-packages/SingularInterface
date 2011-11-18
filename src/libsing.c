@@ -8,6 +8,7 @@ This file contains all of the pure C code that deals with GAP.
 #include <string.h>
   
 #include "libsing.h"
+#include "lowlevel_mappings.h"
 
 
 /******************** Helper functions ***************/
@@ -126,6 +127,8 @@ static StructGVarFunc GVarFuncs[] =
    "op, input",
    FuncSI_CallFunc1,
    "cxx-funcs.cc:FuncSI_CallFunc1" },
+
+#include "lowlevel_mappings_table.h"
 
   { 0 } /* Finish with an empty entry */
 };
