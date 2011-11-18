@@ -122,6 +122,11 @@ static StructGVarFunc GVarFuncs[] =
    FuncSI_ideal,
    "cxx-funcs.cc:FuncSI_ideal" },
 
+  {"SI_CallFunc1", 2,
+   "op, input",
+   FuncSI_CallFunc1,
+   "cxx-funcs.cc:FuncSI_CallFunc1" },
+
   { 0 } /* Finish with an empty entry */
 };
 

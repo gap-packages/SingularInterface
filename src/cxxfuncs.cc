@@ -40,6 +40,11 @@ inline ring SINGRING_SINGOBJ( Obj obj )
     return (ring) CXX_SINGOBJ(ELM_PLIST( SingularRings, RING_SINGOBJ(obj)));
 }
 
+inline ring GET_SINGRING(UInt rnr)
+{
+    return (ring) CXX_SINGOBJ(ELM_PLIST( SingularRings, rnr ));
+}
+
 
 // The following should be in rational.h but isn't:
 #define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
@@ -340,11 +345,13 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     UInt len;
     if (r != currRing) rChangeCurrRing(r);
     poly p = p_NSet(NUMBER_FROM_GAP(self, r, coeff),r);
-    len = LEN_LIST(exps);
-    if (len < nrvars) nrvars = len;
-    for (i = 1;i <= nrvars;i++)
-        pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
-    pSetm(p);
+    if (p != NULL) {
+        len = LEN_LIST(exps);
+        if (len < nrvars) nrvars = len;
+        for (i = 1;i <= nrvars;i++)
+            pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
+        pSetm(p);
+    }
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
     return tmp;
 }
@@ -352,9 +359,10 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 extern "C"
 Obj FuncSI_STRING_POLY(Obj self, Obj po)
 {
-    ring r = SINGRING_SINGOBJ(po);
+    UInt rnr;
+    poly p = GET_poly(po,rnr);
+    ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);
-    poly p = (poly) CXX_SINGOBJ(po);
     char *st = p_String(p,r);
     UInt len = (UInt) strlen(st);
     Obj tmp = NEW_STRING(len);
@@ -368,7 +376,7 @@ Obj FuncSI_COPY_POLY(Obj self, Obj po)
 {
     UInt rnr;
     poly p = GET_poly(po,rnr);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
@@ -382,7 +390,7 @@ Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
     poly aa = GET_poly(a,ra);
     poly bb = GET_poly(b,rb);
     if (ra != rb) ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,ra));
+    ring r = GET_SINGRING(ra);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     aa = p_Copy(aa,r);
     bb = p_Copy(bb,r);
@@ -759,7 +767,7 @@ void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
           case SINGTYPE_IDEAL:
             type = IDEAL_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
           case SINGTYPE_INTMAT:
@@ -774,37 +782,37 @@ void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
           case SINGTYPE_LIST:
             type = LIST_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return lCopy( (lists) CXX_SINGOBJ(input) );
           case SINGTYPE_MAP:
             type = MAP_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return maCopy( (map) CXX_SINGOBJ(input) );
           case SINGTYPE_MATRIX:
             type = MATRIX_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return mpCopy( (matrix) CXX_SINGOBJ(input) );
           case SINGTYPE_MODULE:
             type = MODUL_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
           case SINGTYPE_NUMBER:
             type = NUMBER_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return n_Copy((number)CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
           case SINGTYPE_POLY:
             type = POLY_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
           case SINGTYPE_QRING:
@@ -813,7 +821,7 @@ void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
           case SINGTYPE_RESOLUTION:
             type = RESOLUTION_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return syCopy((syStrategy) CXX_SINGOBJ(input));
           case SINGTYPE_RING:
@@ -825,7 +833,7 @@ void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
           case SINGTYPE_VECTOR:
             type = VECTOR_CMD;
             rnr = RING_SINGOBJ(input);
-            r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+            r = GET_SINGRING(rnr);
             if (r != currRing) rChangeCurrRing(r);
             return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
         }
@@ -902,7 +910,7 @@ Obj UNWRAP_SINGULAR(leftv singres, UInt rnr, ring r)
     }
 }
 
-Obj FuncCallSingFunc1(Obj self, Obj op, Obj input)
+Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 {
     int type;  /* Singular type like INT_CMD */
     UInt rnr;

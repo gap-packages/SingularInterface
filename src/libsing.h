@@ -72,15 +72,6 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
     return tmp;
 }
 
-static inline Obj NEW_SINGOBJ_RING_PROXY(UInt type, void *cxx, UInt ring, Obj ind)
-{
-    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,ring);
-    INC_REFCOUNT(ring);
-    return tmp;
-}
 #define SINGTYPE_BIGINT         1
 #define SINGTYPE_DEF            2 
 #define SINGTYPE_IDEAL          3 
@@ -123,7 +114,6 @@ inline int ISSINGOBJ(int typ, Obj obj)
     return TNUM_OBJ(obj) == T_SINGULAR && TYPE_SINGOBJ(obj) == typ;
 }
 
-
 //////////////// C++ functions to be called from C ////////////////////
 
 
@@ -151,6 +141,7 @@ Obj FuncSI_intmat(Obj self, Obj m);
 Obj FuncSI_Matintmat(Obj self, Obj im);
 Obj FuncSI_ideal(Obj self, Obj l);
 
+Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input);
 
 //////////////// C functions to be called from C++ ////////////////////
 
