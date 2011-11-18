@@ -434,6 +434,8 @@ Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
+#include "func-mapping.cc"
+
 extern "C"
 Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
 {
