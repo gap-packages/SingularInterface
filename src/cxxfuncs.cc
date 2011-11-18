@@ -873,7 +873,7 @@ Obj UNWRAP_SINGULAR(leftv singres, UInt rnr, ring r)
       case NONE:
         return True;
       case INT_CMD:
-        return ObjInt_Int((int) (singres->Data()));
+        return ObjInt_Int((long) (singres->Data()));
       case NUMBER_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,singres->Data(),rnr);
       case POLY_CMD:
