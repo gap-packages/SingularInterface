@@ -91,16 +91,26 @@ end;
 # * retconv: (optional) a GAP function that generates code to return a value of this type
 # * ...
 SINGULAR_types := rec(
-	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
-	INTVEC := rec( ring := false, cxxtype := "intvec *", copy := var -> Concatenation("ivCopy(", var, ")" ) ),
-	RING   := rec( ring := false, cxxtype := "ring",     copy := var -> Concatenation("rCopy(", var, ")" )),
-
-	NUMBER := rec( ring := true,  cxxtype := "number",   copy := var -> Concatenation("n_Copy(", var, ", r)" ) ),
-	POLY   := rec( ring := true,  cxxtype := "poly",     copy := var -> Concatenation("p_Copy(", var, ", r)" ) ),
+	#BIGINT  := rec( ring := false,  ... ),
 	IDEAL  := rec( ring := true,  cxxtype := "ideal",    copy := var -> Concatenation("id_Copy(", var, ", r)" ) ),
+	#INTMAT  := rec( ring := false,  ... ),
+	INTVEC := rec( ring := false, cxxtype := "intvec *", copy := var -> Concatenation("ivCopy(", var, ")" ) ),
+	#LINK  := rec( ... ),
+	#LIST  := rec( ... ),
+	#MAP  := rec( ... ),
 
 	# TODO: There seems to be no mp_Copy which takes a ring, so for now use the old mpCopy
 	MATRIX := rec( ring := true,  cxxtype := "matrix",   copy := var -> Concatenation("mpCopy(", var, ")" ) ),
+
+	#MODULE  := rec( ... ),
+	NUMBER := rec( ring := true,  cxxtype := "number",   copy := var -> Concatenation("n_Copy(", var, ", r)" ) ),
+	#PACKAGE  := rec( ... ),
+	POLY   := rec( ring := true,  cxxtype := "poly",     copy := var -> Concatenation("p_Copy(", var, ", r)" ) ),
+	#QRING  := rec( ... ),
+	#RESOLUTION  := rec( ... ),
+	RING   := rec( ring := false, cxxtype := "ring",     copy := var -> Concatenation("rCopy(", var, ")" )),
+	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
+	#VECTOR  := rec( ... ),
 );
 
 # Array containing records describing various Singular kernel functions.
