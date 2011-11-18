@@ -104,6 +104,23 @@ Persons := [
     IsMaintainer  := true,
   ),
   rec(
+    LastName      := "Horn",
+    FirstNames    := "Max",
+    IsAuthor      := true,
+    IsMaintainer  := true,
+    Email         := "mhorn@tu-bs.de",
+    WWWHome       := "http://www.icm.tu-bs.de/~mhorn",
+    PostalAddress := Concatenation(
+                       "AG Algebra und Diskrete Mathematik\n",
+                       "Institut Computational Mathematics\n",
+                       "TU Braunschweig\n",
+                       "Pockelsstr. 14\n",
+                       "D-38106 Braunschweig\n",
+                       "Germany" ),
+    Place         := "Braunschweig",
+    Institution   := "TU Braunschweig"
+  ),
+  rec(
     LastName      := "Linton",
     FirstNames    := "Stephen",
     IsAuthor      := true,
