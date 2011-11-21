@@ -1,0 +1,10 @@
+-Wl,-rpath,PFAD fuer libsingular
+
+unter MacOSX sorgt davor, dass @rpath honoriert wird im mit
+install_name_tool eingebauten Pfad in libsingular.dylib
+
+mkdir Singular-3.1.3/`singuname.sh`
+mkdir Singular-3.1.3/`singuname.sh`/include
+mkdir Singular-3.1.3/`singuname.sh`/lib
+
+link gmp.h and libgmp.a from GAP to there
