@@ -49,3 +49,8 @@ clean-local:
 	@$(MAKE) $(AM_MAKEFLAGS) uninstall-libLTLIBRARIES
 	rm -f $(top_srcdir)/$(BINARCHDIR)/libsing.so
 
+
+lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel_mappings.g
+	@echo "Generating lowlevel mappings..."
+	$(GAPROOT)/bin/gap.sh -A -q -T < $<
+	@echo "Done!"
