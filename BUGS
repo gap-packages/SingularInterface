@@ -1,8 +1,4 @@
-gap> Singular("print(a)");
-
-runs into an error and Singular reads from STDIN.
-return(); does not leave the interpreter but produces an error
-After ^D we back at the GAP level
-Subsequent Singular(""); commands produce segfault
+Singular(""); gives no method found although "" seems to be in
+IsStringRep.
 
 
