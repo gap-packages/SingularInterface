@@ -129,11 +129,28 @@ SINGULAR_types := rec(
 # * result: string indicating the return type (this is again used to
 #           lookup the type in SINGULAR_types).
 SINGULAR_funcs := [
+	# PINLINE2 char*     p_String(poly p, ring p_ring);
 	rec( name := "p_String", params := [ "POLY" ], result := "STRING" ),
-	rec( name := "p_Add_q", params := [ ["POLY",true], ["POLY",true] ], result := "POLY" ),
+
+	#PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
 	rec( name := "p_Neg", params := [ ["POLY",true] ], result := "POLY" ),
+
+	# PINLINE2 poly pp_Mult_qq(poly p, poly q, const ring r);
 	rec( name := "pp_Mult_qq", params := [ "POLY", "POLY" ], result := "POLY" ),
+
+	# PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
 	rec( name := "pp_Mult_nn", params := [ "POLY", "NUMBER" ], result := "POLY" ),
+
+	# PINLINE2 poly p_Add_q(DESTROYS poly p, DESTROYS poly q, const ring r);
+	rec( name := "p_Add_q", params := [ ["POLY",true], ["POLY",true] ], result := "POLY" ),
+
+	# PINLINE2 poly p_Minus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
+	rec( name := "p_Minus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
+
+	# PINLINE2 poly p_Plus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
+	rec( name := "p_Plus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
+
+
 ];;
 
 GenerateSingularWrapper := function (desc)

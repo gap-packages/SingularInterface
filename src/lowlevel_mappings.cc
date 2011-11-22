@@ -27,28 +27,6 @@ Obj FuncSI_p_String(Obj self, Obj arg1) {
     }
 }
 
-Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
-    
-    // Prepare input data
-    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
-    poly var2 = p_Copy((poly)CXX_SINGOBJ(arg2), r);
-    
-    // Call into Singular kernel
-    poly res = p_Add_q(var1,var2,r);
-    
-    // Convert result for GAP and return it
-    {
-        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
-        return tmp;
-    }
-}
-
 Obj FuncSI_p_Neg(Obj self, Obj arg1) {
     // Setup current ring
     UInt rnr = RING_SINGOBJ(arg1);
@@ -104,6 +82,78 @@ Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
     
     // Call into Singular kernel
     poly res = pp_Mult_nn(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
+    // Setup current ring
+    UInt rnr = RING_SINGOBJ(arg1);
+    if (rnr != RING_SINGOBJ(arg2))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);
+    
+    // Prepare input data
+    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var2 = p_Copy((poly)CXX_SINGOBJ(arg2), r);
+    
+    // Call into Singular kernel
+    poly res = p_Add_q(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
+    // Setup current ring
+    UInt rnr = RING_SINGOBJ(arg1);
+    if (rnr != RING_SINGOBJ(arg2))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    if (rnr != RING_SINGOBJ(arg3))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);
+    
+    // Prepare input data
+    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var2 = (poly)CXX_SINGOBJ(arg2);
+    poly var3 = (poly)CXX_SINGOBJ(arg3);
+    
+    // Call into Singular kernel
+    poly res = p_Minus_mm_Mult_qq(var1,var2,var3,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
+    // Setup current ring
+    UInt rnr = RING_SINGOBJ(arg1);
+    if (rnr != RING_SINGOBJ(arg2))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    if (rnr != RING_SINGOBJ(arg3))
+        ErrorQuit("Elements not over the same ring\n",0L,0L);
+    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
+    if (r != currRing) rChangeCurrRing(r);
+    
+    // Prepare input data
+    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var2 = (poly)CXX_SINGOBJ(arg2);
+    poly var3 = (poly)CXX_SINGOBJ(arg3);
+    
+    // Call into Singular kernel
+    poly res = p_Plus_mm_Mult_qq(var1,var2,var3,r);
     
     // Convert result for GAP and return it
     {
