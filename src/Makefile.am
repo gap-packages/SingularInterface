@@ -4,7 +4,11 @@ SINGULARNAME = Singular-`cat ../SINGULARVERSION`
 SINGARCHNAME = `cat ../SINGARCHNAME`
 
 lib_LTLIBRARIES = libsing.la
-     
+bin_PROGRAMS = gen_highlevel_mappings
+gen_highlevel_mappings_SOURCES = gen_highlevel_mappings.cc
+gen_highlevel_mappings_CPPFLAGS = -I../${SINGULARNAME}/${SINGARCHNAME}/include
+gen_highlevel_mappings_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
+
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
 libsing_la_LIBADD = 
