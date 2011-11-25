@@ -73,30 +73,30 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 }
 
 enum {
-	SINGTYPE_BIGINT        =  1,
-	SINGTYPE_DEF           =  2,
-	SINGTYPE_IDEAL         =  3,
-	SINGTYPE_INT           =  4,
-	SINGTYPE_INTMAT        =  5,
-	SINGTYPE_INTVEC        =  6,
-	SINGTYPE_LINK          =  7,
-	SINGTYPE_LIST          =  8,
-	SINGTYPE_MAP           =  9,
-	SINGTYPE_MATRIX        = 10,
-	SINGTYPE_MODULE        = 11,
-	SINGTYPE_NUMBER        = 12,
-	SINGTYPE_PACKAGE       = 13,
-	SINGTYPE_POLY          = 14,
-	SINGTYPE_PROC          = 15,
-	SINGTYPE_QRING         = 16,
-	SINGTYPE_RESOLUTION    = 17,
-	SINGTYPE_RING          = 18,
-	SINGTYPE_STRING        = 19,
-	SINGTYPE_VECTOR        = 20,
-	SINGTYPE_USERDEF       = 21,
-	SINGTYPE_PYOBJECT      = 22,
+    SINGTYPE_BIGINT        =  1,
+    SINGTYPE_DEF           =  2,
+    SINGTYPE_IDEAL         =  3,
+    SINGTYPE_INT           =  4,
+    SINGTYPE_INTMAT        =  5,
+    SINGTYPE_INTVEC        =  6,
+    SINGTYPE_LINK          =  7,
+    SINGTYPE_LIST          =  8,
+    SINGTYPE_MAP           =  9,
+    SINGTYPE_MATRIX        = 10,
+    SINGTYPE_MODULE        = 11,
+    SINGTYPE_NUMBER        = 12,
+    SINGTYPE_PACKAGE       = 13,
+    SINGTYPE_POLY          = 14,
+    SINGTYPE_PROC          = 15,
+    SINGTYPE_QRING         = 16,
+    SINGTYPE_RESOLUTION    = 17,
+    SINGTYPE_RING          = 18,
+    SINGTYPE_STRING        = 19,
+    SINGTYPE_VECTOR        = 20,
+    SINGTYPE_USERDEF       = 21,
+    SINGTYPE_PYOBJECT      = 22,
 
-	SINGTYPE_LASTNUMBER    = 22
+    SINGTYPE_LASTNUMBER    = 22
 };
 
 /* If you change these numbers, then also adjust the table TypeTable

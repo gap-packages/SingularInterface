@@ -257,109 +257,206 @@ static poly GET_IDEAL_ELM_PROXY(Obj p)
     return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
 }
 
-void *GET_SINGOBJ(Obj input, int &type, UInt &rnr, ring &r)
+// The following table maps GAP type numbers for singular objects to
+// Singular type numbers for Singular objects:
+
+static int GAPtoSingType[] =
+  { 0 /* NOTUSED */, BIGINT_CMD, DEF_CMD , IDEAL_CMD, INT_CMD, INTMAT_CMD,
+    INTVEC_CMD, LINK_CMD, LIST_CMD, MAP_CMD, MATRIX_CMD, MODUL_CMD, NUMBER_CMD,
+    PACKAGE_CMD, POLY_CMD, PROC_CMD, QRING_CMD, RESOLUTION_CMD, RING_CMD, 
+    STRING_CMD, VECTOR_CMD, 0 /* USERDEF */, /* PYOBJECT */ };
+
+static int SingtoGAPType[MAX_TOK];
+/* Also adjust FuncSI_INIT_INTERPRETER where this is initialised,
+   when the set of types changes. */
+
+static int HasRingTable[] =
+  { 0, // NOTUSED
+    0, // SINGTYPE_BIGINT        =  1
+    0, // SINGTYPE_DEF           =  2
+    1, // SINGTYPE_IDEAL         =  3
+    0, // SINGTYPE_INT           =  4
+    0, // SINGTYPE_INTMAT        =  5
+    0, // SINGTYPE_INTVEC        =  6
+    0, // SINGTYPE_LINK          =  7
+    1, // SINGTYPE_LIST          =  8
+    1, // SINGTYPE_MAP           =  9
+    1, // SINGTYPE_MATRIX        = 10
+    1, // SINGTYPE_MODULE        = 11
+    1, // SINGTYPE_NUMBER        = 12
+    0, // SINGTYPE_PACKAGE       = 13
+    1, // SINGTYPE_POLY          = 14
+    0, // SINGTYPE_PROC          = 15
+    0, // SINGTYPE_QRING         = 16
+    1, // SINGTYPE_RESOLUTION    = 17
+    0, // SINGTYPE_RING          = 18
+    0, // SINGTYPE_STRING        = 19
+    1, // SINGTYPE_VECTOR        = 20
+    0, // SINGTYPE_USERDEF       = 21
+    0  // SINGTYPE_PYOBJECT      = 22
+  };
+
+void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype)
+// proxy is a GAP proxy object, pos is a position in it, the first
+// being 2, current is a pointer to a Singular object of type
+// currgtype (as a GAP type number). This function returns the
+// Singular object referenced by the proxy object. This function
+// implements the recursion needed for deeply nested Singular objects.
 {
-    rnr = 0;
-    if (IS_INTOBJ(input) || 
-        TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        type = INT_CMD;
-        return (void *) (INT_FROM_GAP(input));
+    // To end the recursion:
+    if (pos >= SIZE_OBJ(proxy)/sizeof(UInt)) return current;
+    if (!IS_INTOBJ(ELM_PLIST(proxy,pos))) {
+        ErrorQuit("proxy index must be an immediate integer",0L,0L);
+        return NULL;
     }
-    if (TNUM_OBJ(input) == T_SINGULAR) {
-        switch (TYPE_SINGOBJ(input)) {
-          case SINGTYPE_BIGINT:
-            type = BIGINT_CMD;
-            return nlCopy((number) CXX_SINGOBJ(input));
-          case SINGTYPE_IDEAL:
-            type = IDEAL_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
-          case SINGTYPE_INTMAT:
-            type = INTMAT_CMD;
-            return new intvec((intvec *) CXX_SINGOBJ(input));
-          case SINGTYPE_INTVEC:
-            type = INTVEC_CMD;
-            return new intvec((intvec *) CXX_SINGOBJ(input));
-          case SINGTYPE_LINK:
-            type = LINK_CMD;
-            return CXX_SINGOBJ(input);
-          case SINGTYPE_LIST:
-            type = LIST_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return lCopy( (lists) CXX_SINGOBJ(input) );
-          case SINGTYPE_MAP:
-            type = MAP_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return maCopy( (map) CXX_SINGOBJ(input) );
-          case SINGTYPE_MATRIX:
-            type = MATRIX_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return mpCopy( (matrix) CXX_SINGOBJ(input) );
-          case SINGTYPE_MODULE:
-            type = MODUL_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return id_Copy((ideal) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
-          case SINGTYPE_NUMBER:
-            type = NUMBER_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return n_Copy((number)CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
-          case SINGTYPE_POLY:
-            type = POLY_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
-          case SINGTYPE_QRING:
-            type = QRING_CMD;
-            return CXX_SINGOBJ(input);
-          case SINGTYPE_RESOLUTION:
-            type = RESOLUTION_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return syCopy((syStrategy) CXX_SINGOBJ(input));
-          case SINGTYPE_RING:
-            type = RING_CMD;
-            return CXX_SINGOBJ(input);
-          case SINGTYPE_STRING:
-            type = STRING_CMD;
-            return omStrDup( (char *) CXX_SINGOBJ(input));
-          case SINGTYPE_VECTOR:
-            type = VECTOR_CMD;
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            if (r != currRing) rChangeCurrRing(r);
-            return p_Copy((poly) CXX_SINGOBJ(input),SINGRING_SINGOBJ(input));
+
+    if (currgtype == SINGTYPE_IDEAL) {
+        Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        ideal id = (ideal) current;
+        if (index <= 0 || index > IDELEMS(id)) {
+            ErrorQuit("ideal index out of range",0L,0L);
+            return NULL;
         }
-    } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == SingularProxiesType) {
-        ErrorQuit("Argument to Singular call is no valid singular object",
-                  0L,0L);
+        currgtype = SINGTYPE_POLY;
+        return id->m[index-1];
+    } else if (currgtype == SINGTYPE_MATRIX) {
+        if (pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+          ErrorQuit("need two integer indices for matrix proxy element",0L,0L);
+          return NULL;
+        }
+        Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
+        matrix mat = (matrix) current;
+        if (row <= 0 || row > mat->nrows ||
+            col <= 0 || col > mat->ncols) {
+            ErrorQuit("matrix indices out of range",0L,0L);
+            return NULL;
+        }
+        return MATELEM(mat,row,col);
+    } else if (currgtype == SINGTYPE_LIST) {
+        lists l = (lists) current;
+        Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        if (index <= 0 || index > l->nr+1 ) {
+            ErrorQuit("list index out of range",0L,0L);
+            return NULL;
+        }
+        currgtype = SingtoGAPType[l->m[index-1].Typ()];
+        current = l->m[index-1].Data();
+        return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype);
     } else {
-        ErrorQuit("Argument to Singular call is no valid singular object",
-                  0L,0L);
+        ErrorQuit("Singular object has no subobjects",0L,0L);
+        return NULL;
     }
 }
 
+void *GET_SINGOBJ(Obj input, int &gtype, int &stype, UInt &rnr, ring &r, 
+                  int wantstype)
+// This function digs out the underlying singular object of a GAP
+// object together with its type and ring. gtype is set to the GAP
+// number for of the type and stype to the Singular number of the
+// type. rnr and r are set if the object has an associated ring,
+// otherwise they are not touched.
+// The GAP object input can be GAP integers (which produce
+// machine integers if possible), GAP wrappers for Singular objects,
+// which produce the corresponding Singular object, GAP proxy
+// objects for subobjects of other Singular objects, or GAP proxy
+// objects for values in Singular interpreter variables. Note that
+// the resulting Singular object is *not* copied. Use COPY_SINGOBJ 
+// afterwards if you want to hand the result to something destructive.
+// If wanttype is set to a nonzero value, then this function reports an
+// error, if the resulting object is not of the Singular type wantstype.
+{
+    void *result;
+    if (IS_INTOBJ(input) || 
+        TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
+        gtype = SINGTYPE_INT;
+        result = (void *) (INT_FROM_GAP(input));
+    } else if (TNUM_OBJ(input) == T_SINGULAR) {
+        gtype = TYPE_SINGOBJ(input);
+        result = CXX_SINGOBJ(input);
+        if (HasRingTable[gtype]) {
+            rnr = RING_SINGOBJ(input);
+            r = GET_SINGRING(rnr);
+        }
+    } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == SingularProxiesType) {
+        if (IS_INTOBJ(ELM_PLIST(input,2))) {
+            // This is a proxy object for a subobject:
+            Obj ob = ELM_PLIST(input,1);
+            if (TNUM_OBJ(ob) != T_SINGULAR) {
+                ErrorQuit("proxy object does not refer to Singular object",
+                          0L,0L);
+                return NULL;
+            }
+            gtype = TYPE_SINGOBJ(ob);
+            if (RING_SINGOBJ(ob) != 0) {
+                rnr = RING_SINGOBJ(ob);
+                r = GET_SINGRING(rnr);
+            }
+            result = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype);
+        } else if (IS_STRING_REP(ELM_PLIST(input,2))) {
+            // This is a proxy object for an interpreter variable
+            ErrorQuit("proxy objects to Singular interpreter variables "
+                      "are not yet implemented",0L,0L);
+            return NULL;
+        } else {
+            ErrorQuit("unknown Singular proxy object",0L,0L);
+            return NULL;
+        }
+    } else {
+        ErrorQuit("Argument to Singular call is no valid Singular object",
+                  0L,0L);
+    }
+    stype = GAPtoSingType[gtype];
+    if (wantstype && stype != wantstype) {
+        ErrorQuit("Argument to Singular call is of wrong type",0L,0L);
+        return NULL;
+    }
+    return result;
+}
 
-#if 0
-static int TypeTable[] =
-  { 0, BIGINT_CMD, 0, IDEAL_CMD, INT_CMD, INTMAT_CMD, INTVEC_CMD, LINK_CMD,
-    LIST_CMD, MAP_CMD, MATRIX_CMD, MODUL_CMD, NUMBER_CMD, 0 /* PACKAGE */,
-    POLY_CMD, 0 /* PROC */, QRING_CMD, RESOLUTION_CMD, RING_CMD, STRING_CMD,
-    VECTOR_CMD, 0 /* USERDEF */, 0 /* PYOBJECT */ };
-#endif
+void *COPY_SINGOBJ(void *s, int gtype, ring r)
+// Copies a singular object using the appropriate function according
+// to its type, unless it is a link, a qring or a ring. type is the
+// type of the object in the GAP numbering and r is the corresponding
+// Singular ring. r must already be set as the default ring.
+{
+    switch (gtype) {
+      case SINGTYPE_BIGINT:
+        return nlCopy((number) s);
+      case SINGTYPE_IDEAL:
+        return id_Copy((ideal) s,r);
+      case SINGTYPE_INTMAT:
+      case SINGTYPE_INTVEC:
+        return new intvec((intvec *) s);
+      case SINGTYPE_LINK:  // Do not copy here since it does not make sense
+        return s;
+      case SINGTYPE_LIST:
+        return lCopy( (lists) s );
+      case SINGTYPE_MAP:
+        return maCopy( (map) s );
+      case SINGTYPE_MATRIX:
+        return mpCopy( (matrix) s );
+      case SINGTYPE_MODULE:
+        return id_Copy((ideal) s,r);
+      case SINGTYPE_NUMBER:
+        return n_Copy((number) s,r);
+      case SINGTYPE_POLY:
+        return p_Copy((poly) s,r);
+      case SINGTYPE_QRING:
+        return s;
+      case SINGTYPE_RESOLUTION:
+        return syCopy((syStrategy) s);
+      case SINGTYPE_RING:
+        return s;
+      case SINGTYPE_STRING:
+        return omStrDup( (char *) s);
+      case SINGTYPE_VECTOR:
+        return p_Copy((poly) s,r);
+    }
+}
+
 
 leftv WRAP_SINGULAR(void *singobj, int type)
 {
@@ -855,10 +952,18 @@ void SingularErrorCallback(const char *st)
 extern "C"
 Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
 {
+    int i;
     // init path names etc.
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
     currentVoice=feInitStdin(NULL);
     WerrorS_callback = SingularErrorCallback;
+    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i++) {
+        if (GAPtoSingType[i] >= MAX_TOK) {
+            Pr("Singular types have changed unforeseen",0L,0L);
+            exit(1);
+        }
+        SingtoGAPType[GAPtoSingType[i]] = i;
+    }
 }
 
 extern "C"
@@ -948,14 +1053,26 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
 
 Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 {
-    int type;  /* Singular type like INT_CMD */
+    int gtype;
+    int stype;  /* Singular type like INT_CMD */
     UInt rnr;
     ring r;
-    void *sing = GET_SINGOBJ(input,type,rnr,r);
-    leftv singint = WRAP_SINGULAR(sing,type);
+    void *sing = GET_SINGOBJ(input,gtype,stype,rnr,r,0);
+    if (r != currRing) rChangeCurrRing(r);
+    sing = COPY_SINGOBJ(sing,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singint = WRAP_SINGULAR(sing,stype);
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    if (LastSingularOutput) {
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
     BOOLEAN ret = iiExprArith1(singres,singint,INT_INTOBJ(op));
-    if (type != LINK_CMD && type != RING_CMD && type != QRING_CMD) 
+    LastSingularOutput = SPrintEnd();
+    if (stype != LINK_CMD && stype != RING_CMD && stype != QRING_CMD) 
         singint->CleanUp(r);
     omFree(singint);
     if (ret) {
