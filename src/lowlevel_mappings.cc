@@ -34,7 +34,7 @@ Obj FuncSI_p_Neg(Obj self, Obj arg1) {
     if (r != currRing) rChangeCurrRing(r);
     
     // Prepare input data
-    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
     
     // Call into Singular kernel
     poly res = p_Neg(var1,r);
@@ -99,8 +99,8 @@ Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
     if (r != currRing) rChangeCurrRing(r);
     
     // Prepare input data
-    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
-    poly var2 = p_Copy((poly)CXX_SINGOBJ(arg2), r);
+    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
+    poly var2 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg2), SINGTYPE_POLY, r);
     
     // Call into Singular kernel
     poly res = p_Add_q(var1,var2,r);
@@ -123,7 +123,7 @@ Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     if (r != currRing) rChangeCurrRing(r);
     
     // Prepare input data
-    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
     poly var2 = (poly)CXX_SINGOBJ(arg2);
     poly var3 = (poly)CXX_SINGOBJ(arg3);
     
@@ -148,7 +148,7 @@ Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     if (r != currRing) rChangeCurrRing(r);
     
     // Prepare input data
-    poly var1 = p_Copy((poly)CXX_SINGOBJ(arg1), r);
+    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
     poly var2 = (poly)CXX_SINGOBJ(arg2);
     poly var3 = (poly)CXX_SINGOBJ(arg3);
     

@@ -83,32 +83,26 @@ end;;
 # For each type, there is a record with the following entries:
 # * ring: boolean indicating whether the type implicitly depends on the active ring
 # * cxxtype: corresponding C++ type
-# * copy: a GAP function that takes a C variable name of this type and
-#         returns a string with C++ code creating a copy of the variable.
-#         If the type is ring dependant, then this may implicitly assume that "r" is
-#         the name of a C++ variable containing the active ring.
-#
 # * retconv: (optional) a GAP function that generates code to return a value of this type
 # * ...
 SINGULAR_types := rec(
 	#BIGINT  := rec( ring := false,  ... ),
-	IDEAL  := rec( ring := true,  cxxtype := "ideal",    copy := var -> Concatenation("id_Copy(", var, ", r)" ) ),
+	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
 	#INTMAT  := rec( ring := false,  ... ),
-	INTVEC := rec( ring := false, cxxtype := "intvec *", copy := var -> Concatenation("ivCopy(", var, ")" ) ),
+	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
 	#LINK  := rec( ... ),
 	#LIST  := rec( ... ),
 	#MAP  := rec( ... ),
 
-	# TODO: There seems to be no mp_Copy which takes a ring, so for now use the old mpCopy
-	MATRIX := rec( ring := true,  cxxtype := "matrix",   copy := var -> Concatenation("mpCopy(", var, ")" ) ),
+	MATRIX := rec( ring := true,  cxxtype := "matrix" ),
 
 	#MODULE  := rec( ... ),
-	NUMBER := rec( ring := true,  cxxtype := "number",   copy := var -> Concatenation("n_Copy(", var, ", r)" ) ),
+	NUMBER := rec( ring := true,  cxxtype := "number" ),
 	#PACKAGE  := rec( ... ),
-	POLY   := rec( ring := true,  cxxtype := "poly",     copy := var -> Concatenation("p_Copy(", var, ", r)" ) ),
+	POLY   := rec( ring := true,  cxxtype := "poly" ),
 	#QRING  := rec( ... ),
 	#RESOLUTION  := rec( ... ),
-	RING   := rec( ring := false, cxxtype := "ring",     copy := var -> Concatenation("rCopy(", var, ")" )),
+	RING   := rec( ring := false, cxxtype := "ring" ),
 	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
 	#VECTOR  := rec( ... ),
 );;
@@ -232,16 +226,14 @@ GenerateSingularWrapper := function (desc)
 		type := SINGULAR_types.(GetParamTypeName(i));
 		# Determine whether we need to copy the parameter or not
 		if not IsString(desc.params[i]) and desc.params[i][2] then
-			var_formatter := type.copy;
+			var_formatter := var -> Concatenation("COPY_SINGOBJ(", var, ", SINGTYPE_", GetParamTypeName(i), ", r)" );
 		else
 			var_formatter := IdFunc;
 		fi;
 		PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
-						var_formatter( Concatenation(
 							"(", type.cxxtype, ")", # cast
-							"CXX_SINGOBJ(", CXXArgName(i), ")"
-						) ),
-					";");
+							var_formatter( Concatenation( "CXX_SINGOBJ(", CXXArgName(i), ")" ) ),
+							";");
 	od;
 	PrintCXXLine("");
 
