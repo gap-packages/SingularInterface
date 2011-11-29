@@ -6,13 +6,15 @@ extern "C" {
 #endif /* ifdef __cplusplus */
 
 Obj FuncSI_p_String(Obj self, Obj arg1) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)CXX_SINGOBJ(arg1);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     char * res = p_String(var1,r);
@@ -28,13 +30,16 @@ Obj FuncSI_p_String(Obj self, Obj arg1) {
 }
 
 Obj FuncSI_p_Neg(Obj self, Obj arg1) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = p_Neg(var1,r);
@@ -47,16 +52,16 @@ Obj FuncSI_p_Neg(Obj self, Obj arg1) {
 }
 
 Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)CXX_SINGOBJ(arg1);
-    poly var2 = (poly)CXX_SINGOBJ(arg2);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = pp_Mult_qq(var1,var2,r);
@@ -69,16 +74,16 @@ Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)CXX_SINGOBJ(arg1);
-    number var2 = (number)CXX_SINGOBJ(arg2);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    number var2 = (number)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = pp_Mult_nn(var1,var2,r);
@@ -91,16 +96,18 @@ Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
-    poly var2 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg2), SINGTYPE_POLY, r);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    var2 = (poly)COPY_SINGOBJ(var2, SINGTYPE_POLY, r);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = p_Add_q(var1,var2,r);
@@ -113,19 +120,18 @@ Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    if (rnr != RING_SINGOBJ(arg3))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
-    poly var2 = (poly)CXX_SINGOBJ(arg2);
-    poly var3 = (poly)CXX_SINGOBJ(arg3);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, 0);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = p_Minus_mm_Mult_qq(var1,var2,var3,r);
@@ -138,19 +144,18 @@ Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
 }
 
 Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
-    // Setup current ring
-    UInt rnr = RING_SINGOBJ(arg1);
-    if (rnr != RING_SINGOBJ(arg2))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    if (rnr != RING_SINGOBJ(arg3))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-    if (r != currRing) rChangeCurrRing(r);
+    int gtype, stype;
+    UInt rnr;
+    ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)COPY_SINGOBJ(CXX_SINGOBJ(arg1), SINGTYPE_POLY, r);
-    poly var2 = (poly)CXX_SINGOBJ(arg2);
-    poly var3 = (poly)CXX_SINGOBJ(arg3);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, 0);
+    
+    // Setup current ring
+    if (r != currRing) rChangeCurrRing(r);
     
     // Call into Singular kernel
     poly res = p_Plus_mm_Mult_qq(var1,var2,var3,r);
