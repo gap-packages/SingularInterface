@@ -237,7 +237,7 @@ GenerateSingularWrapper := function (desc)
 		# Extract the underlying Singular data from the GAP input object
 		PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 							"(", type.cxxtype, ")", # cast
-							"GET_SINGOBJ(", CXXArgName(i), ", gtype, stype, rnr, r, 0)",
+							"GET_SINGOBJ(", CXXArgName(i), ", gtype, stype, rnr, r, ", GetParamTypeName(i), "_CMD)",
 							";");
 		# Copy the parameter if necessary
 		if not IsString(desc.params[i]) and desc.params[i][2] then

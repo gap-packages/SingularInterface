@@ -11,7 +11,7 @@ Obj FuncSI_p_String(Obj self, Obj arg1) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
     
     // Setup current ring
     if (r != currRing) rChangeCurrRing(r);
@@ -35,7 +35,7 @@ Obj FuncSI_p_Neg(Obj self, Obj arg1) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
     var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
     
     // Setup current ring
@@ -57,8 +57,8 @@ Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
     
     // Setup current ring
     if (r != currRing) rChangeCurrRing(r);
@@ -79,8 +79,8 @@ Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
-    number var2 = (number)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
+    number var2 = (number)GET_SINGOBJ(arg2, gtype, stype, rnr, r, NUMBER_CMD);
     
     // Setup current ring
     if (r != currRing) rChangeCurrRing(r);
@@ -101,9 +101,9 @@ Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
     var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
     var2 = (poly)COPY_SINGOBJ(var2, SINGTYPE_POLY, r);
     
     // Setup current ring
@@ -125,10 +125,10 @@ Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
     var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
-    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, 0);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
+    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, POLY_CMD);
     
     // Setup current ring
     if (r != currRing) rChangeCurrRing(r);
@@ -149,10 +149,10 @@ Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, 0);
+    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
     var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, 0);
-    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, 0);
+    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
+    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, POLY_CMD);
     
     // Setup current ring
     if (r != currRing) rChangeCurrRing(r);
