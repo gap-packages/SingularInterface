@@ -147,7 +147,7 @@ number BIGINT_FROM_GAP(Obj nr)
     number n;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
-        if (i >= -268435456L && i < 268435456L)
+        if (i >= -1L << 28 && i < 1L << 28)
             n = nlInit((int) i,NULL);
         else
             n = nlRInit(i);
