@@ -35,7 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = gen_highlevel_mappings$(EXEEXT)
+bin_PROGRAMS = gen_highlevel_mappings$(EXEEXT) gentableforGAP$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -90,6 +90,12 @@ gen_highlevel_mappings_LDADD = $(LDADD)
 gen_highlevel_mappings_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(gen_highlevel_mappings_LDFLAGS) $(LDFLAGS) -o $@
+am_gentableforGAP_OBJECTS = gentableforGAP-gentableforGAP.$(OBJEXT)
+gentableforGAP_OBJECTS = $(am_gentableforGAP_OBJECTS)
+gentableforGAP_LDADD = $(LDADD)
+gentableforGAP_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(gentableforGAP_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -112,8 +118,10 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES)
-DIST_SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES)
+SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES) \
+	$(gentableforGAP_SOURCES)
+DIST_SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES) \
+	$(gentableforGAP_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -245,6 +253,9 @@ lib_LTLIBRARIES = libsing.la
 gen_highlevel_mappings_SOURCES = gen_highlevel_mappings.cc
 gen_highlevel_mappings_CPPFLAGS = -I../${SINGULARNAME}/${SINGARCHNAME}/include
 gen_highlevel_mappings_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
+gentableforGAP_SOURCES = gentableforGAP.cc
+gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
+gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
 libsing_la_LIBADD = 
@@ -362,6 +373,9 @@ clean-binPROGRAMS:
 gen_highlevel_mappings$(EXEEXT): $(gen_highlevel_mappings_OBJECTS) $(gen_highlevel_mappings_DEPENDENCIES) 
 	@rm -f gen_highlevel_mappings$(EXEEXT)
 	$(gen_highlevel_mappings_LINK) $(gen_highlevel_mappings_OBJECTS) $(gen_highlevel_mappings_LDADD) $(LIBS)
+gentableforGAP$(EXEEXT): $(gentableforGAP_OBJECTS) $(gentableforGAP_DEPENDENCIES) 
+	@rm -f gentableforGAP$(EXEEXT)
+	$(gentableforGAP_LINK) $(gentableforGAP_OBJECTS) $(gentableforGAP_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -370,6 +384,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentableforGAP-gentableforGAP.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-cxxfuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-libsing.Plo@am__quote@
 
@@ -442,6 +457,20 @@ gen_highlevel_mappings-gen_highlevel_mappings.obj: gen_highlevel_mappings.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gen_highlevel_mappings.cc' object='gen_highlevel_mappings-gen_highlevel_mappings.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gen_highlevel_mappings_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gen_highlevel_mappings-gen_highlevel_mappings.obj `if test -f 'gen_highlevel_mappings.cc'; then $(CYGPATH_W) 'gen_highlevel_mappings.cc'; else $(CYGPATH_W) '$(srcdir)/gen_highlevel_mappings.cc'; fi`
+
+gentableforGAP-gentableforGAP.o: gentableforGAP.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gentableforGAP-gentableforGAP.o -MD -MP -MF $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo -c -o gentableforGAP-gentableforGAP.o `test -f 'gentableforGAP.cc' || echo '$(srcdir)/'`gentableforGAP.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo $(DEPDIR)/gentableforGAP-gentableforGAP.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gentableforGAP.cc' object='gentableforGAP-gentableforGAP.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gentableforGAP-gentableforGAP.o `test -f 'gentableforGAP.cc' || echo '$(srcdir)/'`gentableforGAP.cc
+
+gentableforGAP-gentableforGAP.obj: gentableforGAP.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gentableforGAP-gentableforGAP.obj -MD -MP -MF $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo -c -o gentableforGAP-gentableforGAP.obj `if test -f 'gentableforGAP.cc'; then $(CYGPATH_W) 'gentableforGAP.cc'; else $(CYGPATH_W) '$(srcdir)/gentableforGAP.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo $(DEPDIR)/gentableforGAP-gentableforGAP.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gentableforGAP.cc' object='gentableforGAP-gentableforGAP.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gentableforGAP-gentableforGAP.obj `if test -f 'gentableforGAP.cc'; then $(CYGPATH_W) 'gentableforGAP.cc'; else $(CYGPATH_W) '$(srcdir)/gentableforGAP.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
