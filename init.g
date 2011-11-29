@@ -15,5 +15,5 @@ if not IsBound(LIBSINGULAR) then
   fi;
 fi;
 
+ReadPackage( "libsingular", "lib/highlevel_mappings.g" );
 ReadPackage( "libsingular", "lib/libsingular.gd" );
-

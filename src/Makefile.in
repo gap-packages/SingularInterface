@@ -684,12 +684,16 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	uninstall-libLTLIBRARIES
 
 
+highlevel_mappings.g:	gentableforGAP
+	./gentableforGAP
+
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
-all-local: 
+all-local: highlevel_mappings.g
 	@$(MAKE) $(AM_MAKEFLAGS) install-libLTLIBRARIES
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
 	cp $(libdir)/libsing.so $(GAPINSTALLLIB)
+	cp highlevel_mappings.g ../lib
 	@echo ""
 	@echo "***********************************************************************"
 	@echo ""

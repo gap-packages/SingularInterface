@@ -19,12 +19,16 @@ libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 
+highlevel_mappings.g:	gentableforGAP
+	./gentableforGAP
+
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
-all-local: 
+all-local: highlevel_mappings.g
 	@$(MAKE) $(AM_MAKEFLAGS) install-libLTLIBRARIES
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
 	cp $(libdir)/libsing.so $(GAPINSTALLLIB)
+	cp highlevel_mappings.g ../lib
 	@echo ""
 	@echo "***********************************************************************"
 	@echo ""
