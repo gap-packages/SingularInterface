@@ -1,0 +1,17 @@
+More constructors (or less, if accessible via high level)
+Quick polynomial constructor
+More view and print routines
+proxies for Singular interpreter variables
+generic copying for singular objects (and proxy objects)
+access to def and proc ?
+Help-function to see available Singular-Funktions
+Method installations for conveniences like +, -, * etc.
+Better ring constructor
+Try to run manual examples
+Tuning using low level interface
+get rid of SING_GETPOLY
+check automatic type changes
+explicit type casts?
+Write access to Singular interpreter variables
+Documentation
+Debugging

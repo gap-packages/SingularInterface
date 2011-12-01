@@ -1,4 +1,14 @@
 Singular(""); gives no method found although "" seems to be in
 IsStringRep.
 
+SI_bigint(1); does not work, gives:
+<singular bigint:-1408746431>
+
+Tocheck:
+
+ - memory management stress test
+ - performance of high level
+ - Calls to 2, 3, and many arguments
+ - error handling with call to 1 argument
+ - lots of code paths in SI_GETSINGOBJ
 

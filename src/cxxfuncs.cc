@@ -1245,6 +1245,7 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
                      // this has copied the object if at all possible
                      // (not for link, qring and ring)
         singint[i] = WRAP_SINGULAR(sing[i],stype[i]);
+        if (i > 0) singint[i-1]->next = singint[i];
     }
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
     if (LastSingularOutput) {
@@ -1266,8 +1267,7 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
                                singint[0],singint[1],singint[2]);
             break;
         default:
-            ErrorQuit("not yet implemented",0L,0L);
-            ret = 0;
+            ret = iiExprArithM(singres,singint[0],INT_INTOBJ(op));
             break;
     }
     LastSingularOutput = SPrintEnd();
