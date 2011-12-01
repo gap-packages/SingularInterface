@@ -655,7 +655,7 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
-Obj FuncSI_bigint(Obj self, Obj nr)
+Obj FuncSI_Makebigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT,BIGINT_FROM_GAP(nr));
 }
@@ -688,7 +688,7 @@ Obj FuncSI_Intbigint(Obj self, Obj nr)
     }             
 }
 
-Obj FuncSI_intvec(Obj self, Obj l)
+Obj FuncSI_Makeintvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
         ErrorQuit("l must be a list",0L,0L);
@@ -731,7 +731,7 @@ Obj FuncSI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
-Obj FuncSI_intmat(Obj self, Obj m)
+Obj FuncSI_Makeintmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
            IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
@@ -793,7 +793,7 @@ Obj FuncSI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
-Obj FuncSI_ideal(Obj self, Obj l)
+Obj FuncSI_Makeideal(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
         ErrorQuit("l must be a list",0L,0L);
@@ -1055,14 +1055,16 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 {
     int gtype;
     int stype;  /* Singular type like INT_CMD */
-    UInt rnr;
-    ring r;
+    UInt rnr = 0;
+    ring r = NULL;
+
     void *sing = GET_SINGOBJ(input,gtype,stype,rnr,r,0);
-    if (r != currRing) rChangeCurrRing(r);
+    if (r && r != currRing) rChangeCurrRing(r);
     sing = COPY_SINGOBJ(sing,gtype,r);
                  // this has copied the object if at all possible
                  // (not for link, qring and ring)
     leftv singint = WRAP_SINGULAR(sing,stype);
+
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
     if (LastSingularOutput) {
         omFree(LastSingularOutput);
@@ -1072,9 +1074,189 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     errorreported = 0;
     BOOLEAN ret = iiExprArith1(singres,singint,INT_INTOBJ(op));
     LastSingularOutput = SPrintEnd();
+
     if (stype != LINK_CMD && stype != RING_CMD && stype != QRING_CMD) 
         singint->CleanUp(r);
     omFree(singint);
+
+    if (ret) {
+        singres->CleanUp(r);
+        omFree(singres);
+        return Fail;
+    }
+    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
+    omFree(singres);
+    return result;
+}
+
+Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
+{
+    int gtype;
+    int stypea;  /* Singular type of a like INT_CMD */
+    int stypeb;  /* Singular type of b like INT_CMD */
+    UInt rnr = 0;
+    ring r = NULL;
+
+    void *singa = GET_SINGOBJ(a,gtype,stypea,rnr,r,0);
+    if (r && r != currRing) rChangeCurrRing(r);
+    singa = COPY_SINGOBJ(singa,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singaint = WRAP_SINGULAR(singa,stypea);
+
+    void *singb = GET_SINGOBJ(b,gtype,stypeb,rnr,r,0);
+    if (r && r != currRing) rChangeCurrRing(r);
+    singb = COPY_SINGOBJ(singb,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singbint = WRAP_SINGULAR(singb,stypeb);
+
+    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    if (LastSingularOutput) {
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
+    BOOLEAN ret = iiExprArith2(singres,singaint,INT_INTOBJ(op),singbint);
+    LastSingularOutput = SPrintEnd();
+
+    if (stypea != LINK_CMD && stypea != RING_CMD && stypea != QRING_CMD) 
+        singaint->CleanUp(r);
+    omFree(singaint);
+
+    if (stypeb != LINK_CMD && stypeb != RING_CMD && stypeb != QRING_CMD) 
+        singbint->CleanUp(r);
+    omFree(singbint);
+
+    if (ret) {
+        singres->CleanUp(r);
+        omFree(singres);
+        return Fail;
+    }
+    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
+    omFree(singres);
+    return result;
+}
+
+Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
+{
+    int gtype;
+    int stypea;  /* Singular type of a like INT_CMD */
+    int stypeb;  /* Singular type of b like INT_CMD */
+    int stypec;  /* Singular type of c like INT_CMD */
+    UInt rnr = 0;
+    ring r = NULL;
+
+    void *singa = GET_SINGOBJ(a,gtype,stypea,rnr,r,0);
+    if (r && r != currRing) rChangeCurrRing(r);
+    singa = COPY_SINGOBJ(singa,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singaint = WRAP_SINGULAR(singa,stypea);
+
+    void *singb = GET_SINGOBJ(b,gtype,stypeb,rnr,r,0);
+    if (r && r != currRing) rChangeCurrRing(r);
+    singb = COPY_SINGOBJ(singb,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singbint = WRAP_SINGULAR(singb,stypeb);
+
+    void *singc = GET_SINGOBJ(c,gtype,stypec,rnr,r,0);
+    if (r && r != currRing) rChangeCurrRing(r);
+    singc = COPY_SINGOBJ(singc,gtype,r);
+                 // this has copied the object if at all possible
+                 // (not for link, qring and ring)
+    leftv singcint = WRAP_SINGULAR(singc,stypec);
+
+    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    if (LastSingularOutput) {
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
+    BOOLEAN ret = iiExprArith3(singres,INT_INTOBJ(op),
+                               singaint,singbint,singcint);
+    LastSingularOutput = SPrintEnd();
+
+    if (stypea != LINK_CMD && stypea != RING_CMD && stypea != QRING_CMD) 
+        singaint->CleanUp(r);
+    omFree(singaint);
+
+    if (stypeb != LINK_CMD && stypeb != RING_CMD && stypeb != QRING_CMD) 
+        singbint->CleanUp(r);
+    omFree(singbint);
+
+    if (stypec != LINK_CMD && stypec != RING_CMD && stypec != QRING_CMD) 
+        singcint->CleanUp(r);
+    omFree(singcint);
+
+    if (ret) {
+        singres->CleanUp(r);
+        omFree(singres);
+        return Fail;
+    }
+    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
+    omFree(singres);
+    return result;
+}
+
+#define SINGULAR_MAX_NR_ARGS 8
+
+Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
+{
+    int gtype;
+    int stype[SINGULAR_MAX_NR_ARGS];  /* Singular type like INT_CMD */
+    UInt rnr = 0;
+    ring r = NULL;
+    void *sing[SINGULAR_MAX_NR_ARGS];
+    leftv singint[SINGULAR_MAX_NR_ARGS];
+    int nrargs = (int) LEN_PLIST(arg);
+    int i;
+    if (nrargs > SINGULAR_MAX_NR_ARGS) {
+        ErrorQuit("Too many arguments to Singular call",0L,0L);
+        return NULL;
+    }
+    for (i = 0;i < nrargs;i++) {
+        sing[i] = GET_SINGOBJ(ELM_PLIST(arg,i+1),gtype,stype[i],rnr,r,0);
+        if (r && r != currRing) rChangeCurrRing(r);
+        sing[i] = COPY_SINGOBJ(sing[i],gtype,r);
+                     // this has copied the object if at all possible
+                     // (not for link, qring and ring)
+        singint[i] = WRAP_SINGULAR(sing[i],stype[i]);
+    }
+    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    if (LastSingularOutput) {
+        omFree(LastSingularOutput);
+        LastSingularOutput = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
+    BOOLEAN ret;
+    switch (nrargs) {
+        case 1:
+            ret = iiExprArith1(singres,singint[0],INT_INTOBJ(op));
+            break;
+        case 2:
+            ret = iiExprArith2(singres,singint[0],INT_INTOBJ(op),singint[1]);
+            break;
+        case 3:
+            ret = iiExprArith3(singres,INT_INTOBJ(op),
+                               singint[0],singint[1],singint[2]);
+            break;
+        default:
+            ErrorQuit("not yet implemented",0L,0L);
+            ret = 0;
+            break;
+    }
+    LastSingularOutput = SPrintEnd();
+    for (i = 0;i < nrargs;i++) {
+        if (stype[i] != LINK_CMD && stype[i] != RING_CMD && 
+            stype[i] != QRING_CMD) 
+            singint[i]->CleanUp(r);
+        omFree(singint[i]);
+    }
     if (ret) {
         singres->CleanUp(r);
         omFree(singres);

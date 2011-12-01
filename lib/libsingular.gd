@@ -55,6 +55,25 @@ SingularTypes[SINGULAR_TYPENRS.SINGTYPE_STRING]
 SingularTypes[SINGULAR_TYPENRS.SINGTYPE_VECTOR] 
    := NewType(SingularFamily,IsSingularVector);
 
+BindGlobal("SINGULAR_TYPETAB",
+    rec( bigint := IsSingularBigInt,
+         ideal := IsSingularIdeal,
+         intmat := IsSingularIntMat,
+         intvec := IsSingularIntVec,
+         link := IsSingularLink,
+         list := IsSingularList,
+         map := IsSingularMap,
+         matrix := IsSingularMatrix,
+         module := IsSingularModule,
+         number := IsSingularNumber,
+         poly := IsSingularPoly,
+         qring := IsSingularQRing,
+         resolution := IsSingularResolution,
+         ring := IsSingularRing,
+         string := IsSingularString,
+         vector := IsSingularVector,
+       ));
+
 BindGlobal("SingularProxiesType", NewType( SingularFamily, IsSingularProxy ));
 
 SingularRings := [];
@@ -71,3 +90,4 @@ DeclareOperation( "Singular", [] );
 
 DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt] );
 DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt, IsPosInt] );
+

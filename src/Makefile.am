@@ -4,11 +4,7 @@ SINGULARNAME = Singular-`cat ../SINGULARVERSION`
 SINGARCHNAME = `cat ../SINGARCHNAME`
 
 lib_LTLIBRARIES = libsing.la
-bin_PROGRAMS = gen_highlevel_mappings gentableforGAP
-
-gen_highlevel_mappings_SOURCES = gen_highlevel_mappings.cc
-gen_highlevel_mappings_CPPFLAGS = -I../${SINGULARNAME}/${SINGARCHNAME}/include
-gen_highlevel_mappings_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
+bin_PROGRAMS = gentableforGAP
 
 gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
@@ -19,16 +15,14 @@ libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 
-highlevel_mappings.g:	gentableforGAP
-	./gentableforGAP
-
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
-all-local: highlevel_mappings.g
+all-local: highlevel_mappings.g highlevel_mappings_table.g
 	@$(MAKE) $(AM_MAKEFLAGS) install-libLTLIBRARIES
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
 	cp $(libdir)/libsing.so $(GAPINSTALLLIB)
 	cp highlevel_mappings.g ../lib
+	cp highlevel_mappings_table.g ../lib
 	@echo ""
 	@echo "***********************************************************************"
 	@echo ""
@@ -67,3 +61,12 @@ lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel
 	@echo "Generating lowlevel mappings..."
 	$(GAPROOT)/bin/gap.sh -A -q -T < $<
 	@echo "Done!"
+
+highlevel_mappings_table.g:	gentableforGAP
+	./gentableforGAP
+
+highlevel_mappings.g:	highlevel_mappings_table.g gen_highlevel_mappings.g
+	@echo "Generating highlevel mappings..."
+	$(GAPROOT)/bin/gap.sh -A -q -T < gen_highlevel_mappings.g
+	@echo "Done!"
+

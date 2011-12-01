@@ -117,3 +117,9 @@ InstallMethod(ViewObj, "for a singular proxy object",
     Print("]>");
   end );
 
+InstallMethod(ViewObj, "for a generic singular object",
+  [ IsSingularObj ],
+  function( s )
+    Print("<singular object>");
+  end );
+

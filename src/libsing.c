@@ -88,45 +88,60 @@ static StructGVarFunc GVarFuncs[] =
    FuncLastSingularOutput,
    "cxx-funcs.cc:FuncLastSingularOutput" },
 
-  {"SI_bigint", 1,
+  {"SI_Makebigint", 1,
    "nr",
-   FuncSI_bigint,
-   "cxx-funcs.cc:FuncSI_bigint" },
+   FuncSI_Makebigint,
+   "cxx-funcs.cc:FuncSI_Makebigint" },
 
   {"SI_Intbigint", 1,
    "nr",
    FuncSI_Intbigint,
    "cxx-funcs.cc:FuncSI_Intbigint" },
 
-  {"SI_intvec", 1,
+  {"SI_Makeintvec", 1,
    "l",
-   FuncSI_intvec,
-   "cxx-funcs.cc:FuncSI_intvec" },
+   FuncSI_Makeintvec,
+   "cxx-funcs.cc:FuncSI_Makeintvec" },
    
   {"SI_Plistintvec", 1,
    "iv",
    FuncSI_Plistintvec,
    "cxx-funcs.cc:FuncSI_Plistintvec" },
    
-  {"SI_intmat", 1,
+  {"SI_Makeintmat", 1,
    "m",
-   FuncSI_intmat,
-   "cxx-funcs.cc:FuncSI_intmat" },
+   FuncSI_Makeintmat,
+   "cxx-funcs.cc:FuncSI_Makeintmat" },
    
   {"SI_Matintmat", 1,
    "im",
    FuncSI_Matintmat,
    "cxx-funcs.cc:FuncSI_Matintmat" },
    
-  {"SI_ideal", 1,
+  {"SI_Makeideal", 1,
    "l",
-   FuncSI_ideal,
-   "cxx-funcs.cc:FuncSI_ideal" },
+   FuncSI_Makeideal,
+   "cxx-funcs.cc:FuncSI_Makeideal" },
 
   {"SI_CallFunc1", 2,
    "op, input",
    FuncSI_CallFunc1,
    "cxx-funcs.cc:FuncSI_CallFunc1" },
+
+  {"SI_CallFunc2", 3,
+   "op, a, b",
+   FuncSI_CallFunc2,
+   "cxx-funcs.cc:FuncSI_CallFunc2" },
+
+  {"SI_CallFunc3", 4,
+   "op, a, b, c",
+   FuncSI_CallFunc3,
+   "cxx-funcs.cc:FuncSI_CallFunc3" },
+
+  {"SI_CallFuncM", 2,
+   "arg",
+   FuncSI_CallFuncM,
+   "cxx-funcs.cc:FuncSI_CallFuncM" },
 
 #include "lowlevel_mappings_table.h"
 

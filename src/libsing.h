@@ -135,15 +135,18 @@ Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path);
 Obj FuncSI_EVALUATE(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
 Obj FuncLastSingularOutput(Obj self);
-Obj FuncSI_bigint(Obj self, Obj nr);
+Obj FuncSI_Makebigint(Obj self, Obj nr);
 Obj FuncSI_Intbigint(Obj self, Obj b);
-Obj FuncSI_intvec(Obj self, Obj l);
+Obj FuncSI_Makeintvec(Obj self, Obj l);
 Obj FuncSI_Plistintvec(Obj self, Obj iv);
-Obj FuncSI_intmat(Obj self, Obj m);
+Obj FuncSI_Makeintmat(Obj self, Obj m);
 Obj FuncSI_Matintmat(Obj self, Obj im);
-Obj FuncSI_ideal(Obj self, Obj l);
+Obj FuncSI_Makeideal(Obj self, Obj l);
 
 Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input);
+Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
+Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
+Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg);
 
 //////////////// C functions to be called from C++ ////////////////////
 

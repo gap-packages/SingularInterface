@@ -35,7 +35,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = gen_highlevel_mappings$(EXEEXT) gentableforGAP$(EXEEXT)
+bin_PROGRAMS = gentableforGAP$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -83,13 +83,6 @@ libsing_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(libsing_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
-am_gen_highlevel_mappings_OBJECTS =  \
-	gen_highlevel_mappings-gen_highlevel_mappings.$(OBJEXT)
-gen_highlevel_mappings_OBJECTS = $(am_gen_highlevel_mappings_OBJECTS)
-gen_highlevel_mappings_LDADD = $(LDADD)
-gen_highlevel_mappings_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(gen_highlevel_mappings_LDFLAGS) $(LDFLAGS) -o $@
 am_gentableforGAP_OBJECTS = gentableforGAP-gentableforGAP.$(OBJEXT)
 gentableforGAP_OBJECTS = $(am_gentableforGAP_OBJECTS)
 gentableforGAP_LDADD = $(LDADD)
@@ -118,10 +111,8 @@ CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES) \
-	$(gentableforGAP_SOURCES)
-DIST_SOURCES = $(libsing_la_SOURCES) $(gen_highlevel_mappings_SOURCES) \
-	$(gentableforGAP_SOURCES)
+SOURCES = $(libsing_la_SOURCES) $(gentableforGAP_SOURCES)
+DIST_SOURCES = $(libsing_la_SOURCES) $(gentableforGAP_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -250,9 +241,6 @@ GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
 SINGULARNAME = Singular-`cat ../SINGULARVERSION`
 SINGARCHNAME = `cat ../SINGARCHNAME`
 lib_LTLIBRARIES = libsing.la
-gen_highlevel_mappings_SOURCES = gen_highlevel_mappings.cc
-gen_highlevel_mappings_CPPFLAGS = -I../${SINGULARNAME}/${SINGARCHNAME}/include
-gen_highlevel_mappings_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
 gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
 gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular
@@ -370,9 +358,6 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-gen_highlevel_mappings$(EXEEXT): $(gen_highlevel_mappings_OBJECTS) $(gen_highlevel_mappings_DEPENDENCIES) 
-	@rm -f gen_highlevel_mappings$(EXEEXT)
-	$(gen_highlevel_mappings_LINK) $(gen_highlevel_mappings_OBJECTS) $(gen_highlevel_mappings_LDADD) $(LIBS)
 gentableforGAP$(EXEEXT): $(gentableforGAP_OBJECTS) $(gentableforGAP_DEPENDENCIES) 
 	@rm -f gentableforGAP$(EXEEXT)
 	$(gentableforGAP_LINK) $(gentableforGAP_OBJECTS) $(gentableforGAP_LDADD) $(LIBS)
@@ -383,7 +368,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gentableforGAP-gentableforGAP.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-cxxfuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-libsing.Plo@am__quote@
@@ -443,20 +427,6 @@ libsing_la-cxxfuncs.lo: cxxfuncs.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cxxfuncs.cc' object='libsing_la-cxxfuncs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsing_la-cxxfuncs.lo `test -f 'cxxfuncs.cc' || echo '$(srcdir)/'`cxxfuncs.cc
-
-gen_highlevel_mappings-gen_highlevel_mappings.o: gen_highlevel_mappings.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gen_highlevel_mappings_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gen_highlevel_mappings-gen_highlevel_mappings.o -MD -MP -MF $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Tpo -c -o gen_highlevel_mappings-gen_highlevel_mappings.o `test -f 'gen_highlevel_mappings.cc' || echo '$(srcdir)/'`gen_highlevel_mappings.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Tpo $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gen_highlevel_mappings.cc' object='gen_highlevel_mappings-gen_highlevel_mappings.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gen_highlevel_mappings_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gen_highlevel_mappings-gen_highlevel_mappings.o `test -f 'gen_highlevel_mappings.cc' || echo '$(srcdir)/'`gen_highlevel_mappings.cc
-
-gen_highlevel_mappings-gen_highlevel_mappings.obj: gen_highlevel_mappings.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gen_highlevel_mappings_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gen_highlevel_mappings-gen_highlevel_mappings.obj -MD -MP -MF $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Tpo -c -o gen_highlevel_mappings-gen_highlevel_mappings.obj `if test -f 'gen_highlevel_mappings.cc'; then $(CYGPATH_W) 'gen_highlevel_mappings.cc'; else $(CYGPATH_W) '$(srcdir)/gen_highlevel_mappings.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Tpo $(DEPDIR)/gen_highlevel_mappings-gen_highlevel_mappings.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gen_highlevel_mappings.cc' object='gen_highlevel_mappings-gen_highlevel_mappings.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gen_highlevel_mappings_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o gen_highlevel_mappings-gen_highlevel_mappings.obj `if test -f 'gen_highlevel_mappings.cc'; then $(CYGPATH_W) 'gen_highlevel_mappings.cc'; else $(CYGPATH_W) '$(srcdir)/gen_highlevel_mappings.cc'; fi`
 
 gentableforGAP-gentableforGAP.o: gentableforGAP.cc
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gentableforGAP-gentableforGAP.o -MD -MP -MF $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo -c -o gentableforGAP-gentableforGAP.o `test -f 'gentableforGAP.cc' || echo '$(srcdir)/'`gentableforGAP.cc
@@ -684,16 +654,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	uninstall-libLTLIBRARIES
 
 
-highlevel_mappings.g:	gentableforGAP
-	./gentableforGAP
-
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
-all-local: highlevel_mappings.g
+all-local: highlevel_mappings.g highlevel_mappings_table.g
 	@$(MAKE) $(AM_MAKEFLAGS) install-libLTLIBRARIES
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
 	cp $(libdir)/libsing.so $(GAPINSTALLLIB)
 	cp highlevel_mappings.g ../lib
+	cp highlevel_mappings_table.g ../lib
 	@echo ""
 	@echo "***********************************************************************"
 	@echo ""
@@ -729,6 +697,14 @@ clean-local:
 lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel_mappings.g
 	@echo "Generating lowlevel mappings..."
 	$(GAPROOT)/bin/gap.sh -A -q -T < $<
+	@echo "Done!"
+
+highlevel_mappings_table.g:	gentableforGAP
+	./gentableforGAP
+
+highlevel_mappings.g:	highlevel_mappings_table.g gen_highlevel_mappings.g
+	@echo "Generating highlevel mappings..."
+	$(GAPROOT)/bin/gap.sh -A -q -T < gen_highlevel_mappings.g
 	@echo "Done!"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
