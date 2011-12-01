@@ -15,3 +15,5 @@ explicit type casts?
 Write access to Singular interpreter variables
 Documentation
 Debugging
+Explosion of objects like lists (rewrap pieces)
+Assembling of objects losing the wrapping of the pieces
