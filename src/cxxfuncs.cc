@@ -147,7 +147,7 @@ number BIGINT_FROM_GAP(Obj nr)
     number n;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
-        if (i >= -268435456L && i < 268435456L)
+        if (i >= -1L << 28 && i < 1L << 28)
             n = nlInit((int) i,NULL);
         else
             n = nlRInit(i);
@@ -260,17 +260,37 @@ static poly GET_IDEAL_ELM_PROXY(Obj p)
 // The following table maps GAP type numbers for singular objects to
 // Singular type numbers for Singular objects:
 
-static int GAPtoSingType[] =
-  { 0 /* NOTUSED */, BIGINT_CMD, DEF_CMD , IDEAL_CMD, INT_CMD, INTMAT_CMD,
-    INTVEC_CMD, LINK_CMD, LIST_CMD, MAP_CMD, MATRIX_CMD, MODUL_CMD, NUMBER_CMD,
-    PACKAGE_CMD, POLY_CMD, PROC_CMD, QRING_CMD, RESOLUTION_CMD, RING_CMD, 
-    STRING_CMD, VECTOR_CMD, 0 /* USERDEF */, /* PYOBJECT */ };
+static const int GAPtoSingType[] =
+  { 0 /* NOTUSED */,
+    BIGINT_CMD,
+    DEF_CMD ,
+    IDEAL_CMD,
+    INT_CMD,
+    INTMAT_CMD,
+    INTVEC_CMD,
+    LINK_CMD,
+    LIST_CMD,
+    MAP_CMD,
+    MATRIX_CMD,
+    MODUL_CMD,
+    NUMBER_CMD,
+    PACKAGE_CMD,
+    POLY_CMD,
+    PROC_CMD,
+    QRING_CMD,
+    RESOLUTION_CMD,
+    RING_CMD,
+    STRING_CMD,
+    VECTOR_CMD,
+    0 /* USERDEF */,
+    0 /* PYOBJECT */
+  };
 
 static int SingtoGAPType[MAX_TOK];
 /* Also adjust FuncSI_INIT_INTERPRETER where this is initialised,
    when the set of types changes. */
 
-static int HasRingTable[] =
+static const int HasRingTable[] =
   { 0, // NOTUSED
     0, // SINGTYPE_BIGINT        =  1
     0, // SINGTYPE_DEF           =  2
@@ -449,7 +469,7 @@ void *COPY_SINGOBJ(void *s, int gtype, ring r)
       case SINGTYPE_RESOLUTION:
         return syCopy((syStrategy) s);
       case SINGTYPE_RING:
-        return s;
+        return s; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
       case SINGTYPE_STRING:
         return omStrDup( (char *) s);
       case SINGTYPE_VECTOR:

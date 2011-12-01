@@ -83,32 +83,26 @@ end;;
 # For each type, there is a record with the following entries:
 # * ring: boolean indicating whether the type implicitly depends on the active ring
 # * cxxtype: corresponding C++ type
-# * copy: a GAP function that takes a C variable name of this type and
-#         returns a string with C++ code creating a copy of the variable.
-#         If the type is ring dependant, then this may implicitly assume that "r" is
-#         the name of a C++ variable containing the active ring.
-#
 # * retconv: (optional) a GAP function that generates code to return a value of this type
 # * ...
 SINGULAR_types := rec(
 	#BIGINT  := rec( ring := false,  ... ),
-	IDEAL  := rec( ring := true,  cxxtype := "ideal",    copy := var -> Concatenation("id_Copy(", var, ", r)" ) ),
+	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
 	#INTMAT  := rec( ring := false,  ... ),
-	INTVEC := rec( ring := false, cxxtype := "intvec *", copy := var -> Concatenation("ivCopy(", var, ")" ) ),
+	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
 	#LINK  := rec( ... ),
 	#LIST  := rec( ... ),
 	#MAP  := rec( ... ),
 
-	# TODO: There seems to be no mp_Copy which takes a ring, so for now use the old mpCopy
-	MATRIX := rec( ring := true,  cxxtype := "matrix",   copy := var -> Concatenation("mpCopy(", var, ")" ) ),
+	MATRIX := rec( ring := true,  cxxtype := "matrix" ),
 
 	#MODULE  := rec( ... ),
-	NUMBER := rec( ring := true,  cxxtype := "number",   copy := var -> Concatenation("n_Copy(", var, ", r)" ) ),
+	NUMBER := rec( ring := true,  cxxtype := "number" ),
 	#PACKAGE  := rec( ... ),
-	POLY   := rec( ring := true,  cxxtype := "poly",     copy := var -> Concatenation("p_Copy(", var, ", r)" ) ),
+	POLY   := rec( ring := true,  cxxtype := "poly" ),
 	#QRING  := rec( ... ),
 	#RESOLUTION  := rec( ... ),
-	RING   := rec( ring := false, cxxtype := "ring",     copy := var -> Concatenation("rCopy(", var, ")" )),
+	RING   := rec( ring := false, cxxtype := "ring" ),
 	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
 	#VECTOR  := rec( ... ),
 );;
@@ -162,7 +156,6 @@ GenerateSingularWrapper := function (desc)
 		CXXArgName,		# helper function printing name of the i-th param
 		CXXVarName,		# helper function printing name of the i-th param after conversion
 		GetParamTypeName,
-		var_formatter,
 		retconv,
 		func_head,
 		i, j;
@@ -209,41 +202,59 @@ GenerateSingularWrapper := function (desc)
 
 	indent := 1;
 
+	# Declare some variables used throughout the wrapper function body.
+	PrintCXXLine("int gtype, stype;");
+	PrintCXXLine("UInt rnr;");
+	PrintCXXLine("ring r = currRing;");
+	PrintCXXLine("");
+
 	# Ddetermine all params that depend on the current ring.
 	ring_users := Filtered( [1 .. Length(desc.params) ],
 		i -> SINGULAR_types.(GetParamTypeName(i)).ring );
 
-	# Ensure right ring is set, and that all ring-depend params use the same ring.
-	if Length(ring_users) > 0 then
-		PrintCXXLine("// Setup current ring");
-		PrintCXXLine("UInt rnr = RING_SINGOBJ(", CXXArgName(ring_users[1]), ");");
-		for j in ring_users{[2..Length(ring_users)]} do
-			PrintCXXLine("if (rnr != RING_SINGOBJ(", CXXArgName(j), "))");
-			PrintCXXLine("    ErrorQuit(\"Elements not over the same ring\\n\",0L,0L);");
-		od;
-		PrintCXXLine("ring r = (ring)CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));");
-		PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
-		PrintCXXLine("");
-	fi;
+	# TODO: When this code was converted to use GET_SINGOBJ, the code that verifies
+	# that all ring-dependent inputs are defined over the same ring was disabled.
+	# We need to decide whether to rewrite this, or whether to go on without such
+	# a check.
+
+#	# Ensure right ring is set, and that all ring-depend params use the same ring.
+# 	if Length(ring_users) > 0 then
+# 		PrintCXXLine("// Setup current ring");
+# 		PrintCXXLine("rnr = RING_SINGOBJ(", CXXArgName(ring_users[1]), ");");
+# 		for j in ring_users{[2..Length(ring_users)]} do
+# 			PrintCXXLine("if (rnr != RING_SINGOBJ(", CXXArgName(j), "))");
+# 			PrintCXXLine("    ErrorQuit(\"Elements not over the same ring\\n\",0L,0L);");
+# 		od;
+# 		PrintCXXLine("r = GET_SINGRING(rnr);");
+# 		PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
+# 		PrintCXXLine("");
+# 	fi;
 
 	# Extract the underlying data for the parameters
 	PrintCXXLine("// Prepare input data");
 	for i in [1 .. Length(desc.params) ] do
 		type := SINGULAR_types.(GetParamTypeName(i));
-		# Determine whether we need to copy the parameter or not
-		if not IsString(desc.params[i]) and desc.params[i][2] then
-			var_formatter := type.copy;
-		else
-			var_formatter := IdFunc;
-		fi;
+		# Extract the underlying Singular data from the GAP input object
 		PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
-						var_formatter( Concatenation(
 							"(", type.cxxtype, ")", # cast
-							"CXX_SINGOBJ(", CXXArgName(i), ")"
-						) ),
-					";");
+							"GET_SINGOBJ(", CXXArgName(i), ", gtype, stype, rnr, r, ", GetParamTypeName(i), "_CMD)",
+							";");
+		# Copy the parameter if necessary
+		if not IsString(desc.params[i]) and desc.params[i][2] then
+			PrintCXXLine(CXXVarName(i), " = ",
+							"(", type.cxxtype, ")", # cast
+							"COPY_SINGOBJ(", CXXVarName(i), ", SINGTYPE_", GetParamTypeName(i), ", r)",
+							";");
+		fi;
 	od;
 	PrintCXXLine("");
+
+	# Ensure right ring is set
+	if Length(ring_users) > 0 then
+		PrintCXXLine("// Setup current ring");
+		PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
+		PrintCXXLine("");
+	fi;
 
 
 	# Determine the result type
