@@ -4,7 +4,7 @@
 
 AC_DEFUN([AC_FIND_GAP],
 [
-  AC_LANG_PUSH(C)
+  AC_LANG_PUSH([C])
   
   # Make sure CDPATH is portably set to a sensible value
   CDPATH=${ZSH_VERSION+.}:
@@ -104,8 +104,8 @@ AC_DEFUN([AC_FIND_GAP],
   CPPFLAGS="$OLD_CPPFLAGS -I$GAPROOT"
   
   AC_COMPILE_IFELSE(
-    [#include "src/compiled.h"
-      Obj Func(Obj Self){return (Obj)0;}], 
+    [AC_LANG_SOURCE([[#include "src/compiled.h"
+      Obj Func(Obj Self){return (Obj)0;}]])],
     [a=1])
 
   if test "x$a" = "x1"; then
@@ -164,5 +164,5 @@ AC_DEFUN([AC_FIND_GAP],
   AC_SUBST(GAP_CPPFLAGS)
 
 
-  AC_LANG_POP(C)
+  AC_LANG_POP([C])
 ])

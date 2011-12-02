@@ -13,7 +13,7 @@ AX_CC_MAXOPT
 
 ## 
 if test "$ac_test_CXXFLAGS" != "set"; then
-  AC_LANG_PUSH(C++)
+  AC_LANG_PUSH([C++])
   CXXFLAGS=$CFLAGS
   AX_CHECK_COMPILER_FLAGS($CXXFLAGS, [], [
   echo ""
@@ -26,7 +26,7 @@ if test "$ac_test_CXXFLAGS" != "set"; then
   echo ""
   CXXFLAGS=""
   ])
-  AC_LANG_POP(C++)
+  AC_LANG_POP([C++])
 fi
 
 AC_LIBTOOL_DLOPEN
