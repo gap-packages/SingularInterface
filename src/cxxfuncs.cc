@@ -393,6 +393,8 @@ void *GET_SINGOBJ(Obj input, int &gtype, int &stype, UInt &rnr, ring &r,
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         gtype = SINGTYPE_INT;
         result = (void *) (INT_FROM_GAP(input));
+        // Allow for really long ints here to make bigints
+    // Allow for GAP strings here
     } else if (TNUM_OBJ(input) == T_SINGULAR) {
         gtype = TYPE_SINGOBJ(input);
         result = CXX_SINGOBJ(input);
@@ -410,7 +412,7 @@ void *GET_SINGOBJ(Obj input, int &gtype, int &stype, UInt &rnr, ring &r,
                 return NULL;
             }
             gtype = TYPE_SINGOBJ(ob);
-            if (RING_SINGOBJ(ob) != 0) {
+            if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
                 rnr = RING_SINGOBJ(ob);
                 r = GET_SINGRING(rnr);
             }
@@ -474,6 +476,11 @@ void *COPY_SINGOBJ(void *s, int gtype, ring r)
         return omStrDup( (char *) s);
       case SINGTYPE_VECTOR:
         return p_Copy((poly) s,r);
+      case SINGTYPE_INT:
+        return s;
+      default:
+        return s;
+
     }
 }
 

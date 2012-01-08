@@ -1,3 +1,4 @@
+proxy implementation for intmats and intvecs?
 More constructors (or less, if accessible via high level)
 Quick polynomial constructor
 More view and print routines
