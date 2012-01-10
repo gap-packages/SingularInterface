@@ -147,7 +147,7 @@ number BIGINT_FROM_GAP(Obj nr)
     number n;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
-        if (i >= -1L << 28 && i < 1L << 28)
+        if (i >= (-1L << 28) && i < (1L << 28))
             n = nlInit((int) i,NULL);
         else
             n = nlRInit(i);
@@ -188,6 +188,32 @@ int INT_FROM_GAP(Obj nr)
         return TNUM_OBJ(nr) == T_INTPOS ?
                (int) ADDR_INT(nr)[0] :
                -(int) ADDR_INT(nr)[0];
+    }
+}
+
+void BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int ii, number n)
+{
+    if (IS_INTOBJ(nr)) {    // a GAP immediate integer
+        Int i = INT_INTOBJ(nr);
+#ifdef SYS_IS_64_BIT
+        if (i >= (-1L << 31) && i < (1L << 31)) {
+#endif
+            gtype = SINGTYPE_INT;
+            ii = (int) i;
+#ifdef SYS_IS_64_BIT
+        } else {
+            gtype = SINGTYPE_BIGINT;
+            n = nlRInit(i);
+        }
+#endif
+    } else {   // a long GAP integer
+        n = ALLOC_RNUMBER();
+        UInt size = SIZE_INT(nr);
+        mpz_init2(n->z,size*GMP_NUMB_BITS);
+        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
+        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        n->s = 3;  // indicates an integer
+        gtype = SINGTYPE_BIGINT;
     }
 }
 
@@ -371,119 +397,230 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype)
     }
 }
 
-void *GET_SINGOBJ(Obj input, int &gtype, int &stype, UInt &rnr, ring &r, 
-                  int wantstype)
-// This function digs out the underlying singular object of a GAP
-// object together with its type and ring. gtype is set to the GAP
-// number for of the type and stype to the Singular number of the
-// type. rnr and r are set if the object has an associated ring,
-// otherwise they are not touched.
-// The GAP object input can be GAP integers (which produce
-// machine integers if possible), GAP wrappers for Singular objects,
-// which produce the corresponding Singular object, GAP proxy
-// objects for subobjects of other Singular objects, or GAP proxy
-// objects for values in Singular interpreter variables. Note that
-// the resulting Singular object is *not* copied. Use COPY_SINGOBJ 
-// afterwards if you want to hand the result to something destructive.
-// If wanttype is set to a nonzero value, then this function reports an
-// error, if the resulting object is not of the Singular type wantstype.
+class SingObj {
+    // This class digs out the underlying singular object of a GAP
+    // object together with its type and ring. gtype is set to the GAP
+    // number for of the type and stype to the Singular number of the
+    // type. rnr and r are set if the object has an associated ring,
+    // otherwise they are not touched.
+    // The GAP object input can be GAP integers (which produce
+    // machine integers if possible), GAP strings, GAP wrappers for
+    // Singular objects, which produce the corresponding Singular
+    // object, GAP proxy objects for subobjects of other Singular
+    // objects, or GAP proxy objects for values in Singular interpreter
+    // variables. Note that the resulting Singular object is *not*
+    // copied. Use .copy afterwards if you want to hand the
+    // result to something destructive.
+    // This class remembers, whether or not the object has been made
+    // on the fly (for integers and strings) or whether it is only
+    // borrowed. The destructor takes care of freeing automatically.
+  public:
+    void *obj;
+    int gtype;
+    int stype;
+    bool iscopy;
+    const char *error;
+    ring ri;
+
+    SingObj(Obj input, UInt &rnr, ring &r);
+    ~SingObj(void);       // Calls cleanup
+    void copy(void);      // Makes a copy if it is not already one
+    void cleanup(void);   // Frees object if it was a copy
+};
+
+SingObj::~SingObj(void)
 {
-    void *result;
+    if (iscopy) cleanup();
+}
+
+SingObj::SingObj(Obj input, UInt &rnr, ring &r)
+{
+    int i;
+    number n;
+    error = NULL;
+    ri = NULL;
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        gtype = SINGTYPE_INT;
-        result = (void *) (INT_FROM_GAP(input));
-        // Allow for really long ints here to make bigints
-    // Allow for GAP strings here
+        BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
+        if (gtype == SINGTYPE_INT) {
+            obj = (void *) i;
+            iscopy = false;
+        } else {
+            obj = (void *) n;
+            iscopy = true;
+        }
+    } else if (TNUM_OBJ(input) == T_STRING) {
+        UInt len = GET_LEN_STRING(input);
+        char *ost = (char *) omalloc((size_t) len + 1);
+        memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(input)),len);
+        obj = (void *) ost;
+        gtype = SINGTYPE_STRING;
+        iscopy = true;
     } else if (TNUM_OBJ(input) == T_SINGULAR) {
         gtype = TYPE_SINGOBJ(input);
-        result = CXX_SINGOBJ(input);
+        obj = CXX_SINGOBJ(input);
         if (HasRingTable[gtype]) {
             rnr = RING_SINGOBJ(input);
             r = GET_SINGRING(rnr);
+            ri = r;
         }
+        iscopy = false;
     } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == SingularProxiesType) {
         if (IS_INTOBJ(ELM_PLIST(input,2))) {
             // This is a proxy object for a subobject:
             Obj ob = ELM_PLIST(input,1);
             if (TNUM_OBJ(ob) != T_SINGULAR) {
-                ErrorQuit("proxy object does not refer to Singular object",
-                          0L,0L);
-                return NULL;
+                obj = NULL;
+                iscopy = false;
+                gtype = 0;
+                stype = 0;
+                error = "proxy object does not refer to Singular object";
+                return;
             }
             gtype = TYPE_SINGOBJ(ob);
             if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
                 rnr = RING_SINGOBJ(ob);
                 r = GET_SINGRING(rnr);
+                ri = r;
             }
-            result = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype);
+            obj = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype);
+            iscopy = false;
         } else if (IS_STRING_REP(ELM_PLIST(input,2))) {
             // This is a proxy object for an interpreter variable
-            ErrorQuit("proxy objects to Singular interpreter variables "
-                      "are not yet implemented",0L,0L);
-            return NULL;
+            obj = NULL;
+            error = "proxy objects to Singular interpreter variables are not yet implemented";
+            iscopy = false;
+            gtype = 0;
+            stype = 0;
+            return;
         } else {
-            ErrorQuit("unknown Singular proxy object",0L,0L);
-            return NULL;
+            obj = NULL;
+            error = "unknown Singular proxy object";
+            iscopy = false;
+            gtype = 0;
+            stype = 0;
+            return;
         }
     } else {
-        ErrorQuit("Argument to Singular call is no valid Singular object",
-                  0L,0L);
+        obj = NULL;
+        iscopy = false;
+        error = "Argument to Singular call is no valid Singular object";
+        gtype = 0;
+        stype = 0;
+        return;
     }
     stype = GAPtoSingType[gtype];
-    if (wantstype && stype != wantstype) {
-        ErrorQuit("Argument to Singular call is of wrong type",0L,0L);
-        return NULL;
-    }
-    return result;
 }
 
-void *COPY_SINGOBJ(void *s, int gtype, ring r)
+void SingObj::copy()
 // Copies a singular object using the appropriate function according
-// to its type, unless it is a link, a qring or a ring. type is the
-// type of the object in the GAP numbering and r is the corresponding
-// Singular ring. r must already be set as the default ring.
+// to its type, unless it is a link, a qring or a ring, or unless it
+// is already a copy.
 {
+    if (ri && ri != currRing) rChangeCurrRing(ri);
     switch (gtype) {
       case SINGTYPE_BIGINT:
-        return nlCopy((number) s);
+        obj = (void *) nlCopy((number) obj);
+        break;
       case SINGTYPE_IDEAL:
-        return id_Copy((ideal) s,r);
+        obj = (void *) id_Copy((ideal) obj,ri);
+        break;
       case SINGTYPE_INTMAT:
       case SINGTYPE_INTVEC:
-        return new intvec((intvec *) s);
+        obj = (void *) new intvec((intvec *) obj);
+        break;
       case SINGTYPE_LINK:  // Do not copy here since it does not make sense
-        return s;
+        return;
       case SINGTYPE_LIST:
-        return lCopy( (lists) s );
+        obj = (void *) lCopy( (lists) obj );
+        break;
       case SINGTYPE_MAP:
-        return maCopy( (map) s );
+        obj = (void *) maCopy( (map) obj );
+        break;
       case SINGTYPE_MATRIX:
-        return mpCopy( (matrix) s );
+        obj = (void *) mpCopy( (matrix) obj );
+        break;
       case SINGTYPE_MODULE:
-        return id_Copy((ideal) s,r);
+        obj = (void *) id_Copy((ideal) obj,ri);
+        break;
       case SINGTYPE_NUMBER:
-        return n_Copy((number) s,r);
+        obj = (void *) n_Copy((number) obj,ri);
+        break;
       case SINGTYPE_POLY:
-        return p_Copy((poly) s,r);
+        obj = (void *) p_Copy((poly) obj,ri);
+        break;
       case SINGTYPE_QRING:
-        return s;
+        return;
       case SINGTYPE_RESOLUTION:
-        return syCopy((syStrategy) s);
+        obj = (void *) syCopy((syStrategy) obj);
+        break;
       case SINGTYPE_RING:
-        return s; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
+        return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
       case SINGTYPE_STRING:
-        return omStrDup( (char *) s);
+        obj = (void *) omStrDup( (char *) obj);
+        break;
       case SINGTYPE_VECTOR:
-        return p_Copy((poly) s,r);
+        obj = (void *) p_Copy((poly) obj,ri);
+        break;
       case SINGTYPE_INT:
-        return s;
+        return;
       default:
-        return s;
-
+        return;
     }
+    iscopy = true;
 }
 
+void SingObj::cleanup(void)
+{
+    if (!iscopy) return;
+    iscopy = false;
+    switch (gtype) {
+      case SINGTYPE_BIGINT:
+        nlDelete((number *)(&obj), NULL);
+        break;
+      case SINGTYPE_IDEAL:
+        id_Delete((ideal *)(&obj), ri);
+        break;
+      case SINGTYPE_INTMAT:
+      case SINGTYPE_INTVEC:
+        delete (intvec *) obj;
+        break;
+      case SINGTYPE_LINK:  // Was never copied, so leave untouched
+        return;
+      case SINGTYPE_LIST:
+        ((lists) obj)->Clean(ri);
+        break;
+      case SINGTYPE_MAP:
+        // FIXME
+        break;
+      case SINGTYPE_MATRIX:
+        mpDelete((matrix *)(&obj), ri);
+        break;
+      case SINGTYPE_MODULE:
+        id_Delete((ideal *)(&obj), ri);
+        break;
+      case SINGTYPE_NUMBER:
+        n_Delete((number *)(&obj), ri);
+        break;
+      case SINGTYPE_POLY:
+        p_Delete((poly *)(&obj), ri);
+        break;
+      case SINGTYPE_QRING:
+        return;
+      case SINGTYPE_RESOLUTION:
+        return;
+      case SINGTYPE_RING:
+        return;
+      case SINGTYPE_STRING:
+        omfree( (char *) obj );
+        break;
+      case SINGTYPE_VECTOR:
+        p_Delete((poly*)(&obj), ri);
+        break;
+      case SINGTYPE_INT:
+        return;
+    }
+}
 
 leftv WRAP_SINGULAR(void *singobj, int type)
 {
@@ -1085,12 +1222,15 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     UInt rnr = 0;
     ring r = NULL;
 
-    void *sing = GET_SINGOBJ(input,gtype,stype,rnr,r,0);
+    SingObj sing(input,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    sing = COPY_SINGOBJ(sing,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singint = WRAP_SINGULAR(sing,stype);
+    if (sing.error) {
+        sing.cleanup();
+        ErrorQuit(sing.error,0L,0L);
+    }
+    sing.copy();   // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singint = WRAP_SINGULAR(sing.obj,sing.stype);
 
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
     if (LastSingularOutput) {
@@ -1102,8 +1242,9 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     BOOLEAN ret = iiExprArith1(singres,singint,INT_INTOBJ(op));
     LastSingularOutput = SPrintEnd();
 
-    if (stype != LINK_CMD && stype != RING_CMD && stype != QRING_CMD) 
-        singint->CleanUp(r);
+    // if (stype != LINK_CMD && stype != RING_CMD && stype != QRING_CMD) 
+    //    singint->CleanUp(r);
+    sing.cleanup();
     omFree(singint);
 
     if (ret) {
@@ -1118,25 +1259,29 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 
 Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
-    int gtype;
-    int stypea;  /* Singular type of a like INT_CMD */
-    int stypeb;  /* Singular type of b like INT_CMD */
     UInt rnr = 0;
     ring r = NULL;
 
-    void *singa = GET_SINGOBJ(a,gtype,stypea,rnr,r,0);
+    SingObj singa(a,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    singa = COPY_SINGOBJ(singa,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singaint = WRAP_SINGULAR(singa,stypea);
+    if (singa.error) {
+        singa.cleanup();
+        ErrorQuit(singa.error,0L,0L);
+    }
+    singa.copy();  // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singaint = WRAP_SINGULAR(singa.obj,singa.stype);
 
-    void *singb = GET_SINGOBJ(b,gtype,stypeb,rnr,r,0);
+    SingObj singb(b,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    singb = COPY_SINGOBJ(singb,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singbint = WRAP_SINGULAR(singb,stypeb);
+    if (singb.error) {
+        singa.cleanup();
+        singb.cleanup();
+        ErrorQuit(singb.error,0L,0L);
+    }
+    singb.copy();  // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singbint = WRAP_SINGULAR(singb.obj,singb.stype);
 
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
     if (LastSingularOutput) {
@@ -1148,12 +1293,10 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     BOOLEAN ret = iiExprArith2(singres,singaint,INT_INTOBJ(op),singbint);
     LastSingularOutput = SPrintEnd();
 
-    if (stypea != LINK_CMD && stypea != RING_CMD && stypea != QRING_CMD) 
-        singaint->CleanUp(r);
+    singa.cleanup();
     omFree(singaint);
 
-    if (stypeb != LINK_CMD && stypeb != RING_CMD && stypeb != QRING_CMD) 
-        singbint->CleanUp(r);
+    singb.cleanup();
     omFree(singbint);
 
     if (ret) {
@@ -1168,33 +1311,41 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 
 Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
-    int gtype;
-    int stypea;  /* Singular type of a like INT_CMD */
-    int stypeb;  /* Singular type of b like INT_CMD */
-    int stypec;  /* Singular type of c like INT_CMD */
     UInt rnr = 0;
     ring r = NULL;
 
-    void *singa = GET_SINGOBJ(a,gtype,stypea,rnr,r,0);
+    SingObj singa(a,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    singa = COPY_SINGOBJ(singa,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singaint = WRAP_SINGULAR(singa,stypea);
+    if (singa.error) {
+        singa.cleanup();
+        ErrorQuit(singa.error,0L,0L);
+    }
+    singa.copy();  // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singaint = WRAP_SINGULAR(singa.obj,singa.stype);
 
-    void *singb = GET_SINGOBJ(b,gtype,stypeb,rnr,r,0);
+    SingObj singb(b,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    singb = COPY_SINGOBJ(singb,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singbint = WRAP_SINGULAR(singb,stypeb);
+    if (singb.error) {
+        singa.cleanup();
+        singb.cleanup();
+        ErrorQuit(singb.error,0L,0L);
+    }
+    singb.copy();  // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singbint = WRAP_SINGULAR(singb.obj,singb.stype);
 
-    void *singc = GET_SINGOBJ(c,gtype,stypec,rnr,r,0);
+    SingObj singc(c,rnr,r);
     if (r && r != currRing) rChangeCurrRing(r);
-    singc = COPY_SINGOBJ(singc,gtype,r);
-                 // this has copied the object if at all possible
-                 // (not for link, qring and ring)
-    leftv singcint = WRAP_SINGULAR(singc,stypec);
+    if (singc.error) {
+        singa.cleanup();
+        singb.cleanup();
+        singc.cleanup();
+        ErrorQuit(singc.error,0L,0L);
+    }
+    singc.copy();  // this has copied the object if at all possible
+                   // (not for link, qring and ring)
+    leftv singcint = WRAP_SINGULAR(singc.obj,singc.stype);
 
     leftv singres = (leftv) omAlloc0(sizeof(sleftv));
     if (LastSingularOutput) {
@@ -1207,16 +1358,13 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
                                singaint,singbint,singcint);
     LastSingularOutput = SPrintEnd();
 
-    if (stypea != LINK_CMD && stypea != RING_CMD && stypea != QRING_CMD) 
-        singaint->CleanUp(r);
+    singa.cleanup();
     omFree(singaint);
 
-    if (stypeb != LINK_CMD && stypeb != RING_CMD && stypeb != QRING_CMD) 
-        singbint->CleanUp(r);
+    singb.cleanup();
     omFree(singbint);
 
-    if (stypec != LINK_CMD && stypec != RING_CMD && stypec != QRING_CMD) 
-        singcint->CleanUp(r);
+    singc.cleanup();
     omFree(singcint);
 
     if (ret) {
