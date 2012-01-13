@@ -355,7 +355,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     // To end the recursion:
     if (pos >= SIZE_OBJ(proxy)/sizeof(UInt)) return current;
     if (!IS_INTOBJ(ELM_PLIST(proxy,pos))) {
-        err = "proxy index must be an immediate integer";
+        error = "proxy index must be an immediate integer";
         return NULL;
     }
 
@@ -428,7 +428,7 @@ class SingObj {
     // in the methods of this object. It is possible that other objects
     // of the same type need to be told about the error.
   public:
-    sleft obj;
+    sleftv obj;
     int gtype;
     bool needcleanup;  // if this is true we have to destruct the Singular
                         // object when this object dies.
@@ -441,15 +441,33 @@ class SingObj {
     SingObj(void)     // Default constructor for empty object
       : gtype(0), needcleanup(false), error(NULL), rnr(0), r(NULL)
       { obj.Init(); }
-    init(Obj inpupt, UInt &extrnr, ring &extr);
+    void init(Obj input, UInt &extrnr, ring &extr);
       // This does the actual work
     ~SingObj(void) { cleanup(); }   // a mere convenience
+    leftv destructiveuse(void)
+      // Call this to get a pointer to the internal obj structure of type
+      // sleftv if you intend to use the Singular object destructively.
+      // If necessary, copy() is called automatically and any scheduled
+      // cleanup on our side is prevented.
+    {
+        if (!needcleanup) copy();
+        needcleanup = false;
+        return &obj;
+    }
+    leftv nondestructiveuse(void)
+      // Call this to get a pointer to the internal obj structure of type
+      // sleftv if you intend to use the singular object non-destructively.
+      // No automatic copy() is performed, if cleanup was scheduled it
+      // will be done as scheduled later on.
+    {
+        return &obj;
+    }
     void copy(void);      // Makes a copy if it is not already one
     void cleanup(void);   // Frees object if it was a copy
     Obj gapwrap(void);    // GAP-wraps the object
 };
 
-SingObj::init(Obj input, UInt &extrnr, ring &extr)
+void SingObj::init(Obj input, UInt &extrnr, ring &extr)
 {
     int i;
     number n;
@@ -537,47 +555,47 @@ void SingObj::copy()
 {
     switch (gtype) {
       case SINGTYPE_BIGINT:
-        obj = (void *) nlCopy((number) obj);
+        obj.data = (void *) nlCopy((number) obj.data);
         break;
       case SINGTYPE_IDEAL:
-        obj = (void *) id_Copy((ideal) obj,r);
+        obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_INTMAT:
       case SINGTYPE_INTVEC:
-        obj = (void *) new intvec((intvec *) obj);
+        obj.data = (void *) new intvec((intvec *) obj.data);
         break;
       case SINGTYPE_LINK:  // Do not copy here since it does not make sense
         return;
       case SINGTYPE_LIST:
-        obj = (void *) lCopy( (lists) obj );
+        obj.data = (void *) lCopy( (lists) obj.data );
         break;
       case SINGTYPE_MAP:
-        obj = (void *) maCopy( (map) obj );
+        obj.data = (void *) maCopy( (map) obj.data );
         break;
       case SINGTYPE_MATRIX:
-        obj = (void *) mpCopy( (matrix) obj );
+        obj.data = (void *) mpCopy( (matrix) obj.data );
         break;
       case SINGTYPE_MODULE:
-        obj = (void *) id_Copy((ideal) obj,r);
+        obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_NUMBER:
-        obj = (void *) n_Copy((number) obj,r);
+        obj.data = (void *) n_Copy((number) obj.data,r);
         break;
       case SINGTYPE_POLY:
-        obj = (void *) p_Copy((poly) obj,r);
+        obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_QRING:
         return;
       case SINGTYPE_RESOLUTION:
-        obj = (void *) syCopy((syStrategy) obj);
+        obj.data = (void *) syCopy((syStrategy) obj.data);
         break;
       case SINGTYPE_RING:
         return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
       case SINGTYPE_STRING:
-        obj = (void *) omStrDup( (char *) obj);
+        obj.data = (void *) omStrDup( (char *) obj.data);
         break;
       case SINGTYPE_VECTOR:
-        obj = (void *) p_Copy((poly) obj,r);
+        obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_INT:
         return;
@@ -593,34 +611,34 @@ void SingObj::cleanup(void)
     needcleanup = false;
     switch (gtype) {
       case SINGTYPE_BIGINT:
-        nlDelete((number *)(&obj), NULL);
+        nlDelete((number *)(obj.data), NULL);
         break;
       case SINGTYPE_IDEAL:
-        id_Delete((ideal *)(&obj), r);
+        id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_INTMAT:
       case SINGTYPE_INTVEC:
-        delete (intvec *) obj;
+        delete (intvec *) (obj.data);
         break;
       case SINGTYPE_LINK:  // Was never copied, so leave untouched
         return;
       case SINGTYPE_LIST:
-        ((lists) obj)->Clean(r);
+        ((lists) (obj.data))->Clean(r);
         break;
       case SINGTYPE_MAP:
         // FIXME
         break;
       case SINGTYPE_MATRIX:
-        mpDelete((matrix *)(&obj), r);
+        mpDelete((matrix *)(obj.data), r);
         break;
       case SINGTYPE_MODULE:
-        id_Delete((ideal *)(&obj), r);
+        id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_NUMBER:
-        n_Delete((number *)(&obj), r);
+        n_Delete((number *)(obj.data), r);
         break;
       case SINGTYPE_POLY:
-        p_Delete((poly *)(&obj), r);
+        p_Delete((poly *)(obj.data), r);
         break;
       case SINGTYPE_QRING:
         return;
@@ -629,10 +647,10 @@ void SingObj::cleanup(void)
       case SINGTYPE_RING:
         return;
       case SINGTYPE_STRING:
-        omfree( (char *) obj );
+        omfree( (char *) (obj.data) );
         break;
       case SINGTYPE_VECTOR:
-        p_Delete((poly*)(&obj), r);
+        p_Delete((poly*)(obj.data), r);
         break;
       case SINGTYPE_INT:
         return;
@@ -651,46 +669,46 @@ void SingObj::cleanup(void)
 Obj SingObj::gapwrap(void)
 {
     if (!needcleanup) {
-        Pr("#W try to GAP-wrap a borrowed Singular object",0L);
+        Pr("#W try to GAP-wrap a borrowed Singular object",0L,0L);
     }
     needcleanup = false;
     switch (obj.Typ()) {
       case NONE:
         return True;
       case INT_CMD:
-        return ObjInt_Int((long) (Data()));
+        return ObjInt_Int((long) (obj.Data()));
       case NUMBER_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,obj.Data(),rnr);
       case POLY_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_POLY,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rnr);
       case INTVEC_CMD:
-        return NEW_SINGOBJ(SINGTYPE_INTVEC,Data());
+        return NEW_SINGOBJ(SINGTYPE_INTVEC,obj.Data());
       case INTMAT_CMD:
-        return NEW_SINGOBJ(SINGTYPE_INTMAT,Data());
+        return NEW_SINGOBJ(SINGTYPE_INTMAT,obj.Data());
       case VECTOR_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rnr);
       case IDEAL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rnr);
       case BIGINT_CMD:
-        return NEW_SINGOBJ(SINGTYPE_BIGINT,Data());
+        return NEW_SINGOBJ(SINGTYPE_BIGINT,obj.Data());
       case MATRIX_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rnr);
       case LIST_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_LIST,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rnr);
       case LINK_CMD:
-        return NEW_SINGOBJ(SINGTYPE_LINK,Data());
+        return NEW_SINGOBJ(SINGTYPE_LINK,obj.Data());
       case RING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_RING,Data());
+        return NEW_SINGOBJ(SINGTYPE_RING,obj.Data());
       case QRING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_QRING,Data());
+        return NEW_SINGOBJ(SINGTYPE_QRING,obj.Data());
       case RESOLUTION_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,obj.Data(),rnr);
       case STRING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_STRING,Data());
+        return NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
       case MAP_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MAP,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MAP,obj.Data(),rnr);
       case MODUL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rnr);
       default:
         obj.CleanUp(r);
         return False;
@@ -1242,7 +1260,6 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 
     SingObj sing(input,rnr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
-    sing.copy();
     SingObj singres;
     if (LastSingularOutput) {
         omFree(LastSingularOutput);
@@ -1250,13 +1267,11 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith1(&(singres.obj),&(singint.obj),INT_INTOBJ(op));
-    // The call cleans up the argument, so we do not have to do it any more.
-    singint.needcleanup = false;
+    BOOLEAN ret = iiExprArith1(&(singres.obj),sing.destructiveuse(),
+                               INT_INTOBJ(op));
     LastSingularOutput = SPrintEnd();
-
     if (ret) {
-        singres.obj.Cleanup();
+        singres.obj.CleanUp();
         return Fail;
     }
     singres.rnr = rnr;   // Set the ring number according to the arguments
@@ -1269,50 +1284,28 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     ring r = NULL;
 
     SingObj singa(a,rnr,r);
-    if (r && r != currRing) rChangeCurrRing(r);
-    if (singa.error) {
-        singa.cleanup();
-        ErrorQuit(singa.error,0L,0L);
-    }
-    singa.copy();  // this has copied the object if at all possible
-                   // (not for link, qring and ring)
-    leftv singaint = WRAP_SINGULAR(singa.obj,singa.stype);
-
+    if (singa.error) { ErrorQuit(singa.error,0L,0L); }
     SingObj singb(b,rnr,r);
-    if (r && r != currRing) rChangeCurrRing(r);
     if (singb.error) {
         singa.cleanup();
-        singb.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    singb.copy();  // this has copied the object if at all possible
-                   // (not for link, qring and ring)
-    leftv singbint = WRAP_SINGULAR(singb.obj,singb.stype);
-
-    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    SingObj singres;
     if (LastSingularOutput) {
         omFree(LastSingularOutput);
         LastSingularOutput = NULL;
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith2(singres,singaint,INT_INTOBJ(op),singbint);
+    BOOLEAN ret = iiExprArith2(&(singres.obj),singa.destructiveuse(),
+                    INT_INTOBJ(op),singb.destructiveuse());
     LastSingularOutput = SPrintEnd();
-
-    singa.cleanup();
-    omFree(singaint);
-
-    singb.cleanup();
-    omFree(singbint);
-
     if (ret) {
-        singres->CleanUp(r);
-        omFree(singres);
+        singres.obj.CleanUp(r);
         return Fail;
     }
-    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
-    omFree(singres);
-    return result;
+    singres.rnr = rnr;
+    return singres.gapwrap();
 }
 
 Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
@@ -1321,94 +1314,61 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     ring r = NULL;
 
     SingObj singa(a,rnr,r);
-    if (r && r != currRing) rChangeCurrRing(r);
-    if (singa.error) {
-        singa.cleanup();
-        ErrorQuit(singa.error,0L,0L);
-    }
-    singa.copy();  // this has copied the object if at all possible
-                   // (not for link, qring and ring)
-    leftv singaint = WRAP_SINGULAR(singa.obj,singa.stype);
-
+    if (singa.error) { ErrorQuit(singa.error,0L,0L); }
     SingObj singb(b,rnr,r);
-    if (r && r != currRing) rChangeCurrRing(r);
     if (singb.error) {
         singa.cleanup();
-        singb.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    singb.copy();  // this has copied the object if at all possible
-                   // (not for link, qring and ring)
-    leftv singbint = WRAP_SINGULAR(singb.obj,singb.stype);
-
     SingObj singc(c,rnr,r);
-    if (r && r != currRing) rChangeCurrRing(r);
     if (singc.error) {
         singa.cleanup();
         singb.cleanup();
-        singc.cleanup();
         ErrorQuit(singc.error,0L,0L);
     }
-    singc.copy();  // this has copied the object if at all possible
-                   // (not for link, qring and ring)
-    leftv singcint = WRAP_SINGULAR(singc.obj,singc.stype);
-
-    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    SingObj singres;
     if (LastSingularOutput) {
         omFree(LastSingularOutput);
         LastSingularOutput = NULL;
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith3(singres,INT_INTOBJ(op),
-                               singaint,singbint,singcint);
+    BOOLEAN ret = iiExprArith3(&(singres.obj),INT_INTOBJ(op),
+                               singa.destructiveuse(),
+                               singb.destructiveuse(),
+                               singc.destructiveuse());
     LastSingularOutput = SPrintEnd();
-
-    singa.cleanup();
-    omFree(singaint);
-
-    singb.cleanup();
-    omFree(singbint);
-
-    singc.cleanup();
-    omFree(singcint);
-
     if (ret) {
-        singres->CleanUp(r);
-        omFree(singres);
+        singres.obj.CleanUp(r);
         return Fail;
     }
-    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
-    omFree(singres);
-    return result;
+    singres.rnr = rnr;
+    return singres.gapwrap();
 }
-
-#define SINGULAR_MAX_NR_ARGS 8
 
 Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
 {
-    int gtype;
-    int stype[SINGULAR_MAX_NR_ARGS];  /* Singular type like INT_CMD */
     UInt rnr = 0;
     ring r = NULL;
-    void *sing[SINGULAR_MAX_NR_ARGS];
-    leftv singint[SINGULAR_MAX_NR_ARGS];
+    int i,j;
+    SingObj *sing;
+    const char *error;
+
     int nrargs = (int) LEN_PLIST(arg);
-    int i;
-    if (nrargs > SINGULAR_MAX_NR_ARGS) {
-        ErrorQuit("Too many arguments to Singular call",0L,0L);
-        return NULL;
-    }
+    sing = new SingObj[nrargs];
     for (i = 0;i < nrargs;i++) {
-        sing[i] = GET_SINGOBJ(ELM_PLIST(arg,i+1),gtype,stype[i],rnr,r,0);
-        if (r && r != currRing) rChangeCurrRing(r);
-        sing[i] = COPY_SINGOBJ(sing[i],gtype,r);
-                     // this has copied the object if at all possible
-                     // (not for link, qring and ring)
-        singint[i] = WRAP_SINGULAR(sing[i],stype[i]);
-        if (i > 0) singint[i-1]->next = singint[i];
+        sing[i].init(ELM_PLIST(arg,i+1),rnr,r);
+        if (sing[i].error) {
+            for (j = 0;j < i;j++) {
+                sing[j].cleanup();
+            }
+            error = sing[i].error;
+            delete [] sing;
+            ErrorQuit(error,0L,0L);
+        }
+        if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
-    leftv singres = (leftv) omAlloc0(sizeof(sleftv));
+    SingObj singres;
     if (LastSingularOutput) {
         omFree(LastSingularOutput);
         LastSingularOutput = NULL;
@@ -1418,33 +1378,38 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
     BOOLEAN ret;
     switch (nrargs) {
         case 1:
-            ret = iiExprArith1(singres,singint[0],INT_INTOBJ(op));
+            ret = iiExprArith1(&(singres.obj),sing[0].destructiveuse(),
+                               INT_INTOBJ(op));
             break;
         case 2:
-            ret = iiExprArith2(singres,singint[0],INT_INTOBJ(op),singint[1]);
+            sing[0].obj.next = NULL;
+            ret = iiExprArith2(&(singres.obj),sing[0].destructiveuse(),
+                               INT_INTOBJ(op),
+                               sing[1].destructiveuse());
             break;
         case 3:
-            ret = iiExprArith3(singres,INT_INTOBJ(op),
-                               singint[0],singint[1],singint[2]);
+            sing[0].obj.next = NULL;
+            sing[1].obj.next = NULL;
+            ret = iiExprArith3(&(singres.obj),INT_INTOBJ(op),
+                               sing[0].destructiveuse(),
+                               sing[1].destructiveuse(),
+                               sing[2].destructiveuse());
             break;
         default:
-            ret = iiExprArithM(singres,singint[0],INT_INTOBJ(op));
+            for (j = 1;j < nrargs;j++) {
+                sing[j].needcleanup = false;
+                // The linked list takes care of all cleanup automatically
+            }
+            ret = iiExprArithM(&(singres.obj),sing[0].destructiveuse(),
+                               INT_INTOBJ(op));
             break;
     }
     LastSingularOutput = SPrintEnd();
-    for (i = 0;i < nrargs;i++) {
-        if (stype[i] != LINK_CMD && stype[i] != RING_CMD && 
-            stype[i] != QRING_CMD) 
-            singint[i]->CleanUp(r);
-        omFree(singint[i]);
-    }
     if (ret) {
-        singres->CleanUp(r);
-        omFree(singres);
+        singres.obj.CleanUp(r);
         return Fail;
     }
-    Obj result = UNWRAP_SINGULAR(singres,rnr,r);
-    omFree(singres);
-    return result;
+    singres.rnr = rnr;
+    return singres.gapwrap();
 }
 
