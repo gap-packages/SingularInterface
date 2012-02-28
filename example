@@ -12,6 +12,7 @@ s3 := SI_ADD_POLYS(s3,SI_MONOMIAL(s,1,[0,10,20]));
 s3 := SI_ADD_POLYS(s3,SI_MONOMIAL(s,11,[3,0,0]));
 i := SI_Makeideal([s1,s2,s3]);
 n := SI_MONOMIAL(s,0,[0,0,0]);
+j := SI_std(i);
 ps := List([1..40],k->SI_ADD_POLYS(n,SI_proxy(j,k)));
 pss := List(ps,SI_STRING_POLY);
 ps2 := List([1..40],k->SI_proxy(j,k));
