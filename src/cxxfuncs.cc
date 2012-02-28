@@ -1271,10 +1271,11 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
                                INT_INTOBJ(op));
     LastSingularOutput = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp();
+        singres.obj.CleanUp();  // 
         return Fail;
     }
     singres.rnr = rnr;   // Set the ring number according to the arguments
+    singres.needcleanup = true;
     return singres.gapwrap();
 }
 
@@ -1305,6 +1306,7 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         return Fail;
     }
     singres.rnr = rnr;
+    singres.needcleanup = true;
     return singres.gapwrap();
 }
 
@@ -1343,6 +1345,7 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         return Fail;
     }
     singres.rnr = rnr;
+    singres.needcleanup = true;
     return singres.gapwrap();
 }
 
@@ -1410,6 +1413,7 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
         return Fail;
     }
     singres.rnr = rnr;
+    singres.needcleanup = true;
     return singres.gapwrap();
 }
 
