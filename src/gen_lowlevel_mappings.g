@@ -155,6 +155,7 @@ GenerateSingularWrapper := function (desc)
 		cxxparams,
 		CXXArgName,		# helper function printing name of the i-th param
 		CXXVarName,		# helper function printing name of the i-th param after conversion
+		CXXObjName,     # helper function printing name of the i-th param conversion obj
 		GetParamTypeName,
 		retconv,
 		func_head,
@@ -167,6 +168,7 @@ GenerateSingularWrapper := function (desc)
 	end;
 	CXXArgName := i -> String(Concatenation("arg", String(i)));
 	CXXVarName := i -> String(Concatenation("var", String(i)));
+	CXXObjName := i -> String(Concatenation("obj", String(i)));
 
 	#############################################
 	# Generate the function head
@@ -203,7 +205,6 @@ GenerateSingularWrapper := function (desc)
 	indent := 1;
 
 	# Declare some variables used throughout the wrapper function body.
-	PrintCXXLine("int gtype, stype;");
 	PrintCXXLine("UInt rnr;");
 	PrintCXXLine("ring r = currRing;");
 	PrintCXXLine("");
@@ -235,26 +236,57 @@ GenerateSingularWrapper := function (desc)
 	for i in [1 .. Length(desc.params) ] do
 		type := SINGULAR_types.(GetParamTypeName(i));
 		# Extract the underlying Singular data from the GAP input object
-		PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
-							"(", type.cxxtype, ")", # cast
-							"GET_SINGOBJ(", CXXArgName(i), ", gtype, stype, rnr, r, ", GetParamTypeName(i), "_CMD)",
-							";");
-		# Copy the parameter if necessary
+		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", rnr, r);");
+		PrintCXXLine("if (",CXXObjName(i),".error) {");
+		indent := indent + 1;
+		    for j in [1..i] do
+				PrintCXXLine(CXXObjName(j),".cleanup();");
+			od;
+			PrintCXXLine("ErrorQuit(",CXXObjName(i),".error,0L,0L);");
+			PrintCXXLine("return Fail;");
+		indent := indent - 1;
+		PrintCXXLine("} else if (",CXXObjName(i),".obj.rtyp != ",GetParamTypeName(i),"_CMD) {");
+		indent := indent + 1;
+		    for j in [1..i] do
+				PrintCXXLine(CXXObjName(j),".cleanup();");
+			od;
+			PrintCXXLine("ErrorQuit(\"argument ",i," must be of type ",GetParamTypeName(i),"\", 0L, 0L);");
+			PrintCXXLine("return Fail;");
+		indent := indent - 1;
+		PrintCXXLine("}");
+		# Is this destructive use?
 		if not IsString(desc.params[i]) and desc.params[i][2] then
-			PrintCXXLine(CXXVarName(i), " = ",
-							"(", type.cxxtype, ")", # cast
-							"COPY_SINGOBJ(", CXXVarName(i), ", SINGTYPE_", GetParamTypeName(i), ", r)",
-							";");
+			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
+								"(", type.cxxtype, ") ", # cast
+								CXXObjName(i),".destructiveuse();");
+		else
+			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
+								"(", type.cxxtype, ") ", # cast
+								CXXObjName(i),".nondestructiveuse();");
 		fi;
+		#PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
+		#					"(", type.cxxtype, ")", # cast
+		#					"GET_SINGOBJ(", CXXArgName(i), ", gtype, stype, rnr, r, ", GetParamTypeName(i), "_CMD)",
+		#					";");
+
+		# Copy the parameter if necessary
+		#if not IsString(desc.params[i]) and desc.params[i][2] then
+		#	PrintCXXLine(CXXVarName(i), " = ",
+		#					"(", type.cxxtype, ")", # cast
+		#					"COPY_SINGOBJ(", CXXVarName(i), ", SINGTYPE_", GetParamTypeName(i), ", r)",
+		#					";");
+		#fi;
 	od;
 	PrintCXXLine("");
 
+    # The SingObj class sets the ring for us, we use the ring of the last
+	# argument that had one. --> Maybe do better checking here???
 	# Ensure right ring is set
-	if Length(ring_users) > 0 then
-		PrintCXXLine("// Setup current ring");
-		PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
-		PrintCXXLine("");
-	fi;
+	#if Length(ring_users) > 0 then
+	#	PrintCXXLine("// Setup current ring");
+	#	PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
+	#	PrintCXXLine("");
+	#fi;
 
 
 	# Determine the result type

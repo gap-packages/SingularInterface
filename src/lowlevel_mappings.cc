@@ -6,15 +6,21 @@ extern "C" {
 #endif /* ifdef __cplusplus */
 
 Obj FuncSI_p_String(Obj self, Obj arg1) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse();
     
     // Call into Singular kernel
     char * res = p_String(var1,r);
@@ -30,16 +36,21 @@ Obj FuncSI_p_String(Obj self, Obj arg1) {
 }
 
 Obj FuncSI_p_Neg(Obj self, Obj arg1) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse();
     
     // Call into Singular kernel
     poly res = p_Neg(var1,r);
@@ -52,16 +63,34 @@ Obj FuncSI_p_Neg(Obj self, Obj arg1) {
 }
 
 Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse();
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse();
     
     // Call into Singular kernel
     poly res = pp_Mult_qq(var1,var2,r);
@@ -74,16 +103,34 @@ Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    number var2 = (number)GET_SINGOBJ(arg2, gtype, stype, rnr, r, NUMBER_CMD);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse();
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != NUMBER_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type NUMBER", 0L, 0L);
+        return Fail;
+    }
+    number var2 = (number) obj2.nondestructiveuse();
     
     // Call into Singular kernel
     poly res = pp_Mult_nn(var1,var2,r);
@@ -96,18 +143,34 @@ Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
-    var2 = (poly)COPY_SINGOBJ(var2, SINGTYPE_POLY, r);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse();
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.destructiveuse();
     
     // Call into Singular kernel
     poly res = p_Add_q(var1,var2,r);
@@ -120,18 +183,49 @@ Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
 }
 
 Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
-    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, POLY_CMD);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse();
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse();
+    SingObj obj3(arg3, rnr, r);
+    if (obj3.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        obj3.cleanup();
+        ErrorQuit(obj3.error,0L,0L);
+        return Fail;
+    } else if (obj3.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        obj3.cleanup();
+        ErrorQuit("argument 3 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var3 = (poly) obj3.nondestructiveuse();
     
     // Call into Singular kernel
     poly res = p_Minus_mm_Mult_qq(var1,var2,var3,r);
@@ -144,18 +238,49 @@ Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
 }
 
 Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
-    int gtype, stype;
     UInt rnr;
     ring r = currRing;
     
     // Prepare input data
-    poly var1 = (poly)GET_SINGOBJ(arg1, gtype, stype, rnr, r, POLY_CMD);
-    var1 = (poly)COPY_SINGOBJ(var1, SINGTYPE_POLY, r);
-    poly var2 = (poly)GET_SINGOBJ(arg2, gtype, stype, rnr, r, POLY_CMD);
-    poly var3 = (poly)GET_SINGOBJ(arg3, gtype, stype, rnr, r, POLY_CMD);
-    
-    // Setup current ring
-    if (r != currRing) rChangeCurrRing(r);
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse();
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse();
+    SingObj obj3(arg3, rnr, r);
+    if (obj3.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        obj3.cleanup();
+        ErrorQuit(obj3.error,0L,0L);
+        return Fail;
+    } else if (obj3.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        obj3.cleanup();
+        ErrorQuit("argument 3 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var3 = (poly) obj3.nondestructiveuse();
     
     // Call into Singular kernel
     poly res = p_Plus_mm_Mult_qq(var1,var2,var3,r);
