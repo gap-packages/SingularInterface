@@ -1,5 +1,5 @@
-AC_PREREQ(2.67)
-LT_PREREQ([2.2.6])
+AC_PREREQ(2.68)
+LT_PREREQ([2.4.2])
 AC_INIT([libsingular], 0.1, neunhoef@mcs.st-and.ac.uk)
 AC_CONFIG_SRCDIR([src/libsing.h])
 AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
