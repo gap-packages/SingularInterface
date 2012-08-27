@@ -813,6 +813,114 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
 }
 
 extern "C"
+Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
+{
+    char **array;
+    char *p;
+    UInt nrvars;
+    UInt nrords;
+    int *ord;
+    int *block0;
+    int *block1;
+    int **wvhdl;
+    UInt i,j;
+    int covered;
+    Obj tmp,tmp2;
+    
+    // Some checks:
+    if (!IS_INTOBJ(charact) || !IS_LIST(names) || !IS_LIST(orderings)) {
+        ErrorQuit("Need immediate integer and two lists",0L,0L);
+        return Fail;
+    }
+    nrvars = LEN_LIST(names);
+    for (i = 1;i <= nrvars;i++) {
+        if (!IS_STRING_REP(ELM_LIST(names,i))) {
+            ErrorQuit("Variable names must be strings",0L,0L);
+            return Fail;
+        }
+    }
+
+    // First check that the orderings cover exactly all variables:
+    covered = 0;
+    nrords = LEN_LIST(orderings);
+    for (i = 1;i <= nrords;i++) {
+        tmp = ELM_LIST(orderings,i);
+        if (!IS_LIST(tmp) || LEN_LIST(tmp) != 2) {
+            ErrorQuit("Orderings must be lists of length 2",0L,0L);
+            return Fail;
+        }
+        if (!IS_STRING_REP(ELM_LIST(tmp,1))) {
+            ErrorQuit("First entry of ordering must be a string",0L,0L);
+            return Fail;
+        }
+        tmp2 = ELM_LIST(tmp,2);
+        if (IS_INTOBJ(tmp2)) covered += (int) INT_INTOBJ(tmp2);
+        else if (IS_LIST(tmp2)) {
+            covered += (int) LEN_LIST(tmp2);
+            for (j = 1;j <= LEN_LIST(tmp2);j++) {
+                if (!IS_INTOBJ(ELM_LIST(tmp2,j))) {
+                    ErrorQuit("Weights must be immediate integers",0L,0L);
+                    return Fail;
+                }
+            }
+        } else {
+            ErrorQuit("Second entry of ordering must be an integer or a "
+                      "plain list",0L,0L);
+            return Fail;
+        }
+    }
+    if (covered != (int) nrvars) {
+        ErrorQuit("Orderings do not cover exactly the variables",0L,0L);
+        return Fail;
+    }
+            
+    // Now allocate strings for the variable names:
+    array = (char **) omalloc(sizeof(char *) * nrvars);
+    for (i = 0;i < nrvars;i++)
+        array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
+
+    // Now allocate int lists for the orderings:
+    ord = (int *) omalloc(sizeof(int) * nrords);
+    block0 = (int *) omalloc(sizeof(int) * nrords);
+    block1 = (int *) omalloc(sizeof(int) * nrords);
+    wvhdl = (int **) omalloc(sizeof(int *) * nrords);
+    covered = 0;
+    for (i = 0;i < nrords;i++) {
+        tmp = ELM_LIST(orderings,i+1);
+        p = omStrDup(CSTR_STRING(ELM_LIST(tmp,1)));
+        ord[i] = rOrderName(p);
+        if (ord[i] = 0) {
+            Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
+               (Int) (CSTR_STRING(ELM_LIST(tmp,1))),0L);
+            ord[i] = rOrderName(omStrDup("dp"));
+        }
+        block0[i] = covered+1;
+        tmp2 = ELM_LIST(tmp,2);
+        if (IS_INTOBJ(tmp2)) {
+            block1[i] = covered+ (int) (INT_INTOBJ(tmp2));
+            wvhdl[i] = NULL;
+            covered += (int) (INT_INTOBJ(tmp2));
+        } else {   // IS_LIST(tmp2) and consisting of immediate integers
+            block1[i] = covered+(int) (LEN_LIST(tmp2));
+            wvhdl[i] = (int *) omalloc(sizeof(int) * LEN_LIST(tmp2));
+            for (j = 0;j < LEN_LIST(tmp2);j++) {
+                wvhdl[i][j] = (int) (INT_INTOBJ(ELM_LIST(tmp2,j+1)));
+            }
+        }
+    }
+
+    ring r = rDefault(INT_INTOBJ(charact),nrvars,array,
+                      nrords,ord,block0,block1,wvhdl);
+    r->ref++;
+
+    i = LEN_LIST(SingularRings)+1;
+    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
+    ASS_LIST(SingularRings,i,tmp);
+    ASS_LIST(SingularElCounts,i,INTOBJ_INT(0));
+    return tmp;
+}
+
+extern "C"
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
 {
     Obj res;
@@ -1298,6 +1406,36 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
             return Fail;
         default:
             return Fail;
+    }
+}
+
+extern "C"
+Obj FuncGAPSingular(Obj self, Obj singobj)
+// Tries to transform a singular object to a GAP object.
+// Currently does small integers and strings
+{
+    char *st;
+    UInt len;
+    Obj tmp;
+    Int i;
+
+    if (TNUM_OBJ(singobj) != T_SINGULAR) {
+        ErrorQuit("singobj must be a wrapped Singular object",0L,0L);
+        return Fail;
+    }
+    switch (TYPE_SINGOBJ(singobj)) {
+      case SINGTYPE_STRING:
+        st = (char *) CXX_SINGOBJ(singobj);
+        len = (UInt) strlen(st);
+        tmp = NEW_STRING(len);
+        SET_LEN_STRING(tmp,len);
+        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
+        return tmp;
+      case SINGTYPE_INT:
+        i = (Int) CXX_SINGOBJ(singobj);
+        return INTOBJ_INT(i);
+      default:
+        return Fail;
     }
 }
 
