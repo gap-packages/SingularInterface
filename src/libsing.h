@@ -9,6 +9,22 @@
 
 #include <src/compiled.h>
 
+#undef PACKAGE
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_URL
+#undef PACKAGE_VERSION
+
+#include "pkgconfig.h"             /* our own configure results */
+
+/* Note that SIZEOF_VOID_P comes from GAP's config.h whereas
+ * SIZEOF_VOID_PP comes from pkgconfig.h! */
+#if SIZEOF_VOID_PP != SIZEOF_VOID_P
+#error GAPs word size is different from ours, 64bit/32bit mismatch
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 /**
 @file libsing.h
@@ -21,6 +37,7 @@ extern Obj SingularTypes;    /* A kernel copy of a plain list of types */
 extern Obj SingularRings;    /* A kernel copy of a plain list of rings */
 extern Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
 extern Obj SingularErrors;   /* A kernel copy of a string */
+extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // 3 words: 
@@ -71,29 +88,49 @@ static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
     return tmp;
 }
 
-#define SINGTYPE_BIGINT         1
-#define SINGTYPE_DEF            2 
-#define SINGTYPE_IDEAL          3 
-#define SINGTYPE_INT            4 
-#define SINGTYPE_INTMAT         5 
-#define SINGTYPE_INTVEC         6 
-#define SINGTYPE_LINK           7 
-#define SINGTYPE_LIST           8 
-#define SINGTYPE_MAP            9 
-#define SINGTYPE_MATRIX        10 
-#define SINGTYPE_MODULE        11 
-#define SINGTYPE_NUMBER        12 
-#define SINGTYPE_PACKAGE       13 
-#define SINGTYPE_POLY          14 
-#define SINGTYPE_PROC          15 
-#define SINGTYPE_QRING         16 
-#define SINGTYPE_RESOLUTION    17 
-#define SINGTYPE_RING          18 
-#define SINGTYPE_STRING        19 
-#define SINGTYPE_VECTOR        20 
-#define SINGTYPE_USERDEF       21 
-#define SINGTYPE_PYOBJECT      22 
-#define SINGTYPE_LASTNUMBER    22
+enum {
+    SINGTYPE_BIGINT        =  1,
+    SINGTYPE_DEF           =  2,
+    SINGTYPE_IDEAL         =  3,
+    SINGTYPE_INT           =  4,
+    SINGTYPE_INTMAT        =  5,
+    SINGTYPE_INTVEC        =  6,
+    SINGTYPE_LINK          =  7,
+    SINGTYPE_LIST          =  8,
+    SINGTYPE_MAP           =  9,
+    SINGTYPE_MATRIX        = 10,
+    SINGTYPE_MODULE        = 11,
+    SINGTYPE_NUMBER        = 12,
+    SINGTYPE_PACKAGE       = 13,
+    SINGTYPE_POLY          = 14,
+    SINGTYPE_PROC          = 15,
+    SINGTYPE_QRING         = 16,
+    SINGTYPE_RESOLUTION    = 17,
+    SINGTYPE_RING          = 18,
+    SINGTYPE_STRING        = 19,
+    SINGTYPE_VECTOR        = 20,
+    SINGTYPE_USERDEF       = 21,
+    SINGTYPE_PYOBJECT      = 22,
+
+    SINGTYPE_LASTNUMBER    = 22
+};
+
+/* If you change these numbers, then also adjust the tables GAPtoSingType
+ * and HasRingTable in cxxfuncs.cc! */
+
+#if 0
+proxies fuer:
+  ideal   ->  poly
+  list    ->  ?
+  matrix  ->  poly
+  module  ->  vector
+  qring   ->  ideal
+#endif
+
+inline int ISSINGOBJ(int typ, Obj obj)
+{
+    return TNUM_OBJ(obj) == T_SINGULAR && TYPE_SINGOBJ(obj) == typ;
+}
 
 //////////////// C++ functions to be called from C ////////////////////
 
@@ -105,6 +142,7 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
 Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj FuncSI_STRING_POLY(Obj self, Obj po);
+Obj FuncSI_COPY_POLY(Obj self, Obj po);
 Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b);
 Obj FuncSI_NEG_POLY(Obj self, Obj a);
 Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b);
@@ -113,23 +151,22 @@ Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path);
 Obj FuncSI_EVALUATE(Obj self, Obj st);
 Obj FuncValueOfSingularVar(Obj self, Obj name);
 Obj FuncLastSingularOutput(Obj self);
-Obj FuncSI_bigint(Obj self, Obj nr);
+Obj FuncSI_Makebigint(Obj self, Obj nr);
 Obj FuncSI_Intbigint(Obj self, Obj b);
-Obj FuncSI_intvec(Obj self, Obj l);
+Obj FuncSI_Makeintvec(Obj self, Obj l);
 Obj FuncSI_Plistintvec(Obj self, Obj iv);
-Obj FuncSI_intmat(Obj self, Obj m);
+Obj FuncSI_Makeintmat(Obj self, Obj m);
 Obj FuncSI_Matintmat(Obj self, Obj im);
+Obj FuncSI_Makeideal(Obj self, Obj l);
 
+Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input);
+Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
+Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
+Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg);
 
 //////////////// C functions to be called from C++ ////////////////////
 
 void PrintGAPError(const char* message);
-
-
-//////////////// old stuff which will eventually go ///////////////////
-
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b);
-Obj FuncSingularTest(Obj self);
 
 #endif //#define LIBSING_H
 

@@ -1,1 +1,1 @@
-spielwiese/BUILD
+spielwiese/TARGET

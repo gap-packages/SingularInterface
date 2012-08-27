@@ -8,12 +8,13 @@ if not IsBound(LIBSINGULAR) then
 fi;
 # now try the dynamic module
 if not IsBound(LIBSINGULAR) then
-  if Filename(DirectoriesPackagePrograms("libsingular"), 
+  if Filename(DirectoriesPackagePrograms("libsing"), 
               "libsing.so") <> fail then
-    LoadDynamicModule(Filename(DirectoriesPackagePrograms("libsingular"), 
+    LoadDynamicModule(Filename(DirectoriesPackagePrograms("libsing"), 
                                "libsing.so"));
   fi;
 fi;
 
-ReadPackage( "libsingular", "lib/libsingular.gd" );
-
+ReadPackage( "libsing", "lib/libsing.gd" );
+ReadPackage( "libsing", "lib/highlevel_mappings_table.g" );
+ReadPackage( "libsing", "lib/highlevel_mappings.g" );

@@ -1,8 +1,14 @@
-gap> Singular("print(a)");
+Singular(""); gives no method found although "" seems to be in
+IsStringRep.
 
-runs into an error and Singular reads from STDIN.
-return(); does not leave the interpreter but produces an error
-After ^D we back at the GAP level
-Subsequent Singular(""); commands produce segfault
+SI_bigint(1); does not work, gives:
+<singular bigint:-1408746431>
 
+Tocheck:
+
+ - memory management stress test
+ - performance of high level
+ - Calls to 2, 3, and many arguments
+ - error handling with call to 1 argument
+ - lots of code paths in SI_GETSINGOBJ
 

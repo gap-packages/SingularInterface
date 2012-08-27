@@ -1,3 +1,17 @@
+# switch to glob syntax.
+syntax: glob
+
+lib/highlevel_mappings.g
+lib/highlevel_mappings_table.g
+src/gentableforGAP
+src/highlevel_mappings.g
+src/highlevel_mappings_table.g
+src/pkgconfig.h
+src/stamp-h1
+
+# switch to regexp syntax.
+syntax: regexp
+
 ^Singular
 \.so$
 \.la$
