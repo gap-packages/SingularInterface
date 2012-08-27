@@ -49,7 +49,7 @@ InstallGlobalFunction( InitSingularInterpreter,
   function( )
     local path;
     path := ShallowCopy(
-            Filename(DirectoriesPackageLibrary("libsingular","")[1],
+            Filename(DirectoriesPackageLibrary("libsing","")[1],
                      "Singular-3-1-5/Singular/libsingular."));
     if ARCH_IS_MAC_OS_X() then
         Append(path,"dylib");

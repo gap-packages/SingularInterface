@@ -83,7 +83,7 @@ SingularErrors := "";
 DeclareGlobalFunction( "CleanupSingularRings" );
 
 DeclareGlobalFunction( "InitSingularInterpreter" );
-# This is called automatically from libsingular.gi, no need for the user to call it.
+# This is called automatically from libsing.gi, no need for the user to call it.
 
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [] );

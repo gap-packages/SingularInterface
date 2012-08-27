@@ -2,7 +2,7 @@ SetPackageInfo( rec(
 
 ##  This is case sensitive, use your preferred spelling.
 ##
-PackageName := "libsingular",
+PackageName := "libsing",
 
 ##  This may be used by a default banner or on a Web page, should fit on
 ##  one line.
@@ -22,7 +22,7 @@ Date := "25/5/2011",
 ##  directory containing the package (in our "example" probably:
 ##  example/init.g, ...    or  example-1.3/init.g, ...  )
 # 
-ArchiveURL := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsingular-0.1.tar.gz",
+ArchiveURL := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing-0.1.tar.gz",
 
 ##  All provided formats as list of file extensions, separated by white
 ##  space or commas.
@@ -204,9 +204,9 @@ Status := "dev",
 ##  and updating of the package in the GAP distribution.
 #
 README_URL := 
-  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsingular/README",
+  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing/README",
 PackageInfoURL := 
-  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsingular/PackageInfo.g",
+  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing/PackageInfo.g",
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -216,10 +216,10 @@ PackageInfoURL :=
 ##  '<span class="pkgname">MyPKG</span>' for specifing package names.
 ##  
 AbstractHTML := 
-  "The <span class=\"pkgname\">libsingular</span> package links Singular\
+  "The <span class=\"pkgname\">libsing</span> package links Singular\
   as a library into a GAP process.",
 
-PackageWWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsingular.html",
+PackageWWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing.html",
 
 ##  Here is the information on the help books of the package, used for
 ##  loading into GAP's online help and maybe for an online copy of the 
@@ -250,7 +250,7 @@ PackageWWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Sof
 # in case of several help books give a list of such records here:
 PackageDoc := rec(
   # use same as in GAP
-  BookName  := "libsingular",
+  BookName  := "libsing",
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
@@ -301,10 +301,10 @@ Dependencies := rec(
 AvailabilityTest := function()
   local path;
     # test for existence of the compiled binary
-    path := DirectoriesPackagePrograms("libsingular");
-    if not "libsingular" in SHOW_STAT() and 
+    path := DirectoriesPackagePrograms("libsing");
+    if not "libsing" in SHOW_STAT() and 
        Filename(path, "libsing.so") = fail then
-      Info(InfoWarning, 1, "libsingular: compiled kernel module not present.");
+      Info(InfoWarning, 1, "libsing: compiled kernel module not present.");
     fi;
     return true;
   end,

@@ -1,2 +1,2 @@
-ReadPackage("libsingular","lib/libsingular.gi");
+ReadPackage("libsing","lib/libsing.gi");
 
