@@ -158,6 +158,7 @@ Obj FuncSI_Plistintvec(Obj self, Obj iv);
 Obj FuncSI_Makeintmat(Obj self, Obj m);
 Obj FuncSI_Matintmat(Obj self, Obj im);
 Obj FuncSI_Makeideal(Obj self, Obj l);
+Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l);
 
 Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input);
 Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b);

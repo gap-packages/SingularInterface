@@ -19,3 +19,41 @@ Documentation
 Debugging
 Explosion of objects like lists (rewrap pieces)
 Assembling of objects losing the wrapping of the pieces
+
+
+
+Ring constructors:
+
+  Provide functionality:
+
+  gap> SingularRing(32003,["a","b","c"],[["dp",[PARAMETER]]);
+  gap> SingularRing(32003,["a","b","c"],[["dp",NRVARS],["lp",NRVARS],
+  gap>      ["wp",[GEWICHTE]]]);
+
+  i.e.:
+     SingularRing( CHARACTERISTIC as immediate integer,
+                   VARIABLE NAMES as list of strings
+                   ORDERINGS as list of
+                     list with entries STRING, INT   (nr of vars)
+                       or with entries STRING, [WEIGHTS]   (intlist)
+                 );
+     delegating to
+       ring rDefault(int ch, int N, char **n,int ord_size, int *ord, int
+                     *block0, int *block1, int ** wvhdl=NULL);
+       ord, block0, block1 must be omalloced
+            (first variable, last variable, 1-based)
+       wvhdl must be alloced, each is
+            NULL
+         or a pointer to an int array also omalloced
+
+     use rOrderName to convert from string to order number for ord
+     (this frees string!)
+
+
+
+More TODO:
+
+proxy objects to look into matrices
+why does SI_print do nothing (or does it do anything?)
+
+

@@ -123,6 +123,11 @@ static StructGVarFunc GVarFuncs[] =
    FuncSI_Makeideal,
    "cxx-funcs.cc:FuncSI_Makeideal" },
 
+  {"SI_Makematrix", 3,
+   "nrrows, nrcols, l",
+   FuncSI_Makematrix,
+   "cxx-funcs.cc:FuncSI_Makematrix" },
+
   {"SI_CallFunc1", 2,
    "op, input",
    FuncSI_CallFunc1,
