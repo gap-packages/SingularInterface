@@ -1,4 +1,4 @@
-LoadPackage("libsingular");
+LoadPackage("libsing");
 s := SingularRingWithoutOrdering(32003,["x","y","z"]);
 s1 := SI_MONOMIAL(s,1,[2,1,0]);
 s1 := SI_ADD_POLYS(s1,SI_MONOMIAL(s,151,[1,1,10]));

@@ -1,4 +1,4 @@
-LoadPackage("libsingular");
+LoadPackage("libsing");
 Singular("int ver=system(\"version\");");
 ValueOfSingularVar("ver");
 ValueOfSingularVar("version");   # gives fail
