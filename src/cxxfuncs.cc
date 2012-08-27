@@ -203,7 +203,7 @@ int INT_FROM_GAP(Obj nr)
     }
 }
 
-void BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int ii, number n)
+void BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
 {
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
@@ -486,6 +486,7 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
     error = NULL;
     r = NULL;
     rnr = 0;
+    obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
@@ -815,6 +816,7 @@ Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
         array[i] = omStrDup(CSTR_STRING(ELM_PLIST(names,i+1)));
 
     ring r = rDefault(INT_INTOBJ(charact),nrvars,array);
+    r->ref++;
     i = LEN_LIST(SingularRings)+1;
     tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
     ASS_LIST(SingularRings,i,tmp);
