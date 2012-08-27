@@ -1036,6 +1036,59 @@ Obj FuncSI_Makeideal(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
+Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
+{
+    if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
+          INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
+        ErrorQuit("nrrows and nrcols must be positive integers",0L,0L);
+        return Fail;
+    }
+    Int c_nrrows = INT_INTOBJ(nrrows);
+    Int c_nrcols = INT_INTOBJ(nrcols);
+    if (!IS_LIST(l)) {
+        ErrorQuit("l must be a list",0L,0L);
+        return Fail;
+    }
+    UInt len = LEN_LIST(l);
+    if (len == 0) {
+        ErrorQuit("l must contain at least one element",0L,0L);
+        return Fail;
+    }
+    matrix mat;
+    UInt i;
+    Obj t;
+    ring r,r2;
+    UInt row = 1;
+    UInt col = 1;
+    for (i = 1;i <= len && row <= c_nrrows;i++) {
+        t = ELM_LIST(l,i);
+        if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
+            if (i > 1) id_Delete((ideal *) &mat,r);
+            ErrorQuit("l must only contain singular polynomials",0L,0L);
+            return Fail;
+        }
+        if (i == 1) {
+            r = SINGRING_SINGOBJ(t);
+            if (r != currRing) rChangeCurrRing(r);
+            mat = mpNew(c_nrrows,c_nrcols);
+        } else {
+            if (r != SINGRING_SINGOBJ(t)) {
+                id_Delete((ideal *) &mat,r);
+                ErrorQuit("all elements of l must have the same ring",0L,0L);
+                return Fail;
+            }
+        }
+        poly p = p_Copy((poly) CXX_SINGOBJ(t),r);
+        MATELEM(mat,row,col) = p;
+        col++;
+        if (col > c_nrcols) {
+            col = 1;
+            row++;
+        }
+    }
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
+}
+
 extern "C"
 Obj FuncSI_STRING_POLY(Obj self, Obj po)
 {
