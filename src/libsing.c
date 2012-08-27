@@ -196,6 +196,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
   
   TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
+  InfoBags[T_SINGULAR].name = "singular wrapper object";
 
   /* return success                                                      */
   return 0;
