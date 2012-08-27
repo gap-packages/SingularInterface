@@ -18,4 +18,4 @@
 
 
 
-./configure --with-libSingular=/mnt/DATA/GITHUB/w/GAP/libsing/spielwiese/TARGET --with-gaproot=/mnt/DATA/GITHUB/w/GAP/gap4r5
+./configure --with-libSingular=`pwd`/SW --with-gaproot=`pwd`/../GAP
