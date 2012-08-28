@@ -42,6 +42,7 @@ Ring constructors:
                      *block0, int *block1, int ** wvhdl=NULL);
        ord, block0, block1 must be omalloced
             (first variable, last variable, 1-based)
+            ord is 0-terminated
        wvhdl must be alloced, each is
             NULL
          or a pointer to an int array also omalloced

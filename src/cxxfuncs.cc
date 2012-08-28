@@ -880,7 +880,8 @@ Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
         array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
 
     // Now allocate int lists for the orderings:
-    ord = (int *) omalloc(sizeof(int) * nrords);
+    ord = (int *) omalloc(sizeof(int) * nrords+1);
+    ord[nrords] = 0;
     block0 = (int *) omalloc(sizeof(int) * nrords);
     block1 = (int *) omalloc(sizeof(int) * nrords);
     wvhdl = (int **) omalloc(sizeof(int *) * nrords);
@@ -889,7 +890,7 @@ Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
         tmp = ELM_LIST(orderings,i+1);
         p = omStrDup(CSTR_STRING(ELM_LIST(tmp,1)));
         ord[i] = rOrderName(p);
-        if (ord[i] = 0) {
+        if (ord[i] == 0) {
             Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
                (Int) (CSTR_STRING(ELM_LIST(tmp,1))),0L);
             ord[i] = rOrderName(omStrDup("dp"));
