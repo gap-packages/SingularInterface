@@ -36,6 +36,11 @@ static StructGVarFunc GVarFuncs[] =
    FuncSingularRingWithoutOrdering,
    "cxx-funcs.cc:FuncSingularRingWithoutOrdering" }, 
 
+  {"SingularRing", 3,
+   "characteristic, names, orderings",
+   FuncSingularRing,
+   "cxx-funcs.cc:FuncSingularRing" }, 
+
   {"IndeterminatesOfSingularRing", 1,
    "ring", FuncIndeterminatesOfSingularRing,
    "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
@@ -82,6 +87,11 @@ static StructGVarFunc GVarFuncs[] =
    "name",
    FuncValueOfSingularVar,
    "cxx-funcs.cc:FuncValueOfSingularVar" },
+
+  {"GAPSingular", 1, 
+   "singobj",
+   FuncGAPSingular,
+   "cxx-funcs.cc:FuncGAPSingular" },
 
   {"LastSingularOutput", 0,
    "",

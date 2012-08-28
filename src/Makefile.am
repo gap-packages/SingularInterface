@@ -16,9 +16,12 @@ gentableforGAP_LDFLAGS =  $(LIBSINGULAR_LIBS) -lpthread
 
 
 libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
-libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular $(LIBSINGULAR_LIBS) -lpthread
+
 # libsing_la_LIBADD = $(LIBSINGULAR_LIBS)
+libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular $(LIBSINGULAR_LIBS) -lpthread
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS)  $(LIBSINGULAR_CFLAGS)
+libsing_la_CXXFLAGS = -Wall
+libsing_la_CFLAGS = -Wall
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
