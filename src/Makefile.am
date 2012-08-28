@@ -14,6 +14,8 @@ libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+libsing_la_CXXFLAGS = -Wall
+libsing_la_CFLAGS = -Wall
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory

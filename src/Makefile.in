@@ -88,7 +88,7 @@ libsing_la_DEPENDENCIES =
 am_libsing_la_OBJECTS = libsing_la-libsing.lo libsing_la-cxxfuncs.lo
 libsing_la_OBJECTS = $(am_libsing_la_OBJECTS)
 libsing_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(libsing_la_CXXFLAGS) \
 	$(CXXFLAGS) $(libsing_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
 am_gentableforGAP_OBJECTS = gentableforGAP-gentableforGAP.$(OBJEXT)
@@ -261,6 +261,8 @@ libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+libsing_la_CXXFLAGS = -Wall
+libsing_la_CFLAGS = -Wall
 all: pkgconfig.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -423,11 +425,11 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
 libsing_la-libsing.lo: libsing.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libsing_la-libsing.lo -MD -MP -MF $(DEPDIR)/libsing_la-libsing.Tpo -c -o libsing_la-libsing.lo `test -f 'libsing.c' || echo '$(srcdir)/'`libsing.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CFLAGS) $(CFLAGS) -MT libsing_la-libsing.lo -MD -MP -MF $(DEPDIR)/libsing_la-libsing.Tpo -c -o libsing_la-libsing.lo `test -f 'libsing.c' || echo '$(srcdir)/'`libsing.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libsing_la-libsing.Tpo $(DEPDIR)/libsing_la-libsing.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libsing.c' object='libsing_la-libsing.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libsing_la-libsing.lo `test -f 'libsing.c' || echo '$(srcdir)/'`libsing.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CFLAGS) $(CFLAGS) -c -o libsing_la-libsing.lo `test -f 'libsing.c' || echo '$(srcdir)/'`libsing.c
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -451,11 +453,11 @@ libsing_la-libsing.lo: libsing.c
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
 
 libsing_la-cxxfuncs.lo: cxxfuncs.cc
-@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libsing_la-cxxfuncs.lo -MD -MP -MF $(DEPDIR)/libsing_la-cxxfuncs.Tpo -c -o libsing_la-cxxfuncs.lo `test -f 'cxxfuncs.cc' || echo '$(srcdir)/'`cxxfuncs.cc
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CXXFLAGS) $(CXXFLAGS) -MT libsing_la-cxxfuncs.lo -MD -MP -MF $(DEPDIR)/libsing_la-cxxfuncs.Tpo -c -o libsing_la-cxxfuncs.lo `test -f 'cxxfuncs.cc' || echo '$(srcdir)/'`cxxfuncs.cc
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libsing_la-cxxfuncs.Tpo $(DEPDIR)/libsing_la-cxxfuncs.Plo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cxxfuncs.cc' object='libsing_la-cxxfuncs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libsing_la-cxxfuncs.lo `test -f 'cxxfuncs.cc' || echo '$(srcdir)/'`cxxfuncs.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CXXFLAGS) $(CXXFLAGS) -c -o libsing_la-cxxfuncs.lo `test -f 'cxxfuncs.cc' || echo '$(srcdir)/'`cxxfuncs.cc
 
 gentableforGAP-gentableforGAP.o: gentableforGAP.cc
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gentableforGAP-gentableforGAP.o -MD -MP -MF $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo -c -o gentableforGAP-gentableforGAP.o `test -f 'gentableforGAP.cc' || echo '$(srcdir)/'`gentableforGAP.cc
