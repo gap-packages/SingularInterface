@@ -283,7 +283,7 @@ void ttGen1()
   fprintf(outfile,"]\n]);\n");
   /* Seems no longer to be needed */
   fprintf(outfile,"BindGlobal(\"SI_TOKENLIST\", [\n");
-  char ops[]="=><+*/[.^,%(;";
+  char ops[]="=><+-*/[.^,%(;";
   for(i=0;ops[i]!='\0';i++)
     fprintf(outfile,"  %d,\"%c\",\n", (int)ops[i], ops[i]);
   for (i=257;i<=MAX_TOK;i++)
