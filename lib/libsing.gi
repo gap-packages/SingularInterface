@@ -120,6 +120,11 @@ InstallMethod(ViewObj, "for a singular proxy object",
 InstallMethod(ViewObj, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
-    Print("<singular object>");
+    Print("<singular object: ",GAPSingular(SI_print(s)),">");
   end );
 
+InstallMethod(DisplayString, "for a generic singular object",
+  [ IsSingularObj ],
+  function( s )
+    return Concatenation(GAPSingular(SI_print(s)),"\n");
+  end );
