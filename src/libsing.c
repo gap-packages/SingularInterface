@@ -6,7 +6,7 @@ This file contains all of the pure C code that deals with GAP.
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
-  
+
 #include "libsing.h"
 #include "lowlevel_mappings.h"
 
@@ -14,7 +14,7 @@ This file contains all of the pure C code that deals with GAP.
 /******************** Helper functions ***************/
 
 /**
-Print a GAP error message. 
+Print a GAP error message.
 @param message The message
 **/
 void PrintGAPError(const char* message)
@@ -26,145 +26,145 @@ void PrintGAPError(const char* message)
 
 
 /**
-Details of the functions to make available to GAP. 
+Details of the functions to make available to GAP.
 This is used in InitKernel() and InitLibrary()
 */
-static StructGVarFunc GVarFuncs[] = 
+static StructGVarFunc GVarFuncs[] =
 {
   {"SingularRingWithoutOrdering", 2,
    "characteristic, names",
    FuncSingularRingWithoutOrdering,
-   "cxx-funcs.cc:FuncSingularRingWithoutOrdering" }, 
+   "cxxfuncs.cc:FuncSingularRingWithoutOrdering" },
 
   {"SingularRing", 3,
    "characteristic, names, orderings",
    FuncSingularRing,
-   "cxx-funcs.cc:FuncSingularRing" }, 
+   "cxxfuncs.cc:FuncSingularRing" },
 
   {"IndeterminatesOfSingularRing", 1,
    "ring", FuncIndeterminatesOfSingularRing,
-   "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
+   "cxxfuncs.cc:FuncIndeterminatesOfSingularRing" },
 
   {"SI_Makepoly_from_String", 2,
    "rr, st", FuncSI_Makepoly_from_String,
-   "cxx-funcs.cc:FuncSI_Makepoly_from_String" }, 
+   "cxxfuncs.cc:FuncSI_Makepoly_from_String" },
 
   {"SI_Makematrix_from_String", 4,
    "nrrows, nrcols, rr, st", FuncSI_Makematrix_from_String,
-   "cxx-funcs.cc:FuncSI_Makematrix_from_String" }, 
+   "cxxfuncs.cc:FuncSI_Makematrix_from_String" },
 
   {"SI_MONOMIAL", 3,
    "ring, coeff, exponents", FuncSI_MONOMIAL,
-   "cxx-funcs.cc:FuncSI_MONOMIAL" }, 
+   "cxxfuncs.cc:FuncSI_MONOMIAL" },
 
   {"SI_STRING_POLY", 1,
    "poly", FuncSI_STRING_POLY,
-   "cxx-funcs.cc:FuncSI_STRING_POLY" }, 
+   "cxxfuncs.cc:FuncSI_STRING_POLY" },
 
   {"SI_COPY_POLY", 1,
    "poly", FuncSI_COPY_POLY,
-   "cxx-funcs.cc:FuncSI_COPY_POLY" }, 
+   "cxxfuncs.cc:FuncSI_COPY_POLY" },
 
   {"SI_ADD_POLYS", 2,
    "a, b", FuncSI_ADD_POLYS,
-   "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
+   "cxxfuncs.cc:FuncSI_ADD_POLYS" },
 
   {"SI_NEG_POLY", 1,
    "a", FuncSI_NEG_POLY,
-   "cxx-funcs.cc:FuncSI_NEG_POLY" }, 
+   "cxxfuncs.cc:FuncSI_NEG_POLY" },
 
   {"SI_MULT_POLYS", 2,
    "a, b", FuncSI_MULT_POLYS,
-   "cxx-funcs.cc:FuncSI_MULT_POLYS" }, 
+   "cxxfuncs.cc:FuncSI_MULT_POLYS" },
 
   {"SI_MULT_POLY_NUMBER", 2,
    "a, b", FuncSI_MULT_POLY_NUMBER,
-   "cxx-funcs.cc:FuncSI_MULT_POLY_NUMBER" }, 
+   "cxxfuncs.cc:FuncSI_MULT_POLY_NUMBER" },
 
-  {"SI_INIT_INTERPRETER", 1, 
+  {"SI_INIT_INTERPRETER", 1,
    "path",
    FuncSI_INIT_INTERPRETER,
-   "cxx-funcs.cc:FuncSI_INIT_INTERPRETER" },
+   "cxxfuncs.cc:FuncSI_INIT_INTERPRETER" },
 
-  {"SI_EVALUATE", 1, 
+  {"SI_EVALUATE", 1,
    "st",
    FuncSI_EVALUATE,
-   "cxx-funcs.cc:FuncSI_EVALUATE" },
+   "cxxfuncs.cc:FuncSI_EVALUATE" },
 
-  {"ValueOfSingularVar", 1, 
+  {"ValueOfSingularVar", 1,
    "name",
    FuncValueOfSingularVar,
-   "cxx-funcs.cc:FuncValueOfSingularVar" },
+   "cxxfuncs.cc:FuncValueOfSingularVar" },
 
-  {"GAPSingular", 1, 
+  {"GAPSingular", 1,
    "singobj",
    FuncGAPSingular,
-   "cxx-funcs.cc:FuncGAPSingular" },
+   "cxxfuncs.cc:FuncGAPSingular" },
 
   {"LastSingularOutput", 0,
    "",
    FuncLastSingularOutput,
-   "cxx-funcs.cc:FuncLastSingularOutput" },
+   "cxxfuncs.cc:FuncLastSingularOutput" },
 
   {"SI_Makebigint", 1,
    "nr",
    FuncSI_Makebigint,
-   "cxx-funcs.cc:FuncSI_Makebigint" },
+   "cxxfuncs.cc:FuncSI_Makebigint" },
 
   {"SI_Intbigint", 1,
    "nr",
    FuncSI_Intbigint,
-   "cxx-funcs.cc:FuncSI_Intbigint" },
+   "cxxfuncs.cc:FuncSI_Intbigint" },
 
   {"SI_Makeintvec", 1,
    "l",
    FuncSI_Makeintvec,
-   "cxx-funcs.cc:FuncSI_Makeintvec" },
-   
+   "cxxfuncs.cc:FuncSI_Makeintvec" },
+
   {"SI_Plistintvec", 1,
    "iv",
    FuncSI_Plistintvec,
-   "cxx-funcs.cc:FuncSI_Plistintvec" },
-   
+   "cxxfuncs.cc:FuncSI_Plistintvec" },
+
   {"SI_Makeintmat", 1,
    "m",
    FuncSI_Makeintmat,
-   "cxx-funcs.cc:FuncSI_Makeintmat" },
-   
+   "cxxfuncs.cc:FuncSI_Makeintmat" },
+
   {"SI_Matintmat", 1,
    "im",
    FuncSI_Matintmat,
-   "cxx-funcs.cc:FuncSI_Matintmat" },
-   
+   "cxxfuncs.cc:FuncSI_Matintmat" },
+
   {"SI_Makeideal", 1,
    "l",
    FuncSI_Makeideal,
-   "cxx-funcs.cc:FuncSI_Makeideal" },
+   "cxxfuncs.cc:FuncSI_Makeideal" },
 
   {"SI_Makematrix", 3,
    "nrrows, nrcols, l",
    FuncSI_Makematrix,
-   "cxx-funcs.cc:FuncSI_Makematrix" },
+   "cxxfuncs.cc:FuncSI_Makematrix" },
 
   {"SI_CallFunc1", 2,
    "op, input",
    FuncSI_CallFunc1,
-   "cxx-funcs.cc:FuncSI_CallFunc1" },
+   "cxxfuncs.cc:FuncSI_CallFunc1" },
 
   {"SI_CallFunc2", 3,
    "op, a, b",
    FuncSI_CallFunc2,
-   "cxx-funcs.cc:FuncSI_CallFunc2" },
+   "cxxfuncs.cc:FuncSI_CallFunc2" },
 
   {"SI_CallFunc3", 4,
    "op, a, b, c",
    FuncSI_CallFunc3,
-   "cxx-funcs.cc:FuncSI_CallFunc3" },
+   "cxxfuncs.cc:FuncSI_CallFunc3" },
 
   {"SI_CallFuncM", 2,
    "arg",
    FuncSI_CallFuncM,
-   "cxx-funcs.cc:FuncSI_CallFuncM" },
+   "cxxfuncs.cc:FuncSI_CallFuncM" },
 
 #include "lowlevel_mappings_table.h"
 
@@ -217,7 +217,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("SingularElCounts", &SingularElCounts);
   InitCopyGVar("SingularErrors", &SingularErrors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
-  
+
   TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
   InfoBags[T_SINGULAR].name = "singular wrapper object";
 
@@ -240,7 +240,7 @@ static Int InitLibrary(StructInitInfo* module)
 
 
 /**
-Information about this library, returned when the library is loaded, 
+Information about this library, returned when the library is loaded,
 for example by Init__Dynamic(). This contains details of the library name,
 and the further initialisation functions to call.
 **/
@@ -265,8 +265,8 @@ static StructInitInfo module = {
 
 
 #ifndef STATICGAP
-/** 
-Function called by GAP as soon as the library is dynamically loaded. 
+/**
+Function called by GAP as soon as the library is dynamically loaded.
 This returns the StructInitInfo data for this library
 **/
 StructInitInfo * Init__Dynamic (void)
