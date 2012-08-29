@@ -170,6 +170,8 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
 Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
 Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg);
 
+Obj FuncSI_SetCurrRing(Obj self, Obj r);
+
 //////////////// C functions to be called from C++ ////////////////////
 
 void PrintGAPError(const char* message);

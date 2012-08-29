@@ -1746,3 +1746,16 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
     return singres.gapwrap();
 }
 
+extern "C"
+Obj FuncSI_SetCurrRing(Obj self, Obj r)
+{
+    if (TNUM_OBJ(r) != T_SINGULAR ||
+        TYPE_SINGOBJ(r) != SINGTYPE_RING) {
+        ErrorQuit("argument r must be a singular ring",0L,0L);
+        return Fail;
+    }
+    ring rr = SINGRING_SINGOBJ(r);
+    if (rr != currRing) rChangeCurrRing(rr);
+    return NULL;
+}
+
