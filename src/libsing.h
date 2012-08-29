@@ -46,8 +46,8 @@ extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 // The third is an index into the list of all singular rings and the
 // corresponding reference counting list.
 
-inline UInt TYPE_SINGOBJ( Obj obj ) { return (UInt) ADDR_OBJ(obj)[0]; }
-inline void SET_TYPE_SINGOBJ( Obj obj, UInt val )
+inline Int TYPE_SINGOBJ( Obj obj ) { return (Int) ADDR_OBJ(obj)[0]; }
+inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
 { ADDR_OBJ(obj)[0] = (Obj) val; }
 inline void *CXX_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[1]; }
 inline void SET_CXX_SINGOBJ( Obj obj, void *val )

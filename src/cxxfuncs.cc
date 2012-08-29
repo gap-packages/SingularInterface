@@ -262,6 +262,7 @@ static poly GET_poly(Obj o, UInt &rnr)
         ErrorQuit("argument must be a singular polynomial (or proxy)",0L,0L);
         return NULL;
     }
+    return NULL;   // To please the compiler
 }
 
 static inline poly GET_IDEAL_ELM_PROXY_NC(Obj p)
@@ -1297,7 +1298,7 @@ Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
     matrix mat;
     Int i;
     Obj t;
-    ring r,r2;
+    ring r;
     Int row = 1;
     Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
@@ -1461,6 +1462,7 @@ Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
         }
         SingtoGAPType[GAPtoSingType[i]] = i;
     }
+    return NULL;
 }
 
 extern "C"
@@ -1487,11 +1489,11 @@ Obj FuncSI_EVALUATE(Obj self, Obj st)
 extern "C"
 Obj FuncValueOfSingularVar(Obj self, Obj name)
 {
-    UInt len;
+    Int len;
     Obj tmp,tmp2;
     intvec *v;
     int i,j,k;
-    UInt rows, cols;
+    Int rows, cols;
     number n;
 
     idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
@@ -1500,14 +1502,14 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
         case INT_CMD:
             return ObjInt_Int( (Int) (IDINT(h)) );
         case STRING_CMD:
-            len = (UInt) strlen(IDSTRING(h));
+            len = (Int) strlen(IDSTRING(h));
             tmp = NEW_STRING(len);
             SET_LEN_STRING(tmp,len);
             strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),IDSTRING(h));
             return tmp;
         case INTVEC_CMD:
             v = IDINTVEC(h);
-            len = (UInt) v->length();
+            len = (Int) v->length();
             tmp = NEW_PLIST(T_PLIST_CYC,len);
             SET_LEN_PLIST(tmp,len);
             for (i = 0; i < len;i++) {
@@ -1517,8 +1519,8 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
             return tmp;
         case INTMAT_CMD:
             v = IDINTVEC(h);
-            rows = (UInt) v->rows();
-            cols = (UInt) v->cols();
+            rows = (Int) v->rows();
+            cols = (Int) v->cols();
             tmp = NEW_PLIST(T_PLIST_DENSE,rows);
             SET_LEN_PLIST(tmp,rows);
             k = 0;
