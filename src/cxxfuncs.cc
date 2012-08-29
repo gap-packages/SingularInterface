@@ -991,8 +991,7 @@ extern "C"
 Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
-    if (TNUM_OBJ(rr) != T_SINGULAR ||
-        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1043,8 +1042,7 @@ Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     }
     Int c_nrrows = INT_INTOBJ(nrrows);
     Int c_nrcols = INT_INTOBJ(nrcols);
-    if (TNUM_OBJ(rr) != T_SINGULAR ||
-        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1158,8 +1156,7 @@ Obj FuncSI_Makeintvec(Obj self, Obj l)
 extern "C"
 Obj FuncSI_Plistintvec(Obj self, Obj iv)
 {
-    if (! (TNUM_OBJ(iv) == T_SINGULAR && 
-           TYPE_SINGOBJ(iv) == SINGTYPE_INTVEC) ) {
+    if (!ISSINGOBJ(SINGTYPE_INTVEC,iv) ) {
         ErrorQuit("iv must be a singular intvec", 0L, 0L);
         return Fail;
     }
@@ -1214,8 +1211,7 @@ Obj FuncSI_Makeintmat(Obj self, Obj m)
 extern "C"
 Obj FuncSI_Matintmat(Obj self, Obj im)
 {
-    if (! (TNUM_OBJ(im) == T_SINGULAR && 
-           TYPE_SINGOBJ(im) == SINGTYPE_INTMAT) ) {
+    if (!ISSINGOBJ(SINGTYPE_INTMAT, im)) {
         ErrorQuit("im must be a singular intmat", 0L, 0L);
         return Fail;
     }
