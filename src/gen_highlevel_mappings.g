@@ -1,6 +1,13 @@
 Read("highlevel_mappings_table.g");;
+IsRingDep := 
+Set(["ideal","map","matrix","module","number","poly","qring","ring","vector"]);;
+IsRingDepVariant := function(tabrow)
+  return ForAll(tabrow[2],x->not(x in IsRingDep)) and
+         tabrow[3] in IsRingDep;
+end;;
+
 doit := function()
-  local s,ops,ops2,op,poss,name,nr,i;
+  local needring,s,ops,ops2,op,poss,name,nr,i;
 s := OutputTextFile("highlevel_mappings.g",false);
 PrintTo(s,"# DO NOT EDIT, this file is generated automatically.\n");
 
@@ -12,28 +19,62 @@ od;
 for op in ops do
   if IsBound(ops2.(op)) then
     nr := ops2.(op);
-    poss := List(SI_OPERATIONS,l->First([1..Length(l)],i->l[i][1] = op));
+    poss := List(SI_OPERATIONS,l->Filtered([1..Length(l)],i->l[i][1] = op));
+    needring := false;
+    for i in [1..3] do
+        if ForAny(SI_OPERATIONS[i]{poss[i]},IsRingDepVariant) then
+            needring := true;
+        fi;
+    od;
     name := Concatenation("SI_",op);
     if poss{[2..4]} = [fail,fail,fail] then
         # occurs only with one argument
-        PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a)\n",
-                  "    return SI_CallFunc1(",nr,",a);\n",
-                  "  end );\n\n");
+        if needring then
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a)\n",
+                      "    SI_SetCurrRing(r);\n",
+                      "    return SI_CallFunc1(",nr,",a);\n",
+                      "  end );\n\n");
+        else
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a)\n",
+                      "    return SI_CallFunc1(",nr,",a);\n",
+                      "  end );\n\n");
+        fi;
     elif poss{[1,3,4]} = [fail,fail,fail] then
         # occurs only with two arguments
-        PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b)\n",
-                  "    return SI_CallFunc2(",nr,",a,b);\n",
-                  "  end );\n\n");
+        if needring then
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b)\n",
+                      "    SI_SetCurrRing(r);\n",
+                      "    return SI_CallFunc2(",nr,",a,b);\n",
+                      "  end );\n\n");
+        else
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b)\n",
+                      "    return SI_CallFunc2(",nr,",a,b);\n",
+                      "  end );\n\n");
+        fi;
     elif poss{[1,2,4]} = [fail,fail,fail] then
         # occurs only with three arguments
-        PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b,c)\n",
-                  "    return SI_CallFunc3(",nr,",a,b,c);\n",
-                  "  end );\n\n");
+        if needring then
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b,c)\n",
+                      "    SI_SetCurrRing(r);\n",
+                      "    return SI_CallFunc3(",nr,",a,b,c);\n",
+                      "  end );\n\n");
+        else
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b,c)\n",
+                      "    return SI_CallFunc3(",nr,",a,b,c);\n",
+                      "  end );\n\n");
+        fi;
     else
-        # generic case:
-        PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
-                  "    return SI_CallFuncM(",nr,",arg);\n",
-                  "  end );\n\n");
+        # generic Case:
+        if needring then
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
+                    "    SI_SetCurrRing(arg[1]);\n",
+                    "    return SI_CallFuncM(",nr,",arg{[2..Length(arg)]});\n",
+                    "  end );\n\n");
+        else
+            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
+                      "    return SI_CallFuncM(",nr,",arg);\n",
+                      "  end );\n\n");
+        fi;
     fi;
   fi;
 od;
