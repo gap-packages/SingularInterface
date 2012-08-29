@@ -45,6 +45,14 @@ static StructGVarFunc GVarFuncs[] =
    "ring", FuncIndeterminatesOfSingularRing,
    "cxx-funcs.cc:FuncIndeterminatesOfSingularRing" }, 
 
+  {"SI_Makepoly_from_String", 2,
+   "rr, st", FuncSI_Makepoly_from_String,
+   "cxx-funcs.cc:FuncSI_Makepoly_from_String" }, 
+
+  {"SI_Makematrix_from_String", 4,
+   "nrrows, nrcols, rr, st", FuncSI_Makematrix_from_String,
+   "cxx-funcs.cc:FuncSI_Makematrix_from_String" }, 
+
   {"SI_MONOMIAL", 3,
    "ring, coeff, exponents", FuncSI_MONOMIAL,
    "cxx-funcs.cc:FuncSI_MONOMIAL" }, 

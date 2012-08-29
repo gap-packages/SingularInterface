@@ -947,6 +947,133 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
     return res;
 }
 
+// Our constructors for polynomials:
+
+poly ParsePoly(ring r, const char *&st)
+{
+    poly p,q;
+    const char *s;
+    char *buf;
+    p = NULL;
+    bool neg;
+    if (r != currRing) rChangeCurrRing(r);
+    while (true) {
+        while (*st == ' ') st++;
+        if (*st == '-') {
+            neg = true;
+            st++;
+            while (*st == ' ') st++;
+        } else neg = false;
+        s = st;
+        while ((*s >= '0' && *s <= '9') ||
+               (*s >= 'a' && *s <= 'z') ||
+               (*s >= 'A' && *s <= 'Z')) s++;
+        buf = (char *) omalloc( (s - st)+1 );
+        strncpy(buf,st,s-st);
+        buf[s-st] = 0;
+        s = p_Read(buf,q,r);
+        s = st + (s - buf);
+        omFree(buf);
+        if (s == st) return p;
+        if (neg) q = p_Neg(q,r);
+        p = p_Add_q(p,q,r);
+        st = s;
+        while (*st == ' ') st++;
+        if (*st == '+') {
+            st++;
+            while (*st == ' ') st++;
+        }
+        if (*st == ',' || *st == 0) return p;
+    }
+}
+
+extern "C"
+Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st)
+// st a string or a list of lists or so...
+{
+    if (TNUM_OBJ(rr) != T_SINGULAR ||
+        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+        ErrorQuit("Argument rr must be a singular ring",0L,0L);
+        return Fail;
+    }
+    if (!IS_STRING_REP(st)) {
+        ErrorQuit("Argument st must be a string",0L,0L);
+        return Fail;
+    }
+    ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
+    const char *p = CSTR_STRING(st);
+    poly q = ParsePoly(r,p);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,q,rnr);
+    return tmp;
+}
+
+int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
+{
+    int alloc = expected;
+    int len = 0;
+    res = (poly *) omalloc(sizeof(poly) * alloc);
+    poly *newres;
+    poly newpoly;
+
+    while (true) {
+        newpoly = ParsePoly(r,st);
+        if (len >= alloc) {
+            alloc *= 2;
+            newres = (poly *) omalloc(sizeof(poly) * alloc);
+            memcpy(newres,res,sizeof(poly)*len);
+            omFree(res);
+            res = newres;
+        }
+        res[len++] = newpoly;
+        if (*st != ',') return len;
+        st++;
+        while (*st == ' ') st++;
+    }
+}
+
+extern "C"
+Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+                                  Obj rr, Obj st)
+{
+    if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
+          INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
+        ErrorQuit("nrrows and nrcols must be positive integers",0L,0L);
+        return Fail;
+    }
+    Int c_nrrows = INT_INTOBJ(nrrows);
+    Int c_nrcols = INT_INTOBJ(nrcols);
+    if (TNUM_OBJ(rr) != T_SINGULAR ||
+        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+        ErrorQuit("Argument rr must be a singular ring",0L,0L);
+        return Fail;
+    }
+    if (!IS_STRING_REP(st)) {
+        ErrorQuit("Argument st must be a string",0L,0L);
+        return Fail;
+    }
+    ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
+    if (r != currRing) rChangeCurrRing(r);
+    const char *p = CSTR_STRING(st);
+    poly *polylist;
+    Int len = ParsePolyList(r, p, (int) (c_nrrows * c_nrrows), polylist);
+    matrix mat = mpNew(c_nrrows,c_nrcols);
+    Int i;
+    Int row = 1;
+    Int col = 1;
+    for (i = 0;i < len && row <= c_nrrows;i++) {
+        MATELEM(mat,row,col) = polylist[i];
+        col++;
+        if (col > c_nrcols) {
+            col = 1;
+            row++;
+        }
+    }
+    omFree(polylist);
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rnr);
+}
+
 extern "C"
 Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
@@ -1166,7 +1293,7 @@ Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
         ErrorQuit("l must be a list",0L,0L);
         return Fail;
     }
-    UInt len = LEN_LIST(l);
+    Int len = LEN_LIST(l);
     if (len == 0) {
         ErrorQuit("l must contain at least one element",0L,0L);
         return Fail;
