@@ -141,6 +141,9 @@ Obj TypeSingularObj(Obj o);
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
 Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings);
 Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
+Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st);
+Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+                                  Obj rr, Obj st);
 Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj FuncSI_STRING_POLY(Obj self, Obj po);
 Obj FuncSI_COPY_POLY(Obj self, Obj po);

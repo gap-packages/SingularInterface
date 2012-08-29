@@ -22,39 +22,50 @@ Assembling of objects losing the wrapping of the pieces
 
 
 
-Ring constructors:
-
-  Provide functionality:
-
-  gap> SingularRing(32003,["a","b","c"],[["dp",[PARAMETER]]);
-  gap> SingularRing(32003,["a","b","c"],[["dp",NRVARS],["lp",NRVARS],
-  gap>      ["wp",[GEWICHTE]]]);
-
-  i.e.:
-     SingularRing( CHARACTERISTIC as immediate integer,
-                   VARIABLE NAMES as list of strings
-                   ORDERINGS as list of
-                     list with entries STRING, INT   (nr of vars)
-                       or with entries STRING, [WEIGHTS]   (intlist)
-                 );
-     delegating to
-       ring rDefault(int ch, int N, char **n,int ord_size, int *ord, int
-                     *block0, int *block1, int ** wvhdl=NULL);
-       ord, block0, block1 must be omalloced
-            (first variable, last variable, 1-based)
-            ord is 0-terminated
-       wvhdl must be alloced, each is
-            NULL
-         or a pointer to an int array also omalloced
-
-     use rOrderName to convert from string to order number for ord
-     (this frees string!)
-
-
-
 More TODO:
 
 proxy objects to look into matrices
 why does SI_print do nothing (or does it do anything?)
 
+
+
+const char *p_Read(const char *st, poly &rc, const ring r)
+returns how far it has parsed
+if equal to input, then nothing read --> error
+
+poly a;
+poly b;
+
+a = p_Add(a,b);
+danach ist b undefiniert, nullen
+
+
+Vektor machen:
+
+
+
+
+Sort out:
+
+gap> s := SingularRing(3,["a","b","c"],[["dp",3]]);
+<singular ring>
+gap> Print(GAPSingular(SI_print(s)));
+//   characteristic : 3
+//   number of vars : 3
+//        block   1 : ordering dp
+//                  : names    a b c
+gap> Print(GAPSingular(SI_print(s)));
+//   characteristic : 3
+//   number of vars : 3
+//        block   1 : ordering dp
+//                  : names    a b c
+gap> Print(GAPSingular(SI_print(s)));
+//   characteristic : 3
+//   number of vars : 3
+//        block   1 : ordering (null)
+//                  : weights  1451812608 0 1451812616 0 1451812624 0
+//                  14518126\
+32 0 1451812640
+gap> Print(GAPSingular(SI_print(s)));
+Speicherzugriffsfehler
 

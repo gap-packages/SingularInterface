@@ -191,8 +191,8 @@ int INT_FROM_GAP(Obj nr)
     } else {   // a long GAP integer
         UInt size = SIZE_INT(nr);
         if (size * sizeof(mp_limb_t) > 4 ||
-            (size == 1 && ADDR_INT(nr)[0] > (1L << 31)) ||
-            (size == 1 && ADDR_INT(nr)[0] == (1L << 31) && 
+            (size == 1UL && ADDR_INT(nr)[0] > (1UL << 31)) ||
+            (size == 1UL && ADDR_INT(nr)[0] == (1UL << 31) && 
              TNUM_OBJ(nr) == T_INTPOS)) {
             ErrorQuit("Argument must be a 32-bit integer",0L,0L);
             return 0;
@@ -365,7 +365,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
 // returned.
 {
     // To end the recursion:
-    if (pos >= SIZE_OBJ(proxy)/sizeof(UInt)) return current;
+    if ((UInt) pos >= SIZE_OBJ(proxy)/sizeof(UInt)) return current;
     if (!IS_INTOBJ(ELM_PLIST(proxy,pos))) {
         error = "proxy index must be an immediate integer";
         return NULL;
@@ -381,7 +381,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SINGTYPE_POLY;
         return id->m[index-1];
     } else if (currgtype == SINGTYPE_MATRIX) {
-        if (pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+        if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
           error = "need two integer indices for matrix proxy element";
@@ -806,7 +806,6 @@ extern "C"
 Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
 {
     char **array;
-    char *p;
     UInt nrvars = LEN_PLIST(names);
     UInt i;
     Obj tmp;
@@ -835,7 +834,8 @@ Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
     int *block0;
     int *block1;
     int **wvhdl;
-    UInt i,j;
+    UInt i;
+    Int j;
     int covered;
     Obj tmp,tmp2;
     
@@ -959,6 +959,133 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
     return res;
 }
 
+// Our constructors for polynomials:
+
+poly ParsePoly(ring r, const char *&st)
+{
+    poly p,q;
+    const char *s;
+    char *buf;
+    p = NULL;
+    bool neg;
+    if (r != currRing) rChangeCurrRing(r);
+    while (true) {
+        while (*st == ' ') st++;
+        if (*st == '-') {
+            neg = true;
+            st++;
+            while (*st == ' ') st++;
+        } else neg = false;
+        s = st;
+        while ((*s >= '0' && *s <= '9') ||
+               (*s >= 'a' && *s <= 'z') ||
+               (*s >= 'A' && *s <= 'Z')) s++;
+        buf = (char *) omalloc( (s - st)+1 );
+        strncpy(buf,st,s-st);
+        buf[s-st] = 0;
+        s = p_Read(buf,q,r);
+        s = st + (s - buf);
+        omFree(buf);
+        if (s == st) return p;
+        if (neg) q = p_Neg(q,r);
+        p = p_Add_q(p,q,r);
+        st = s;
+        while (*st == ' ') st++;
+        if (*st == '+') {
+            st++;
+            while (*st == ' ') st++;
+        }
+        if (*st == ',' || *st == 0) return p;
+    }
+}
+
+extern "C"
+Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st)
+// st a string or a list of lists or so...
+{
+    if (TNUM_OBJ(rr) != T_SINGULAR ||
+        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+        ErrorQuit("Argument rr must be a singular ring",0L,0L);
+        return Fail;
+    }
+    if (!IS_STRING_REP(st)) {
+        ErrorQuit("Argument st must be a string",0L,0L);
+        return Fail;
+    }
+    ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
+    const char *p = CSTR_STRING(st);
+    poly q = ParsePoly(r,p);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,q,rnr);
+    return tmp;
+}
+
+int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
+{
+    int alloc = expected;
+    int len = 0;
+    res = (poly *) omalloc(sizeof(poly) * alloc);
+    poly *newres;
+    poly newpoly;
+
+    while (true) {
+        newpoly = ParsePoly(r,st);
+        if (len >= alloc) {
+            alloc *= 2;
+            newres = (poly *) omalloc(sizeof(poly) * alloc);
+            memcpy(newres,res,sizeof(poly)*len);
+            omFree(res);
+            res = newres;
+        }
+        res[len++] = newpoly;
+        if (*st != ',') return len;
+        st++;
+        while (*st == ' ') st++;
+    }
+}
+
+extern "C"
+Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+                                  Obj rr, Obj st)
+{
+    if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
+          INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
+        ErrorQuit("nrrows and nrcols must be positive integers",0L,0L);
+        return Fail;
+    }
+    Int c_nrrows = INT_INTOBJ(nrrows);
+    Int c_nrcols = INT_INTOBJ(nrcols);
+    if (TNUM_OBJ(rr) != T_SINGULAR ||
+        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+        ErrorQuit("Argument rr must be a singular ring",0L,0L);
+        return Fail;
+    }
+    if (!IS_STRING_REP(st)) {
+        ErrorQuit("Argument st must be a string",0L,0L);
+        return Fail;
+    }
+    ring r = (ring) CXX_SINGOBJ(rr);
+    UInt rnr = RING_SINGOBJ(rr);
+    if (r != currRing) rChangeCurrRing(r);
+    const char *p = CSTR_STRING(st);
+    poly *polylist;
+    Int len = ParsePolyList(r, p, (int) (c_nrrows * c_nrrows), polylist);
+    matrix mat = mpNew(c_nrrows,c_nrcols);
+    Int i;
+    Int row = 1;
+    Int col = 1;
+    for (i = 0;i < len && row <= c_nrrows;i++) {
+        MATELEM(mat,row,col) = polylist[i];
+        col++;
+        if (col > c_nrcols) {
+            col = 1;
+            row++;
+        }
+    }
+    omFree(polylist);
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rnr);
+}
+
 extern "C"
 Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
@@ -980,11 +1107,13 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
+extern "C"
 Obj FuncSI_Makebigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT,BIGINT_FROM_GAP(nr));
 }
 
+extern "C"
 Obj FuncSI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
@@ -1013,6 +1142,7 @@ Obj FuncSI_Intbigint(Obj self, Obj nr)
     }             
 }
 
+extern "C"
 Obj FuncSI_Makeintvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1037,6 +1167,7 @@ Obj FuncSI_Makeintvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC,iv);
 }
 
+extern "C"
 Obj FuncSI_Plistintvec(Obj self, Obj iv)
 {
     if (! (TNUM_OBJ(iv) == T_SINGULAR && 
@@ -1056,6 +1187,7 @@ Obj FuncSI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
+extern "C"
 Obj FuncSI_Makeintmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
@@ -1063,9 +1195,9 @@ Obj FuncSI_Makeintmat(Obj self, Obj m)
         ErrorQuit("m must be a list of lists",0L,0L);
         return Fail;
     }
-    UInt rows = LEN_LIST(m);
-    UInt cols = LEN_LIST(ELM_LIST(m,1));
-    UInt r,c;
+    Int rows = LEN_LIST(m);
+    Int cols = LEN_LIST(ELM_LIST(m,1));
+    Int r,c;
     Obj therow;
     intvec *iv = new intvec(rows,cols,0);
     for (r = 1;r <= rows;r++) {
@@ -1091,6 +1223,7 @@ Obj FuncSI_Makeintmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
 }
 
+extern "C"
 Obj FuncSI_Matintmat(Obj self, Obj im)
 {
     if (! (TNUM_OBJ(im) == T_SINGULAR && 
@@ -1118,6 +1251,7 @@ Obj FuncSI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
+extern "C"
 Obj FuncSI_Makeideal(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1132,7 +1266,7 @@ Obj FuncSI_Makeideal(Obj self, Obj l)
     ideal id;
     UInt i;
     Obj t;
-    ring r,r2;
+    ring r;
     for (i = 1;i <= len;i++) {
         t = ELM_LIST(l,i);
         if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
@@ -1157,6 +1291,7 @@ Obj FuncSI_Makeideal(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
+extern "C"
 Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1170,17 +1305,17 @@ Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
         ErrorQuit("l must be a list",0L,0L);
         return Fail;
     }
-    UInt len = LEN_LIST(l);
+    Int len = LEN_LIST(l);
     if (len == 0) {
         ErrorQuit("l must contain at least one element",0L,0L);
         return Fail;
     }
     matrix mat;
-    UInt i;
+    Int i;
     Obj t;
     ring r,r2;
-    UInt row = 1;
-    UInt col = 1;
+    Int row = 1;
+    Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
         t = ELM_LIST(l,i);
         if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
@@ -1467,6 +1602,7 @@ Obj FuncGAPSingular(Obj self, Obj singobj)
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
+extern "C"
 Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 {
     UInt rnr = 0;
@@ -1493,6 +1629,7 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     return singres.gapwrap();
 }
 
+extern "C"
 Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
     UInt rnr = 0;
@@ -1524,6 +1661,7 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     return singres.gapwrap();
 }
 
+extern "C"
 Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
     UInt rnr = 0;
@@ -1563,6 +1701,7 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     return singres.gapwrap();
 }
 
+extern "C"
 Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     UInt rnr = 0;
