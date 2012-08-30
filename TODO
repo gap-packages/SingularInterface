@@ -45,32 +45,6 @@ Vektor machen:
 
 
 
-Sort out:
-
-gap> s := SingularRing(3,["a","b","c"],[["dp",3]]);
-<singular ring>
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering dp
-//                  : names    a b c
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering dp
-//                  : names    a b c
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering (null)
-//                  : weights  1451812608 0 1451812616 0 1451812624 0
-//                  14518126\
-32 0 1451812640
-gap> Print(GAPSingular(SI_print(s)));
-Speicherzugriffsfehler
-
-
-
 Noch benoetigt:
 
 - Zugriff auf Matrixeintraege, lesen und schreiben
