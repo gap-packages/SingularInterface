@@ -1,3 +1,14 @@
+Bugs: ->Mohamed, SI_det, SI_std, crashes (see below)
+Mutable/Immutable types
+Void Singular object
+More constructors
+Method installation (->high performance)
+cleanup of internal objects
+more possibilities for proxy objects actually working
+access to subobjects of singular objects
+IsRingElement and other filters at least for polynomials
+Finish low-level interface and implement some functions with it
+
 Fix path in lib/libsing.gi, because it contains the Singular version!
 proxy implementation for intmats and intvecs?
 More constructors (or less, if accessible via high level)
