@@ -30,7 +30,7 @@ are to be called from C, or vice-versa.
 extern Obj _SI_Types;    /* A kernel copy of a plain list of types */
 extern Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
 extern Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
-extern Obj _SI_Errors;   /* A kernel copy of a string */
+extern Obj SI_Errors;   /* A kernel copy of a string */
 extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
@@ -154,7 +154,7 @@ Obj Func_SI_intvec(Obj self, Obj l);
 Obj Func_SI_Plistintvec(Obj self, Obj iv);
 Obj Func_SI_intmat(Obj self, Obj m);
 Obj Func_SI_Matintmat(Obj self, Obj im);
-Obj Func_SI_ideal(Obj self, Obj l);
+Obj Func_SI_ideal_from_els(Obj self, Obj l);
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l);
 
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input);

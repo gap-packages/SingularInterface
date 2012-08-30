@@ -131,10 +131,10 @@ static StructGVarFunc GVarFuncs[] =
    Func_SI_Matintmat,
    "cxxfuncs.cc:Func_SI_Matintmat" },
 
-  {"_SI_ideal", 1,
+  {"_SI_ideal_from_els", 1,
    "l",
-   Func_SI_ideal,
-   "cxxfuncs.cc:Func_SI_ideal" },
+   Func_SI_ideal_from_els,
+   "cxxfuncs.cc:Func_SI_ideal_from_els" },
 
   {"_SI_matrix_from_els", 3,
    "nrrows, nrcols, l",
@@ -174,7 +174,7 @@ static StructGVarFunc GVarFuncs[] =
 Obj _SI_Types;    /* A kernel copy of a plain list of types */
 Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
 Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
-Obj _SI_Errors;   /* A kernel copy of a string */
+Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
 /**
@@ -215,7 +215,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("_SI_Types", &_SI_Types);
   InitCopyGVar("_SI_Rings", &_SI_Rings);
   InitCopyGVar("_SI_ElCounts", &_SI_ElCounts);
-  InitCopyGVar("_SI_Errors", &_SI_Errors);
+  InitCopyGVar("SI_Errors", &SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
 
   TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;

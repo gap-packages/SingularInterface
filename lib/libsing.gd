@@ -78,7 +78,7 @@ BindGlobal("SingularProxiesType", NewType( SingularFamily, IsSingularProxy ));
 
 _SI_Rings := [];
 _SI_ElCounts := [];
-_SI_Errors := "";
+SI_Errors := "";
 
 DeclareGlobalFunction( "SI_CleanupRings" );
 
@@ -87,6 +87,53 @@ DeclareGlobalFunction( "_SI_InitInterpreter" );
 
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [] );
+
+BindGlobal("SI_bigint_singular", SI_bigint);
+MakeReadWriteGVar("SI_bigint");
+Unbind(SI_bigint);
+DeclareOperation("SI_bigint",[IsSingularObj]);
+DeclareOperation("SI_bigint",[IsInt]);
+
+BindGlobal("SI_intvec_singular", SI_intvec);
+MakeReadWriteGVar("SI_intvec");
+Unbind(SI_intvec);
+DeclareOperation("SI_intvec",[IsSingularObj]);
+DeclareOperation("SI_intvec",[IsList]);
+
+BindGlobal("SI_intmat_singular", SI_intmat);
+MakeReadWriteGVar("SI_intmat");
+Unbind(SI_intmat);
+DeclareOperation("SI_intmat",[IsSingularObj]);
+DeclareOperation("SI_intmat",[IsSingularObj,IsPosInt,IsPosInt]);
+DeclareOperation("SI_intmat",[IsList]);
+
+BindGlobal("SI_ring_singular", SI_ring);
+MakeReadWriteGVar("SI_ring");
+Unbind(SI_ring);
+DeclareOperation("SI_ring",[IsSingularRing, IsSingularObj]);
+DeclareOperation("SI_ring",[IsInt,IsList]);
+DeclareOperation("SI_ring",[IsInt,IsList,IsList]);
+
+BindGlobal("SI_poly_singular", SI_poly);
+MakeReadWriteGVar("SI_poly");
+Unbind(SI_poly);
+DeclareOperation("SI_poly",[IsSingularRing, IsSingularObj]);
+DeclareOperation("SI_poly",[IsSingularRing, IsStringRep]);
+
+BindGlobal("SI_matrix_singular", SI_matrix);
+MakeReadWriteGVar("SI_matrix");
+Unbind(SI_matrix);
+DeclareOperation("SI_matrix",[IsSingularObj]);
+DeclareOperation("SI_matrix",[IsSingularObj,IsPosInt,IsPosInt]);
+DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsSingularRing, IsStringRep]);
+DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsList]);
+
+BindGlobal("SI_ideal_singular", SI_ideal);
+MakeReadWriteGVar("SI_ideal");
+Unbind(SI_ideal);
+DeclareOperation("SI_ideal",[IsSingularObj]);
+DeclareOperation("SI_ideal",[IsPosInt, IsPosInt, IsSingularRing, IsStringRep]);
+DeclareOperation("SI_ideal",[IsList]);
 
 DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt] );
 DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt, IsPosInt] );

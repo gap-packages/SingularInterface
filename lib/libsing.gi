@@ -1,3 +1,34 @@
+InstallMethod(SI_bigint,[IsSingularObj],SI_bigint_singular);
+InstallMethod(SI_bigint,[IsInt],_SI_bigint);
+
+InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
+InstallMethod(SI_intvec,[IsList],_SI_intvec);
+
+InstallMethod(SI_intmat,[IsSingularObj],SI_intmat_singular);
+InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],SI_intmat_singular);
+InstallMethod(SI_intmat,[IsList],_SI_intmat);
+
+InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
+InstallMethod(SI_ring,[IsInt,IsList,IsList],_SI_ring);
+InstallMethod(SI_ring,[IsInt,IsList],
+  function( p, l )
+    return SI_ring(p,l,[["dp",Length(l)]]);
+  end);
+
+InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
+InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
+
+InstallMethod(SI_matrix,[IsSingularObj],SI_matrix_singular);
+InstallMethod(SI_matrix,[IsSingularObj,IsPosInt,IsPosInt],SI_matrix_singular);
+InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
+              _SI_matrix_from_String);
+InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsList], _SI_matrix_from_els);
+
+InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
+#InstallMethod(SI_ideal,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
+#              _SI_ideal_from_String);
+InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
+
 InstallGlobalFunction( SI_CleanupRings,
   function()
     local i;
@@ -64,10 +95,10 @@ InstallMethod( Singular, "for a string in stringrep",
   [ IsStringRep ], 
   function( st )
     local ret;
-    _SI_Errors := "";
+    SI_Errors := "";
     ret := _SI_EVALUATE(st);
-    if Length(_SI_Errors) > 0 then
-        Print(_SI_Errors);
+    if Length(SI_Errors) > 0 then
+        Print(SI_Errors);
     fi;
     return ret;
   end );
@@ -138,7 +169,7 @@ InstallMethod(ViewString, "for a singular proxy object",
 InstallMethod(ViewString, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
-    return Concatenation("<singular object: ",SI_ToGAP(SI_print(s)),">");
+    return Concatenation("<singular object:\n",SI_ToGAP(SI_print(s)),">");
   end );
 
 

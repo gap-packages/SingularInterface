@@ -1213,7 +1213,7 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
 }
 
 extern "C"
-Obj Func_SI_ideal(Obj self, Obj l)
+Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
         ErrorQuit("l must be a list",0L,0L);
@@ -1411,15 +1411,15 @@ extern "C"
 void _SI_ErrorCallback(const char *st)
 {
     UInt len = (UInt) strlen(st);
-    if (IS_STRING(_SI_Errors)) {
+    if (IS_STRING(SI_Errors)) {
         char *p;
-        UInt oldlen = GET_LEN_STRING(_SI_Errors);
-        GROW_STRING(_SI_Errors,oldlen+len+2);
-        p = CSTR_STRING(_SI_Errors);
+        UInt oldlen = GET_LEN_STRING(SI_Errors);
+        GROW_STRING(SI_Errors,oldlen+len+2);
+        p = CSTR_STRING(SI_Errors);
         memcpy(p+oldlen,st,len);
         p[oldlen+len] = '\n';
         p[oldlen+len+1] = 0;
-        SET_LEN_STRING(_SI_Errors,oldlen+len+1);
+        SET_LEN_STRING(SI_Errors,oldlen+len+1);
     }
 }
 
