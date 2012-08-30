@@ -1306,6 +1306,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
+// TODO: Remove this function, use _SI_p_String instead
 extern "C"
 Obj Func_SI_STRING_POLY(Obj self, Obj po)
 {
@@ -1333,6 +1334,7 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
     return tmp;
 }
 
+// TODO: Remove this function, use _SI_p_Add_q instead
 extern "C"
 Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b)
 {
@@ -1349,6 +1351,7 @@ Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b)
     return tmp;
 }
 
+// TODO: Remove this function, use _SI_p_Neg instead
 extern "C"
 Obj Func_SI_NEG_POLY(Obj self, Obj a)
 {
@@ -1360,6 +1363,7 @@ Obj Func_SI_NEG_POLY(Obj self, Obj a)
     return tmp;
 }
 
+// TODO: Remove this function, use _SI_pp_Mult_qq instead
 extern "C"
 Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
 {
@@ -1372,6 +1376,12 @@ Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
     return tmp;
 }
 
+// TODO: Remove this function, use _SI_pp_Mult_nn instead
+// CAVEAT: One issue remains: _SI_MULT_POLY_NUMBER can take
+// a GAP integer as second argument.
+// But _SI_pp_Mult_nn currently cannot do that: It uses SingObj, which
+// converts the GAP (GMP) int into a Singular 'bigint'.
+// But pp_Mult_nn needs a Singular 'number'...
 extern "C"
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
