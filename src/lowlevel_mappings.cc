@@ -20,7 +20,7 @@ Obj Func_SI_p_String(Obj self, Obj arg1) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.nondestructiveuse();
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
     
     // Call into Singular kernel
     char * res = p_String(var1,r);
@@ -50,7 +50,7 @@ Obj Func_SI_p_Neg(Obj self, Obj arg1) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.destructiveuse();
+    poly var1 = (poly) obj1.destructiveuse()->data;
     
     // Call into Singular kernel
     poly res = p_Neg(var1,r);
@@ -77,7 +77,7 @@ Obj Func_SI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.nondestructiveuse();
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
     SingObj obj2(arg2, rnr, r);
     if (obj2.error) {
         obj1.cleanup();
@@ -90,7 +90,7 @@ Obj Func_SI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var2 = (poly) obj2.nondestructiveuse();
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
     
     // Call into Singular kernel
     poly res = pp_Mult_qq(var1,var2,r);
@@ -117,7 +117,7 @@ Obj Func_SI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.nondestructiveuse();
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
     SingObj obj2(arg2, rnr, r);
     if (obj2.error) {
         obj1.cleanup();
@@ -130,7 +130,7 @@ Obj Func_SI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 2 must be of type NUMBER", 0L, 0L);
         return Fail;
     }
-    number var2 = (number) obj2.nondestructiveuse();
+    number var2 = (number) obj2.nondestructiveuse()->data;
     
     // Call into Singular kernel
     poly res = pp_Mult_nn(var1,var2,r);
@@ -157,7 +157,7 @@ Obj Func_SI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.destructiveuse();
+    poly var1 = (poly) obj1.destructiveuse()->data;
     SingObj obj2(arg2, rnr, r);
     if (obj2.error) {
         obj1.cleanup();
@@ -170,7 +170,7 @@ Obj Func_SI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
         ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var2 = (poly) obj2.destructiveuse();
+    poly var2 = (poly) obj2.destructiveuse()->data;
     
     // Call into Singular kernel
     poly res = p_Add_q(var1,var2,r);
@@ -197,7 +197,7 @@ Obj Func_SI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.destructiveuse();
+    poly var1 = (poly) obj1.destructiveuse()->data;
     SingObj obj2(arg2, rnr, r);
     if (obj2.error) {
         obj1.cleanup();
@@ -210,7 +210,7 @@ Obj Func_SI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var2 = (poly) obj2.nondestructiveuse();
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
     SingObj obj3(arg3, rnr, r);
     if (obj3.error) {
         obj1.cleanup();
@@ -225,7 +225,7 @@ Obj Func_SI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 3 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var3 = (poly) obj3.nondestructiveuse();
+    poly var3 = (poly) obj3.nondestructiveuse()->data;
     
     // Call into Singular kernel
     poly res = p_Minus_mm_Mult_qq(var1,var2,var3,r);
@@ -252,7 +252,7 @@ Obj Func_SI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var1 = (poly) obj1.destructiveuse();
+    poly var1 = (poly) obj1.destructiveuse()->data;
     SingObj obj2(arg2, rnr, r);
     if (obj2.error) {
         obj1.cleanup();
@@ -265,7 +265,7 @@ Obj Func_SI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var2 = (poly) obj2.nondestructiveuse();
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
     SingObj obj3(arg3, rnr, r);
     if (obj3.error) {
         obj1.cleanup();
@@ -280,7 +280,7 @@ Obj Func_SI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
         ErrorQuit("argument 3 must be of type POLY", 0L, 0L);
         return Fail;
     }
-    poly var3 = (poly) obj3.nondestructiveuse();
+    poly var3 = (poly) obj3.nondestructiveuse()->data;
     
     // Call into Singular kernel
     poly res = p_Plus_mm_Mult_qq(var1,var2,var3,r);
