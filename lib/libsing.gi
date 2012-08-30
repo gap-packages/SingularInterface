@@ -88,7 +88,7 @@ InstallGlobalFunction( _SI_InitInterpreter,
     local path;
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "spielwiese/TARGET/bin/Singular"));
+                     "SW/bin/Singular"));
     if ARCH_IS_MAC_OS_X() then
         Append(path,"exe!");
     fi;
