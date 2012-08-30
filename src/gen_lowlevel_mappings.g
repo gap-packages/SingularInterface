@@ -175,7 +175,7 @@ GenerateSingularWrapper := function (desc)
 	#############################################
 	# Generate the function head
 	#############################################
-	func_head := Concatenation("Obj FuncSI_", desc.name, "(Obj self");
+	func_head := Concatenation("Obj Func_SI_", desc.name, "(Obj self");
 	for i in [1 .. Length(desc.params) ] do
 		Append(func_head, ", Obj ");
 		Append(func_head, CXXArgName(i));
@@ -189,16 +189,16 @@ GenerateSingularWrapper := function (desc)
 	PrintTo(stream_h, func_head, ";\n");
 
 	# add function entry in table header file
-	
-	PrintTo(stream_table_h, "  {\"SI_", desc.name, "\", ", Length(desc.params), ",\n" );
-	PrintTo(stream_table_h, "  \"TODO\", FuncSI_", desc.name, ",\n" );
-	PrintTo(stream_table_h, "  \"", basename, ".cc:FuncSI_", desc.name, "\" },\n" );
+
+	PrintTo(stream_table_h, "  {\"_SI_", desc.name, "\", ", Length(desc.params), ",\n" );
+	PrintTo(stream_table_h, "  \"TODO\", Func_SI_", desc.name, ",\n" );
+	PrintTo(stream_table_h, "  \"", basename, ".cc:Func_SI_", desc.name, "\" },\n" );
 	PrintTo(stream_table_h, "\n" );
 
 
-#   {"SI_ADD_POLYS", 2,
-#    "a, b", FuncSI_ADD_POLYS,
-#    "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
+#   {"_SI_ADD_POLYS", 2,
+#    "a, b", Func_SI_ADD_POLYS,
+#    "cxx-funcs.cc:Func_SI_ADD_POLYS" },
 
 	#############################################
 	# begin function body

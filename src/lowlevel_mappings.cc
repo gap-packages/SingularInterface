@@ -5,7 +5,7 @@
 extern "C" {
 #endif /* ifdef __cplusplus */
 
-Obj FuncSI_p_String(Obj self, Obj arg1) {
+Obj Func_SI_p_String(Obj self, Obj arg1) {
     UInt rnr;
     ring r = currRing;
     
@@ -35,7 +35,7 @@ Obj FuncSI_p_String(Obj self, Obj arg1) {
     }
 }
 
-Obj FuncSI_p_Neg(Obj self, Obj arg1) {
+Obj Func_SI_p_Neg(Obj self, Obj arg1) {
     UInt rnr;
     ring r = currRing;
     
@@ -62,7 +62,7 @@ Obj FuncSI_p_Neg(Obj self, Obj arg1) {
     }
 }
 
-Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
+Obj Func_SI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
     UInt rnr;
     ring r = currRing;
     
@@ -102,7 +102,7 @@ Obj FuncSI_pp_Mult_qq(Obj self, Obj arg1, Obj arg2) {
     }
 }
 
-Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
+Obj Func_SI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
     UInt rnr;
     ring r = currRing;
     
@@ -142,7 +142,7 @@ Obj FuncSI_pp_Mult_nn(Obj self, Obj arg1, Obj arg2) {
     }
 }
 
-Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
+Obj Func_SI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
     UInt rnr;
     ring r = currRing;
     
@@ -182,7 +182,7 @@ Obj FuncSI_p_Add_q(Obj self, Obj arg1, Obj arg2) {
     }
 }
 
-Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
+Obj Func_SI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     UInt rnr;
     ring r = currRing;
     
@@ -237,7 +237,7 @@ Obj FuncSI_p_Minus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     }
 }
 
-Obj FuncSI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
+Obj Func_SI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     UInt rnr;
     ring r = currRing;
     
