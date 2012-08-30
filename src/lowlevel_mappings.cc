@@ -30,7 +30,7 @@ Obj Func_SI_p_String(Obj self, Obj arg1) {
         UInt len = (UInt) strlen(res);
         Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),res);
+        memcpy(CHARS_STRING(tmp),res, len+1);
         return tmp;
     }
 }

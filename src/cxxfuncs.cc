@@ -1317,7 +1317,7 @@ Obj Func_SI_STRING_POLY(Obj self, Obj po)
     UInt len = (UInt) strlen(st);
     Obj tmp = NEW_STRING(len);
     SET_LEN_STRING(tmp,len);
-    strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
+    memcpy(CHARS_STRING(tmp),st,len+1);
     return tmp;
 }
 
@@ -1398,7 +1398,7 @@ Obj FuncSI_LastOutput(Obj self)
         UInt len = (UInt) strlen(_SI_LastOutputBuf);
         Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),_SI_LastOutputBuf);
+        memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
         return tmp;
@@ -1481,7 +1481,7 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
             len = (Int) strlen(IDSTRING(h));
             tmp = NEW_STRING(len);
             SET_LEN_STRING(tmp,len);
-            strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),IDSTRING(h));
+            memcpy(CHARS_STRING(tmp),IDSTRING(h),len+1);
             return tmp;
         case INTVEC_CMD:
             v = IDINTVEC(h);
@@ -1539,7 +1539,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
         len = (UInt) strlen(st);
         tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
+        memcpy(CHARS_STRING(tmp),st,len+1);
         return tmp;
       case SINGTYPE_INT:
         i = (Int) CXX_SINGOBJ(singobj);
