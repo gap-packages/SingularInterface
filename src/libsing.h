@@ -1,12 +1,6 @@
 #ifndef LIBSING_H
 #define LIBSING_H
 
-#if 1
-// HACK: Workaround #1 for version of GAP before 2011-11-16:
-// ensure USE_GMP is defined
-#define USE_GMP 1
-#endif
-
 #include <src/compiled.h>
 
 #undef PACKAGE
@@ -33,10 +27,10 @@ are to be called from C, or vice-versa.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
-extern Obj SingularTypes;    /* A kernel copy of a plain list of types */
-extern Obj SingularRings;    /* A kernel copy of a plain list of rings */
-extern Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
-extern Obj SingularErrors;   /* A kernel copy of a string */
+extern Obj _SI_Types;    /* A kernel copy of a plain list of types */
+extern Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
+extern Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
+extern Obj _SI_Errors;   /* A kernel copy of a string */
 extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
@@ -58,16 +52,16 @@ inline void SET_RING_SINGOBJ( Obj obj, UInt val )
 
 inline void INC_REFCOUNT( UInt ring )
 {
-    Int count = INT_INTOBJ(ELM_PLIST(SingularElCounts,ring));
+    Int count = INT_INTOBJ(ELM_PLIST(_SI_ElCounts,ring));
     count++;
-    SET_ELM_PLIST(SingularElCounts,ring,INTOBJ_INT(count));
+    SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
 inline void DEC_REFCOUNT( UInt ring )
 {
-    Int count = INT_INTOBJ(ELM_PLIST(SingularElCounts,ring));
+    Int count = INT_INTOBJ(ELM_PLIST(_SI_ElCounts,ring));
     count--;
-    SET_ELM_PLIST(SingularElCounts,ring,INTOBJ_INT(count));
+    SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
 static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
@@ -135,46 +129,44 @@ inline int ISSINGOBJ(int typ, Obj obj)
 //////////////// C++ functions to be called from C ////////////////////
 
 
-void SingularObjMarkFunc(Bag o);
-void SingularFreeFunc(Obj o);
-Obj TypeSingularObj(Obj o);
-Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names);
-Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings);
-Obj FuncIndeterminatesOfSingularRing(Obj self, Obj r);
-Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st);
-Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
-                                  Obj rr, Obj st);
-Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
-Obj FuncSI_STRING_POLY(Obj self, Obj po);
-Obj FuncSI_COPY_POLY(Obj self, Obj po);
-Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b);
-Obj FuncSI_NEG_POLY(Obj self, Obj a);
-Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b);
-Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);
-Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path);
-Obj FuncSI_EVALUATE(Obj self, Obj st);
-Obj FuncValueOfSingularVar(Obj self, Obj name);
-Obj FuncGAPSingular(Obj self, Obj singobj);
-Obj FuncLastSingularOutput(Obj self);
-Obj FuncSI_Makebigint(Obj self, Obj nr);
-Obj FuncSI_Intbigint(Obj self, Obj b);
-Obj FuncSI_Makeintvec(Obj self, Obj l);
-Obj FuncSI_Plistintvec(Obj self, Obj iv);
-Obj FuncSI_Makeintmat(Obj self, Obj m);
-Obj FuncSI_Matintmat(Obj self, Obj im);
-Obj FuncSI_Makeideal(Obj self, Obj l);
-Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l);
+void _SI_ObjMarkFunc(Bag o);
+void _SI_FreeFunc(Obj o);
+Obj _SI_TypeObj(Obj o);
+Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
+Obj FuncSI_Indeterminates(Obj self, Obj r);
+Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
+Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);
+Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
+Obj Func_SI_STRING_POLY(Obj self, Obj po);
+Obj Func_SI_COPY_POLY(Obj self, Obj po);
+Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b);
+Obj Func_SI_NEG_POLY(Obj self, Obj a);
+Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b);
+Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);
+Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path);
+Obj Func_SI_EVALUATE(Obj self, Obj st);
+Obj FuncSI_ValueOfVar(Obj self, Obj name);
+Obj FuncSI_ToGAP(Obj self, Obj singobj);
+Obj FuncSI_LastOutput(Obj self);
+Obj Func_SI_bigint(Obj self, Obj nr);
+Obj Func_SI_Intbigint(Obj self, Obj b);
+Obj Func_SI_intvec(Obj self, Obj l);
+Obj Func_SI_Plistintvec(Obj self, Obj iv);
+Obj Func_SI_intmat(Obj self, Obj m);
+Obj Func_SI_Matintmat(Obj self, Obj im);
+Obj Func_SI_ideal(Obj self, Obj l);
+Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l);
 
-Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input);
-Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
-Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
-Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg);
+Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input);
+Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
+Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
+Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg);
 
 Obj FuncSI_SetCurrRing(Obj self, Obj r);
 
 //////////////// C functions to be called from C++ ////////////////////
 
-void PrintGAPError(const char* message);
+void _SI_PrintGAPError(const char* message);
 
 #endif //#define LIBSING_H
 

@@ -1,6 +1,6 @@
 # Make some types:
 
-SingularTypes := [];
+_SI_Types := [];
 
 SingularFamily := NewFamily("SingularFamily");
 DeclareCategory( "IsSingularObj", IsObject );
@@ -22,40 +22,40 @@ DeclareCategory( "IsSingularString", IsSingularObj );
 DeclareCategory( "IsSingularVector", IsSingularObj );
 DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
 
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_BIGINT]
+_SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT]
    := NewType(SingularFamily,IsSingularBigInt);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_IDEAL]
+_SI_Types[_SI_TYPENRS.SINGTYPE_IDEAL]
    := NewType(SingularFamily,IsSingularIdeal);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTMAT]
+_SI_Types[_SI_TYPENRS.SINGTYPE_INTMAT]
    := NewType(SingularFamily,IsSingularIntMat);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_INTVEC]
+_SI_Types[_SI_TYPENRS.SINGTYPE_INTVEC]
    := NewType(SingularFamily,IsSingularIntVec);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_LINK]
+_SI_Types[_SI_TYPENRS.SINGTYPE_LINK]
    := NewType(SingularFamily,IsSingularLink);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_LIST]
+_SI_Types[_SI_TYPENRS.SINGTYPE_LIST]
    := NewType(SingularFamily,IsSingularList);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_MAP]
+_SI_Types[_SI_TYPENRS.SINGTYPE_MAP]
    := NewType(SingularFamily,IsSingularMap);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_MATRIX]
+_SI_Types[_SI_TYPENRS.SINGTYPE_MATRIX]
    := NewType(SingularFamily,IsSingularMatrix);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_MODULE]
+_SI_Types[_SI_TYPENRS.SINGTYPE_MODULE]
    := NewType(SingularFamily,IsSingularModule);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_NUMBER]
+_SI_Types[_SI_TYPENRS.SINGTYPE_NUMBER]
    := NewType(SingularFamily,IsSingularNumber);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_POLY]
+_SI_Types[_SI_TYPENRS.SINGTYPE_POLY]
    := NewType(SingularFamily,IsSingularPoly);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_QRING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_QRING] 
    := NewType(SingularFamily,IsSingularQRing);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RESOLUTION] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION] 
    := NewType(SingularFamily,IsSingularResolution);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_RING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RING] 
    := NewType(SingularFamily,IsSingularRing);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_STRING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_STRING] 
    := NewType(SingularFamily,IsSingularString);
-SingularTypes[SINGULAR_TYPENRS.SINGTYPE_VECTOR] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR] 
    := NewType(SingularFamily,IsSingularVector);
 
-BindGlobal("SINGULAR_TYPETAB",
+BindGlobal("_SI_TYPETAB",
     rec( bigint := IsSingularBigInt,
          ideal := IsSingularIdeal,
          intmat := IsSingularIntMat,
@@ -76,18 +76,20 @@ BindGlobal("SINGULAR_TYPETAB",
 
 BindGlobal("SingularProxiesType", NewType( SingularFamily, IsSingularProxy ));
 
-SingularRings := [];
-SingularElCounts := [];
-SingularErrors := "";
+_SI_Rings := [];
+_SI_ElCounts := [];
+_SI_Errors := "";
 
-DeclareGlobalFunction( "CleanupSingularRings" );
+DeclareGlobalFunction( "SI_CleanupRings" );
 
-DeclareGlobalFunction( "InitSingularInterpreter" );
+DeclareGlobalFunction( "_SI_InitInterpreter" );
 # This is called automatically from libsing.gi, no need for the user to call it.
 
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [] );
 
-DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt] );
-DeclareOperation( "SI_proxy", [IsSingularObj, IsPosInt, IsPosInt] );
+DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt] );
+DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt, IsPosInt] );
+DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
+
 

@@ -70,3 +70,16 @@ ab,-1
 gap> x := SI_\[(m,1);
 
 
+Naming convention questions:
+
+How about:
+
+Get rid of _SI_Intbigint and use SI_ToGAP
+Get rid of _SI_Plistintvec and use SI_ToGAP
+Get rid of _SI_Matintmat and use SI_ToGAP
+
+
+Implementiere FreeFuncs fuer viele Singular-Typen
+
+Unify SingObj::cleanup and _SI_FreeFunc as far as possible
+

@@ -17,7 +17,7 @@ This file contains all of the pure C code that deals with GAP.
 Print a GAP error message.
 @param message The message
 **/
-void PrintGAPError(const char* message)
+void _SI_PrintGAPError(const char* message)
 {
   ErrorMayQuit(message, 0L, 0L);
 }
@@ -31,140 +31,135 @@ This is used in InitKernel() and InitLibrary()
 */
 static StructGVarFunc GVarFuncs[] =
 {
-  {"SingularRingWithoutOrdering", 2,
-   "characteristic, names",
-   FuncSingularRingWithoutOrdering,
-   "cxxfuncs.cc:FuncSingularRingWithoutOrdering" },
-
-  {"SingularRing", 3,
+  {"_SI_ring", 3,
    "characteristic, names, orderings",
-   FuncSingularRing,
-   "cxxfuncs.cc:FuncSingularRing" },
+   Func_SI_ring,
+   "cxxfuncs.cc:Func_SI_ring" },
 
-  {"IndeterminatesOfSingularRing", 1,
-   "ring", FuncIndeterminatesOfSingularRing,
-   "cxxfuncs.cc:FuncIndeterminatesOfSingularRing" },
+  {"SI_Indeterminates", 1,
+   "ring", FuncSI_Indeterminates,
+   "cxxfuncs.cc:FuncSI_Indeterminates" },
 
-  {"SI_Makepoly_from_String", 2,
-   "rr, st", FuncSI_Makepoly_from_String,
-   "cxxfuncs.cc:FuncSI_Makepoly_from_String" },
+  {"_SI_poly_from_String", 2,
+   "rr, st", Func_SI_poly_from_String,
+   "cxxfuncs.cc:Func_SI_poly_from_String" },
 
-  {"SI_Makematrix_from_String", 4,
-   "nrrows, nrcols, rr, st", FuncSI_Makematrix_from_String,
-   "cxxfuncs.cc:FuncSI_Makematrix_from_String" },
+  {"_SI_matrix_from_String", 4,
+   "nrrows, nrcols, rr, st", Func_SI_matrix_from_String,
+   "cxxfuncs.cc:Func_SI_matrix_from_String" },
 
-  {"SI_MONOMIAL", 3,
-   "ring, coeff, exponents", FuncSI_MONOMIAL,
-   "cxxfuncs.cc:FuncSI_MONOMIAL" },
+  {"_SI_MONOMIAL", 3,
+   "ring, coeff, exponents", Func_SI_MONOMIAL,
+   "cxxfuncs.cc:Func_SI_MONOMIAL" },
 
-  {"SI_STRING_POLY", 1,
-   "poly", FuncSI_STRING_POLY,
-   "cxxfuncs.cc:FuncSI_STRING_POLY" },
+  {"_SI_STRING_POLY", 1,
+   "poly", Func_SI_STRING_POLY,
+   "cxxfuncs.cc:Func_SI_STRING_POLY" },
 
-  {"SI_COPY_POLY", 1,
-   "poly", FuncSI_COPY_POLY,
-   "cxxfuncs.cc:FuncSI_COPY_POLY" },
+  {"_SI_COPY_POLY", 1,
+   "poly", Func_SI_COPY_POLY,
+   "cxxfuncs.cc:Func_SI_COPY_POLY" },
 
-  {"SI_ADD_POLYS", 2,
-   "a, b", FuncSI_ADD_POLYS,
-   "cxxfuncs.cc:FuncSI_ADD_POLYS" },
+  {"_SI_ADD_POLYS", 2,
+   "a, b", Func_SI_ADD_POLYS,
+   "cxxfuncs.cc:Func_SI_ADD_POLYS" },
 
-  {"SI_NEG_POLY", 1,
-   "a", FuncSI_NEG_POLY,
-   "cxxfuncs.cc:FuncSI_NEG_POLY" },
+  {"_SI_NEG_POLY", 1,
+   "a", Func_SI_NEG_POLY,
+   "cxxfuncs.cc:Func_SI_NEG_POLY" },
 
-  {"SI_MULT_POLYS", 2,
-   "a, b", FuncSI_MULT_POLYS,
-   "cxxfuncs.cc:FuncSI_MULT_POLYS" },
+  {"_SI_MULT_POLYS", 2,
+   "a, b", Func_SI_MULT_POLYS,
+   "cxxfuncs.cc:Func_SI_MULT_POLYS" },
 
-  {"SI_MULT_POLY_NUMBER", 2,
-   "a, b", FuncSI_MULT_POLY_NUMBER,
-   "cxxfuncs.cc:FuncSI_MULT_POLY_NUMBER" },
+  {"_SI_MULT_POLY_NUMBER", 2,
+   "a, b", Func_SI_MULT_POLY_NUMBER,
+   "cxxfuncs.cc:Func_SI_MULT_POLY_NUMBER" },
 
-  {"SI_INIT_INTERPRETER", 1,
+  {"_SI_INIT_INTERPRETER", 1,
    "path",
-   FuncSI_INIT_INTERPRETER,
-   "cxxfuncs.cc:FuncSI_INIT_INTERPRETER" },
+   Func_SI_INIT_INTERPRETER,
+   "cxxfuncs.cc:Func_SI_INIT_INTERPRETER" },
 
-  {"SI_EVALUATE", 1,
+  {"_SI_EVALUATE", 1,
    "st",
-   FuncSI_EVALUATE,
-   "cxxfuncs.cc:FuncSI_EVALUATE" },
+   Func_SI_EVALUATE,
+   "cxxfuncs.cc:Func_SI_EVALUATE" },
 
-  {"ValueOfSingularVar", 1,
+  {"SI_ValueOfVar", 1,
    "name",
-   FuncValueOfSingularVar,
-   "cxxfuncs.cc:FuncValueOfSingularVar" },
+   FuncSI_ValueOfVar,
+   "cxxfuncs.cc:FuncSI_ValueOfVar" },
 
-  {"GAPSingular", 1,
+  {"SI_ToGAP", 1,
    "singobj",
-   FuncGAPSingular,
-   "cxxfuncs.cc:FuncGAPSingular" },
+   FuncSI_ToGAP,
+   "cxxfuncs.cc:FuncSI_ToGAP" },
 
-  {"LastSingularOutput", 0,
+  {"SI_LastOutput", 0,
    "",
-   FuncLastSingularOutput,
-   "cxxfuncs.cc:FuncLastSingularOutput" },
+   FuncSI_LastOutput,
+   "cxxfuncs.cc:FuncSI_LastOutput" },
 
-  {"SI_Makebigint", 1,
+  {"_SI_bigint", 1,
    "nr",
-   FuncSI_Makebigint,
-   "cxxfuncs.cc:FuncSI_Makebigint" },
+   Func_SI_bigint,
+   "cxxfuncs.cc:Func_SI_bigint" },
 
-  {"SI_Intbigint", 1,
+  {"_SI_Intbigint", 1,
    "nr",
-   FuncSI_Intbigint,
-   "cxxfuncs.cc:FuncSI_Intbigint" },
+   Func_SI_Intbigint,
+   "cxxfuncs.cc:Func_SI_Intbigint" },
 
-  {"SI_Makeintvec", 1,
+  {"_SI_intvec", 1,
    "l",
-   FuncSI_Makeintvec,
-   "cxxfuncs.cc:FuncSI_Makeintvec" },
+   Func_SI_intvec,
+   "cxxfuncs.cc:Func_SI_intvec" },
 
-  {"SI_Plistintvec", 1,
+  {"_SI_Plistintvec", 1,
    "iv",
-   FuncSI_Plistintvec,
-   "cxxfuncs.cc:FuncSI_Plistintvec" },
+   Func_SI_Plistintvec,
+   "cxxfuncs.cc:Func_SI_Plistintvec" },
 
-  {"SI_Makeintmat", 1,
+  {"_SI_intmat", 1,
    "m",
-   FuncSI_Makeintmat,
-   "cxxfuncs.cc:FuncSI_Makeintmat" },
+   Func_SI_intmat,
+   "cxxfuncs.cc:Func_SI_intmat" },
 
-  {"SI_Matintmat", 1,
+  {"_SI_Matintmat", 1,
    "im",
-   FuncSI_Matintmat,
-   "cxxfuncs.cc:FuncSI_Matintmat" },
+   Func_SI_Matintmat,
+   "cxxfuncs.cc:Func_SI_Matintmat" },
 
-  {"SI_Makeideal", 1,
+  {"_SI_ideal", 1,
    "l",
-   FuncSI_Makeideal,
-   "cxxfuncs.cc:FuncSI_Makeideal" },
+   Func_SI_ideal,
+   "cxxfuncs.cc:Func_SI_ideal" },
 
-  {"SI_Makematrix", 3,
+  {"_SI_matrix_from_els", 3,
    "nrrows, nrcols, l",
-   FuncSI_Makematrix,
-   "cxxfuncs.cc:FuncSI_Makematrix" },
+   Func_SI_matrix_from_els,
+   "cxxfuncs.cc:Func_SI_matrix_from_els" },
 
-  {"SI_CallFunc1", 2,
+  {"_SI_CallFunc1", 2,
    "op, input",
-   FuncSI_CallFunc1,
-   "cxxfuncs.cc:FuncSI_CallFunc1" },
+   Func_SI_CallFunc1,
+   "cxxfuncs.cc:Func_SI_CallFunc1" },
 
-  {"SI_CallFunc2", 3,
+  {"_SI_CallFunc2", 3,
    "op, a, b",
-   FuncSI_CallFunc2,
-   "cxxfuncs.cc:FuncSI_CallFunc2" },
+   Func_SI_CallFunc2,
+   "cxxfuncs.cc:Func_SI_CallFunc2" },
 
-  {"SI_CallFunc3", 4,
+  {"_SI_CallFunc3", 4,
    "op, a, b, c",
-   FuncSI_CallFunc3,
-   "cxxfuncs.cc:FuncSI_CallFunc3" },
+   Func_SI_CallFunc3,
+   "cxxfuncs.cc:Func_SI_CallFunc3" },
 
-  {"SI_CallFuncM", 2,
+  {"_SI_CallFuncM", 2,
    "arg",
-   FuncSI_CallFuncM,
-   "cxxfuncs.cc:FuncSI_CallFuncM" },
+   Func_SI_CallFuncM,
+   "cxxfuncs.cc:Func_SI_CallFuncM" },
 
   {"SI_SetCurrRing", 1,
    "r",
@@ -176,10 +171,10 @@ static StructGVarFunc GVarFuncs[] =
   { 0 } /* Finish with an empty entry */
 };
 
-Obj SingularTypes;    /* A kernel copy of a plain list of types */
-Obj SingularRings;    /* A kernel copy of a plain list of rings */
-Obj SingularElCounts; /* A kernel copy of a plain list of ref counts */
-Obj SingularErrors;   /* A kernel copy of a string */
+Obj _SI_Types;    /* A kernel copy of a plain list of types */
+Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
+Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
+Obj _SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
 /**
@@ -192,8 +187,8 @@ static Int InitKernel(StructInitInfo* module)
 
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
-  InitFreeFuncBag(T_SINGULAR,&SingularFreeFunc);
-  InitMarkFuncBags(T_SINGULAR,&SingularObjMarkFunc);
+  InitFreeFuncBag(T_SINGULAR,&_SI_FreeFunc);
+  InitMarkFuncBags(T_SINGULAR,&_SI_ObjMarkFunc);
   tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
   AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
   AssPRec(tmp,RNamName("SINGTYPE_IDEAL"), INTOBJ_INT(SINGTYPE_IDEAL));
@@ -212,18 +207,18 @@ static Int InitKernel(StructInitInfo* module)
   AssPRec(tmp,RNamName("SINGTYPE_RING"), INTOBJ_INT(SINGTYPE_RING));
   AssPRec(tmp,RNamName("SINGTYPE_STRING"), INTOBJ_INT(SINGTYPE_STRING));
   AssPRec(tmp,RNamName("SINGTYPE_VECTOR"), INTOBJ_INT(SINGTYPE_VECTOR));
-  gvar = GVarName("SINGULAR_TYPENRS");
+  gvar = GVarName("_SI_TYPENRS");
   MakeReadWriteGVar(gvar);
   AssGVar(gvar,tmp);
   MakeReadOnlyGVar(gvar);
 
-  InitCopyGVar("SingularTypes", &SingularTypes);
-  InitCopyGVar("SingularRings", &SingularRings);
-  InitCopyGVar("SingularElCounts", &SingularElCounts);
-  InitCopyGVar("SingularErrors", &SingularErrors);
+  InitCopyGVar("_SI_Types", &_SI_Types);
+  InitCopyGVar("_SI_Rings", &_SI_Rings);
+  InitCopyGVar("_SI_ElCounts", &_SI_ElCounts);
+  InitCopyGVar("_SI_Errors", &_SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
 
-  TypeObjFuncs[T_SINGULAR] = TypeSingularObj;
+  TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
   InfoBags[T_SINGULAR].name = "singular wrapper object";
 
   /* return success                                                      */
