@@ -1,0 +1,98 @@
+//
+// From kernel/p_polys.h
+//
+
+/***************************************************************
+ *
+ * Copying/Deleteion of polys: args may be NULL
+ *  - p/q as arg mean a poly
+ *  - m a monomial
+ *  - n a number
+ *  - pp (resp. qq, mm, nn) means arg is constant
+ *  - p (resp, q, m, n)     means arg is destroyed
+ *
+ ***************************************************************/
+// returns -p, p is destroyed
+PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
+
+// returns p*n, p is const (i.e. copied)
+PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
+// returns p*n, destroys p
+PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring r);
+PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring lmRing, const ring tailRing);
+
+// returns p*m, does neither destroy p nor m
+PINLINE2 poly pp_Mult_mm(poly p, poly m, const ring r);
+// returns p*m, destroys p, const: m
+PINLINE2 poly p_Mult_mm(DESTROYS poly p, poly m, const ring r);
+
+// returns p+q, destroys p and q
+PINLINE2 poly p_Add_q(DESTROYS poly p, DESTROYS poly q, const ring r);
+// like p_Add_q, except that if lp == pLength(lp) lq == pLength(lq)
+// then lp == pLength(p+q)
+PINLINE2 poly p_Add_q(DESTROYS poly p, DESTROYS poly q, int &lp, int lq, const ring r);
+
+// return p - m*q, destroys p; const: q,m
+PINLINE2 poly p_Minus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
+// like p_Minus_mm_Mult_qq, except that if lp == pLength(lp) lq == pLength(lq)
+// then lp == pLength(p -m*q)
+PINLINE2 poly p_Minus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, int &lp, int lq,
+                                 poly spNoether, const ring r);
+// returns p + m*q destroys p, const: q, m
+PINLINE2 poly p_Plus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
+
+// returns p + m*q destroys p, const: q, m
+PINLINE2 poly p_Plus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, int &lp, int lq,
+                                const ring r);
+
+// returns p*q, destroys p and q
+PINLINE2 poly p_Mult_q(DESTROYS poly p, DESTROYS poly q, const ring r);
+// returns p*q, does neither destroy p nor q
+PINLINE2 poly pp_Mult_qq(poly p, poly q, const ring r);
+
+// returns p*Coeff(m) for such monomials pm of p, for which m is divisble by pm
+PINLINE2 poly pp_Mult_Coeff_mm_DivSelect(poly p, const poly m, const ring r);
+
+// returns p*Coeff(m) for such monomials pm of p, for which m is divisble by pm
+// if lp is length of p on input then lp is length of returned poly on output
+PINLINE2 poly pp_Mult_Coeff_mm_DivSelect(poly p, int &lp, const poly m, const ring r);
+
+// returns merged p and q, assumes p and q have no monomials which are equal
+PINLINE2 poly p_Merge_q(DESTROYS poly p, DESTROYS poly c, const ring r);
+// sorts p using bucket sort: returns sorted poly
+// assumes that monomials of p are all different
+// reverses it first, if revert == TRUE, use this if input p is "almost" sorted
+// correctly
+PINLINE2 poly p_SortMerge(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
+// like SortMerge, except that p may have equal monimals
+PINLINE2 poly p_SortAdd(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
+
+
+
+/***************************************************************
+ *
+ * poly things which are independent of ring
+ *
+ ***************************************************************/
+PINLINE0 int       pLength(poly a);
+PINLINE0 poly      pLast(poly a, int &length);
+inline   poly      pLast(poly a) { int l; return pLast(a, l);}
+PINLINE0 poly pReverse(poly p);
+
+
+/***************************************************************
+ *
+ * I/O
+ *
+ ***************************************************************/
+char*     p_String(poly p, ring lmRing, ring tailRing);
+char*     p_String0(poly p, ring lmRing, ring tailRing);
+void      p_Write(poly p, ring lmRing, ring tailRing);
+void      p_Write0(poly p, ring lmRing, ring tailRing);
+void      p_wrp(poly p, ring lmRing, ring tailRing);
+
+PINLINE2 char*     p_String(poly p, ring p_ring);
+PINLINE2 char*     p_String0(poly p, ring p_ring);
+PINLINE2 void      p_Write(poly p, ring p_ring);
+PINLINE2 void      p_Write0(poly p, ring p_ring);
+PINLINE2 void      p_wrp(poly p, ring p_ring);

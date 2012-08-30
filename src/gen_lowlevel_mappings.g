@@ -10,7 +10,9 @@
 # * Add mappings for more data types to SINGULAR_types.
 #
 
-# output streams:
+#
+# open output streams
+#
 basename := "lowlevel_mappings";;
 # - for the source file containing the wrapper functions
 stream_cc := OutputTextFile(Concatenation(basename, ".cc"), false);;
