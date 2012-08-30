@@ -1,4 +1,4 @@
-Bugs: ->Mohamed, SI_det, SI_std, crashes (see below)
+Bugs: ->Mohamed, crashes (see below)
 Mutable/Immutable types
 Void Singular object
 More constructors
@@ -60,25 +60,12 @@ Noch benoetigt:
 
 - Zugriff auf Matrixeintraege, lesen und schreiben
 - Verhindere Abstuerze bei falschen Aufrufen
-- SI_det produziert 0 fuer [[a,b],[ab,-1]]
 - unsere Polynome sind "IsRingElement"
 - String methode
 - Fix Makematrix_from_String if not enough polys are given
 - hole ring von Singular object
 
 Fragen:
-
-- Warum stuerzt das ab:
-
-gap> s := SingularRing(3,["a","b"],[["dp",2]]);
-<singular ring>
-gap> m := SI_Makematrix_from_String(2,2,s,"a,b,ab,2");
-<singular object: a, b,
-ab,-1>
-gap> Display(m);
-a, b,
-ab,-1
-gap> x := SI_\[(m,1);
 
 
 Naming convention questions:
