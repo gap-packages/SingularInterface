@@ -9,7 +9,14 @@ InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],SI_intmat_singular);
 InstallMethod(SI_intmat,[IsList],_SI_intmat);
 
 InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
-InstallMethod(SI_ring,[IsInt,IsList,IsList],_SI_ring);
+InstallMethod(SI_ring,[IsInt,IsList,IsList],
+  function( p, l, o )
+    if ForAll(o,x->x[1] <> "c" and x[1] <> "C") then
+        o := ShallowCopy(o);
+        Add(o,["c",0]);
+    fi;
+    return _SI_ring(p,l,o));
+  end);
 InstallMethod(SI_ring,[IsInt,IsList],
   function( p, l )
     return SI_ring(p,l,[["dp",Length(l)]]);
