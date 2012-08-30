@@ -189,16 +189,23 @@ GenerateSingularWrapper := function (desc)
 	PrintTo(stream_h, func_head, ";\n");
 
 	# add function entry in table header file
+	# the result looks like this:
+	#   {"_SI_ADD_POLYS", 2,
+	#    "a, b", Func_SI_ADD_POLYS,
+	#    "cxx-funcs.cc:Func_SI_ADD_POLYS" },
 
 	PrintTo(stream_table_h, "  {\"_SI_", desc.name, "\", ", Length(desc.params), ",\n" );
-	PrintTo(stream_table_h, "  \"TODO\", Func_SI_", desc.name, ",\n" );
+	PrintTo(stream_table_h, "  \"" );
+	for i in [1 .. Length(desc.params) ] do
+		if i>1 then
+			PrintTo(stream_table_h, ", " );
+		fi;
+		PrintTo(stream_table_h, CXXArgName(i) );
+	od;
+	PrintTo(stream_table_h, "\", Func_SI_", desc.name, ",\n" );
 	PrintTo(stream_table_h, "  \"", basename, ".cc:Func_SI_", desc.name, "\" },\n" );
 	PrintTo(stream_table_h, "\n" );
 
-
-#   {"_SI_ADD_POLYS", 2,
-#    "a, b", Func_SI_ADD_POLYS,
-#    "cxx-funcs.cc:Func_SI_ADD_POLYS" },
 
 	#############################################
 	# begin function body
