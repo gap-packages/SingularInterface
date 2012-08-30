@@ -15,7 +15,7 @@ InstallMethod(SI_ring,[IsInt,IsList,IsList],
         o := ShallowCopy(o);
         Add(o,["c",0]);
     fi;
-    return _SI_ring(p,l,o));
+    return _SI_ring(p,l,o);
   end);
 InstallMethod(SI_ring,[IsInt,IsList],
   function( p, l )
