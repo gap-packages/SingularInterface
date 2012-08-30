@@ -1,0 +1,33 @@
+After discussion in St Andrews on August 30, 2012, we came up with the following
+naming conventions:
+
+1) Wrapper interpreter functions use the Singular name, prefixed by SI_.
+For example:
+  SI_std
+  SI_ring
+  SI_bigint
+
+2) For constructors of Singular objects, we try to use the *same* name, too, with a SI_ prefix.
+  So we would have SI_ring and SI_bigint etc.. Since this clashes with the interpreter "SI_bigint",
+  we need to override that with a dispatcher function which calls the right internal code.
+  Example:
+
+  _SI_bigint_orig := SI_bigint;
+  UnbindGlobal("SI_bigint");
+  BindGlobal("SI_bigint",
+    function(arg)
+      if Length(arg) = 1 and IsInt(arg[1]) then
+        return SI_Makebigint(arg[1]);
+      fi;
+      return CallFuncList(_SI_bigint_orig, arg);
+    end );
+
+
+3) For low level functions, we use the prefix _SI_,  as in _SI_p_Add_q
+
+
+4) For objects which consume / destroy some of their arguments, we want a destructive
+   variant, which is distinguished by a _Destroy suffix:
+   _SI_p_Add_q  wold get a _SI_p_Add_q_Destructive  sibling
+   SI_std  ->  SI_std_Destructive
+

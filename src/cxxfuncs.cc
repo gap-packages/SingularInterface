@@ -13,10 +13,6 @@ This file contains all of the code that deals with C++ libraries.
 extern "C" 
 {
   #include "libsing.h"
-
-  // HACK: Workaround #2 for version of GAP before 2011-11-16:
-  // export AInvInt to global namespace
-  Obj AInvInt ( Obj gmp );
 }
 
 // Prevent inline code from using tests which are not in libsingular:
@@ -49,12 +45,12 @@ using namespace std;
 
 inline ring SINGRING_SINGOBJ( Obj obj )
 {
-    return (ring) CXX_SINGOBJ(ELM_PLIST( SingularRings, RING_SINGOBJ(obj)));
+    return (ring) CXX_SINGOBJ(ELM_PLIST( _SI_Rings, RING_SINGOBJ(obj)));
 }
 
 inline ring GET_SINGRING(UInt rnr)
 {
-    return (ring) CXX_SINGOBJ(ELM_PLIST( SingularRings, rnr ));
+    return (ring) CXX_SINGOBJ(ELM_PLIST( _SI_Rings, rnr ));
 }
 
 
@@ -67,7 +63,7 @@ inline ring GET_SINGRING(UInt rnr)
 // proper singular elements from their GAP wrappers or from real GAP
 // objects.
 
-number NUMBER_FROM_GAP(ring r, Obj n)
+static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
 // This internal function converts a GAP number n into a coefficient
 // number for the ring r. n can be an immediate integer, a GMP integer
 // or a rational number. If anything goes wrong, NULL is returned.
@@ -154,7 +150,7 @@ number NUMBER_FROM_GAP(ring r, Obj n)
     }
 }
 
-number BIGINT_FROM_GAP(Obj nr)
+static number _SI_BIGINT_FROM_GAP(Obj nr)
 {
     number n;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
@@ -177,7 +173,9 @@ number BIGINT_FROM_GAP(Obj nr)
     return n;
 }
 
-int INT_FROM_GAP(Obj nr)
+// This seems to be no longer needed:
+#if 0
+int _SI_INT_FROM_GAP(Obj nr)
 {
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
@@ -202,8 +200,9 @@ int INT_FROM_GAP(Obj nr)
                -(int) ADDR_INT(nr)[0];
     }
 }
+#endif
 
-void BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
+static void _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
 {
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
@@ -229,7 +228,7 @@ void BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
     }
 }
 
-static poly GET_poly(Obj o, UInt &rnr)
+static poly _SI_GET_poly(Obj o, UInt &rnr)
 {
     if (ISSINGOBJ(SINGTYPE_POLY,o)) {
         rnr = RING_SINGOBJ(o);
@@ -274,16 +273,17 @@ static poly GET_poly(Obj o, UInt &rnr)
         ErrorQuit("argument must be a singular polynomial (or proxy)",0L,0L);
         return NULL;
     }
+    return NULL;   // To please the compiler
 }
 
-static inline poly GET_IDEAL_ELM_PROXY_NC(Obj p)
+static inline poly _SI_GET_IDEAL_ELM_PROXY_NC(Obj p)
 {
     Obj id = ELM_PLIST(p,1);
     ideal ide = (ideal) CXX_SINGOBJ(id);
     return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
 }
 
-static poly GET_IDEAL_ELM_PROXY(Obj p)
+static poly _SI_GET_IDEAL_ELM_PROXY(Obj p)
 {
     if (TYPE_OBJ(p) != SingularProxiesType) {
         ErrorQuit("p must be a singular proxy object",0L,0L);
@@ -325,7 +325,7 @@ static const int GAPtoSingType[] =
   };
 
 static int SingtoGAPType[MAX_TOK];
-/* Also adjust FuncSI_INIT_INTERPRETER where this is initialised,
+/* Also adjust Func_SI_INIT_INTERPRETER where this is initialised,
    when the set of types changes. */
 
 static const int HasRingTable[] =
@@ -354,8 +354,8 @@ static const int HasRingTable[] =
     0  // SINGTYPE_PYOBJECT      = 22
   };
 
-void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
-                    const char *(&error))
+static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
+                           const char *(&error))
 // proxy is a GAP proxy object, pos is a position in it, the first
 // being 2, current is a pointer to a Singular object of type
 // currgtype (as a GAP type number). This function returns the
@@ -489,7 +489,7 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
     obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
+        _SI_BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
         if (gtype == SINGTYPE_INT) {
             obj.data = (void *) i;
             obj.rtyp = INT_CMD;
@@ -566,6 +566,7 @@ void SingObj::copy()
 // to its type, unless it is a link, a qring or a ring, or unless it
 // is already a copy.
 {
+    ring ri;
     switch (gtype) {
       case SINGTYPE_BIGINT:
         obj.data = (void *) nlCopy((number) obj.data, coeffs_BIGINT);
@@ -598,12 +599,18 @@ void SingObj::copy()
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_QRING:
+        ri = (ring) obj.data;
+        ri->ref++;   // We fake a copy since this will be decreased later on
         return;
       case SINGTYPE_RESOLUTION:
         obj.data = (void *) syCopy((syStrategy) obj.data);
         break;
       case SINGTYPE_RING:
+        ri = (ring) obj.data;
+        ri->ref++;   // We fake a copy since this will be decreased later on
         return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
+                // indeed, we never want to do this, therefore we increase
+                // the reference count
       case SINGTYPE_STRING:
         obj.data = (void *) omStrDup( (char *) obj.data);
         break;
@@ -670,15 +677,6 @@ void SingObj::cleanup(void)
     }
 }
 
-// This should no long be necessary:
-//leftv WRAP_SINGULAR(void *singobj, int type)
-//{
-//    leftv res = (leftv) omAlloc0(sizeof(sleftv));
-//    res->rtyp = type;
-//    res->data = singobj;
-//    return res;
-//}
-
 Obj SingObj::gapwrap(void)
 {
     if (!needcleanup) {
@@ -736,7 +734,7 @@ Obj SingObj::gapwrap(void)
 // reference to a singular object anyway.
 
 extern "C" 
-void SingularFreeFunc(Obj o)
+void _SI_FreeFunc(Obj o)
 {
     UInt type = TYPE_SINGOBJ(o);
     poly p;
@@ -771,7 +769,7 @@ void SingularFreeFunc(Obj o)
 // This function is not actually needed.
 
 extern "C"
-void SingularObjMarkFunc(Bag o)
+void _SI_ObjMarkFunc(Bag o)
 {
 #if 0
     // Not necessary, since singular objects do not have GAP subobjects!
@@ -793,9 +791,9 @@ void SingularObjMarkFunc(Bag o)
 // GAP kernel.
 
 extern "C"
-Obj TypeSingularObj(Obj o)
+Obj _SI_TypeObj(Obj o)
 {
-    return ELM_PLIST(SingularTypes,TYPE_SINGOBJ(o));
+    return ELM_PLIST(_SI_Types,TYPE_SINGOBJ(o));
 }
 
 // The following functions are implementations of functions which
@@ -803,28 +801,7 @@ Obj TypeSingularObj(Obj o)
 // them:
 
 extern "C"
-Obj FuncSingularRingWithoutOrdering(Obj self, Obj charact, Obj names)
-{
-    char **array;
-    UInt nrvars = LEN_PLIST(names);
-    UInt i;
-    Obj tmp;
-    
-    array = (char **) omalloc(sizeof(char *) * nrvars);
-    for (i = 0;i < nrvars;i++)
-        array[i] = omStrDup(CSTR_STRING(ELM_PLIST(names,i+1)));
-
-    ring r = rDefault(INT_INTOBJ(charact),nrvars,array);
-    r->ref++;
-    i = LEN_LIST(SingularRings)+1;
-    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
-    ASS_LIST(SingularRings,i,tmp);
-    ASS_LIST(SingularElCounts,i,INTOBJ_INT(0));
-    return tmp;
-}
-
-extern "C"
-Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
+Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
     char *p;
@@ -926,15 +903,15 @@ Obj FuncSingularRing(Obj self, Obj charact, Obj names, Obj orderings)
                       nrords,ord,block0,block1,wvhdl);
     r->ref++;
 
-    i = LEN_LIST(SingularRings)+1;
+    i = LEN_LIST(_SI_Rings)+1;
     tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
-    ASS_LIST(SingularRings,i,tmp);
-    ASS_LIST(SingularElCounts,i,INTOBJ_INT(0));
+    ASS_LIST(_SI_Rings,i,tmp);
+    ASS_LIST(_SI_ElCounts,i,INTOBJ_INT(0));
     return tmp;
 }
 
 extern "C"
-Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
+Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -961,7 +938,7 @@ Obj FuncIndeterminatesOfSingularRing(Obj self, Obj rr)
 
 // Our constructors for polynomials:
 
-poly ParsePoly(ring r, const char *&st)
+static poly ParsePoly(ring r, const char *&st)
 {
     poly p,q;
     const char *s;
@@ -1000,7 +977,7 @@ poly ParsePoly(ring r, const char *&st)
 }
 
 extern "C"
-Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st)
+Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
     if (TNUM_OBJ(rr) != T_SINGULAR ||
@@ -1020,7 +997,7 @@ Obj FuncSI_Makepoly_from_String(Obj self, Obj rr, Obj st)
     return tmp;
 }
 
-int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
+static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 {
     int alloc = expected;
     int len = 0;
@@ -1045,7 +1022,7 @@ int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 }
 
 extern "C"
-Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
                                   Obj rr, Obj st)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1087,7 +1064,7 @@ Obj FuncSI_Makematrix_from_String(Obj self, Obj nrrows, Obj nrcols,
 }
 
 extern "C"
-Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
+Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt rnr = RING_SINGOBJ(rr);
@@ -1095,7 +1072,7 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     UInt i;
     UInt len;
     if (r != currRing) rChangeCurrRing(r);
-    poly p = p_NSet(NUMBER_FROM_GAP(r, coeff),r);
+    poly p = p_NSet(_SI_NUMBER_FROM_GAP(r, coeff),r);
     if (p != NULL) {
         len = LEN_LIST(exps);
         if (len < nrvars) nrvars = len;
@@ -1108,13 +1085,13 @@ Obj FuncSI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 }
 
 extern "C"
-Obj FuncSI_Makebigint(Obj self, Obj nr)
+Obj Func_SI_bigint(Obj self, Obj nr)
 {
-    return NEW_SINGOBJ(SINGTYPE_BIGINT,BIGINT_FROM_GAP(nr));
+    return NEW_SINGOBJ(SINGTYPE_BIGINT,_SI_BIGINT_FROM_GAP(nr));
 }
 
 extern "C"
-Obj FuncSI_Intbigint(Obj self, Obj nr)
+Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
     Obj res;
@@ -1143,7 +1120,7 @@ Obj FuncSI_Intbigint(Obj self, Obj nr)
 }
 
 extern "C"
-Obj FuncSI_Makeintvec(Obj self, Obj l)
+Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
         ErrorQuit("l must be a list",0L,0L);
@@ -1168,7 +1145,7 @@ Obj FuncSI_Makeintvec(Obj self, Obj l)
 }
 
 extern "C"
-Obj FuncSI_Plistintvec(Obj self, Obj iv)
+Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
     if (! (TNUM_OBJ(iv) == T_SINGULAR && 
            TYPE_SINGOBJ(iv) == SINGTYPE_INTVEC) ) {
@@ -1188,7 +1165,7 @@ Obj FuncSI_Plistintvec(Obj self, Obj iv)
 }
 
 extern "C"
-Obj FuncSI_Makeintmat(Obj self, Obj m)
+Obj Func_SI_intmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
            IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
@@ -1224,7 +1201,7 @@ Obj FuncSI_Makeintmat(Obj self, Obj m)
 }
 
 extern "C"
-Obj FuncSI_Matintmat(Obj self, Obj im)
+Obj Func_SI_Matintmat(Obj self, Obj im)
 {
     if (! (TNUM_OBJ(im) == T_SINGULAR && 
            TYPE_SINGOBJ(im) == SINGTYPE_INTMAT) ) {
@@ -1252,7 +1229,7 @@ Obj FuncSI_Matintmat(Obj self, Obj im)
 }
 
 extern "C"
-Obj FuncSI_Makeideal(Obj self, Obj l)
+Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
         ErrorQuit("l must be a list",0L,0L);
@@ -1292,7 +1269,7 @@ Obj FuncSI_Makeideal(Obj self, Obj l)
 }
 
 extern "C"
-Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
+Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
           INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
@@ -1313,7 +1290,7 @@ Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
     matrix mat;
     Int i;
     Obj t;
-    ring r,r2;
+    ring r;
     Int row = 1;
     Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
@@ -1346,10 +1323,10 @@ Obj FuncSI_Makematrix(Obj self, Obj nrrows, Obj nrcols, Obj l)
 }
 
 extern "C"
-Obj FuncSI_STRING_POLY(Obj self, Obj po)
+Obj Func_SI_STRING_POLY(Obj self, Obj po)
 {
     UInt rnr;
-    poly p = GET_poly(po,rnr);
+    poly p = _SI_GET_poly(po,rnr);
     ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);
     char *st = p_String(p,r);
@@ -1361,10 +1338,10 @@ Obj FuncSI_STRING_POLY(Obj self, Obj po)
 }
 
 extern "C"
-Obj FuncSI_COPY_POLY(Obj self, Obj po)
+Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     UInt rnr;
-    poly p = GET_poly(po,rnr);
+    poly p = _SI_GET_poly(po,rnr);
     ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
@@ -1373,11 +1350,11 @@ Obj FuncSI_COPY_POLY(Obj self, Obj po)
 }
 
 extern "C"
-Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
+Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b)
 {
     UInt ra,rb;
-    poly aa = GET_poly(a,ra);
-    poly bb = GET_poly(b,rb);
+    poly aa = _SI_GET_poly(a,ra);
+    poly bb = _SI_GET_poly(b,rb);
     if (ra != rb) ErrorQuit("Elements not over the same ring\n",0L,0L);
     ring r = GET_SINGRING(ra);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
@@ -1389,7 +1366,7 @@ Obj FuncSI_ADD_POLYS(Obj self, Obj a, Obj b)
 }
 
 extern "C"
-Obj FuncSI_NEG_POLY(Obj self, Obj a)
+Obj Func_SI_NEG_POLY(Obj self, Obj a)
 {
     ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
@@ -1400,7 +1377,7 @@ Obj FuncSI_NEG_POLY(Obj self, Obj a)
 }
 
 extern "C"
-Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b)
+Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
 {
     if (RING_SINGOBJ(a) != RING_SINGOBJ(b))
         ErrorQuit("Elements not over the same ring\n",0L,0L);
@@ -1412,7 +1389,7 @@ Obj FuncSI_MULT_POLYS(Obj self, Obj a, Obj b)
 }
 
 extern "C"
-Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
+Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
 /*
     UInt rnr = RING_SINGOBJ(a);
@@ -1423,8 +1400,7 @@ Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 */
     ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);   // necessary?
-    number bb = NUMBER_FROM_GAP(r,b);
-
+    number bb = _SI_NUMBER_FROM_GAP(r,b);
     poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
     n_Delete(&bb,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
@@ -1436,18 +1412,18 @@ Obj FuncSI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
 
-char *LastSingularOutput = NULL;
+static char *_SI_LastOutputBuf = NULL;
 
 extern "C"
-Obj FuncLastSingularOutput(Obj self)
+Obj FuncSI_LastOutput(Obj self)
 {
-    if (LastSingularOutput) {
-        UInt len = (UInt) strlen(LastSingularOutput);
+    if (_SI_LastOutputBuf) {
+        UInt len = (UInt) strlen(_SI_LastOutputBuf);
         Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),LastSingularOutput);
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),_SI_LastOutputBuf);
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
         return tmp;
     } else return Fail;
 }
@@ -1455,29 +1431,29 @@ Obj FuncLastSingularOutput(Obj self)
 extern int inerror;
 
 extern "C"
-void SingularErrorCallback(const char *st)
+void _SI_ErrorCallback(const char *st)
 {
     UInt len = (UInt) strlen(st);
-    if (IS_STRING(SingularErrors)) {
+    if (IS_STRING(SI_Errors)) {
         char *p;
-        UInt oldlen = GET_LEN_STRING(SingularErrors);
-        GROW_STRING(SingularErrors,oldlen+len+2);
-        p = CSTR_STRING(SingularErrors);
+        UInt oldlen = GET_LEN_STRING(SI_Errors);
+        GROW_STRING(SI_Errors,oldlen+len+2);
+        p = CSTR_STRING(SI_Errors);
         memcpy(p+oldlen,st,len);
         p[oldlen+len] = '\n';
         p[oldlen+len+1] = 0;
-        SET_LEN_STRING(SingularErrors,oldlen+len+1);
+        SET_LEN_STRING(SI_Errors,oldlen+len+1);
     }
 }
 
 extern "C"
-Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
+Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
 {
     int i;
     // init path names etc.
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
     currentVoice=feInitStdin(NULL);
-    WerrorS_callback = SingularErrorCallback;
+    WerrorS_callback = _SI_ErrorCallback;
     for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i++) {
         if (GAPtoSingType[i] >= MAX_TOK) {
             Pr("Singular types have changed unforeseen",0L,0L);
@@ -1485,37 +1461,38 @@ Obj FuncSI_INIT_INTERPRETER(Obj self, Obj path)
         }
         SingtoGAPType[GAPtoSingType[i]] = i;
     }
+    return NULL;
 }
 
 extern "C"
-Obj FuncSI_EVALUATE(Obj self, Obj st)
+Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
     UInt len = GET_LEN_STRING(st);
     char *ost = (char *) omalloc((size_t) len + 10);
     memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
     memcpy(ost+len,"return();",10);
-    if (LastSingularOutput) {
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     myynest = 1;
     Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
     inerror = 0;
     errorreported = 0;
-    LastSingularOutput = SPrintEnd();
+    _SI_LastOutputBuf = SPrintEnd();
     // Note that iiEStart uses omFree internally to free the string ost
     return ObjInt_Int((Int) err);
 }
 
 extern "C"
-Obj FuncValueOfSingularVar(Obj self, Obj name)
+Obj FuncSI_ValueOfVar(Obj self, Obj name)
 {
-    UInt len;
+    Int len;
     Obj tmp,tmp2;
     intvec *v;
     int i,j,k;
-    UInt rows, cols;
+    Int rows, cols;
     number n;
 
     idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
@@ -1524,14 +1501,14 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
         case INT_CMD:
             return ObjInt_Int( (Int) (IDINT(h)) );
         case STRING_CMD:
-            len = (UInt) strlen(IDSTRING(h));
+            len = (Int) strlen(IDSTRING(h));
             tmp = NEW_STRING(len);
             SET_LEN_STRING(tmp,len);
             strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),IDSTRING(h));
             return tmp;
         case INTVEC_CMD:
             v = IDINTVEC(h);
-            len = (UInt) v->length();
+            len = (Int) v->length();
             tmp = NEW_PLIST(T_PLIST_CYC,len);
             SET_LEN_PLIST(tmp,len);
             for (i = 0; i < len;i++) {
@@ -1541,8 +1518,8 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
             return tmp;
         case INTMAT_CMD:
             v = IDINTVEC(h);
-            rows = (UInt) v->rows();
-            cols = (UInt) v->cols();
+            rows = (Int) v->rows();
+            cols = (Int) v->cols();
             tmp = NEW_PLIST(T_PLIST_DENSE,rows);
             SET_LEN_PLIST(tmp,rows);
             k = 0;
@@ -1566,7 +1543,7 @@ Obj FuncValueOfSingularVar(Obj self, Obj name)
 }
 
 extern "C"
-Obj FuncGAPSingular(Obj self, Obj singobj)
+Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
 {
@@ -1603,7 +1580,7 @@ Obj FuncGAPSingular(Obj self, Obj singobj)
 // structure.
 
 extern "C"
-Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
+Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 {
     UInt rnr = 0;
     ring r = NULL;
@@ -1611,15 +1588,15 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
     SingObj sing(input,rnr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
     SingObj singres;
-    if (LastSingularOutput) {
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
     BOOLEAN ret = iiExprArith1(&(singres.obj),sing.destructiveuse(),
                                INT_INTOBJ(op));
-    LastSingularOutput = SPrintEnd();
+    _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         singres.obj.CleanUp();  // 
         return Fail;
@@ -1630,7 +1607,7 @@ Obj FuncSI_CallFunc1(Obj self, Obj op, Obj input)
 }
 
 extern "C"
-Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
+Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
     UInt rnr = 0;
     ring r = NULL;
@@ -1643,15 +1620,15 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         ErrorQuit(singb.error,0L,0L);
     }
     SingObj singres;
-    if (LastSingularOutput) {
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
     BOOLEAN ret = iiExprArith2(&(singres.obj),singa.destructiveuse(),
                     INT_INTOBJ(op),singb.destructiveuse());
-    LastSingularOutput = SPrintEnd();
+    _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         singres.obj.CleanUp(r);
         return Fail;
@@ -1662,7 +1639,7 @@ Obj FuncSI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 }
 
 extern "C"
-Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
+Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
     UInt rnr = 0;
     ring r = NULL;
@@ -1681,9 +1658,9 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         ErrorQuit(singc.error,0L,0L);
     }
     SingObj singres;
-    if (LastSingularOutput) {
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
@@ -1691,7 +1668,7 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
                                singa.destructiveuse(),
                                singb.destructiveuse(),
                                singc.destructiveuse());
-    LastSingularOutput = SPrintEnd();
+    _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         singres.obj.CleanUp(r);
         return Fail;
@@ -1702,7 +1679,7 @@ Obj FuncSI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 }
 
 extern "C"
-Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
+Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     UInt rnr = 0;
     ring r = NULL;
@@ -1725,9 +1702,9 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
         if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
     SingObj singres;
-    if (LastSingularOutput) {
-        omFree(LastSingularOutput);
-        LastSingularOutput = NULL;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
@@ -1760,7 +1737,7 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
                                INT_INTOBJ(op));
             break;
     }
-    LastSingularOutput = SPrintEnd();
+    _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         singres.obj.CleanUp(r);
         return Fail;
@@ -1770,145 +1747,16 @@ Obj FuncSI_CallFuncM(Obj self, Obj op, Obj arg)
     return singres.gapwrap();
 }
 
-/*
-Obj FuncSI_intmat(Obj self, Obj m)
+extern "C"
+Obj FuncSI_SetCurrRing(Obj self, Obj r)
 {
-    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
-           IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
-        ErrorQuit("m must be a list of lists",0L,0L);
+    if (TNUM_OBJ(r) != T_SINGULAR ||
+        TYPE_SINGOBJ(r) != SINGTYPE_RING) {
+        ErrorQuit("argument r must be a singular ring",0L,0L);
         return Fail;
     }
-    UInt rows = LEN_LIST(m);
-    UInt cols = LEN_LIST(ELM_LIST(m,1));
-    UInt r,c;
-    Obj therow;
-    intvec *iv = new intvec(rows,cols,0);
-    for (r = 1;r <= rows;r++) {
-        therow = ELM_LIST(m,r);
-        if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
-            delete iv;
-            ErrorQuit("m must be a matrix",0L,0L);
-            return Fail;
-        }
-        for (c = 1; c <= cols; c++) {
-            Obj t = ELM_LIST(therow,c);
-            if (!IS_INTOBJ(t)
-#ifdef SYS_IS_64_BIT
-                || (INT_INTOBJ(t) < -(1L << 31) || INT_INTOBJ(t) >= (1L << 31))
-#endif
-               ) {
-                delete iv;
-                ErrorQuit("m must contain small integers", 0L, 0L);
-            }
-            IMATELEM(*iv,r,c) = (int) (INT_INTOBJ(t));
-        }
-    }
-    return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
+    ring rr = SINGRING_SINGOBJ(r);
+    if (rr != currRing) rChangeCurrRing(rr);
+    return NULL;
 }
 
-Obj FuncSI_Matintmat(Obj self, Obj im)
-{
-    if (! (TNUM_OBJ(im) == T_SINGULAR && 
-           TYPE_SINGOBJ(im) == SINGTYPE_INTMAT) ) {
-        ErrorQuit("im must be a singular intmat", 0L, 0L);
-        return Fail;
-    }
-    intvec *i = (intvec *) CXX_SINGOBJ(im);
-    UInt rows = i->rows();
-    UInt cols = i->cols();
-    Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
-    SET_LEN_PLIST(ret,rows);
-    UInt r,c;
-    for (r = 1;r <= rows;r++) {
-        Obj tmp;
-        tmp = NEW_PLIST(T_PLIST_CYC,cols);
-        SET_ELM_PLIST(ret,r,tmp);
-        CHANGED_BAG(ret);
-        for (c = 1;c <= cols;c++) {
-            SET_ELM_PLIST(tmp,c,ObjInt_Int(IMATELEM(*i,r,c)));
-            CHANGED_BAG(tmp);
-        }
-        SET_LEN_PLIST(tmp,cols);
-    }
-    return ret;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
-
-// The rest will eventually go:
-
-/// GAP kernel C handler to concatenate two strings
-/// @param self The usual GAP first parameter
-/// @param a The first string
-/// @param b The second string
-/// @return The rank of the matrix
-extern "C"
-Obj FuncCONCATENATE(Obj self, Obj a, Obj b)
-{
-  if(!IS_STRING(a))
-    PrintGAPError("The first argument must be a string");
-
-  if(!IS_STRING(b))
-    PrintGAPError("The second argument must be a string");
-    
-  string str_a = reinterpret_cast<char*>(CHARS_STRING(a));
-  string str_b = reinterpret_cast<char*>(CHARS_STRING(b));
-  string str = str_a + "-" + str_b;
-
-  unsigned int len = str.length();
-  Obj GAPstring = NEW_STRING(len);
-  memcpy( CHARS_STRING(GAPstring), str.c_str(), len );
-  return GAPstring;
-}
-
-extern "C"
-Obj FuncSingularTest(Obj self)
-{
-  // init path names etc.
-  siInit((char*) LIBSINGULAR_HOME "/bin/Singular");
-
-  // construct the ring Z/32003[x,y,z]
-  // the variable names
-  char **n=(char**)omalloc(3*sizeof(char*));
-  n[0]=omStrDup("x");
-  n[1]=omStrDup("y");
-  n[2]=omStrDup("z2");
-
-  ring R=rDefault(32003,3,n);
-  // make R the default ring:
-  rChangeCurrRing(R);
-
-  // create the polynomial 1
-  poly p1=p_ISet(1,R);
-
-  // create tthe polynomial 2*x^3*z^2
-  poly p2=p_ISet(2,R);
-  pSetExp(p2,1,3);
-  pSetExp(p2,3,2);
-  pSetm(p2);
-
-  // print p1 + p2
-  pWrite(p1); printf(" + \n"); pWrite(p2); printf("\n");
-
-  // compute p1+p2
-  p1=p_Add_q(p1,p2,R); p2=NULL;
-  pWrite(p1); 
-
-  // cleanup:
-  pDelete(&p1);
-  rKill(R);
-
-  currentVoice=feInitStdin(NULL);
-  int err=iiEStart(omStrDup("int ver=system(\"version\");export ver;return();\n"),NULL);
-  // if (err) errorreported = inerror = cmdtok = 0; // reset error handling
-  printf("interpreter returns %d\n",err);
-  idhdl h=ggetid("ver");
-  if (h!=NULL)
-    printf("singular variable ver contains %d\n",IDINT(h));
-  else
-    printf("variable ver does not exist\n");
-  return 0;
-
-}
-*/

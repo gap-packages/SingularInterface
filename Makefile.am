@@ -21,7 +21,7 @@ dist2: distdir
 	$(am__remove_distdir)
 	
 dofetchsingular:
-	./fetchsingular
+	./fetchsingular.sw
 
 domakesingular:
-	./makesingular
+	./makesingular.sw

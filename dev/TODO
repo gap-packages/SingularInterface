@@ -1,3 +1,14 @@
+Bugs: ->Mohamed, crashes (see below)
+Mutable/Immutable types
+Void Singular object
+More constructors
+Method installation (->high performance)
+cleanup of internal objects
+more possibilities for proxy objects actually working
+access to subobjects of singular objects
+IsRingElement and other filters at least for polynomials
+Finish low-level interface and implement some functions with it
+
 Fix path in lib/libsing.gi, because it contains the Singular version!
 proxy implementation for intmats and intvecs?
 More constructors (or less, if accessible via high level)
@@ -45,27 +56,33 @@ Vektor machen:
 
 
 
-Sort out:
+Noch benoetigt:
 
-gap> s := SingularRing(3,["a","b","c"],[["dp",3]]);
-<singular ring>
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering dp
-//                  : names    a b c
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering dp
-//                  : names    a b c
-gap> Print(GAPSingular(SI_print(s)));
-//   characteristic : 3
-//   number of vars : 3
-//        block   1 : ordering (null)
-//                  : weights  1451812608 0 1451812616 0 1451812624 0
-//                  14518126\
-32 0 1451812640
-gap> Print(GAPSingular(SI_print(s)));
-Speicherzugriffsfehler
+- Zugriff auf Matrixeintraege, lesen und schreiben
+- Verhindere Abstuerze bei falschen Aufrufen
+- unsere Polynome sind "IsRingElement"
+- String methode
+- Fix Makematrix_from_String if not enough polys are given
+- hole ring von Singular object
 
+Fragen:
+
+
+Naming convention questions:
+
+How about:
+
+Get rid of _SI_Intbigint and use SI_ToGAP
+Get rid of _SI_Plistintvec and use SI_ToGAP
+Get rid of _SI_Matintmat and use SI_ToGAP
+
+
+Implementiere FreeFuncs fuer viele Singular-Typen
+
+Unify SingObj::cleanup and _SI_FreeFunc as far as possible
+
+
+gap> s := SI_ring(3,["a","b"]);
+gap> SI_poly(s,SI_bigint(2));
+
+crashes GAP

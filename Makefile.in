@@ -54,7 +54,7 @@ DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/cnf/config.guess \
 	$(top_srcdir)/cnf/config.sub $(top_srcdir)/cnf/install-sh \
 	$(top_srcdir)/cnf/ltmain.sh $(top_srcdir)/cnf/missing \
-	$(top_srcdir)/configure TODO cnf/config.guess cnf/config.sub \
+	$(top_srcdir)/configure cnf/config.guess cnf/config.sub \
 	cnf/depcomp cnf/install-sh cnf/ltmain.sh cnf/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_find_gap.m4 \
@@ -783,10 +783,10 @@ dist2: distdir
 	$(am__remove_distdir)
 
 dofetchsingular:
-	./fetchsingular
+	./fetchsingular.sw
 
 domakesingular:
-	./makesingular
+	./makesingular.sw
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
