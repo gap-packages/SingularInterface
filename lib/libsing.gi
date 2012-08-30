@@ -47,40 +47,40 @@ InstallGlobalFunction( SI_CleanupRings,
     od;
   end );
   
-InstallMethod( ViewObj, "for a singular ring",
+InstallMethod( ViewString, "for a singular ring",
   [ IsSingularRing ],
   function( r )
-    Print("<singular ring>");
+    return "<singular ring>";
   end );
 
-InstallMethod( ViewObj, "for a singular poly",
+InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
   function( r )
     return STRINGIFY("<singular poly:",_SI_STRING_POLY(r),">");
   end );
 
-InstallMethod( ViewObj, "for a singular bigint",
+InstallMethod( ViewString, "for a singular bigint",
   [ IsSingularBigInt ],
   function( r )
     return STRINGIFY("<singular bigint:",_SI_Intbigint(r),">");
   end );
 
-InstallMethod( ViewObj, "for a singular intvec",
+InstallMethod( ViewString, "for a singular intvec",
   [ IsSingularIntVec ],
   function( i )
     return STRINGIFY("<singular intvec:",_SI_Plistintvec(i),">");
   end );
 
-InstallMethod( ViewObj, "for a singular intmat",
+InstallMethod( ViewString, "for a singular intmat",
   [ IsSingularIntMat ],
   function( i )
     return STRINGIFY("<singular intmat:",_SI_Matintmat(i),">");
   end );
 
-InstallMethod( ViewObj, "for a singular ideal",
+InstallMethod( ViewString, "for a singular ideal",
   [ IsSingularIdeal ],
   function( i )
-    Print("<singular ideal>");
+    return "<singular ideal>";
   end );
 
 InstallGlobalFunction( _SI_InitInterpreter,
@@ -90,7 +90,9 @@ InstallGlobalFunction( _SI_InitInterpreter,
             Filename(DirectoriesPackageLibrary("libsing","")[1],
                      "SW/bin/Singular"));
     if ARCH_IS_MAC_OS_X() then
-        Append(path,"exe!");
+        Append(path,"dylib");
+    else
+        Append(path,"so");
     fi;
     _SI_INIT_INTERPRETER(path);
   end );
@@ -153,16 +155,25 @@ InstallMethod(SI_Proxy, "for a singular object and a string",
 InstallMethod(ViewString, "for a singular proxy object",
   [ IsSingularProxy ],
   function(p)
-    Print("<proxy for ");
-    ViewObj(p![1]);
+    local str;
+    str := "<proxy for ";
+    Append(str, ViewString(p![1]));
     Print("[",p![2]);
+    Append(str, "[");
+    Append(str, ViewString(p![2]));
     if IsBound(p![3]) then
-        Print(",",p![3]);
+        Append(str, ",");
+        Append(str, ViewString(p![3]));
     fi;
-    Print("]>");
+    Append(str, "]>");
+    return str;
   end );
 
-InstallMethod(ViewObj, "for a generic singular object",
+# TODO: Quoting the GAP manual:
+# "ViewObj should print the object to the standard output in a short and
+# concise form, it is used in the main read-eval-print loop to display
+# the resulting object of a computation"
+InstallMethod(ViewString, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
     return Concatenation("<singular object:\n",SI_ToGAP(SI_print(s)),">");
