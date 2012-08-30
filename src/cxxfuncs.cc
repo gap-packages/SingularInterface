@@ -190,18 +190,19 @@ int _SI_INT_FROM_GAP(Obj nr)
 }
 #endif
 
-static void _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
+static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 {
+    number n;
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
 #ifdef SYS_IS_64_BIT
         if (i >= (-1L << 31) && i < (1L << 31)) {
 #endif
-            gtype = SINGTYPE_INT;
-            ii = (int) i;
+            obj.data = (void *) i;
+            obj.rtyp = INT_CMD;
+            return SINGTYPE_INT;
 #ifdef SYS_IS_64_BIT
         } else {
-            gtype = SINGTYPE_BIGINT;
             n = nlRInit(i);
         }
 #endif
@@ -212,8 +213,10 @@ static void _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
         memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
         n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
         n->s = 3;  // indicates an integer
-        gtype = SINGTYPE_BIGINT;
     }
+    obj.data = n;
+    obj.rtyp = BIGINT_CMD;
+    return SINGTYPE_BIGINT;
 }
 
 static poly _SI_GET_poly(Obj o, UInt &rnr)
@@ -469,22 +472,16 @@ class SingObj {
 
 void SingObj::init(Obj input, UInt &extrnr, ring &extr)
 {
-    int i;
-    number n;
     error = NULL;
     r = NULL;
     rnr = 0;
     obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        _SI_BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
+        gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
         if (gtype == SINGTYPE_INT) {
-            obj.data = (void *) i;
-            obj.rtyp = INT_CMD;
             needcleanup = false;
         } else {
-            obj.data = (void *) n;
-            obj.rtyp = BIGINT_CMD;
             needcleanup = true;
         }
     } else if (TNUM_OBJ(input) == T_STRING) {
