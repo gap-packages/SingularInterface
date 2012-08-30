@@ -1,5 +1,4 @@
 LoadPackage("libsing");
-s := SingularRingWithoutOrdering(32003,["x","y","z"]);
 s := SI_ring(32003,["x","y","z"]);
 s1 := SI_poly(s,"x2y+151xyz10+169y21");
 #s1 := SI_MONOMIAL(s,1,[2,1,0]);
@@ -17,9 +16,9 @@ s3 := SI_poly(s,"5xy10z10+2y20z10+y10z20+11x3");
 i := SI_ideal([s1,s2,s3]);
 n := SI_poly(s,"0");
 j := SI_std(i);
-#ps := List([1..40],k->SI_ADD_POLYS(n,SI_proxy(j,k)));
-#pss := List(ps,SI_STRING_POLY);
-#ps2 := List([1..40],k->SI_proxy(j,k));
-#pss2 := List(ps2,SI_STRING_POLY);
-#pss=pss2;
+ps := List([1..40],k->_SI_ADD_POLYS(n,SI_Proxy(j,k)));
+pss := List(ps,_SI_STRING_POLY);
+ps2 := List([1..40],k->SI_Proxy(j,k));
+pss2 := List(ps2,_SI_STRING_POLY);
+pss=pss2;
 
