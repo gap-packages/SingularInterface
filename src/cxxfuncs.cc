@@ -555,6 +555,7 @@ void SingObj::copy()
 // to its type, unless it is a link, a qring or a ring, or unless it
 // is already a copy.
 {
+    ring ri;
     switch (gtype) {
       case SINGTYPE_BIGINT:
         obj.data = (void *) nlCopy((number) obj.data);
@@ -587,12 +588,18 @@ void SingObj::copy()
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_QRING:
+        ri = (ring) obj.data;
+        ri->ref++;   // We fake a copy since this will be decreased later on
         return;
       case SINGTYPE_RESOLUTION:
         obj.data = (void *) syCopy((syStrategy) obj.data);
         break;
       case SINGTYPE_RING:
+        ri = (ring) obj.data;
+        ri->ref++;   // We fake a copy since this will be decreased later on
         return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
+                // indeed, we never want to do this, therefore we increase
+                // the reference count
       case SINGTYPE_STRING:
         obj.data = (void *) omStrDup( (char *) obj.data);
         break;
