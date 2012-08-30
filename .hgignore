@@ -8,6 +8,7 @@ src/highlevel_mappings.g
 src/highlevel_mappings_table.g
 src/pkgconfig.h
 src/stamp-h1
+src/lowlevel_mappings_src.h
 
 # switch to regexp syntax.
 syntax: regexp
