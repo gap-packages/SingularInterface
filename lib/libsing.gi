@@ -1,10 +1,41 @@
-InstallGlobalFunction( CleanupSingularRings,
+InstallMethod(SI_bigint,[IsSingularObj],SI_bigint_singular);
+InstallMethod(SI_bigint,[IsInt],_SI_bigint);
+
+InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
+InstallMethod(SI_intvec,[IsList],_SI_intvec);
+
+InstallMethod(SI_intmat,[IsSingularObj],SI_intmat_singular);
+InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],SI_intmat_singular);
+InstallMethod(SI_intmat,[IsList],_SI_intmat);
+
+InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
+InstallMethod(SI_ring,[IsInt,IsList,IsList],_SI_ring);
+InstallMethod(SI_ring,[IsInt,IsList],
+  function( p, l )
+    return SI_ring(p,l,[["dp",Length(l)]]);
+  end);
+
+InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
+InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
+
+InstallMethod(SI_matrix,[IsSingularObj],SI_matrix_singular);
+InstallMethod(SI_matrix,[IsSingularObj,IsPosInt,IsPosInt],SI_matrix_singular);
+InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
+              _SI_matrix_from_String);
+InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsList], _SI_matrix_from_els);
+
+InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
+#InstallMethod(SI_ideal,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
+#              _SI_ideal_from_String);
+InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
+
+InstallGlobalFunction( SI_CleanupRings,
   function()
     local i;
-    for i in [1..Length(SingularRings)] do
-        if IsBound(SingularRings[i]) and SingularElCounts[i] = 0 then
-            Unbind(SingularRings[i]);
-            Unbind(SingularElCounts[i]);
+    for i in [1..Length(_SI_Rings)] do
+        if IsBound(_SI_Rings[i]) and _SI_ElCounts[i] = 0 then
+            Unbind(_SI_Rings[i]);
+            Unbind(_SI_ElCounts[i]);
         fi;
     od;
   end );
@@ -18,25 +49,25 @@ InstallMethod( ViewString, "for a singular ring",
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
   function( r )
-    return STRINGIFY("<singular poly:",SI_STRING_POLY(r),">");
+    return STRINGIFY("<singular poly:",_SI_STRING_POLY(r),">");
   end );
 
 InstallMethod( ViewString, "for a singular bigint",
   [ IsSingularBigInt ],
   function( r )
-    return STRINGIFY("<singular bigint:",SI_Intbigint(r),">");
+    return STRINGIFY("<singular bigint:",_SI_Intbigint(r),">");
   end );
 
 InstallMethod( ViewString, "for a singular intvec",
   [ IsSingularIntVec ],
   function( i )
-    return STRINGIFY("<singular intvec:",SI_Plistintvec(i),">");
+    return STRINGIFY("<singular intvec:",_SI_Plistintvec(i),">");
   end );
 
 InstallMethod( ViewString, "for a singular intmat",
   [ IsSingularIntMat ],
   function( i )
-    return STRINGIFY("<singular intmat:",SI_Matintmat(i),">");
+    return STRINGIFY("<singular intmat:",_SI_Matintmat(i),">");
   end );
 
 InstallMethod( ViewString, "for a singular ideal",
@@ -45,7 +76,7 @@ InstallMethod( ViewString, "for a singular ideal",
     return "<singular ideal>";
   end );
 
-InstallGlobalFunction( InitSingularInterpreter,
+InstallGlobalFunction( _SI_InitInterpreter,
   function( )
     local path;
     path := ShallowCopy(
@@ -56,18 +87,18 @@ InstallGlobalFunction( InitSingularInterpreter,
     else
         Append(path,"so");
     fi;
-    SI_INIT_INTERPRETER(path);
+    _SI_INIT_INTERPRETER(path);
   end );
-InitSingularInterpreter();
+_SI_InitInterpreter();
 
 InstallMethod( Singular, "for a string in stringrep",
   [ IsStringRep ], 
   function( st )
     local ret;
-    SingularErrors := "";
-    ret := SI_EVALUATE(st);
-    if Length(SingularErrors) > 0 then
-        Print(SingularErrors);
+    SI_Errors := "";
+    ret := _SI_EVALUATE(st);
+    if Length(SI_Errors) > 0 then
+        Print(SI_Errors);
     fi;
     return ret;
   end );
@@ -82,12 +113,12 @@ InstallMethod( Singular, "without arguments",
         s := ReadLine(i);
         if s = "\n" then break; fi;
         Singular(s);
-        Print(LastSingularOutput());
+        Print(SI_LastOutput());
     od;
     CloseStream(i);
   end );
 
-InstallMethod(SI_proxy, "for a singular object and a positive integer",
+InstallMethod(SI_Proxy, "for a singular object and a positive integer",
   [ IsSingularObj, IsPosInt ],
   function( o, i )
     local l;
@@ -96,11 +127,20 @@ InstallMethod(SI_proxy, "for a singular object and a positive integer",
     return l;
   end );
 
-InstallMethod(SI_proxy, "for a singular object and two positive integers",
+InstallMethod(SI_Proxy, "for a singular object and two positive integers",
   [ IsSingularObj, IsPosInt, IsPosInt ],
   function( o, i, j)
     local l;
     l := [o,i,j];
+    Objectify(SingularProxiesType, l);
+    return l;
+  end );
+
+InstallMethod(SI_Proxy, "for a singular object and a string",
+  [ IsSingularObj, IsStringRep ],
+  function( o, s)
+    local l;
+    l := [o,s];
     Objectify(SingularProxiesType, l);
     return l;
   end );
@@ -129,7 +169,7 @@ InstallMethod(ViewString, "for a singular proxy object",
 InstallMethod(ViewString, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
-    return Concatenation("<singular object: ",GAPSingular(SI_print(s)),">");
+    return Concatenation("<singular object:\n",SI_ToGAP(SI_print(s)),">");
   end );
 
 
@@ -139,7 +179,7 @@ InstallMethod(ViewString, "for a generic singular object",
 InstallMethod(DisplayString, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
-    return Concatenation(GAPSingular(SI_print(s)),"\n");
+    return Concatenation(SI_ToGAP(SI_print(s)),"\n");
   end );
 
 # TODO: Quoting the GAP manual:
@@ -149,7 +189,7 @@ InstallMethod(DisplayString, "for a generic singular object",
 InstallMethod(String, "for a generic singular object",
   [ IsSingularObj ],
   function( s )
-    return GAPSingular(SI_print(s));
+    return SI_ToGAP(SI_print(s));
   end );
 
 # WORKAROUND for a bug in GAP 4.5.5: There is a bad PrintObj

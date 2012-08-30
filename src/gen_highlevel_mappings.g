@@ -32,11 +32,11 @@ for op in ops do
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a)\n",
                       "    SI_SetCurrRing(r);\n",
-                      "    return SI_CallFunc1(",nr,",a);\n",
+                      "    return _SI_CallFunc1(",nr,",a);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a)\n",
-                      "    return SI_CallFunc1(",nr,",a);\n",
+                      "    return _SI_CallFunc1(",nr,",a);\n",
                       "  end );\n\n");
         fi;
     elif poss{[1,3,4]} = [fail,fail,fail] then
@@ -44,11 +44,11 @@ for op in ops do
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b)\n",
                       "    SI_SetCurrRing(r);\n",
-                      "    return SI_CallFunc2(",nr,",a,b);\n",
+                      "    return _SI_CallFunc2(",nr,",a,b);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b)\n",
-                      "    return SI_CallFunc2(",nr,",a,b);\n",
+                      "    return _SI_CallFunc2(",nr,",a,b);\n",
                       "  end );\n\n");
         fi;
     elif poss{[1,2,4]} = [fail,fail,fail] then
@@ -56,11 +56,11 @@ for op in ops do
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b,c)\n",
                       "    SI_SetCurrRing(r);\n",
-                      "    return SI_CallFunc3(",nr,",a,b,c);\n",
+                      "    return _SI_CallFunc3(",nr,",a,b,c);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b,c)\n",
-                      "    return SI_CallFunc3(",nr,",a,b,c);\n",
+                      "    return _SI_CallFunc3(",nr,",a,b,c);\n",
                       "  end );\n\n");
         fi;
     else
@@ -68,11 +68,11 @@ for op in ops do
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
                     "    SI_SetCurrRing(arg[1]);\n",
-                    "    return SI_CallFuncM(",nr,",arg{[2..Length(arg)]});\n",
+                    "    return _SI_CallFuncM(",nr,",arg{[2..Length(arg)]});\n",
                     "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
-                      "    return SI_CallFuncM(",nr,",arg);\n",
+                      "    return _SI_CallFuncM(",nr,",arg);\n",
                       "  end );\n\n");
         fi;
     fi;
