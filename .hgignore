@@ -1,14 +1,21 @@
 # switch to glob syntax.
 syntax: glob
 
+src/gentableforGAP
 lib/highlevel_mappings.g
 lib/highlevel_mappings_table.g
-src/gentableforGAP
 src/highlevel_mappings.g
 src/highlevel_mappings_table.g
+
+src/lowlevel_mappings_src.h
+src/lowlevel_mappings_src.g
+src/lowlevel_mappings.cc
+src/lowlevel_mappings.h
+src/lowlevel_mappings_table.h
+
 src/pkgconfig.h
 src/stamp-h1
-src/lowlevel_mappings_src.h
+
 
 # switch to regexp syntax.
 syntax: regexp
