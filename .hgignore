@@ -21,9 +21,11 @@ src/stamp-h1
 syntax: regexp
 
 ^Singular
+~$
 \.so$
 \.la$
 \.lo$
+\.o$
 Makefile$
 ^config\.
 ^SINGARCHNAME$
