@@ -999,11 +999,11 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
 
     // Now allocate int lists for the orderings:
-    ord = (int *) omalloc(sizeof(int) * nrords+1);
+    ord = (int *) omalloc(sizeof(int) * (nrords+1));
     ord[nrords] = 0;
-    block0 = (int *) omalloc(sizeof(int) * nrords);
-    block1 = (int *) omalloc(sizeof(int) * nrords);
-    wvhdl = (int **) omalloc(sizeof(int *) * nrords);
+    block0 = (int *) omalloc(sizeof(int) * (nrords+1));
+    block1 = (int *) omalloc(sizeof(int) * (nrords+1));
+    wvhdl = (int **) omAlloc0(sizeof(int *) * (nrords+1));
     covered = 0;
     for (i = 0;i < nrords;i++) {
         tmp = ELM_LIST(orderings,i+1);
