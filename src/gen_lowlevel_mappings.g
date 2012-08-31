@@ -2,11 +2,17 @@
 # This file generates low-level wrapper GAP C kernel wrappers for
 # Singular C++ kernel functions.
 #
+# Here is an overview on which file is generated from which by whom:
+#
+#  lowlevel_mappings_src.h.in  (contains excerpts of Singular header files)
+#   |
+#   v  processed by C++ preprocessor
+#  lowlevel_mappings_src.h
+#   |
+#   v  processed by gen_lowlevel_mappings.g
+#  lowlevel_mappings.[ch], lowlevel_mappings_table.h
+#
 # TODO:
-# * Instead of adding new mappings in SINGULAR_funcs, allow specifying
-#   them in a separate file in pseudo-C syntax: Essentially, each line
-#   of this file would contain a C++ function prototype, but with some
-#   additional annotation to mark arguments that need to be copied.
 # * Add mappings for more data types to SINGULAR_types.
 #
 
@@ -87,7 +93,35 @@ SINGULAR_default_return := function (type, name)
 	PrintCXXLine("}");
 end;;
 
-Read("gen_lowlevel_common.g");
+# A record containing information about the various Singular types.
+# The name of each entry is carefully chosen to match the types defined
+# in libsing.h; e.g. STRING maps to SINGTYPE_STRING.
+# For each type, there is a record with the following entries:
+# * ring: boolean indicating whether the type implicitly depends on the active ring
+# * cxxtype: corresponding C++ type
+# * ...
+SINGULAR_types := rec(
+	#BIGINT  := rec( ring := false,  ... ),
+	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
+	INT := rec( ring := false, cxxtype := "int" ),
+	#INTMAT  := rec( ring := false,  ... ),
+	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
+	#LINK  := rec( ... ),
+	#LIST  := rec( ... ),
+	#MAP  := rec( ... ),
+
+	MATRIX := rec( ring := true,  cxxtype := "matrix" ),
+
+	#MODULE  := rec( ... ),
+	NUMBER := rec( ring := true,  cxxtype := "number" ),
+	#PACKAGE  := rec( ... ),
+	POLY   := rec( ring := true,  cxxtype := "poly" ),
+	#QRING  := rec( ... ),
+	#RESOLUTION  := rec( ... ),
+	RING   := rec( ring := false, cxxtype := "ring" ),
+	STRING := rec( ring := false, cxxtype := "char *" ),
+	#VECTOR  := rec( ... ),
+);;
 
 # Array containing records describing various Singular kernel functions.
 # From this, we generate GAP C kernel functions that call the Singular
@@ -104,7 +138,104 @@ Read("gen_lowlevel_common.g");
 #           be specified; in that case the input value is *not* copied.
 # * result: string indicating the return type (this is again used to
 #           lookup the type in SINGULAR_types).
-Read("lowlevel_mappings_src.g");
+
+CToSingularType := function(type)
+	# TODO: Handle intvec* etc.
+	if type = "char*" then
+		return "STRING";
+	fi;
+	return UppercaseString(type);
+end;;
+
+Generate_SINGULAR_funcs := function()
+	local SINGULAR_funcs, input, proto, line, toks, tmp, func_name, ret_type, i, j, arg_name, arg_destroyed, arg_type;
+
+	SINGULAR_funcs := [];
+
+	input := InputTextFile("lowlevel_mappings_src.h");
+
+	while not IsEndOfStream(input) do
+		# Read lines until we encounter a semicolon
+		proto := "";
+		repeat
+			line := ReadLine(input);
+			if line = fail then break; fi;
+			Append( proto, line );
+		until ';' in line;
+		if line = fail then break; fi;
+		NormalizeWhitespace(proto);
+
+		# Skip any prototypes using pass-by-reference parameters.
+		# We can't currently handle those (and most are overloaded
+		# with variants that don't need by-ref params anyway).
+		if '&' in proto then continue; fi;
+
+
+		# At this point we have a string like
+		# "poly pp_Mult_nn(poly p, number n, const ring r);"
+		# Split it into a list like this one:
+		# [ "poly pp_Mult_nn", "poly p", " number n", " const ring r" ]
+		RemoveCharacters(proto,";");
+		toks := SplitString(proto, "(,)");
+
+		# Extract the return type and function name
+		tmp := SplitString(toks[1], " ");
+		ret_type := CToSingularType(tmp[1]);
+		func_name := tmp[2];
+
+		# TODO: Add support for void functions
+		if ret_type = "VOID" then
+			continue;
+		fi;
+
+		proto := rec( name := func_name, result := ret_type, params := [] );
+
+		# Iterate over the arguments
+		for i in [2..Length(toks)] do
+			NormalizeWhitespace(toks[i]);
+			tmp := SplitString(toks[i], " ");
+			# Name of the argument comes last
+			# TODO: Deal with 'BOOLEAN revert = FALSE'
+			# TODO: Deal with 'int &length'
+			arg_name := Remove(tmp);
+			tmp := Set(tmp);
+
+			# Destroy argument?
+			j := Position(tmp, "DESTROYS");
+			arg_destroyed := (j <> fail);
+			if j <> fail then
+				Remove(tmp, j);
+			fi;
+
+			tmp := Filtered(tmp, x -> x <> "const");
+
+			Assert(0, Length(tmp) = 1);
+			# TODO: Handle pointers formatted like "char * s" (instead of "char *s")
+			arg_type := CToSingularType(tmp[1]);
+
+			if arg_destroyed then
+				Add( proto.params, [ arg_type, true ] );
+			else
+				Add( proto.params, arg_type );
+			fi;
+		od;
+
+		# TODO: Suppress outputting "ring r" parameter if it is implicit.
+		# This could be done either by adding an IMPLICIT marker;
+		# or we could attempt to guess this by looking at the input elements,
+		# and checking whether any of them carries a ring implicitly; in
+		# that case, drop "ring r" (if it is the last param, at least ?!)
+		# This would require the SINGULAR_types table.
+
+		Add( SINGULAR_funcs, proto );
+	od;
+
+	CloseStream(input);
+
+	return SINGULAR_funcs;
+end;;
+
+SINGULAR_funcs := Generate_SINGULAR_funcs();;
 
 
 GenerateSingularWrapper := function (desc)
