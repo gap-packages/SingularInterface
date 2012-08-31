@@ -51,6 +51,15 @@ inline ring GET_SINGRING(UInt rnr)
 // proper singular elements from their GAP wrappers or from real GAP
 // objects.
 
+static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
+{
+    UInt size = SIZE_INT(in);
+    mpz_init2(out,size*GMP_NUMB_BITS);
+    memcpy(out->_mp_d,ADDR_INT(in),sizeof(mp_limb_t)*size);
+    out->_mp_size = (TNUM_OBJ(in) == T_INTPOS) ? (Int)size : - (Int)size;
+}
+
+
 static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
 // This internal function converts a GAP number n into a coefficient
 // number for the ring r. n can be an immediate integer, a GMP integer
@@ -99,10 +108,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         // but GAP uses the low-level mpn API (where data is stored as an mp_limb_t array), whereas
         // Singular uses the high-level mpz API (using type mpz_t).
         number res = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(n);
-        mpz_init2(res->z,size*GMP_NUMB_BITS);
-        memcpy(res->z->_mp_d,ADDR_INT(n),sizeof(mp_limb_t)*size);
-        res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int)size : - (Int)size;
+        _SI_GMP_FROM_GAP(n, res->z);
         res->s = 3;  // indicates an integer
         return res;
     } else if (TNUM_OBJ(n) == T_RAT) {
@@ -114,22 +120,14 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
             Int i = INT_INTOBJ(nn);
             mpz_init_set_si(res->z,i);
         } else {
-            UInt size = SIZE_INT(nn);
-            mpz_init2(res->z,size*GMP_NUMB_BITS);
-            memcpy(res->z->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
-            res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
-                               ? (Int) size : - (Int)size;
+            _SI_GMP_FROM_GAP(nn, res->z);
         }
         nn = DEN_RAT(n);
         if (IS_INTOBJ(nn)) { // a GAP immediate integer
             Int i = INT_INTOBJ(nn);
             mpz_init_set_si(res->n,i);
         } else {
-            UInt size = SIZE_INT(nn);
-            mpz_init2(res->n,size*GMP_NUMB_BITS);
-            memcpy(res->n->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
-            res->n->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
-                               ? (Int) size : - (Int)size;
+            _SI_GMP_FROM_GAP(nn, res->n);
         }
         return res;
     } else {
@@ -150,10 +148,7 @@ static number _SI_BIGINT_FROM_GAP(Obj nr)
     } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
         // A long GAP integer
         n = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size*GMP_NUMB_BITS);
-        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
-        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        _SI_GMP_FROM_GAP(nr, n->z);
         n->s = 3;  // indicates an integer
     } else {
         ErrorQuit("Argument must be an integer.\n",0L,0L);
@@ -208,10 +203,7 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 #endif
     } else {   // a long GAP integer
         n = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size*GMP_NUMB_BITS);
-        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
-        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        _SI_GMP_FROM_GAP(nr, n->z);
         n->s = 3;  // indicates an integer
     }
     obj.data = n;
