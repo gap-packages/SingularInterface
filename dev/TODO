@@ -30,6 +30,9 @@ Debugging
 Explosion of objects like lists (rewrap pieces)
 Assembling of objects losing the wrapping of the pieces
 
+Constructor for PLURAL rings
+
+Make place of libsingular.so and headers configurable at compile time
 
 
 More TODO:
