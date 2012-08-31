@@ -15,7 +15,7 @@ DeclareCategory( "IsSingularMap", IsSingularObj );
 DeclareCategory( "IsSingularMatrix", IsSingularObj );
 DeclareCategory( "IsSingularModule", IsSingularObj );
 DeclareCategory( "IsSingularNumber", IsSingularObj );
-DeclareCategory( "IsSingularPoly", IsSingularObj );
+DeclareCategory( "IsSingularPoly", IsSingularObj and IsRingElementWithOne);
 DeclareCategory( "IsSingularQRing", IsSingularObj );
 DeclareCategory( "IsSingularResolution", IsSingularObj );
 DeclareCategory( "IsSingularRing", IsSingularObj );

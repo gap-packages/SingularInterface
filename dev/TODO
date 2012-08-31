@@ -83,5 +83,4 @@ Unify SingObj::cleanup and _SI_FreeFunc as far as possible
 
 gap> s := SI_ring(3,["a","b"]);
 gap> SI_poly(s,SI_bigint(2));
-
 crashes GAP
