@@ -47,6 +47,13 @@ InstallGlobalFunction( SI_CleanupRings,
     od;
   end );
   
+# This is a dirty hack but seems to work:
+MakeRewriteGVar("SI_LIB");
+Unbind(SI_LIB);
+BindGlobal("SI_LIB",function(libname)
+  SI_load(libname,"with");
+end);
+
 InstallMethod( ViewString, "for a singular ring",
   [ IsSingularRing ],
   function( r )
