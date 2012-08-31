@@ -35,9 +35,9 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/configure TODO \
-	cnf/config.guess cnf/config.sub cnf/depcomp cnf/install-sh \
-	cnf/ltmain.sh cnf/missing
+	$(srcdir)/Makefile.in $(top_srcdir)/configure cnf/config.guess \
+	cnf/config.sub cnf/depcomp cnf/install-sh cnf/ltmain.sh \
+	cnf/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_find_gap.m4 \
 	$(top_srcdir)/m4/ax_cc_maxopt.m4 \

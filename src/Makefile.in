@@ -715,7 +715,7 @@ clean-local:
 # We cannot use cpp directly, as language selection (via -x) is broken
 # there on recent Mac OS X versions :-(/
 lowlevel_mappings_src.h: lowlevel_mappings_src.h.in
-	c++ -E -P -DPINLINE0= -DPINLINE2= -x c++ $< > $@
+	c++ -E -P -DPINLINE0= -DPINLINE2= -Dinline= -x c++ $< > $@
 
 lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel_mappings.g lowlevel_mappings_src.h
 	@echo "Generating lowlevel mappings..."
