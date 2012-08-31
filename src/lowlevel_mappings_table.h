@@ -27,3 +27,43 @@
   "arg1, arg2, arg3", Func_SI_p_Plus_mm_Mult_qq,
   "lowlevel_mappings.cc:Func_SI_p_Plus_mm_Mult_qq" },
 
+  {"_SI_p_Mult_nn", 2,
+  "arg1, arg2", Func_SI_p_Mult_nn,
+  "lowlevel_mappings.cc:Func_SI_p_Mult_nn" },
+
+  {"_SI_pp_Mult_mm", 2,
+  "arg1, arg2", Func_SI_pp_Mult_mm,
+  "lowlevel_mappings.cc:Func_SI_pp_Mult_mm" },
+
+  {"_SI_p_Mult_mm", 2,
+  "arg1, arg2", Func_SI_p_Mult_mm,
+  "lowlevel_mappings.cc:Func_SI_p_Mult_mm" },
+
+  {"_SI_p_Mult_q", 2,
+  "arg1, arg2", Func_SI_p_Mult_q,
+  "lowlevel_mappings.cc:Func_SI_p_Mult_q" },
+
+  {"_SI_pp_Mult_Coeff_mm_DivSelect", 2,
+  "arg1, arg2", Func_SI_pp_Mult_Coeff_mm_DivSelect,
+  "lowlevel_mappings.cc:Func_SI_pp_Mult_Coeff_mm_DivSelect" },
+
+  {"_SI_p_Merge_q", 2,
+  "arg1, arg2", Func_SI_p_Merge_q,
+  "lowlevel_mappings.cc:Func_SI_p_Merge_q" },
+
+  {"_SI_pLength", 1,
+  "arg1", Func_SI_pLength,
+  "lowlevel_mappings.cc:Func_SI_pLength" },
+
+  {"_SI_pLast", 1,
+  "arg1", Func_SI_pLast,
+  "lowlevel_mappings.cc:Func_SI_pLast" },
+
+  {"_SI_pReverse", 1,
+  "arg1", Func_SI_pReverse,
+  "lowlevel_mappings.cc:Func_SI_pReverse" },
+
+  {"_SI_p_String0", 1,
+  "arg1", Func_SI_p_String0,
+  "lowlevel_mappings.cc:Func_SI_p_String0" },
+

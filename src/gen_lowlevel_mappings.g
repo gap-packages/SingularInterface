@@ -58,6 +58,15 @@ SINGULAR_string_return := function (type, name)
 	PrintCXXLine("}");
 end;;
 
+SINGULAR_int_return := function (type, name)
+	PrintCXXLine("{");
+	indent := indent + 1;
+		# TODO: Should perform bounds checking
+		PrintCXXLine("return INTOBJ_INT(", name,");");
+	indent := indent - 1;
+	PrintCXXLine("}");
+end;;
+
 # Generate code for returning a ring-dependent Singular object
 SINGULAR_default_ringdep_return := function (type, name)
 	PrintCXXLine("{");
@@ -96,29 +105,26 @@ Read("gen_lowlevel_common.g");
 # * result: string indicating the return type (this is again used to
 #           lookup the type in SINGULAR_types).
 SINGULAR_funcs := [
-	# PINLINE2 char*     p_String(poly p, ring p_ring);
-	rec( name := "p_String", params := [ "POLY" ], result := "STRING" ),
+	rec( name := "p_String", result := "STRING", params := [ "POLY", "RING", ] ),
+	rec( name := "p_Neg", result := "POLY", params := [ ["POLY",true], "RING", ] ),
+	rec( name := "pp_Mult_qq", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
+	rec( name := "pp_Mult_nn", result := "POLY", params := [ "POLY", "NUMBER", "RING", ] ),
+	rec( name := "p_Add_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
+	rec( name := "p_Minus_mm_Mult_qq", result := "POLY", params := [ ["POLY",true], "POLY", "POLY", "RING", ] ),
+	rec( name := "p_Plus_mm_Mult_qq", result := "POLY", params := [ ["POLY",true], "POLY", "POLY", "RING", ] ),
 
-	#PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
-	rec( name := "p_Neg", params := [ ["POLY",true] ], result := "POLY" ),
-
-	# PINLINE2 poly pp_Mult_qq(poly p, poly q, const ring r);
-	rec( name := "pp_Mult_qq", params := [ "POLY", "POLY" ], result := "POLY" ),
-
-	# PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
-	rec( name := "pp_Mult_nn", params := [ "POLY", "NUMBER" ], result := "POLY" ),
-
-	# PINLINE2 poly p_Add_q(DESTROYS poly p, DESTROYS poly q, const ring r);
-	rec( name := "p_Add_q", params := [ ["POLY",true], ["POLY",true] ], result := "POLY" ),
-
-	# PINLINE2 poly p_Minus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
-	rec( name := "p_Minus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
-
-	# PINLINE2 poly p_Plus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
-	rec( name := "p_Plus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
-
-
+	rec( name := "p_Mult_nn", result := "POLY", params := [ ["POLY",true], "NUMBER", "RING", ] ),
+	rec( name := "pp_Mult_mm", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
+	rec( name := "p_Mult_mm", result := "POLY", params := [ ["POLY",true], "POLY", "RING", ] ),
+	rec( name := "p_Mult_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
+	rec( name := "pp_Mult_Coeff_mm_DivSelect", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
+	rec( name := "p_Merge_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
+	rec( name := "pLength", result := "INT", params := [ "POLY", ] ),
+	rec( name := "pLast", result := "POLY", params := [ "POLY", ] ),
+	rec( name := "pReverse", result := "POLY", params := [ "POLY", ] ),
+	rec( name := "p_String0", result := "STRING", params := [ "POLY", "RING", ] ),
 ];;
+
 
 GenerateSingularWrapper := function (desc)
 	local
@@ -132,6 +138,7 @@ GenerateSingularWrapper := function (desc)
 		GetParamTypeName,
 		retconv,
 		func_head,
+		implicit_ring,
 		i, j;
 
 	GetParamTypeName := function (i)
@@ -142,6 +149,18 @@ GenerateSingularWrapper := function (desc)
 	CXXArgName := i -> String(Concatenation("arg", String(i)));
 	CXXVarName := i -> String(Concatenation("var", String(i)));
 	CXXObjName := i -> String(Concatenation("obj", String(i)));
+
+	# Determine all params that depend on the current ring.
+	ring_users := Filtered( [1 .. Length(desc.params) ],
+		i -> SINGULAR_types.(GetParamTypeName(i)).ring );
+
+	if Length(ring_users) > 0 and GetParamTypeName(Length(desc.params)) = "RING" then
+		implicit_ring := true;
+		Remove(desc.params);
+	else
+		implicit_ring := false;
+	fi;
+
 
 	#############################################
 	# Generate the function head
@@ -189,9 +208,6 @@ GenerateSingularWrapper := function (desc)
 	PrintCXXLine("ring r = currRing;");
 	PrintCXXLine("");
 
-	# Ddetermine all params that depend on the current ring.
-	ring_users := Filtered( [1 .. Length(desc.params) ],
-		i -> SINGULAR_types.(GetParamTypeName(i)).ring );
 
 	# TODO: When this code was converted to use GET_SINGOBJ, the code that verifies
 	# that all ring-dependent inputs are defined over the same ring was disabled.
@@ -281,7 +297,7 @@ GenerateSingularWrapper := function (desc)
 	# Generate code to call the Singular C++ function.
 	PrintCXXLine("// Call into Singular kernel");
 	cxxparams := List( [1 .. Length(desc.params) ], CXXVarName );
-	if Length(ring_users) > 0 then
+	if implicit_ring then
 		Add(cxxparams, "r");
 	fi;
 
@@ -298,6 +314,8 @@ GenerateSingularWrapper := function (desc)
 	PrintCXXLine("// Convert result for GAP and return it");
 	if desc.result = "STRING" then
 		retconv := SINGULAR_string_return;
+	elif desc.result = "INT" then
+		retconv := SINGULAR_int_return;
 	elif result_type.ring then
 		retconv := SINGULAR_default_ringdep_return;
 	else

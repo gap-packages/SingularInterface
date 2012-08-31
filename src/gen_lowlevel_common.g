@@ -8,6 +8,7 @@
 SINGULAR_types := rec(
 	#BIGINT  := rec( ring := false,  ... ),
 	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
+	INT := rec( ring := false, cxxtype := "int" ),
 	#INTMAT  := rec( ring := false,  ... ),
 	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
 	#LINK  := rec( ... ),

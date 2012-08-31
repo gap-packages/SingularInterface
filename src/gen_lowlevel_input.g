@@ -7,6 +7,16 @@ input := InputTextFile("lowlevel_mappings_src.h");
 
 Print("SINGULAR_funcs := [\n");
 
+
+CToSingularType := function(type)
+	# TODO: Handle intvec* etc.
+	if type = "char*" then
+		return "STRING";
+	fi;
+	return UppercaseString(type);
+end;
+
+
 while not IsEndOfStream(input) do
 	# Read lines until we encounter a semicolon
 	proto := "";
@@ -39,8 +49,14 @@ while not IsEndOfStream(input) do
 
 	# Extract the return type and function name
 	tmp := SplitString(toks[1], " ");
-	ret_type := UppercaseString(tmp[1]);
+	ret_type := CToSingularType(tmp[1]);
 	func_name := tmp[2];
+
+	# TODO: Add support for void functions
+	if ret_type = "VOID" then
+		continue;
+	fi;
+
 
 	Print("	rec( name := \"", func_name, "\", result := \"", ret_type, "\", params := [ ");
 
@@ -64,7 +80,8 @@ while not IsEndOfStream(input) do
 		tmp := Filtered(tmp, x -> x <> "const");
 
 		Assert(0, Length(tmp) = 1);
-		arg_type := UppercaseString(tmp[1]);
+		# TODO: Handle pointers formatted like "char * s" (instead of "char *s")
+		arg_type := CToSingularType(tmp[1]);
 
 		if arg_destroyed then
 			Print("[\"", arg_type, "\",true], ");
@@ -80,7 +97,7 @@ while not IsEndOfStream(input) do
 	# that case, drop "ring r" (if it is the last param, at least ?!)
 	# This would require the SINGULAR_types table.
 
-	Print("]  ),\n");
+	Print("] ),\n");
 od;
 
 Print("];;\n");

@@ -292,6 +292,356 @@ Obj Func_SI_p_Plus_mm_Mult_qq(Obj self, Obj arg1, Obj arg2, Obj arg3) {
     }
 }
 
+Obj Func_SI_p_Mult_nn(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != NUMBER_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type NUMBER", 0L, 0L);
+        return Fail;
+    }
+    number var2 = (number) obj2.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = p_Mult_nn(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_pp_Mult_mm(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = pp_Mult_mm(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_p_Mult_mm(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = p_Mult_mm(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_p_Mult_q(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.destructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = p_Mult_q(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_pp_Mult_Coeff_mm_DivSelect(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = pp_Mult_Coeff_mm_DivSelect(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_p_Merge_q(Obj self, Obj arg1, Obj arg2) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.destructiveuse()->data;
+    SingObj obj2(arg2, rnr, r);
+    if (obj2.error) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit(obj2.error,0L,0L);
+        return Fail;
+    } else if (obj2.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        obj2.cleanup();
+        ErrorQuit("argument 2 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var2 = (poly) obj2.destructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = p_Merge_q(var1,var2,r);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_pLength(Obj self, Obj arg1) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    int res = pLength(var1);
+    
+    // Convert result for GAP and return it
+    {
+        return INTOBJ_INT(res);
+    }
+}
+
+Obj Func_SI_pLast(Obj self, Obj arg1) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = pLast(var1);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_pReverse(Obj self, Obj arg1) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    poly res = pReverse(var1);
+    
+    // Convert result for GAP and return it
+    {
+        Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,res,rnr);
+        return tmp;
+    }
+}
+
+Obj Func_SI_p_String0(Obj self, Obj arg1) {
+    UInt rnr;
+    ring r = currRing;
+    
+    // Prepare input data
+    SingObj obj1(arg1, rnr, r);
+    if (obj1.error) {
+        obj1.cleanup();
+        ErrorQuit(obj1.error,0L,0L);
+        return Fail;
+    } else if (obj1.obj.rtyp != POLY_CMD) {
+        obj1.cleanup();
+        ErrorQuit("argument 1 must be of type POLY", 0L, 0L);
+        return Fail;
+    }
+    poly var1 = (poly) obj1.nondestructiveuse()->data;
+    
+    // Call into Singular kernel
+    char * res = p_String0(var1,r);
+    
+    // Convert result for GAP and return it
+    {
+        UInt len = (UInt) strlen(res);
+        Obj tmp = NEW_STRING(len);
+        SET_LEN_STRING(tmp,len);
+        memcpy(CHARS_STRING(tmp),res, len+1);
+        return tmp;
+    }
+}
+
 
 #ifdef __cplusplus
 }

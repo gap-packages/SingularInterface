@@ -19,7 +19,9 @@ PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
 PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
 // returns p*n, destroys p
 PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring r);
+/* FIXME: What is this one good for?
 PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring lmRing, const ring tailRing);
+*/
 
 // returns p*m, does neither destroy p nor m
 PINLINE2 poly pp_Mult_mm(poly p, poly m, const ring r);
@@ -79,7 +81,6 @@ PINLINE0 poly      pLast(poly a, int &length);
 inline   poly      pLast(poly a);
 PINLINE0 poly pReverse(poly p);
 
-
 /***************************************************************
  *
  * I/O
@@ -92,10 +93,10 @@ char*     p_String0(poly p, ring lmRing, ring tailRing);
 void      p_Write(poly p, ring lmRing, ring tailRing);
 void      p_Write0(poly p, ring lmRing, ring tailRing);
 void      p_wrp(poly p, ring lmRing, ring tailRing);
+*/
 
 PINLINE2 char*     p_String(poly p, ring p_ring);
 PINLINE2 char*     p_String0(poly p, ring p_ring);
 PINLINE2 void      p_Write(poly p, ring p_ring);
 PINLINE2 void      p_Write0(poly p, ring p_ring);
 PINLINE2 void      p_wrp(poly p, ring p_ring);
-*/
