@@ -45,7 +45,12 @@ clean-local:
 lowlevel_mappings_src.h: lowlevel_mappings_src.h.in
 	c++ -E -P -DPINLINE0= -DPINLINE2= -Dinline= -x c++ $< > $@
 
-lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel_mappings.g lowlevel_mappings_src.h
+lowlevel_mappings_src.g: gen_lowlevel_input.g gen_lowlevel_common.g
+	@echo "Generating lowlevel mappings input..."
+	$(GAPROOT)/bin/gap.sh -A -q -T < $< > $@
+	@echo "Done!"
+
+lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel_mappings.g gen_lowlevel_common.g lowlevel_mappings_src.g lowlevel_mappings_src.h
 	@echo "Generating lowlevel mappings..."
 	$(GAPROOT)/bin/gap.sh -A -q -T < $<
 	@echo "Done!"

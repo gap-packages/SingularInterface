@@ -104,26 +104,7 @@ Read("gen_lowlevel_common.g");
 #           be specified; in that case the input value is *not* copied.
 # * result: string indicating the return type (this is again used to
 #           lookup the type in SINGULAR_types).
-SINGULAR_funcs := [
-	rec( name := "p_String", result := "STRING", params := [ "POLY", "RING", ] ),
-	rec( name := "p_Neg", result := "POLY", params := [ ["POLY",true], "RING", ] ),
-	rec( name := "pp_Mult_qq", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
-	rec( name := "pp_Mult_nn", result := "POLY", params := [ "POLY", "NUMBER", "RING", ] ),
-	rec( name := "p_Add_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
-	rec( name := "p_Minus_mm_Mult_qq", result := "POLY", params := [ ["POLY",true], "POLY", "POLY", "RING", ] ),
-	rec( name := "p_Plus_mm_Mult_qq", result := "POLY", params := [ ["POLY",true], "POLY", "POLY", "RING", ] ),
-
-	rec( name := "p_Mult_nn", result := "POLY", params := [ ["POLY",true], "NUMBER", "RING", ] ),
-	rec( name := "pp_Mult_mm", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
-	rec( name := "p_Mult_mm", result := "POLY", params := [ ["POLY",true], "POLY", "RING", ] ),
-	rec( name := "p_Mult_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
-	rec( name := "pp_Mult_Coeff_mm_DivSelect", result := "POLY", params := [ "POLY", "POLY", "RING", ] ),
-	rec( name := "p_Merge_q", result := "POLY", params := [ ["POLY",true], ["POLY",true], "RING", ] ),
-	rec( name := "pLength", result := "INT", params := [ "POLY", ] ),
-	rec( name := "pLast", result := "POLY", params := [ "POLY", ] ),
-	rec( name := "pReverse", result := "POLY", params := [ "POLY", ] ),
-	rec( name := "p_String0", result := "STRING", params := [ "POLY", "RING", ] ),
-];;
+Read("lowlevel_mappings_src.g");
 
 
 GenerateSingularWrapper := function (desc)
