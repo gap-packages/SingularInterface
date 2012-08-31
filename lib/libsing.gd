@@ -23,7 +23,7 @@ DeclareCategory( "IsSingularString", IsSingularObj );
 DeclareCategory( "IsSingularVector", IsSingularObj );
 DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
 
-_SI_TYPES[_SI_TYPENRS.SINGTYPE_VOID]
+_SI_Types[_SI_TYPENRS.SINGTYPE_VOID]
    := NewType(SingularFamily,IsSingularVoid);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT]
    := NewType(SingularFamily,IsSingularBigInt and IsMutable);
@@ -71,23 +71,23 @@ _SI_Types[_SI_TYPENRS.SINGTYPE_POLY_IMM]
    := NewType(SingularFamily,IsSingularPoly);
 _SI_Types[_SI_TYPENRS.SINGTYPE_QRING] 
    := NewType(SingularFamily,IsSingularQRing and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_QRING]_IMM 
+_SI_Types[_SI_TYPENRS.SINGTYPE_QRING_IMM] 
    := NewType(SingularFamily,IsSingularQRing);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION] 
    := NewType(SingularFamily,IsSingularResolution and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION]_IMM 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION_IMM]
    := NewType(SingularFamily,IsSingularResolution);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RING] 
    := NewType(SingularFamily,IsSingularRing and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_RING]_IMM 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RING_IMM] 
    := NewType(SingularFamily,IsSingularRing);
 _SI_Types[_SI_TYPENRS.SINGTYPE_STRING] 
    := NewType(SingularFamily,IsSingularString and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_STRING]_IMM 
+_SI_Types[_SI_TYPENRS.SINGTYPE_STRING_IMM]
    := NewType(SingularFamily,IsSingularString);
 _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR] 
    := NewType(SingularFamily,IsSingularVector and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR]_IMM 
+_SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR_IMM]
    := NewType(SingularFamily,IsSingularVector);
 
 BindGlobal("_SI_TYPETAB",
