@@ -78,36 +78,7 @@ SINGULAR_default_return := function (type, name)
 	PrintCXXLine("}");
 end;;
 
-
-# A record containing information about the various Singular types.
-# The name of each entry is carefully chosen to match the types defined
-# in libsing.h; e.g. STRING maps to SINGTYPE_STRING.
-# For each type, there is a record with the following entries:
-# * ring: boolean indicating whether the type implicitly depends on the active ring
-# * cxxtype: corresponding C++ type
-# * retconv: (optional) a GAP function that generates code to return a value of this type
-# * ...
-SINGULAR_types := rec(
-	#BIGINT  := rec( ring := false,  ... ),
-	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
-	#INTMAT  := rec( ring := false,  ... ),
-	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
-	#LINK  := rec( ... ),
-	#LIST  := rec( ... ),
-	#MAP  := rec( ... ),
-
-	MATRIX := rec( ring := true,  cxxtype := "matrix" ),
-
-	#MODULE  := rec( ... ),
-	NUMBER := rec( ring := true,  cxxtype := "number" ),
-	#PACKAGE  := rec( ... ),
-	POLY   := rec( ring := true,  cxxtype := "poly" ),
-	#QRING  := rec( ... ),
-	#RESOLUTION  := rec( ... ),
-	RING   := rec( ring := false, cxxtype := "ring" ),
-	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
-	#VECTOR  := rec( ... ),
-);;
+Read("gen_lowlevel_common.g");
 
 # Array containing records describing various Singular kernel functions.
 # From this, we generate GAP C kernel functions that call the Singular
@@ -325,8 +296,8 @@ GenerateSingularWrapper := function (desc)
 	# How this is done is type dependent, and we delegate this
 	# to a type dependent function.
 	PrintCXXLine("// Convert result for GAP and return it");
-	if IsBound(result_type.retconv) then
-		retconv := result_type.retconv;
+	if desc.result = "STRING" then
+		retconv := SINGULAR_string_return;
 	elif result_type.ring then
 		retconv := SINGULAR_default_ringdep_return;
 	else
