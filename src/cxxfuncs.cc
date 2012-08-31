@@ -980,8 +980,7 @@ extern "C"
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
-    if (TNUM_OBJ(rr) != T_SINGULAR ||
-        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1032,8 +1031,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     }
     Int c_nrrows = INT_INTOBJ(nrrows);
     Int c_nrcols = INT_INTOBJ(nrcols);
-    if (TNUM_OBJ(rr) != T_SINGULAR ||
-        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1147,8 +1145,7 @@ Obj Func_SI_intvec(Obj self, Obj l)
 extern "C"
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
-    if (! (TNUM_OBJ(iv) == T_SINGULAR && 
-           TYPE_SINGOBJ(iv) == SINGTYPE_INTVEC) ) {
+    if (!ISSINGOBJ(SINGTYPE_INTVEC,iv) ) {
         ErrorQuit("iv must be a singular intvec", 0L, 0L);
         return Fail;
     }
@@ -1203,8 +1200,7 @@ Obj Func_SI_intmat(Obj self, Obj m)
 extern "C"
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
-    if (! (TNUM_OBJ(im) == T_SINGULAR && 
-           TYPE_SINGOBJ(im) == SINGTYPE_INTMAT) ) {
+    if (!ISSINGOBJ(SINGTYPE_INTMAT, im)) {
         ErrorQuit("im must be a singular intmat", 0L, 0L);
         return Fail;
     }
@@ -1391,13 +1387,6 @@ Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
 extern "C"
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
-/*
-    UInt rnr = RING_SINGOBJ(a);
-    ring r = (ring) CXX_SINGOBJ(ELM_PLIST(SingularRings,rnr));
-
-//     if (r != currRing) rChangeCurrRing(r);   // necessary?
-    number bb = NUMBER_FROM_GAP(self,r,b);
-*/
     ring r = SINGRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);   // necessary?
     number bb = _SI_NUMBER_FROM_GAP(r,b);

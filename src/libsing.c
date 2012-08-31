@@ -6,7 +6,7 @@ This file contains all of the pure C code that deals with GAP.
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
-  
+
 #include "libsing.h"
 #include "lowlevel_mappings.h"
 
@@ -14,7 +14,7 @@ This file contains all of the pure C code that deals with GAP.
 /******************** Helper functions ***************/
 
 /**
-Print a GAP error message. 
+Print a GAP error message.
 @param message The message
 **/
 void _SI_PrintGAPError(const char* message)
@@ -26,10 +26,10 @@ void _SI_PrintGAPError(const char* message)
 
 
 /**
-Details of the functions to make available to GAP. 
+Details of the functions to make available to GAP.
 This is used in InitKernel() and InitLibrary()
 */
-static StructGVarFunc GVarFuncs[] = 
+static StructGVarFunc GVarFuncs[] =
 {
   {"_SI_ring", 3,
    "characteristic, names, orderings",
@@ -240,7 +240,7 @@ static Int InitLibrary(StructInitInfo* module)
 
 
 /**
-Information about this library, returned when the library is loaded, 
+Information about this library, returned when the library is loaded,
 for example by Init__Dynamic(). This contains details of the library name,
 and the further initialisation functions to call.
 **/
@@ -265,8 +265,8 @@ static StructInitInfo module = {
 
 
 #ifndef STATICGAP
-/** 
-Function called by GAP as soon as the library is dynamically loaded. 
+/**
+Function called by GAP as soon as the library is dynamically loaded.
 This returns the StructInitInfo data for this library
 **/
 StructInitInfo * Init__Dynamic (void)
