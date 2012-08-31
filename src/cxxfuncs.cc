@@ -282,28 +282,51 @@ static poly _SI_GET_IDEAL_ELM_PROXY(Obj p)
 // Singular type numbers for Singular objects:
 
 static const int GAPtoSingType[] =
-  { 0 /* NOTUSED */,
+  { 0, /* NOTUSED */
+    0, /* VOID */
+    BIGINT_CMD,
     BIGINT_CMD,
     DEF_CMD ,
+    DEF_CMD ,
+    IDEAL_CMD,
     IDEAL_CMD,
     INT_CMD,
+    INT_CMD,
+    INTMAT_CMD,
     INTMAT_CMD,
     INTVEC_CMD,
+    INTVEC_CMD,
+    LINK_CMD,
     LINK_CMD,
     LIST_CMD,
+    LIST_CMD,
+    MAP_CMD,
     MAP_CMD,
     MATRIX_CMD,
+    MATRIX_CMD,
+    MODUL_CMD,
     MODUL_CMD,
     NUMBER_CMD,
+    NUMBER_CMD,
+    PACKAGE_CMD,
     PACKAGE_CMD,
     POLY_CMD,
+    POLY_CMD,
+    PROC_CMD,
     PROC_CMD,
     QRING_CMD,
+    QRING_CMD,
+    RESOLUTION_CMD,
     RESOLUTION_CMD,
     RING_CMD,
+    RING_CMD,
+    STRING_CMD,
     STRING_CMD,
     VECTOR_CMD,
-    0 /* USERDEF */,
+    VECTOR_CMD,
+    0, /* USERDEF */
+    0, /* USERDEF */
+    0, /* PYOBJECT */
     0 /* PYOBJECT */
   };
 
@@ -313,28 +336,51 @@ static int SingtoGAPType[MAX_TOK];
 
 static const int HasRingTable[] =
   { 0, // NOTUSED
-    0, // SINGTYPE_BIGINT        =  1
-    0, // SINGTYPE_DEF           =  2
-    1, // SINGTYPE_IDEAL         =  3
-    0, // SINGTYPE_INT           =  4
-    0, // SINGTYPE_INTMAT        =  5
-    0, // SINGTYPE_INTVEC        =  6
-    0, // SINGTYPE_LINK          =  7
-    1, // SINGTYPE_LIST          =  8
-    1, // SINGTYPE_MAP           =  9
-    1, // SINGTYPE_MATRIX        = 10
-    1, // SINGTYPE_MODULE        = 11
-    1, // SINGTYPE_NUMBER        = 12
-    0, // SINGTYPE_PACKAGE       = 13
-    1, // SINGTYPE_POLY          = 14
-    0, // SINGTYPE_PROC          = 15
-    0, // SINGTYPE_QRING         = 16
-    1, // SINGTYPE_RESOLUTION    = 17
-    0, // SINGTYPE_RING          = 18
-    0, // SINGTYPE_STRING        = 19
-    1, // SINGTYPE_VECTOR        = 20
-    0, // SINGTYPE_USERDEF       = 21
-    0  // SINGTYPE_PYOBJECT      = 22
+    0, // SINGTYPE_VOID          = 1
+    0, // SINGTYPE_BIGINT        = 2,
+    0, // SINGTYPE_BIGINT_IMM    = 3,
+    0, // SINGTYPE_DEF           = 4,
+    0, // SINGTYPE_DEF_IMM       = 5,
+    1, // SINGTYPE_IDEAL         = 6,
+    1, // SINGTYPE_IDEAL_IMM     = 7,
+    0, // SINGTYPE_INT           = 8,
+    0, // SINGTYPE_INT_IMM       = 9,
+    0, // SINGTYPE_INTMAT        = 10,
+    0, // SINGTYPE_INTMAT_IMM    = 11,
+    0, // SINGTYPE_INTVEC        = 12,
+    0, // SINGTYPE_INTVEC_IMM    = 13,
+    0, // SINGTYPE_LINK          = 14,
+    0, // SINGTYPE_LINK_IMM      = 15,
+    1, // SINGTYPE_LIST          = 16,
+    1, // SINGTYPE_LIST_IMM      = 17,
+    1, // SINGTYPE_MAP           = 18,
+    1, // SINGTYPE_MAP_IMM       = 19,
+    1, // SINGTYPE_MATRIX        = 20,
+    1, // SINGTYPE_MATRIX_IMM    = 21,
+    1, // SINGTYPE_MODULE        = 22,
+    1, // SINGTYPE_MODULE_IMM    = 23,
+    1, // SINGTYPE_NUMBER        = 24,
+    1, // SINGTYPE_NUMBER_IMM    = 25,
+    0, // SINGTYPE_PACKAGE       = 26,
+    0, // SINGTYPE_PACKAGE_IMM   = 27,
+    1, // SINGTYPE_POLY          = 28,
+    1, // SINGTYPE_POLY_IMM      = 29,
+    0, // SINGTYPE_PROC          = 30,
+    0, // SINGTYPE_PROC_IMM      = 31,
+    0, // SINGTYPE_QRING         = 32,
+    0, // SINGTYPE_QRING_IMM     = 33,
+    1, // SINGTYPE_RESOLUTION    = 34,
+    1, // SINGTYPE_RESOLUTION_IMM= 35,
+    0, // SINGTYPE_RING          = 36,
+    0, // SINGTYPE_RING_IMM      = 37,
+    0, // SINGTYPE_STRING        = 38,
+    0, // SINGTYPE_STRING_IMM    = 39,
+    1, // SINGTYPE_VECTOR        = 40,
+    1, // SINGTYPE_VECTOR_IMM    = 41,
+    0, // SINGTYPE_USERDEF       = 42,
+    0, // SINGTYPE_USERDEF_IMM   = 43,
+    0, // SINGTYPE_PYOBJECT      = 44,
+    0  // SINGTYPE_PYOBJECT_IMM  = 45,
   };
 
 static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
@@ -546,55 +592,72 @@ void SingObj::copy()
     ring ri;
     switch (gtype) {
       case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM:
         obj.data = (void *) nlCopy((number) obj.data);
         break;
       case SINGTYPE_IDEAL:
+      case SINGTYPE_IDEAL_IMM:
         obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_INTMAT:
+      case SINGTYPE_INTMAT_IMM:
       case SINGTYPE_INTVEC:
+      case SINGTYPE_INTVEC_IMM:
         obj.data = (void *) new intvec((intvec *) obj.data);
         break;
       case SINGTYPE_LINK:  // Do not copy here since it does not make sense
+      case SINGTYPE_LINK_IMM:
         return;
       case SINGTYPE_LIST:
+      case SINGTYPE_LIST_IMM:
         obj.data = (void *) lCopy( (lists) obj.data );
         break;
       case SINGTYPE_MAP:
+      case SINGTYPE_MAP_IMM:
         obj.data = (void *) maCopy( (map) obj.data );
         break;
       case SINGTYPE_MATRIX:
+      case SINGTYPE_MATRIX_IMM:
         obj.data = (void *) mpCopy( (matrix) obj.data );
         break;
       case SINGTYPE_MODULE:
+      case SINGTYPE_MODULE_IMM:
         obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_NUMBER:
+      case SINGTYPE_NUMBER_IMM:
         obj.data = (void *) n_Copy((number) obj.data,r);
         break;
       case SINGTYPE_POLY:
+      case SINGTYPE_POLY_IMM:
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_QRING:
+      case SINGTYPE_QRING_IMM:
         ri = (ring) obj.data;
         ri->ref++;   // We fake a copy since this will be decreased later on
         return;
       case SINGTYPE_RESOLUTION:
+      case SINGTYPE_RESOLUTION_IMM:
         obj.data = (void *) syCopy((syStrategy) obj.data);
         break;
       case SINGTYPE_RING:
+      case SINGTYPE_RING_IMM:
         ri = (ring) obj.data;
         ri->ref++;   // We fake a copy since this will be decreased later on
         return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
                 // indeed, we never want to do this, therefore we increase
                 // the reference count
       case SINGTYPE_STRING:
+      case SINGTYPE_STRING_IMM:
         obj.data = (void *) omStrDup( (char *) obj.data);
         break;
       case SINGTYPE_VECTOR:
+      case SINGTYPE_VECTOR_IMM:
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_INT:
+      case SINGTYPE_INT_IMM:
         return;
       default:
         return;
@@ -604,52 +667,78 @@ void SingObj::copy()
 
 void SingObj::cleanup(void)
 {
+    map m;
+    ideal *i;
     if (!needcleanup) return;
     needcleanup = false;
     switch (gtype) {
       case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM:
         nlDelete((number *)(obj.data), NULL);
         break;
       case SINGTYPE_IDEAL:
+      case SINGTYPE_IDEAL_IMM:
         id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_INTMAT:
+      case SINGTYPE_INTMAT_IMM:
       case SINGTYPE_INTVEC:
+      case SINGTYPE_INTVEC_IMM:
         delete (intvec *) (obj.data);
         break;
       case SINGTYPE_LINK:  // Was never copied, so leave untouched
+      case SINGTYPE_LINK_IMM:
         return;
       case SINGTYPE_LIST:
+      case SINGTYPE_LIST_IMM:
         ((lists) (obj.data))->Clean(r);
         break;
       case SINGTYPE_MAP:
-        // FIXME
+      case SINGTYPE_MAP_IMM:
+        m = (map) obj.data;
+        omfree(m->preimage);
+        m->preimage = NULL;
+        i = (ideal *) m;
+        id_Delete(i,r);
         break;
       case SINGTYPE_MATRIX:
+      case SINGTYPE_MATRIX_IMM:
         mpDelete((matrix *)(obj.data), r);
         break;
       case SINGTYPE_MODULE:
+      case SINGTYPE_MODULE_IMM:
         id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_NUMBER:
+      case SINGTYPE_NUMBER_IMM:
         n_Delete((number *)(obj.data), r);
         break;
       case SINGTYPE_POLY:
+      case SINGTYPE_POLY_IMM:
         p_Delete((poly *)(obj.data), r);
         break;
       case SINGTYPE_QRING:
+      case SINGTYPE_QRING_IMM:
         return;
       case SINGTYPE_RESOLUTION:
+      case SINGTYPE_RESOLUTION_IMM:
+        syKillComputation((syStrategy) (obj.data),r);
         return;
       case SINGTYPE_RING:
+      case SINGTYPE_RING_IMM:
         return;
       case SINGTYPE_STRING:
+      case SINGTYPE_STRING_IMM:
         omfree( (char *) (obj.data) );
         break;
       case SINGTYPE_VECTOR:
+      case SINGTYPE_VECTOR_IMM:
         p_Delete((poly*)(obj.data), r);
         break;
       case SINGTYPE_INT:
+      case SINGTYPE_INT_IMM:
+        return;
+      default:
         return;
     }
 }
@@ -717,26 +806,90 @@ void _SI_FreeFunc(Obj o)
     poly p;
     number n;
     ideal id;
+    map m;
+    ideal *i;
 
     switch (type) {
+        case SINGTYPE_QRING:
+        case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
+        case SINGTYPE_RING_IMM:
             rKill( (ring) CXX_SINGOBJ(o) );
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
+        case SINGTYPE_POLY_IMM:
             p = (poly) CXX_SINGOBJ(o);
             p_Delete( &p, SINGRING_SINGOBJ(o) );
             DEC_REFCOUNT( RING_SINGOBJ(o) );
             // Pr("killed a ring element\n",0L,0L);
             break;
         case SINGTYPE_BIGINT:
+        case SINGTYPE_BIGINT_IMM:
             n = (number) CXX_SINGOBJ(o);
             nlDelete(&n,NULL);
             break;
         case SINGTYPE_IDEAL:
+        case SINGTYPE_IDEAL_IMM:
             id = (ideal) CXX_SINGOBJ(o);
             id_Delete(&id,SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_INTMAT:
+        case SINGTYPE_INTMAT_IMM:
+        case SINGTYPE_INTVEC:
+        case SINGTYPE_INTVEC_IMM:
+            delete ((intvec *) CXX_SINGOBJ(o));
+            break;
+        case SINGTYPE_LINK:
+        case SINGTYPE_LINK_IMM:
+            // FIXME: later: slKill( (si_link) CXX_SINGOBJ(o));
+            break;
+        case SINGTYPE_LIST:
+        case SINGTYPE_LIST_IMM:
+            ((lists) (CXX_SINGOBJ(o)))->Clean(SINGRING_SINGOBJ(o));
+            break;
+        case SINGTYPE_MATRIX:
+        case SINGTYPE_MATRIX_IMM:
+            mpDelete((matrix *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_MODULE:
+        case SINGTYPE_MODULE_IMM:
+            id_Delete((ideal *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_NUMBER:
+        case SINGTYPE_NUMBER_IMM:
+            n_Delete((number *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_STRING:
+        case SINGTYPE_STRING_IMM:
+            omfree( (char *) (CXX_SINGOBJ(o)) );
+            break;
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM:
+            p_Delete((poly*)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_MAP:
+        case SINGTYPE_MAP_IMM:
+            m = (map) CXX_SINGOBJ(o);
+            omfree(m->preimage);
+            m->preimage = NULL;
+            i = (ideal *) m;
+            id_Delete(i,SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+            break;
+        case SINGTYPE_RESOLUTION:
+        case SINGTYPE_RESOLUTION_IMM:
+            syKillComputation((syStrategy) (CXX_SINGOBJ(o)),
+                              SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        default:
             break;
     }
 }
@@ -1372,7 +1525,7 @@ Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
     currentVoice=feInitStdin(NULL);
     WerrorS_callback = _SI_ErrorCallback;
-    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i++) {
+    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i += 2) {
         if (GAPtoSingType[i] >= MAX_TOK) {
             Pr("Singular types have changed unforeseen",0L,0L);
             exit(1);

@@ -1,6 +1,4 @@
 Bugs: ->Mohamed, crashes (see below)
-Mutable/Immutable types
-Void Singular object
 More constructors
 Method installation (->high performance)
 cleanup of internal objects
@@ -79,8 +77,6 @@ Get rid of _SI_Intbigint and use SI_ToGAP
 Get rid of _SI_Plistintvec and use SI_ToGAP
 Get rid of _SI_Matintmat and use SI_ToGAP
 
-
-Implementiere FreeFuncs fuer viele Singular-Typen
 
 Unify SingObj::cleanup and _SI_FreeFunc as far as possible
 
