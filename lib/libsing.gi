@@ -48,7 +48,7 @@ InstallGlobalFunction( SI_CleanupRings,
   end );
   
 # This is a dirty hack but seems to work:
-MakeRewriteGVar("SI_LIB");
+MakeReadWriteGVar("SI_LIB");
 Unbind(SI_LIB);
 BindGlobal("SI_LIB",function(libname)
   SI_load(libname,"with");
