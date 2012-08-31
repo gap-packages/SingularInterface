@@ -190,9 +190,9 @@ GenerateSingularWrapper := function (desc)
 
 	# add function entry in table header file
 	# the result looks like this:
-	#   {"_SI_ADD_POLYS", 2,
-	#    "a, b", Func_SI_ADD_POLYS,
-	#    "cxx-funcs.cc:Func_SI_ADD_POLYS" },
+	#   {"_SI_p_Add_q", 2,
+	#    "a, b", Func_SI_p_Add_q,
+	#    "cxx-funcs.cc:Func_SI_p_Add_q" },
 
 	PrintTo(stream_table_h, "  {\"_SI_", desc.name, "\", ", Length(desc.params), ",\n" );
 	PrintTo(stream_table_h, "  \"" );

@@ -1303,22 +1303,6 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
-// TODO: Remove this function, use _SI_p_String instead
-extern "C"
-Obj Func_SI_STRING_POLY(Obj self, Obj po)
-{
-    UInt rnr;
-    poly p = _SI_GET_poly(po,rnr);
-    ring r = GET_SINGRING(rnr);
-    if (r != currRing) rChangeCurrRing(r);
-    char *st = p_String(p,r);
-    UInt len = (UInt) strlen(st);
-    Obj tmp = NEW_STRING(len);
-    SET_LEN_STRING(tmp,len);
-    memcpy(CHARS_STRING(tmp),st,len+1);
-    return tmp;
-}
-
 extern "C"
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
@@ -1328,48 +1312,6 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
-    return tmp;
-}
-
-// TODO: Remove this function, use _SI_p_Add_q instead
-extern "C"
-Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b)
-{
-    UInt ra,rb;
-    poly aa = _SI_GET_poly(a,ra);
-    poly bb = _SI_GET_poly(b,rb);
-    if (ra != rb) ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = GET_SINGRING(ra);
-    if (r != currRing) rChangeCurrRing(r);  // necessary?
-    aa = p_Copy(aa,r);
-    bb = p_Copy(bb,r);
-    aa = p_Add_q(aa,bb,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,ra);
-    return tmp;
-}
-
-// TODO: Remove this function, use _SI_p_Neg instead
-extern "C"
-Obj Func_SI_NEG_POLY(Obj self, Obj a)
-{
-    ring r = SINGRING_SINGOBJ(a);
-    if (r != currRing) rChangeCurrRing(r);  // necessary?
-    poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
-    aa = p_Neg(aa,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
-    return tmp;
-}
-
-// TODO: Remove this function, use _SI_pp_Mult_qq instead
-extern "C"
-Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
-{
-    if (RING_SINGOBJ(a) != RING_SINGOBJ(b))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = SINGRING_SINGOBJ(a);
-    if (r != currRing) rChangeCurrRing(r);   // necessary?
-    poly aa = pp_Mult_qq((poly) CXX_SINGOBJ(a),(poly) CXX_SINGOBJ(b),r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
 

@@ -56,7 +56,7 @@ InstallMethod( ViewString, "for a singular ring",
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
   function( r )
-    return STRINGIFY("<singular poly:",_SI_STRING_POLY(r),">");
+    return STRINGIFY("<singular poly:",_SI_p_String(r),">");
   end );
 
 InstallMethod( ViewString, "for a singular bigint",
