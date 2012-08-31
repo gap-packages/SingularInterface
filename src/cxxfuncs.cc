@@ -1044,6 +1044,10 @@ extern "C"
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
+    /* check arg */
+    if (! (ISSINGOBJ(SINGTYPE_RING, rr) || ISSINGOBJ(SINGTYPE_RING_IMM, rr)))
+       ErrorQuit("argument must be Singular ring.",0L,0L);
+
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt rnr = RING_SINGOBJ(rr);
     UInt nrvars = rVar(r);
