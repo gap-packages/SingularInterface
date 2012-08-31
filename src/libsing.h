@@ -160,6 +160,8 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg);
 
 Obj FuncSI_SetCurrRing(Obj self, Obj r);
 
+Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
+
 //////////////// C functions to be called from C++ ////////////////////
 
 void _SI_PrintGAPError(const char* message);

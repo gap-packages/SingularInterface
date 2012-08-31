@@ -141,7 +141,7 @@ static StructGVarFunc GVarFuncs[] =
    "cxxfuncs.cc:Func_SI_CallFunc3" },
 
   {"_SI_CallFuncM", 2,
-   "arg",
+   "op, arg",
    Func_SI_CallFuncM,
    "cxxfuncs.cc:Func_SI_CallFuncM" },
 
@@ -149,6 +149,11 @@ static StructGVarFunc GVarFuncs[] =
    "r",
    FuncSI_SetCurrRing,
    "cxx-funcs.cc:FuncSI_SetCurrRing" },
+
+  {"SI_CallProc", 2,
+   "name, args",
+   FuncSI_CallProc,
+   "cxxfuncs.cc:FuncSI_CallProc" },
 
 #include "lowlevel_mappings_table.h"
 

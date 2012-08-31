@@ -1678,3 +1678,94 @@ Obj FuncSI_SetCurrRing(Obj self, Obj r)
     return NULL;
 }
 
+extern "C"
+Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
+{
+    if (!IsStringConv(name)) {
+        ErrorQuit("First argument must be a string.",0L,0L);
+        return Fail;
+    }
+    if (!IS_LIST(args)) {
+        ErrorQuit("Second argument must be a list.",0L,0L);
+        return Fail;
+    }
+
+    idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
+    if (h == NULL) {
+        ErrorQuit("Proc %s not found in Singular interpreter.",
+                  (Int) CHARS_STRING(name),0L);
+        return Fail;
+    }
+
+    UInt rnr = 0;
+    ring r = NULL;
+    int i;
+    const char *error;
+
+    int nrargs = (int) LEN_LIST(args);
+    SingObj sing1;
+    SingObj sing2;
+    leftv cur,neu;
+    if (nrargs > 0) {
+        sing1.init(ELM_LIST(args,1),rnr,r);
+        if (sing1.error) {
+            error = sing1.error;
+            sing1.cleanup();
+            ErrorQuit(error,0L,0L);
+            return Fail;
+        }
+        cur = &(sing1.obj);
+        for (i = 2;i <= nrargs;i++) {
+            sing2.init(ELM_LIST(args,i),rnr,r);
+            if (sing2.error) {
+                neu = sing1.obj.next;
+                sing1.obj.next = NULL;
+                sing1.cleanup();
+                neu->CleanUp(r);
+                error = sing2.error;
+                sing2.cleanup();
+                ErrorQuit(error,0L,0L);
+            }
+            neu = (leftv) omalloc( sizeof(sleftv) );
+            neu->Init();
+            if (!sing2.needcleanup) sing2.copy();
+            sing2.needcleanup = false;
+            neu->data = sing2.obj.data;
+            neu->rtyp = sing2.obj.rtyp;
+            cur->next = neu;
+            cur = neu;
+        }
+        if (!sing1.needcleanup) sing1.copy();
+        sing1.needcleanup = false;
+    }
+    SingObj singres;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
+    leftv ret;
+    currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+    IDRING(currRingHdl) = r;
+    r->ref++;
+    if (nrargs == 0)
+        ret = iiMake_proc(h,NULL,NULL);
+    else
+        ret = iiMake_proc(h,NULL,&(sing1.obj));
+    killhdl(currRingHdl,currPack);
+    _SI_LastOutputBuf = SPrintEnd();
+
+    if (ret == NULL) return Fail;
+    if (ret->next != NULL) {
+        ret->CleanUp(r);
+        ErrorQuit("Multiple return values not yet implemented.",0L,0L);
+        return Fail;
+    }
+    singres.rnr = rnr;
+    singres.needcleanup = true;
+    singres.obj.data = ret->data;
+    singres.obj.rtyp = ret->rtyp;
+    return singres.gapwrap();
+}
+
