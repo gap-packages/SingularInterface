@@ -1,23 +1,23 @@
 Bugs: crash (see end of this file)
 More constructors
+  Quick polynomial constructor via data like exponents and coefficients
 Method installation (->high performance)
+  for conveniences like +, -, * etc.
 more possibilities for proxy objects actually working
+  proxy implementation for intmats and intvecs?
 access to subobjects of singular objects
 Finish low-level interface and implement some functions with it
-What to autoload?
-How to automatically see what is available?
-errorreported nur im Fehlerfall auf 0 setzen
+What to autoload? (from Singular libraries)
+How to automatically see what is available? (Singular("listvar(proc);");)
 
+errorreported nur im Fehlerfall auf 0 setzen
 Fix path in lib/libsing.gi, because it contains the Singular version!
-proxy implementation for intmats and intvecs?
-More constructors (or less, if accessible via high level)
-Quick polynomial constructor
-More view and print routines
+
+More view and print routines (in particular GAP-parsable Print output)
 proxies for Singular interpreter variables
 generic copying for singular objects (and proxy objects)
 access to def and proc ?
 Help-function to see available Singular-Funktions
-Method installations for conveniences like +, -, * etc.
 Better ring constructor
 Try to run manual examples
 Tuning using low level interface
