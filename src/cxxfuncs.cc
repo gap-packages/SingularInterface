@@ -63,6 +63,15 @@ inline ring GET_SINGRING(UInt rnr)
 // proper singular elements from their GAP wrappers or from real GAP
 // objects.
 
+static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
+{
+    UInt size = SIZE_INT(in);
+    mpz_init2(out,size*GMP_NUMB_BITS);
+    memcpy(out->_mp_d,ADDR_INT(in),sizeof(mp_limb_t)*size);
+    out->_mp_size = (TNUM_OBJ(in) == T_INTPOS) ? (Int)size : - (Int)size;
+}
+
+
 static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
 // This internal function converts a GAP number n into a coefficient
 // number for the ring r. n can be an immediate integer, a GMP integer
@@ -111,10 +120,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         // but GAP uses the low-level mpn API (where data is stored as an mp_limb_t array), whereas
         // Singular uses the high-level mpz API (using type mpz_t).
         number res = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(n);
-        mpz_init2(res->z,size*GMP_NUMB_BITS);
-        memcpy(res->z->_mp_d,ADDR_INT(n),sizeof(mp_limb_t)*size);
-        res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) ? (Int)size : - (Int)size;
+        _SI_GMP_FROM_GAP(n, res->z);
         res->s = 3;  // indicates an integer
         return res;
     } else if (TNUM_OBJ(n) == T_RAT) {
@@ -126,22 +132,14 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
             Int i = INT_INTOBJ(nn);
             mpz_init_set_si(res->z,i);
         } else {
-            UInt size = SIZE_INT(nn);
-            mpz_init2(res->z,size*GMP_NUMB_BITS);
-            memcpy(res->z->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
-            res->z->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
-                               ? (Int) size : - (Int)size;
+            _SI_GMP_FROM_GAP(nn, res->z);
         }
         nn = DEN_RAT(n);
         if (IS_INTOBJ(nn)) { // a GAP immediate integer
             Int i = INT_INTOBJ(nn);
             mpz_init_set_si(res->n,i);
         } else {
-            UInt size = SIZE_INT(nn);
-            mpz_init2(res->n,size*GMP_NUMB_BITS);
-            memcpy(res->n->_mp_d,ADDR_INT(nn),sizeof(mp_limb_t)*size);
-            res->n->_mp_size = (TNUM_OBJ(n) == T_INTPOS) 
-                               ? (Int) size : - (Int)size;
+            _SI_GMP_FROM_GAP(nn, res->n);
         }
         return res;
     } else {
@@ -162,10 +160,7 @@ static number _SI_BIGINT_FROM_GAP(Obj nr)
     } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
         // A long GAP integer
         n = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size*GMP_NUMB_BITS);
-        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
-        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        _SI_GMP_FROM_GAP(nr, n->z);
         n->s = 3;  // indicates an integer
     } else {
         ErrorQuit("Argument must be an integer.\n",0L,0L);
@@ -202,30 +197,30 @@ int _SI_INT_FROM_GAP(Obj nr)
 }
 #endif
 
-static void _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, int &gtype, int &ii, number &n)
+static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 {
+    number n;
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
 #ifdef SYS_IS_64_BIT
         if (i >= (-1L << 31) && i < (1L << 31)) {
 #endif
-            gtype = SINGTYPE_INT;
-            ii = (int) i;
+            obj.data = (void *) i;
+            obj.rtyp = INT_CMD;
+            return SINGTYPE_INT;
 #ifdef SYS_IS_64_BIT
         } else {
-            gtype = SINGTYPE_BIGINT;
             n = nlRInit(i);
         }
 #endif
     } else {   // a long GAP integer
         n = ALLOC_RNUMBER();
-        UInt size = SIZE_INT(nr);
-        mpz_init2(n->z,size*GMP_NUMB_BITS);
-        memcpy(n->z->_mp_d,ADDR_INT(nr),sizeof(mp_limb_t)*size);
-        n->z->_mp_size = (TNUM_OBJ(nr) == T_INTPOS) ? (Int) size : - (Int)size;
+        _SI_GMP_FROM_GAP(nr, n->z);
         n->s = 3;  // indicates an integer
-        gtype = SINGTYPE_BIGINT;
     }
+    obj.data = n;
+    obj.rtyp = BIGINT_CMD;
+    return SINGTYPE_BIGINT;
 }
 
 static poly _SI_GET_poly(Obj o, UInt &rnr)
@@ -481,22 +476,16 @@ class SingObj {
 
 void SingObj::init(Obj input, UInt &extrnr, ring &extr)
 {
-    int i;
-    number n;
     error = NULL;
     r = NULL;
     rnr = 0;
     obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        _SI_BIGINT_OR_INT_FROM_GAP(input,gtype,i,n);
+        gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
         if (gtype == SINGTYPE_INT) {
-            obj.data = (void *) i;
-            obj.rtyp = INT_CMD;
             needcleanup = false;
         } else {
-            obj.data = (void *) n;
-            obj.rtyp = BIGINT_CMD;
             needcleanup = true;
         }
     } else if (TNUM_OBJ(input) == T_STRING) {
@@ -1319,21 +1308,6 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 }
 
 extern "C"
-Obj Func_SI_STRING_POLY(Obj self, Obj po)
-{
-    UInt rnr;
-    poly p = _SI_GET_poly(po,rnr);
-    ring r = GET_SINGRING(rnr);
-    if (r != currRing) rChangeCurrRing(r);
-    char *st = p_String(p,r);
-    UInt len = (UInt) strlen(st);
-    Obj tmp = NEW_STRING(len);
-    SET_LEN_STRING(tmp,len);
-    strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
-    return tmp;
-}
-
-extern "C"
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     UInt rnr;
@@ -1345,45 +1319,12 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
     return tmp;
 }
 
-extern "C"
-Obj Func_SI_ADD_POLYS(Obj self, Obj a, Obj b)
-{
-    UInt ra,rb;
-    poly aa = _SI_GET_poly(a,ra);
-    poly bb = _SI_GET_poly(b,rb);
-    if (ra != rb) ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = GET_SINGRING(ra);
-    if (r != currRing) rChangeCurrRing(r);  // necessary?
-    aa = p_Copy(aa,r);
-    bb = p_Copy(bb,r);
-    aa = p_Add_q(aa,bb,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,ra);
-    return tmp;
-}
-
-extern "C"
-Obj Func_SI_NEG_POLY(Obj self, Obj a)
-{
-    ring r = SINGRING_SINGOBJ(a);
-    if (r != currRing) rChangeCurrRing(r);  // necessary?
-    poly aa = p_Copy((poly) CXX_SINGOBJ(a),r);
-    aa = p_Neg(aa,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
-    return tmp;
-}
-
-extern "C"
-Obj Func_SI_MULT_POLYS(Obj self, Obj a, Obj b)
-{
-    if (RING_SINGOBJ(a) != RING_SINGOBJ(b))
-        ErrorQuit("Elements not over the same ring\n",0L,0L);
-    ring r = SINGRING_SINGOBJ(a);
-    if (r != currRing) rChangeCurrRing(r);   // necessary?
-    poly aa = pp_Mult_qq((poly) CXX_SINGOBJ(a),(poly) CXX_SINGOBJ(b),r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
-    return tmp;
-}
-
+// TODO: Remove this function, use _SI_pp_Mult_nn instead
+// CAVEAT: One issue remains: _SI_MULT_POLY_NUMBER can take
+// a GAP integer as second argument.
+// But _SI_pp_Mult_nn currently cannot do that: It uses SingObj, which
+// converts the GAP (GMP) int into a Singular 'bigint'.
+// But pp_Mult_nn needs a Singular 'number'...
 extern "C"
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
@@ -1410,7 +1351,7 @@ Obj FuncSI_LastOutput(Obj self)
         UInt len = (UInt) strlen(_SI_LastOutputBuf);
         Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),_SI_LastOutputBuf);
+        memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
         return tmp;
@@ -1493,7 +1434,7 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
             len = (Int) strlen(IDSTRING(h));
             tmp = NEW_STRING(len);
             SET_LEN_STRING(tmp,len);
-            strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),IDSTRING(h));
+            memcpy(CHARS_STRING(tmp),IDSTRING(h),len+1);
             return tmp;
         case INTVEC_CMD:
             v = IDINTVEC(h);
@@ -1551,7 +1492,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
         len = (UInt) strlen(st);
         tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
-        strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),st);
+        memcpy(CHARS_STRING(tmp),st,len+1);
         return tmp;
       case SINGTYPE_INT:
         i = (Int) CXX_SINGOBJ(singobj);

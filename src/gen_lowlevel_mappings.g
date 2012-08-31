@@ -2,11 +2,17 @@
 # This file generates low-level wrapper GAP C kernel wrappers for
 # Singular C++ kernel functions.
 #
+# Here is an overview on which file is generated from which by whom:
+#
+#  lowlevel_mappings_src.h.in  (contains excerpts of Singular header files)
+#   |
+#   v  processed by C++ preprocessor
+#  lowlevel_mappings_src.h
+#   |
+#   v  processed by gen_lowlevel_mappings.g
+#  lowlevel_mappings.[ch], lowlevel_mappings_table.h
+#
 # TODO:
-# * Instead of adding new mappings in SINGULAR_funcs, allow specifying
-#   them in a separate file in pseudo-C syntax: Essentially, each line
-#   of this file would contain a C++ function prototype, but with some
-#   additional annotation to mark arguments that need to be copied.
 # * Add mappings for more data types to SINGULAR_types.
 #
 
@@ -52,8 +58,17 @@ SINGULAR_string_return := function (type, name)
 		PrintCXXLine("UInt len = (UInt) strlen(", name, ");");
 		PrintCXXLine("Obj tmp = NEW_STRING(len);");
 		PrintCXXLine("SET_LEN_STRING(tmp,len);");
-		PrintCXXLine("strcpy(reinterpret_cast<char*>(CHARS_STRING(tmp)),", name, ");");
+		PrintCXXLine("memcpy(CHARS_STRING(tmp),", name, ", len+1);");
 		PrintCXXLine("return tmp;");
+	indent := indent - 1;
+	PrintCXXLine("}");
+end;;
+
+SINGULAR_int_return := function (type, name)
+	PrintCXXLine("{");
+	indent := indent + 1;
+		# TODO: Should perform bounds checking
+		PrintCXXLine("return INTOBJ_INT(", name,");");
 	indent := indent - 1;
 	PrintCXXLine("}");
 end;;
@@ -78,18 +93,17 @@ SINGULAR_default_return := function (type, name)
 	PrintCXXLine("}");
 end;;
 
-
 # A record containing information about the various Singular types.
 # The name of each entry is carefully chosen to match the types defined
 # in libsing.h; e.g. STRING maps to SINGTYPE_STRING.
 # For each type, there is a record with the following entries:
 # * ring: boolean indicating whether the type implicitly depends on the active ring
 # * cxxtype: corresponding C++ type
-# * retconv: (optional) a GAP function that generates code to return a value of this type
 # * ...
 SINGULAR_types := rec(
 	#BIGINT  := rec( ring := false,  ... ),
 	IDEAL  := rec( ring := true,  cxxtype := "ideal" ),
+	INT := rec( ring := false, cxxtype := "int" ),
 	#INTMAT  := rec( ring := false,  ... ),
 	INTVEC := rec( ring := false, cxxtype := "intvec *" ),
 	#LINK  := rec( ... ),
@@ -105,7 +119,7 @@ SINGULAR_types := rec(
 	#QRING  := rec( ... ),
 	#RESOLUTION  := rec( ... ),
 	RING   := rec( ring := false, cxxtype := "ring" ),
-	STRING := rec( ring := false, cxxtype := "char *", retconv:=SINGULAR_string_return ),
+	STRING := rec( ring := false, cxxtype := "char *" ),
 	#VECTOR  := rec( ... ),
 );;
 
@@ -124,30 +138,105 @@ SINGULAR_types := rec(
 #           be specified; in that case the input value is *not* copied.
 # * result: string indicating the return type (this is again used to
 #           lookup the type in SINGULAR_types).
-SINGULAR_funcs := [
-	# PINLINE2 char*     p_String(poly p, ring p_ring);
-	rec( name := "p_String", params := [ "POLY" ], result := "STRING" ),
 
-	#PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
-	rec( name := "p_Neg", params := [ ["POLY",true] ], result := "POLY" ),
+CToSingularType := function(type)
+	# TODO: Handle intvec* etc.
+	if type = "char*" then
+		return "STRING";
+	fi;
+	return UppercaseString(type);
+end;;
 
-	# PINLINE2 poly pp_Mult_qq(poly p, poly q, const ring r);
-	rec( name := "pp_Mult_qq", params := [ "POLY", "POLY" ], result := "POLY" ),
+Generate_SINGULAR_funcs := function()
+	local SINGULAR_funcs, input, proto, line, toks, tmp, func_name, ret_type, i, j, arg_name, arg_destroyed, arg_type;
 
-	# PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
-	rec( name := "pp_Mult_nn", params := [ "POLY", "NUMBER" ], result := "POLY" ),
+	SINGULAR_funcs := [];
 
-	# PINLINE2 poly p_Add_q(DESTROYS poly p, DESTROYS poly q, const ring r);
-	rec( name := "p_Add_q", params := [ ["POLY",true], ["POLY",true] ], result := "POLY" ),
+	input := InputTextFile("lowlevel_mappings_src.h");
 
-	# PINLINE2 poly p_Minus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
-	rec( name := "p_Minus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
+	while not IsEndOfStream(input) do
+		# Read lines until we encounter a semicolon
+		proto := "";
+		repeat
+			line := ReadLine(input);
+			if line = fail then break; fi;
+			Append( proto, line );
+		until ';' in line;
+		if line = fail then break; fi;
+		NormalizeWhitespace(proto);
 
-	# PINLINE2 poly p_Plus_mm_Mult_qq(DESTROYS poly p, poly m, poly q, const ring r);
-	rec( name := "p_Plus_mm_Mult_qq", params := [ ["POLY",true], "POLY", "POLY" ], result := "POLY" ),
+		# Skip any prototypes using pass-by-reference parameters.
+		# We can't currently handle those (and most are overloaded
+		# with variants that don't need by-ref params anyway).
+		if '&' in proto then continue; fi;
 
 
-];;
+		# At this point we have a string like
+		# "poly pp_Mult_nn(poly p, number n, const ring r);"
+		# Split it into a list like this one:
+		# [ "poly pp_Mult_nn", "poly p", " number n", " const ring r" ]
+		RemoveCharacters(proto,";");
+		toks := SplitString(proto, "(,)");
+
+		# Extract the return type and function name
+		tmp := SplitString(toks[1], " ");
+		ret_type := CToSingularType(tmp[1]);
+		func_name := tmp[2];
+
+		# TODO: Add support for void functions
+		if ret_type = "VOID" then
+			continue;
+		fi;
+
+		proto := rec( name := func_name, result := ret_type, params := [] );
+
+		# Iterate over the arguments
+		for i in [2..Length(toks)] do
+			NormalizeWhitespace(toks[i]);
+			tmp := SplitString(toks[i], " ");
+			# Name of the argument comes last
+			# TODO: Deal with 'BOOLEAN revert = FALSE'
+			# TODO: Deal with 'int &length'
+			arg_name := Remove(tmp);
+			tmp := Set(tmp);
+
+			# Destroy argument?
+			j := Position(tmp, "DESTROYS");
+			arg_destroyed := (j <> fail);
+			if j <> fail then
+				Remove(tmp, j);
+			fi;
+
+			tmp := Filtered(tmp, x -> x <> "const");
+
+			Assert(0, Length(tmp) = 1);
+			# TODO: Handle pointers formatted like "char * s" (instead of "char *s")
+			arg_type := CToSingularType(tmp[1]);
+
+			if arg_destroyed then
+				Add( proto.params, [ arg_type, true ] );
+			else
+				Add( proto.params, arg_type );
+			fi;
+		od;
+
+		# TODO: Suppress outputting "ring r" parameter if it is implicit.
+		# This could be done either by adding an IMPLICIT marker;
+		# or we could attempt to guess this by looking at the input elements,
+		# and checking whether any of them carries a ring implicitly; in
+		# that case, drop "ring r" (if it is the last param, at least ?!)
+		# This would require the SINGULAR_types table.
+
+		Add( SINGULAR_funcs, proto );
+	od;
+
+	CloseStream(input);
+
+	return SINGULAR_funcs;
+end;;
+
+SINGULAR_funcs := Generate_SINGULAR_funcs();;
+
 
 GenerateSingularWrapper := function (desc)
 	local
@@ -161,6 +250,7 @@ GenerateSingularWrapper := function (desc)
 		GetParamTypeName,
 		retconv,
 		func_head,
+		implicit_ring,
 		i, j;
 
 	GetParamTypeName := function (i)
@@ -172,10 +262,22 @@ GenerateSingularWrapper := function (desc)
 	CXXVarName := i -> String(Concatenation("var", String(i)));
 	CXXObjName := i -> String(Concatenation("obj", String(i)));
 
+	# Determine all params that depend on the current ring.
+	ring_users := Filtered( [1 .. Length(desc.params) ],
+		i -> SINGULAR_types.(GetParamTypeName(i)).ring );
+
+	if Length(ring_users) > 0 and GetParamTypeName(Length(desc.params)) = "RING" then
+		implicit_ring := true;
+		Remove(desc.params);
+	else
+		implicit_ring := false;
+	fi;
+
+
 	#############################################
 	# Generate the function head
 	#############################################
-	func_head := Concatenation("Obj FuncSI_", desc.name, "(Obj self");
+	func_head := Concatenation("Obj Func_SI_", desc.name, "(Obj self");
 	for i in [1 .. Length(desc.params) ] do
 		Append(func_head, ", Obj ");
 		Append(func_head, CXXArgName(i));
@@ -189,16 +291,23 @@ GenerateSingularWrapper := function (desc)
 	PrintTo(stream_h, func_head, ";\n");
 
 	# add function entry in table header file
-	
-	PrintTo(stream_table_h, "  {\"SI_", desc.name, "\", ", Length(desc.params), ",\n" );
-	PrintTo(stream_table_h, "  \"TODO\", FuncSI_", desc.name, ",\n" );
-	PrintTo(stream_table_h, "  \"", basename, ".cc:FuncSI_", desc.name, "\" },\n" );
+	# the result looks like this:
+	#   {"_SI_p_Add_q", 2,
+	#    "a, b", Func_SI_p_Add_q,
+	#    "cxx-funcs.cc:Func_SI_p_Add_q" },
+
+	PrintTo(stream_table_h, "  {\"_SI_", desc.name, "\", ", Length(desc.params), ",\n" );
+	PrintTo(stream_table_h, "  \"" );
+	for i in [1 .. Length(desc.params) ] do
+		if i>1 then
+			PrintTo(stream_table_h, ", " );
+		fi;
+		PrintTo(stream_table_h, CXXArgName(i) );
+	od;
+	PrintTo(stream_table_h, "\", Func_SI_", desc.name, ",\n" );
+	PrintTo(stream_table_h, "  \"", basename, ".cc:Func_SI_", desc.name, "\" },\n" );
 	PrintTo(stream_table_h, "\n" );
 
-
-#   {"SI_ADD_POLYS", 2,
-#    "a, b", FuncSI_ADD_POLYS,
-#    "cxx-funcs.cc:FuncSI_ADD_POLYS" }, 
 
 	#############################################
 	# begin function body
@@ -211,9 +320,6 @@ GenerateSingularWrapper := function (desc)
 	PrintCXXLine("ring r = currRing;");
 	PrintCXXLine("");
 
-	# Ddetermine all params that depend on the current ring.
-	ring_users := Filtered( [1 .. Length(desc.params) ],
-		i -> SINGULAR_types.(GetParamTypeName(i)).ring );
 
 	# TODO: When this code was converted to use GET_SINGOBJ, the code that verifies
 	# that all ring-dependent inputs are defined over the same ring was disabled.
@@ -260,11 +366,11 @@ GenerateSingularWrapper := function (desc)
 		if not IsString(desc.params[i]) and desc.params[i][2] then
 			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 								"(", type.cxxtype, ") ", # cast
-								CXXObjName(i),".destructiveuse();");
+								CXXObjName(i),".destructiveuse()->data;");
 		else
 			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 								"(", type.cxxtype, ") ", # cast
-								CXXObjName(i),".nondestructiveuse();");
+								CXXObjName(i),".nondestructiveuse()->data;");
 		fi;
 		#PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 		#					"(", type.cxxtype, ")", # cast
@@ -303,7 +409,7 @@ GenerateSingularWrapper := function (desc)
 	# Generate code to call the Singular C++ function.
 	PrintCXXLine("// Call into Singular kernel");
 	cxxparams := List( [1 .. Length(desc.params) ], CXXVarName );
-	if Length(ring_users) > 0 then
+	if implicit_ring then
 		Add(cxxparams, "r");
 	fi;
 
@@ -318,8 +424,10 @@ GenerateSingularWrapper := function (desc)
 	# How this is done is type dependent, and we delegate this
 	# to a type dependent function.
 	PrintCXXLine("// Convert result for GAP and return it");
-	if IsBound(result_type.retconv) then
-		retconv := result_type.retconv;
+	if desc.result = "STRING" then
+		retconv := SINGULAR_string_return;
+	elif desc.result = "INT" then
+		retconv := SINGULAR_int_return;
 	elif result_type.ring then
 		retconv := SINGULAR_default_ringdep_return;
 	else

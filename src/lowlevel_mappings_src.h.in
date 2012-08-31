@@ -19,7 +19,9 @@ PINLINE2 poly p_Neg(DESTROYS poly p, const ring r);
 PINLINE2 poly pp_Mult_nn(poly p, number n, const ring r);
 // returns p*n, destroys p
 PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring r);
+/* FIXME: What is this one good for?
 PINLINE2 poly p_Mult_nn(DESTROYS poly p, number n, const ring lmRing, const ring tailRing);
+*/
 
 // returns p*m, does neither destroy p nor m
 PINLINE2 poly pp_Mult_mm(poly p, poly m, const ring r);
@@ -63,9 +65,9 @@ PINLINE2 poly p_Merge_q(DESTROYS poly p, DESTROYS poly c, const ring r);
 // assumes that monomials of p are all different
 // reverses it first, if revert == TRUE, use this if input p is "almost" sorted
 // correctly
-PINLINE2 poly p_SortMerge(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
+//PINLINE2 poly p_SortMerge(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
 // like SortMerge, except that p may have equal monimals
-PINLINE2 poly p_SortAdd(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
+//PINLINE2 poly p_SortAdd(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
 
 
 
@@ -76,20 +78,22 @@ PINLINE2 poly p_SortAdd(DESTROYS poly p, const ring r, BOOLEAN revert = FALSE);
  ***************************************************************/
 PINLINE0 int       pLength(poly a);
 PINLINE0 poly      pLast(poly a, int &length);
-inline   poly      pLast(poly a) { int l; return pLast(a, l);}
+inline   poly      pLast(poly a);
 PINLINE0 poly pReverse(poly p);
-
 
 /***************************************************************
  *
  * I/O
  *
  ***************************************************************/
+/* FIXME: How to handle the following overloaded functions?
+   Do we want to wrap them at all? And if so, which of them?
 char*     p_String(poly p, ring lmRing, ring tailRing);
 char*     p_String0(poly p, ring lmRing, ring tailRing);
 void      p_Write(poly p, ring lmRing, ring tailRing);
 void      p_Write0(poly p, ring lmRing, ring tailRing);
 void      p_wrp(poly p, ring lmRing, ring tailRing);
+*/
 
 PINLINE2 char*     p_String(poly p, ring p_ring);
 PINLINE2 char*     p_String0(poly p, ring p_ring);

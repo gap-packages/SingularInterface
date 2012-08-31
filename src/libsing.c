@@ -52,25 +52,9 @@ static StructGVarFunc GVarFuncs[] =
    "ring, coeff, exponents", Func_SI_MONOMIAL,
    "cxxfuncs.cc:Func_SI_MONOMIAL" },
 
-  {"_SI_STRING_POLY", 1,
-   "poly", Func_SI_STRING_POLY,
-   "cxxfuncs.cc:Func_SI_STRING_POLY" },
-
   {"_SI_COPY_POLY", 1,
    "poly", Func_SI_COPY_POLY,
    "cxxfuncs.cc:Func_SI_COPY_POLY" },
-
-  {"_SI_ADD_POLYS", 2,
-   "a, b", Func_SI_ADD_POLYS,
-   "cxxfuncs.cc:Func_SI_ADD_POLYS" },
-
-  {"_SI_NEG_POLY", 1,
-   "a", Func_SI_NEG_POLY,
-   "cxxfuncs.cc:Func_SI_NEG_POLY" },
-
-  {"_SI_MULT_POLYS", 2,
-   "a, b", Func_SI_MULT_POLYS,
-   "cxxfuncs.cc:Func_SI_MULT_POLYS" },
 
   {"_SI_MULT_POLY_NUMBER", 2,
    "a, b", Func_SI_MULT_POLY_NUMBER,
