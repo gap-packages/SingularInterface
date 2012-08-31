@@ -1,0 +1,18 @@
+s := SingularRing(3,["a","b"],[["dp",2]]);
+p := SI_Makepoly_from_String(s,"a+b+ab");
+SI_\[(p,1);
+SI_\[(p,2);
+SI_\[(p,3);
+SI_\[(p,4);
+SI_proxy;
+m := SI_Makematrix_from_String(2,2,s,"a,b,ab,2");
+SI_\[(m,1,1);
+SI_\[(m,2,1);
+SI_\[(m,2,2);
+SI_\*(m,2);
+SI_\*(m,0);
+a := SI_Makepoly_from_String(s,"a");
+SI_\*(m,a);
+Display(m);
+SI_\-(m,m);
+SI_\-(m);

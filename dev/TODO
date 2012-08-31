@@ -1,10 +1,8 @@
-Bugs: ->Mohamed, crashes (see below)
+Bugs: crash (see end of this file)
 More constructors
 Method installation (->high performance)
-cleanup of internal objects
 more possibilities for proxy objects actually working
 access to subobjects of singular objects
-IsRingElement and other filters at least for polynomials
 Finish low-level interface and implement some functions with it
 What to autoload?
 How to automatically see what is available?
