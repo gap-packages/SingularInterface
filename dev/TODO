@@ -8,6 +8,10 @@ more possibilities for proxy objects actually working
 access to subobjects of singular objects
 IsRingElement and other filters at least for polynomials
 Finish low-level interface and implement some functions with it
+Check LIB
+Call Singular-implemented function from the GAP level
+What to autoload?
+How to automatically see what is available?
 
 Fix path in lib/libsing.gi, because it contains the Singular version!
 proxy implementation for intmats and intvecs?
