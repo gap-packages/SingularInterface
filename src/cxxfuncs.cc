@@ -1817,6 +1817,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         singres.obj.CleanUp(r);
         return Fail;
     }
+    omFree(sing);
     singres.rnr = rnr;
     singres.needcleanup = true;
     return singres.gapwrap();
