@@ -106,6 +106,11 @@ static StructGVarFunc GVarFuncs[] =
    Func_SI_Intbigint,
    "cxxfuncs.cc:Func_SI_Intbigint" },
 
+  {"_SI_number", 2,
+   "ring, nr",
+   Func_SI_number,
+   "cxxfuncs.cc:Func_SI_number" },
+
   {"_SI_intvec", 1,
    "l",
    Func_SI_intvec,
@@ -164,7 +169,7 @@ static StructGVarFunc GVarFuncs[] =
   {"SI_ringnr_of_singobj", 1,
    "singobj",
    FuncSI_ringnr_of_singobj,
-   "cxx-funcs.cc:FuncSI_ringnr_of_singobj" },
+   "libsing.c:FuncSI_ringnr_of_singobj" },
 
   {"SI_CallProc", 2,
    "name, args",

@@ -130,6 +130,12 @@ Unbind(SI_bigint);
 DeclareOperation("SI_bigint",[IsSingularObj]);
 DeclareOperation("SI_bigint",[IsInt]);
 
+BindGlobal("SI_number_singular", SI_number);
+MakeReadWriteGVar("SI_number");
+Unbind(SI_number);
+DeclareOperation("SI_number",[IsSingularRing, IsSingularObj]);
+DeclareOperation("SI_number",[IsSingularRing, IsInt]);
+
 BindGlobal("SI_intvec_singular", SI_intvec);
 MakeReadWriteGVar("SI_intvec");
 Unbind(SI_intvec);

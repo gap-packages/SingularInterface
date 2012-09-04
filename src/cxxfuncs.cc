@@ -50,11 +50,20 @@ Obj FuncOmCurrentBytes( Obj self )
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
 static long gc_omalloc_threshold = 1000000L;
+//static long gcfull_omalloc_threshold = 4000000L;
 
+int GCCOUNT = 0;
 static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
+        if (GCCOUNT == 10) {
+          GCCOUNT = 0;
+          CollectBags(0,1);
+        }
+        else {
+          GCCOUNT++;
+          CollectBags(0,0);
+        }
         //printf("\nGC: %ld -> ",gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
         //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
@@ -68,7 +77,14 @@ static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
 static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
+        if (GCCOUNT == 10) {
+          GCCOUNT = 0;
+          CollectBags(0,1);
+        }
+        else {
+          GCCOUNT++;
+          CollectBags(0,0);
+        }
         //printf("\nGC: %ld -> ",gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
         //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
@@ -1308,6 +1324,14 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
         memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
         return res;
     }             
+}
+
+extern "C"
+Obj Func_SI_number(Obj self, Obj r, Obj nr)
+{
+    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
+                       _SI_NUMBER_FROM_GAP(SINGRING_SINGOBJ(r), nr),
+                       RING_SINGOBJ(r));
 }
 
 extern "C"
