@@ -1,3 +1,11 @@
+_SI_CallFunc{1,2,3} are never used!
+
+If many not so small elements are created on Singular side it can take too
+long until GASMAN starts a garbage collection (the GAP side can hold a huge
+number off small Singular wrapper objects) --- we need a way to trigger
+GASMAN when a lot of memory outside the GAP workspace is used.
+
+
 Bugs: crash (see end of this file)
 More constructors
   Quick polynomial constructor via data like exponents and coefficients

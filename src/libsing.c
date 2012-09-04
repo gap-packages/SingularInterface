@@ -171,6 +171,16 @@ static StructGVarFunc GVarFuncs[] =
    FuncSI_CallProc,
    "cxxfuncs.cc:FuncSI_CallProc" },
 
+  {"_SI_OmPrintInfo", 0,
+   "",
+   FuncOmPrintInfo,
+   "cxxfuncs.cc:FuncOmPrintInfo" },
+
+  {"_SI_OmCurrentBytes", 0,
+   "",
+   FuncOmCurrentBytes,
+   "cxxfuncs.cc:FuncOmCurrentBytes" },
+
 #include "lowlevel_mappings_table.h"
 
   { 0 } /* Finish with an empty entry */

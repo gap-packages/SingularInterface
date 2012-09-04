@@ -28,6 +28,58 @@ extern "C"
 /// The C++ Standard Library namespace
 using namespace std;
 
+// get omalloc statistics 
+extern "C"
+{
+Obj FuncOmPrintInfo( Obj self )
+{
+  omPrintInfo(stdout);
+  return NULL;
+}
+}
+
+extern "C"
+{
+Obj FuncOmCurrentBytes( Obj self )
+{
+  omInfo_t info = omGetInfo();
+  return INTOBJ_INT(info.CurrentBytesSystem);
+}
+}
+
+/* We add hooks to the wrapper functions to call a garbage collection
+   by GASMAN if more than a threshold of memory is allocated by omalloc  */
+static long gc_omalloc_threshold = 1000000L;
+
+static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
+{
+    if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
+        CollectBags(0,0);
+        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
+        gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
+        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
+    }
+    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    return tmp;
+}
+
+static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
+{
+    if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
+        CollectBags(0,0);
+        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
+        gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
+        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
+    }
+    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_RING_SINGOBJ(tmp,ring);
+    INC_REFCOUNT(ring);
+    return tmp;
+}
 
 // Some convenience for C++:
 
@@ -745,6 +797,13 @@ void SingObj::cleanup(void)
 
 Obj SingObj::gapwrap(void)
 {
+    // check if we should trigger a garbage collection by GASMAN
+    //omInfo_t info = omGetInfo();
+    //if (info.CurrentBytesSystem > gc_omalloc_threshold) {
+//    if ((om_Info.CurrentBytesFromMalloc) > gc_omalloc_threshold) {
+//        CollectBags(0,0);
+//        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
+//    }
     if (!needcleanup) {
         Pr("#W try to GAP-wrap a borrowed Singular object",0L,0L);
     }
