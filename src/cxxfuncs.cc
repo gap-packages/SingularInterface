@@ -1017,6 +1017,18 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 }
 
 extern "C"
+Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj )
+{
+   if (TNUM_OBJ(singobj) != T_SINGULAR)
+       ErrorQuit("argument must be singular object.",0L,0L);
+
+   if (SIZE_BAG(singobj) < 3*sizeof(Obj))
+       ErrorQuit("argument must have associated singular ring.",0L,0L);
+
+   return INTOBJ_INT(RING_SINGOBJ(singobj));
+}
+
+extern "C"
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
