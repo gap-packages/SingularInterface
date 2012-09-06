@@ -13,6 +13,8 @@ This file contains all of the code that deals with C++ libraries.
 #include <singular/syz.h>
 
 
+extern int inerror; // from Singular/grammar.cc
+
 
 // get omalloc statistics 
 Obj FuncOmPrintInfo( Obj self )
@@ -1466,8 +1468,6 @@ Obj FuncSI_LastOutput(Obj self)
         return tmp;
     } else return Fail;
 }
-
-extern int inerror;
 
 void _SI_ErrorCallback(const char *st)
 {
