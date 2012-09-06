@@ -73,31 +73,8 @@ inline void DEC_REFCOUNT( UInt ring )
     SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
-/*
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
-{
-    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    return tmp;
-}
-
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
-{
-    if ((om_Info.CurrentBytesFromMalloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
-        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
-    }
-    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,ring);
-    INC_REFCOUNT(ring);
-    return tmp;
-}
-*/
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx);
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
+Obj NEW_SINGOBJ(UInt type, void *cxx);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
 
 enum {
     SINGTYPE_VOID          = 1,

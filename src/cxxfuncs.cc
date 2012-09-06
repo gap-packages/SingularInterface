@@ -33,7 +33,8 @@ Obj FuncOmCurrentBytes( Obj self )
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
 static long gc_omalloc_threshold = 1000000L;
 
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
+extern "C"
+Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         CollectBags(0,0);
@@ -47,7 +48,8 @@ static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
     return tmp;
 }
 
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
+extern "C"
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         CollectBags(0,0);
