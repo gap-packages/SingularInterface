@@ -1458,7 +1458,7 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
-#include "lowlevel_mappings.cc"
+//#include "lowlevel_mappings.cc"
 
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
