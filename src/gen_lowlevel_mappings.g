@@ -304,7 +304,7 @@ GenerateSingularWrapper := function (desc)
 		fi;
 		PrintTo(stream_table_h, CXXArgName(i) );
 	od;
-	PrintTo(stream_table_h, "\", Func_SI_", desc.name, ",\n" );
+	PrintTo(stream_table_h, "\", (GVarFunc)Func_SI_", desc.name, ",\n" );
 	PrintTo(stream_table_h, "  \"", basename, ".cc:Func_SI_", desc.name, "\" },\n" );
 	PrintTo(stream_table_h, "\n" );
 
