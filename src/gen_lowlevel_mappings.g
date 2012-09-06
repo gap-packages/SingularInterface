@@ -285,7 +285,7 @@ GenerateSingularWrapper := function (desc)
 	Append(func_head, ")");
 
 	# add function head to source file
-	PrintTo(stream_cc, "extern \"C\"\n", func_head, " {\n");
+	PrintTo(stream_cc, func_head, " {\n");
 
 	# add function declaration to header file
 	PrintTo(stream_h, func_head, ";\n");
@@ -454,10 +454,6 @@ PrintTo(stream_h, Concatenation(
 	"#define ", UppercaseString(basename), "_H\n",
 	"\n",
 	"#include \"libsing.h\"\n",
-	"\n",
-	"#ifdef __cplusplus\n",
-	"extern \"C\" {\n",
-	"#endif /* ifdef __cplusplus */\n",
 	"\n"
 ));
 
@@ -475,10 +471,6 @@ Perform(SINGULAR_funcs, GenerateSingularWrapper);
 # Insert footers into the generated files
 #
 PrintTo(stream_h, Concatenation(
-	"\n",
-	"#ifdef __cplusplus\n",
-	"}\n",
-	"#endif /* ifdef __cplusplus */\n",
 	"\n",
 	"#endif\n"
 ));

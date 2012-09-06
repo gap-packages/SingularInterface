@@ -8,18 +8,6 @@ This file contains all of the pure C code that deals with GAP.
 #include "libsing.h"
 #include "lowlevel_mappings.h"
 
-
-/******************** Helper functions ***************/
-
-/**
-Print a GAP error message.
-@param message The message
-**/
-void _SI_PrintGAPError(const char* message)
-{
-    ErrorMayQuit(message, 0L, 0L);
-}
-
 /******************** The interface to GAP ***************/
 
 

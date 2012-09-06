@@ -6,11 +6,10 @@
 // called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
 #include <gmp.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif /* ifdef __cplusplus */
+  #include <src/compiled.h>
+}
 
-#include <src/compiled.h>
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -182,15 +181,6 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
 
 Obj FuncOmPrintInfo(Obj self);
 Obj FuncOmCurrentBytes(Obj self);
-
-//////////////// C functions to be called from C++ ////////////////////
-
-void _SI_PrintGAPError(const char* message);
-
-
-#ifdef __cplusplus
-}
-#endif /* ifdef __cplusplus */
 
 #endif //#define LIBSING_H
 
