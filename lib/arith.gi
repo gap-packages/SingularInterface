@@ -32,5 +32,8 @@ end);
 # now we can make use of  the following implication
 InstallTrueMethod(IsRingElementWithOne, IsSingularPoly);
 
-# list access, works on many Singular objects
-InstallOtherMethod(\[\], [IsSingularObj, IsInt], SI_\[);
+# list access makes sense for many Singular objects
+BindGlobal("SI_Entry", function(sobj, i)
+  return _SI_CallFunc2(91, sobj, i); end);
+#    this is not used in GAP 4.5.5, kernel complains
+InstallOtherMethod(\[\], [IsSingularObj, IsInt], SI_Entry);

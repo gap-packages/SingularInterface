@@ -64,7 +64,7 @@ inline void DEC_REFCOUNT( UInt ring )
     SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
-/*
+/*   Moved to cxxfuncs.cc, should eventually trigger garbage collections
 static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
