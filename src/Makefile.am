@@ -10,7 +10,7 @@ gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
 gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 
-libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
+libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
@@ -53,8 +53,20 @@ lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel
 highlevel_mappings_table.g:	gentableforGAP
 	./gentableforGAP
 
-highlevel_mappings.g:	highlevel_mappings_table.g gen_highlevel_mappings.g
+highlevel_mappings.g: highlevel_mappings_table.g gen_highlevel_mappings.g
 	@echo "Generating highlevel mappings..."
 	$(GAPROOT)/bin/gap.sh -A -q -T < gen_highlevel_mappings.g
 	@echo "Done!"
 
+BUILT_SOURCES = \
+	lowlevel_mappings.cc \
+	lowlevel_mappings.h \
+	lowlevel_mappings_table.h
+
+CLEANFILES = \
+	lowlevel_mappings.cc \
+	lowlevel_mappings.h \
+	lowlevel_mappings_table.h \
+	lowlevel_mappings_src.h \
+	highlevel_mappings.g \
+	highlevel_mappings_table.g

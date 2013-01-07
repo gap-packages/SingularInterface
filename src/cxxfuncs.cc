@@ -5,46 +5,28 @@ This file contains all of the code that deals with C++ libraries.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
-// Include gmp.h *before* libsing.h, because it detects when compiled from C++
-// and then does some things differently, which would cause an error if
-// called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
-#include <gmp.h>
+#include "libsing.h"
+#include "singobj.h"
 
-extern "C" 
-{
-  #include "libsing.h"
-}
-
-// Prevent inline code from using tests which are not in libsingular:
-#define NDEBUG 1
-#define OM_NDEBUG 1
-
-#include <string>
-#include <libsingular.h>
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
 #include <singular/syz.h>
 
-/// The C++ Standard Library namespace
-using namespace std;
+
+extern int inerror; // from Singular/grammar.cc
+
 
 // get omalloc statistics 
-extern "C"
-{
 Obj FuncOmPrintInfo( Obj self )
 {
   omPrintInfo(stdout);
   return NULL;
 }
-}
 
-extern "C"
-{
 Obj FuncOmCurrentBytes( Obj self )
 {
   omInfo_t info = omGetInfo();
   return INTOBJ_INT(info.CurrentBytesSystem);
-}
 }
 
 /* We add hooks to the wrapper functions to call a garbage collection
@@ -53,7 +35,7 @@ static long gc_omalloc_threshold = 1000000L;
 //static long gcfull_omalloc_threshold = 4000000L;
 
 int GCCOUNT = 0;
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
+Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
@@ -74,7 +56,7 @@ static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
     return tmp;
 }
 
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
@@ -509,73 +491,6 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     }
 }
 
-class SingObj {
-    // This class is a wrapper around a Singular object of any type.
-    // It keeps track whether or not it is its responsibility to free
-    // the Singular object in the end or whether it has just borrowed
-    // the object reference temporarily.
-    // It can dig out the underlying singular object of a GAP
-    // object together with its type and ring, this also works for
-    // proxy objects. The Singular object is also automatically
-    // wrapped for the Singular interpreter in an sleftv structure.
-    // The object also keeps track of the GAP type number, the underlying
-    // ring with its GAP number and a possible error that might have occurred.
-    //
-    // For the usual constructor taking a GAP object:
-    // The GAP object input can be GAP integers (which produce
-    // machine integers if possible and otherwise bigints), 
-    // GAP strings, GAP wrappers for Singular objects, which produce the
-    // corresponding Singular object, GAP proxy objects for subobjects
-    // of other Singular objects, or GAP proxy objects for values in
-    // Singular interpreter variables. Note that the resulting Singular
-    // object is *not* copied. Use .copy afterwards if you want to hand
-    // the result to something destructive.
-    //
-    // Note that if an error occurs, GAP will do a longjmp, so we cannot
-    // rely on automatic destruction any more, we have to call cleanup
-    // ourselves! This is why the error cannot be handled directly
-    // in the methods of this object. It is possible that other objects
-    // of the same type need to be told about the error.
-  public:
-    sleftv obj;
-    int gtype;
-    bool needcleanup;  // if this is true we have to destruct the Singular
-                        // object when this object dies.
-    const char *error;  // If non-NULL, an error has happened.
-    UInt rnr;     // GAP number of the underlying Singular ring
-    ring r;       // Underlying Singular ring.
-
-    SingObj(Obj input, UInt &extrnr, ring &extr)
-      { init(input,extrnr,extr); }
-    SingObj(void)     // Default constructor for empty object
-      : gtype(0), needcleanup(false), error(NULL), rnr(0), r(NULL)
-      { obj.Init(); }
-    void init(Obj input, UInt &extrnr, ring &extr);
-      // This does the actual work
-    ~SingObj(void) { cleanup(); }   // a mere convenience
-    leftv destructiveuse(void)
-      // Call this to get a pointer to the internal obj structure of type
-      // sleftv if you intend to use the Singular object destructively.
-      // If necessary, copy() is called automatically and any scheduled
-      // cleanup on our side is prevented.
-    {
-        if (!needcleanup) copy();
-        needcleanup = false;
-        return &obj;
-    }
-    leftv nondestructiveuse(void)
-      // Call this to get a pointer to the internal obj structure of type
-      // sleftv if you intend to use the singular object non-destructively.
-      // No automatic copy() is performed, if cleanup was scheduled it
-      // will be done as scheduled later on.
-    {
-        return &obj;
-    }
-    void copy(void);      // Makes a copy if it is not already one
-    void cleanup(void);   // Frees object if it was a copy
-    Obj gapwrap(void);    // GAP-wraps the object
-};
-
 void SingObj::init(Obj input, UInt &extrnr, ring &extr)
 {
     error = NULL;
@@ -874,7 +789,6 @@ Obj SingObj::gapwrap(void)
 // in this freeing scheme. They do not actually hold a direct
 // reference to a singular object anyway.
 
-extern "C" 
 void _SI_FreeFunc(Obj o)
 {
     UInt type = TYPE_SINGOBJ(o);
@@ -973,7 +887,6 @@ void _SI_FreeFunc(Obj o)
 // collector for T_SINGULAR objects. In the current implementation
 // This function is not actually needed.
 
-extern "C"
 void _SI_ObjMarkFunc(Bag o)
 {
 #if 0
@@ -995,7 +908,6 @@ void _SI_ObjMarkFunc(Bag o)
 // T_SINGULAR. A pointer to it is put into the dispatcher table in the
 // GAP kernel.
 
-extern "C"
 Obj _SI_TypeObj(Obj o)
 {
     return ELM_PLIST(_SI_Types,TYPE_SINGOBJ(o));
@@ -1005,7 +917,6 @@ Obj _SI_TypeObj(Obj o)
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
 
-extern "C"
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
@@ -1115,7 +1026,17 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     return tmp;
 }
 
-extern "C"
+Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj )
+{
+   if (TNUM_OBJ(singobj) != T_SINGULAR)
+       ErrorQuit("argument must be singular object.",0L,0L);
+
+   if (SIZE_BAG(singobj) < 3*sizeof(Obj))
+       ErrorQuit("argument must have associated singular ring.",0L,0L);
+
+   return INTOBJ_INT(RING_SINGOBJ(singobj));
+}
+
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
@@ -1185,7 +1106,6 @@ static poly ParsePoly(ring r, const char *&st)
     }
 }
 
-extern "C"
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
@@ -1229,7 +1149,6 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
     }
 }
 
-extern "C"
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
                                   Obj rr, Obj st)
 {
@@ -1270,7 +1189,6 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rnr);
 }
 
-extern "C"
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -1291,13 +1209,11 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
-extern "C"
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT,_SI_BIGINT_FROM_GAP(nr));
 }
 
-extern "C"
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
@@ -1326,7 +1242,6 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
     }             
 }
 
-extern "C"
 Obj Func_SI_number(Obj self, Obj r, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
@@ -1334,7 +1249,6 @@ Obj Func_SI_number(Obj self, Obj r, Obj nr)
                        RING_SINGOBJ(r));
 }
 
-extern "C"
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1359,7 +1273,6 @@ Obj Func_SI_intvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC,iv);
 }
 
-extern "C"
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
     if (!ISSINGOBJ(SINGTYPE_INTVEC,iv) ) {
@@ -1378,7 +1291,6 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
-extern "C"
 Obj Func_SI_intmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
@@ -1414,7 +1326,6 @@ Obj Func_SI_intmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
 }
 
-extern "C"
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
     if (!ISSINGOBJ(SINGTYPE_INTMAT, im)) {
@@ -1441,7 +1352,6 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
-extern "C"
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1481,7 +1391,6 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
-extern "C"
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1535,7 +1444,6 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
-extern "C"
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     UInt rnr;
@@ -1553,7 +1461,6 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
 // But _SI_pp_Mult_nn currently cannot do that: It uses SingObj, which
 // converts the GAP (GMP) int into a Singular 'bigint'.
 // But pp_Mult_nn needs a Singular 'number'...
-extern "C"
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
     ring r = SINGRING_SINGOBJ(a);
@@ -1565,14 +1472,13 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
-#include "lowlevel_mappings.cc"
+//#include "lowlevel_mappings.cc"
 
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
 
 static char *_SI_LastOutputBuf = NULL;
 
-extern "C"
 Obj FuncSI_LastOutput(Obj self)
 {
     if (_SI_LastOutputBuf) {
@@ -1586,9 +1492,6 @@ Obj FuncSI_LastOutput(Obj self)
     } else return Fail;
 }
 
-extern int inerror;
-
-extern "C"
 void _SI_ErrorCallback(const char *st)
 {
     UInt len = (UInt) strlen(st);
@@ -1604,7 +1507,6 @@ void _SI_ErrorCallback(const char *st)
     }
 }
 
-extern "C"
 Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
 {
     int i;
@@ -1622,7 +1524,6 @@ Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
     return NULL;
 }
 
-extern "C"
 Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
     UInt len = GET_LEN_STRING(st);
@@ -1643,7 +1544,6 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     return ObjInt_Int((Int) err);
 }
 
-extern "C"
 Obj FuncSI_ValueOfVar(Obj self, Obj name)
 {
     Int len;
@@ -1700,7 +1600,6 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
     }
 }
 
-extern "C"
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
@@ -1737,7 +1636,6 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
-extern "C"
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 {
     UInt rnr = 0;
@@ -1764,7 +1662,6 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
     UInt rnr = 0;
@@ -1796,7 +1693,6 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
     UInt rnr = 0;
@@ -1836,7 +1732,6 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     UInt rnr = 0;
@@ -1906,7 +1801,6 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj FuncSI_SetCurrRing(Obj self, Obj r)
 {
     if (TNUM_OBJ(r) != T_SINGULAR ||
@@ -1919,7 +1813,6 @@ Obj FuncSI_SetCurrRing(Obj self, Obj r)
     return NULL;
 }
 
-extern "C"
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
 {
     if (!IsStringConv(name)) {

@@ -1,7 +1,15 @@
 #ifndef LIBSING_H
 #define LIBSING_H
 
-#include <src/compiled.h>
+// Include gmp.h *before* switching to C mode, because GMP detects when compiled from C++
+// and then does some things differently, which would cause an error if
+// called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
+#include <gmp.h>
+
+extern "C" {
+  #include <src/compiled.h>
+}
+
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -64,31 +72,8 @@ inline void DEC_REFCOUNT( UInt ring )
     SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
-/*   Moved to cxxfuncs.cc, should eventually trigger garbage collections
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
-{
-    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    return tmp;
-}
-
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
-{
-    if ((om_Info.CurrentBytesFromMalloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
-        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
-    }
-    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,ring);
-    INC_REFCOUNT(ring);
-    return tmp;
-}
-*/
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx);
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
+Obj NEW_SINGOBJ(UInt type, void *cxx);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
 
 enum {
     SINGTYPE_VOID          = 1,
@@ -164,6 +149,7 @@ void _SI_ObjMarkFunc(Bag o);
 void _SI_FreeFunc(Obj o);
 Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
+Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);
@@ -196,10 +182,6 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
 
 Obj FuncOmPrintInfo(Obj self);
 Obj FuncOmCurrentBytes(Obj self);
-
-//////////////// C functions to be called from C++ ////////////////////
-
-void _SI_PrintGAPError(const char* message);
 
 #endif //#define LIBSING_H
 
