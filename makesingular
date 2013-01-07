@@ -6,7 +6,17 @@ export CFLAGS="-O0 -g"
 export CXXFLAGS="-O0 -g"
 cd Singular-$SINGULARVERSION
 ./configure --without-dynamic-kernel --without-MP
+if [ `uname` = "Darwin" ] ; then
+    mkdir -p Singular-$SINGULARVERSION/ix86Mac-darwin/include
+    mkdir -p Singular-$SINGULARVERSION/ix86Mac-darwin/lib
+    if [ -f /sw/include/gmp.h ] ; then
+        ln -s /sw/include/gmp.h Singular-$SINGULARVERSION/ix86Mac-darwin/include
+        ln -s /sw/lib/libgmp.dylib Singular-$SINGULARVERSION/ix86Mac-darwin/lib
+    fi
+fi
 make install-libsingular
+# Install missing header (required for Singular 3-1-6)
+cp Singular/sing_dbm.h `./singuname.sh`/include/singular/
 if [ `uname` = "Darwin" ] ; then
     echo "Setting libsingular.dylib load path (because of Mac OS X)"
     install_name_tool -id $PWD/Singular/libsingular.dylib Singular/libsingular.dylib
