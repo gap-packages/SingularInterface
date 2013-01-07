@@ -1879,18 +1879,19 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     }
     SPrintStart();
     errorreported = 0;
-    leftv ret;
+    BOOLEAN bool_ret;
     currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
     IDRING(currRingHdl) = r;
     r->ref++;
     if (nrargs == 0)
-        ret = iiMake_proc(h,NULL,NULL);
+        bool_ret = iiMake_proc(h,NULL,NULL);
     else
-        ret = iiMake_proc(h,NULL,&(sing1.obj));
+        bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
     killhdl(currRingHdl,currPack);
     _SI_LastOutputBuf = SPrintEnd();
 
-    if (ret == NULL) return Fail;
+    if (bool_ret == TRUE) return Fail;
+    leftv ret = &iiRETURNEXPR;
     if (ret->next != NULL) {
         ret->CleanUp(r);
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);
