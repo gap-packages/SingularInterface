@@ -22,6 +22,8 @@ InstallMethod(SI_ring,[IsInt,IsList],
     return SI_ring(p,l,[["dp",Length(l)]]);
   end);
 
+InstallMethod(SI_ring,[IsSingularObj], obj->
+                                  _SI_Rings[SI_ringnr_of_singobj(obj)]);
 InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
 InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
 
@@ -47,6 +49,13 @@ InstallGlobalFunction( SI_CleanupRings,
     od;
   end );
   
+# This is a dirty hack but seems to work:
+MakeReadWriteGVar("SI_LIB");
+Unbind(SI_LIB);
+BindGlobal("SI_LIB",function(libname)
+  SI_load(libname,"with");
+end);
+
 InstallMethod( ViewString, "for a singular ring",
   [ IsSingularRing ],
   function( r )

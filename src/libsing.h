@@ -1,7 +1,15 @@
 #ifndef LIBSING_H
 #define LIBSING_H
 
-#include <src/compiled.h>
+// Include gmp.h *before* switching to C mode, because GMP detects when compiled from C++
+// and then does some things differently, which would cause an error if
+// called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
+#include <gmp.h>
+
+extern "C" {
+  #include <src/compiled.h>
+}
+
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -64,49 +72,57 @@ inline void DEC_REFCOUNT( UInt ring )
     SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
 }
 
-static inline Obj NEW_SINGOBJ(UInt type, void *cxx)
-{
-    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    return tmp;
-}
-
-static inline Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
-{
-    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,ring);
-    INC_REFCOUNT(ring);
-    return tmp;
-}
+Obj NEW_SINGOBJ(UInt type, void *cxx);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
 
 enum {
-    SINGTYPE_BIGINT        =  1,
-    SINGTYPE_DEF           =  2,
-    SINGTYPE_IDEAL         =  3,
-    SINGTYPE_INT           =  4,
-    SINGTYPE_INTMAT        =  5,
-    SINGTYPE_INTVEC        =  6,
-    SINGTYPE_LINK          =  7,
-    SINGTYPE_LIST          =  8,
-    SINGTYPE_MAP           =  9,
-    SINGTYPE_MATRIX        = 10,
-    SINGTYPE_MODULE        = 11,
-    SINGTYPE_NUMBER        = 12,
-    SINGTYPE_PACKAGE       = 13,
-    SINGTYPE_POLY          = 14,
-    SINGTYPE_PROC          = 15,
-    SINGTYPE_QRING         = 16,
-    SINGTYPE_RESOLUTION    = 17,
-    SINGTYPE_RING          = 18,
-    SINGTYPE_STRING        = 19,
-    SINGTYPE_VECTOR        = 20,
-    SINGTYPE_USERDEF       = 21,
-    SINGTYPE_PYOBJECT      = 22,
+    SINGTYPE_VOID          = 1,
+    SINGTYPE_BIGINT        = 2,
+    SINGTYPE_BIGINT_IMM    = 3,
+    SINGTYPE_DEF           = 4,
+    SINGTYPE_DEF_IMM       = 5,
+    SINGTYPE_IDEAL         = 6,
+    SINGTYPE_IDEAL_IMM     = 7,
+    SINGTYPE_INT           = 8,
+    SINGTYPE_INT_IMM       = 9,
+    SINGTYPE_INTMAT        = 10,
+    SINGTYPE_INTMAT_IMM    = 11,
+    SINGTYPE_INTVEC        = 12,
+    SINGTYPE_INTVEC_IMM    = 13,
+    SINGTYPE_LINK          = 14,
+    SINGTYPE_LINK_IMM      = 15,
+    SINGTYPE_LIST          = 16,
+    SINGTYPE_LIST_IMM      = 17,
+    SINGTYPE_MAP           = 18,
+    SINGTYPE_MAP_IMM       = 19,
+    SINGTYPE_MATRIX        = 20,
+    SINGTYPE_MATRIX_IMM    = 21,
+    SINGTYPE_MODULE        = 22,
+    SINGTYPE_MODULE_IMM    = 23,
+    SINGTYPE_NUMBER        = 24,
+    SINGTYPE_NUMBER_IMM    = 25,
+    SINGTYPE_PACKAGE       = 26,
+    SINGTYPE_PACKAGE_IMM   = 27,
+    SINGTYPE_POLY          = 28,
+    SINGTYPE_POLY_IMM      = 29,
+    SINGTYPE_PROC          = 30,
+    SINGTYPE_PROC_IMM      = 31,
+    SINGTYPE_QRING         = 32,
+    SINGTYPE_QRING_IMM     = 33,
+    SINGTYPE_RESOLUTION    = 34,
+    SINGTYPE_RESOLUTION_IMM= 35,
+    SINGTYPE_RING          = 36,
+    SINGTYPE_RING_IMM      = 37,
+    SINGTYPE_STRING        = 38,
+    SINGTYPE_STRING_IMM    = 39,
+    SINGTYPE_VECTOR        = 40,
+    SINGTYPE_VECTOR_IMM    = 41,
+    SINGTYPE_USERDEF       = 42,
+    SINGTYPE_USERDEF_IMM   = 43,
+    SINGTYPE_PYOBJECT      = 44,
+    SINGTYPE_PYOBJECT_IMM  = 45,
 
-    SINGTYPE_LASTNUMBER    = 22
+    SINGTYPE_LASTNUMBER    = 45
 };
 
 /* If you change these numbers, then also adjust the tables GAPtoSingType
@@ -133,6 +149,7 @@ void _SI_ObjMarkFunc(Bag o);
 void _SI_FreeFunc(Obj o);
 Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
+Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);
@@ -160,9 +177,10 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg);
 
 Obj FuncSI_SetCurrRing(Obj self, Obj r);
 
-//////////////// C functions to be called from C++ ////////////////////
+Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
 
-void _SI_PrintGAPError(const char* message);
+Obj FuncOmPrintInfo(Obj self);
+Obj FuncOmCurrentBytes(Obj self);
 
 #endif //#define LIBSING_H
 

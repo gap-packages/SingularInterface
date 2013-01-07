@@ -15,11 +15,14 @@ gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_LDFLAGS =  $(LIBSINGULAR_LIBS) -lpthread
 
 
-libsing_la_SOURCES = libsing.c libsing.h cxxfuncs.cc
-
 # libsing_la_LIBADD = $(LIBSINGULAR_LIBS)
+# libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
+# libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+
+libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc
 libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular $(LIBSINGULAR_LIBS) -lpthread
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS)  $(LIBSINGULAR_CFLAGS)
+libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 libsing_la_CXXFLAGS = -Wall
 libsing_la_CFLAGS = -Wall
 
@@ -59,8 +62,20 @@ lowlevel_mappings.cc lowlevel_mappings.h lowlevel_mappings_table.h: gen_lowlevel
 highlevel_mappings_table.g:	gentableforGAP
 	./gentableforGAP
 
-highlevel_mappings.g:	highlevel_mappings_table.g gen_highlevel_mappings.g
+highlevel_mappings.g: highlevel_mappings_table.g gen_highlevel_mappings.g
 	@echo "Generating highlevel mappings..."
 	$(GAPROOT)/bin/gap.sh -A -q -T < gen_highlevel_mappings.g
 	@echo "Done!"
 
+BUILT_SOURCES = \
+	lowlevel_mappings.cc \
+	lowlevel_mappings.h \
+	lowlevel_mappings_table.h
+
+CLEANFILES = \
+	lowlevel_mappings.cc \
+	lowlevel_mappings.h \
+	lowlevel_mappings_table.h \
+	lowlevel_mappings_src.h \
+	highlevel_mappings.g \
+	highlevel_mappings_table.g

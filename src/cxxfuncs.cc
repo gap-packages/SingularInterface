@@ -5,27 +5,37 @@ This file contains all of the code that deals with C++ libraries.
 **/
 //////////////////////////////////////////////////////////////////////////////
 
-// Include gmp.h *before* libsing.h, because it detects when compiled from C++
-// and then does some things differently, which would cause an error if
-// called from within extern "C". But libsing.h (indirectly) includes gmp.h ...
-#include <gmp.h>
-
-extern "C" 
-{
-  #include "libsing.h"
-}
-
-// Prevent inline code from using tests which are not in libsingular:
-// #define NDEBUG 1
-// #define OM_NDEBUG 1
-
-#include <string>
+#include "libsing.h"
+#include "singobj.h"
 
 #include <coeffs/longrat.h>
 #include <kernel/syz.h>
 
 #include <Singular/ipid.h>
 #include <Singular/libsingular.h>
+// To be removed later on:  (FIXME)
+#include <Singular/lists.h>
+
+#include <string>
+
+extern int inerror; // from Singular/grammar.cc
+
+
+// get omalloc statistics 
+Obj FuncOmPrintInfo( Obj self )
+{
+  omPrintInfo(stdout);
+  return NULL;
+}
+
+// Prevent inline code from using tests which are not in libsingular:
+// #define NDEBUG 1
+// #define OM_NDEBUG 1
+Obj FuncOmCurrentBytes( Obj self )
+{
+  omInfo_t info = omGetInfo();
+  return INTOBJ_INT(info.CurrentBytesSystem);
+}
 
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
@@ -36,10 +46,39 @@ extern void (*WerrorS_callback)(const char *s);
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
 */
+/* We add hooks to the wrapper functions to call a garbage collection
+   by GASMAN if more than a threshold of memory is allocated by omalloc  */
+static long gc_omalloc_threshold = 1000000L;
 
-/// The C++ Standard Library namespace
-using namespace std;
+Obj NEW_SINGOBJ(UInt type, void *cxx)
+{
+    if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
+        CollectBags(0,0);
+        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
+        gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
+        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
+    }
+    Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    return tmp;
+}
 
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
+{
+    if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
+        CollectBags(0,0);
+        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
+        gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
+        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
+    }
+    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_RING_SINGOBJ(tmp,ring);
+    INC_REFCOUNT(ring);
+    return tmp;
+}
 
 // Some convenience for C++:
 
@@ -294,28 +333,51 @@ static poly _SI_GET_IDEAL_ELM_PROXY(Obj p)
 // Singular type numbers for Singular objects:
 
 static const int GAPtoSingType[] =
-  { 0 /* NOTUSED */,
+  { 0, /* NOTUSED */
+    0, /* VOID */
+    BIGINT_CMD,
     BIGINT_CMD,
     DEF_CMD ,
+    DEF_CMD ,
+    IDEAL_CMD,
     IDEAL_CMD,
     INT_CMD,
+    INT_CMD,
+    INTMAT_CMD,
     INTMAT_CMD,
     INTVEC_CMD,
+    INTVEC_CMD,
+    LINK_CMD,
     LINK_CMD,
     LIST_CMD,
+    LIST_CMD,
+    MAP_CMD,
     MAP_CMD,
     MATRIX_CMD,
+    MATRIX_CMD,
+    MODUL_CMD,
     MODUL_CMD,
     NUMBER_CMD,
+    NUMBER_CMD,
+    PACKAGE_CMD,
     PACKAGE_CMD,
     POLY_CMD,
+    POLY_CMD,
+    PROC_CMD,
     PROC_CMD,
     QRING_CMD,
+    QRING_CMD,
+    RESOLUTION_CMD,
     RESOLUTION_CMD,
     RING_CMD,
+    RING_CMD,
+    STRING_CMD,
     STRING_CMD,
     VECTOR_CMD,
-    0 /* USERDEF */,
+    VECTOR_CMD,
+    0, /* USERDEF */
+    0, /* USERDEF */
+    0, /* PYOBJECT */
     0 /* PYOBJECT */
   };
 
@@ -325,28 +387,51 @@ static int SingtoGAPType[MAX_TOK];
 
 static const int HasRingTable[] =
   { 0, // NOTUSED
-    0, // SINGTYPE_BIGINT        =  1
-    0, // SINGTYPE_DEF           =  2
-    1, // SINGTYPE_IDEAL         =  3
-    0, // SINGTYPE_INT           =  4
-    0, // SINGTYPE_INTMAT        =  5
-    0, // SINGTYPE_INTVEC        =  6
-    0, // SINGTYPE_LINK          =  7
-    1, // SINGTYPE_LIST          =  8
-    1, // SINGTYPE_MAP           =  9
-    1, // SINGTYPE_MATRIX        = 10
-    1, // SINGTYPE_MODULE        = 11
-    1, // SINGTYPE_NUMBER        = 12
-    0, // SINGTYPE_PACKAGE       = 13
-    1, // SINGTYPE_POLY          = 14
-    0, // SINGTYPE_PROC          = 15
-    0, // SINGTYPE_QRING         = 16
-    1, // SINGTYPE_RESOLUTION    = 17
-    0, // SINGTYPE_RING          = 18
-    0, // SINGTYPE_STRING        = 19
-    1, // SINGTYPE_VECTOR        = 20
-    0, // SINGTYPE_USERDEF       = 21
-    0  // SINGTYPE_PYOBJECT      = 22
+    0, // SINGTYPE_VOID          = 1
+    0, // SINGTYPE_BIGINT        = 2,
+    0, // SINGTYPE_BIGINT_IMM    = 3,
+    0, // SINGTYPE_DEF           = 4,
+    0, // SINGTYPE_DEF_IMM       = 5,
+    1, // SINGTYPE_IDEAL         = 6,
+    1, // SINGTYPE_IDEAL_IMM     = 7,
+    0, // SINGTYPE_INT           = 8,
+    0, // SINGTYPE_INT_IMM       = 9,
+    0, // SINGTYPE_INTMAT        = 10,
+    0, // SINGTYPE_INTMAT_IMM    = 11,
+    0, // SINGTYPE_INTVEC        = 12,
+    0, // SINGTYPE_INTVEC_IMM    = 13,
+    0, // SINGTYPE_LINK          = 14,
+    0, // SINGTYPE_LINK_IMM      = 15,
+    1, // SINGTYPE_LIST          = 16,
+    1, // SINGTYPE_LIST_IMM      = 17,
+    1, // SINGTYPE_MAP           = 18,
+    1, // SINGTYPE_MAP_IMM       = 19,
+    1, // SINGTYPE_MATRIX        = 20,
+    1, // SINGTYPE_MATRIX_IMM    = 21,
+    1, // SINGTYPE_MODULE        = 22,
+    1, // SINGTYPE_MODULE_IMM    = 23,
+    1, // SINGTYPE_NUMBER        = 24,
+    1, // SINGTYPE_NUMBER_IMM    = 25,
+    0, // SINGTYPE_PACKAGE       = 26,
+    0, // SINGTYPE_PACKAGE_IMM   = 27,
+    1, // SINGTYPE_POLY          = 28,
+    1, // SINGTYPE_POLY_IMM      = 29,
+    0, // SINGTYPE_PROC          = 30,
+    0, // SINGTYPE_PROC_IMM      = 31,
+    0, // SINGTYPE_QRING         = 32,
+    0, // SINGTYPE_QRING_IMM     = 33,
+    1, // SINGTYPE_RESOLUTION    = 34,
+    1, // SINGTYPE_RESOLUTION_IMM= 35,
+    0, // SINGTYPE_RING          = 36,
+    0, // SINGTYPE_RING_IMM      = 37,
+    0, // SINGTYPE_STRING        = 38,
+    0, // SINGTYPE_STRING_IMM    = 39,
+    1, // SINGTYPE_VECTOR        = 40,
+    1, // SINGTYPE_VECTOR_IMM    = 41,
+    0, // SINGTYPE_USERDEF       = 42,
+    0, // SINGTYPE_USERDEF_IMM   = 43,
+    0, // SINGTYPE_PYOBJECT      = 44,
+    0  // SINGTYPE_PYOBJECT_IMM  = 45,
   };
 
 static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
@@ -406,73 +491,6 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         return NULL;
     }
 }
-
-class SingObj {
-    // This class is a wrapper around a Singular object of any type.
-    // It keeps track whether or not it is its responsibility to free
-    // the Singular object in the end or whether it has just borrowed
-    // the object reference temporarily.
-    // It can dig out the underlying singular object of a GAP
-    // object together with its type and ring, this also works for
-    // proxy objects. The Singular object is also automatically
-    // wrapped for the Singular interpreter in an sleftv structure.
-    // The object also keeps track of the GAP type number, the underlying
-    // ring with its GAP number and a possible error that might have occurred.
-    //
-    // For the usual constructor taking a GAP object:
-    // The GAP object input can be GAP integers (which produce
-    // machine integers if possible and otherwise bigints), 
-    // GAP strings, GAP wrappers for Singular objects, which produce the
-    // corresponding Singular object, GAP proxy objects for subobjects
-    // of other Singular objects, or GAP proxy objects for values in
-    // Singular interpreter variables. Note that the resulting Singular
-    // object is *not* copied. Use .copy afterwards if you want to hand
-    // the result to something destructive.
-    //
-    // Note that if an error occurs, GAP will do a longjmp, so we cannot
-    // rely on automatic destruction any more, we have to call cleanup
-    // ourselves! This is why the error cannot be handled directly
-    // in the methods of this object. It is possible that other objects
-    // of the same type need to be told about the error.
-  public:
-    sleftv obj;
-    int gtype;
-    bool needcleanup;  // if this is true we have to destruct the Singular
-                        // object when this object dies.
-    const char *error;  // If non-NULL, an error has happened.
-    UInt rnr;     // GAP number of the underlying Singular ring
-    ring r;       // Underlying Singular ring.
-
-    SingObj(Obj input, UInt &extrnr, ring &extr)
-      { init(input,extrnr,extr); }
-    SingObj(void)     // Default constructor for empty object
-      : gtype(0), needcleanup(false), error(NULL), rnr(0), r(NULL)
-      { obj.Init(); }
-    void init(Obj input, UInt &extrnr, ring &extr);
-      // This does the actual work
-    ~SingObj(void) { cleanup(); }   // a mere convenience
-    leftv destructiveuse(void)
-      // Call this to get a pointer to the internal obj structure of type
-      // sleftv if you intend to use the Singular object destructively.
-      // If necessary, copy() is called automatically and any scheduled
-      // cleanup on our side is prevented.
-    {
-        if (!needcleanup) copy();
-        needcleanup = false;
-        return &obj;
-    }
-    leftv nondestructiveuse(void)
-      // Call this to get a pointer to the internal obj structure of type
-      // sleftv if you intend to use the singular object non-destructively.
-      // No automatic copy() is performed, if cleanup was scheduled it
-      // will be done as scheduled later on.
-    {
-        return &obj;
-    }
-    void copy(void);      // Makes a copy if it is not already one
-    void cleanup(void);   // Frees object if it was a copy
-    Obj gapwrap(void);    // GAP-wraps the object
-};
 
 void SingObj::init(Obj input, UInt &extrnr, ring &extr)
 {
@@ -558,55 +576,72 @@ void SingObj::copy()
     ring ri;
     switch (gtype) {
       case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM:
         obj.data = (void *) nlCopy((number) obj.data, coeffs_BIGINT);
         break;
       case SINGTYPE_IDEAL:
+      case SINGTYPE_IDEAL_IMM:
         obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_INTMAT:
+      case SINGTYPE_INTMAT_IMM:
       case SINGTYPE_INTVEC:
+      case SINGTYPE_INTVEC_IMM:
         obj.data = (void *) new intvec((intvec *) obj.data);
         break;
       case SINGTYPE_LINK:  // Do not copy here since it does not make sense
+      case SINGTYPE_LINK_IMM:
         return;
       case SINGTYPE_LIST:
+      case SINGTYPE_LIST_IMM:
         obj.data = (void *) lCopy( (lists) obj.data );
         break;
       case SINGTYPE_MAP:
+      case SINGTYPE_MAP_IMM:
         obj.data = (void *) maCopy( (map) obj.data,r);
         break;
       case SINGTYPE_MATRIX:
+      case SINGTYPE_MATRIX_IMM:
         obj.data = (void *) mp_Copy( (matrix) obj.data, r );
         break;
       case SINGTYPE_MODULE:
+      case SINGTYPE_MODULE_IMM:
         obj.data = (void *) id_Copy((ideal) obj.data,r);
         break;
       case SINGTYPE_NUMBER:
+      case SINGTYPE_NUMBER_IMM:
         obj.data = (void *) n_Copy((number) obj.data,r);
         break;
       case SINGTYPE_POLY:
+      case SINGTYPE_POLY_IMM:
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_QRING:
+      case SINGTYPE_QRING_IMM:
         ri = (ring) obj.data;
         ri->ref++;   // We fake a copy since this will be decreased later on
         return;
       case SINGTYPE_RESOLUTION:
+      case SINGTYPE_RESOLUTION_IMM:
         obj.data = (void *) syCopy((syStrategy) obj.data);
         break;
       case SINGTYPE_RING:
+      case SINGTYPE_RING_IMM:
         ri = (ring) obj.data;
         ri->ref++;   // We fake a copy since this will be decreased later on
         return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
                 // indeed, we never want to do this, therefore we increase
                 // the reference count
       case SINGTYPE_STRING:
+      case SINGTYPE_STRING_IMM:
         obj.data = (void *) omStrDup( (char *) obj.data);
         break;
       case SINGTYPE_VECTOR:
+      case SINGTYPE_VECTOR_IMM:
         obj.data = (void *) p_Copy((poly) obj.data,r);
         break;
       case SINGTYPE_INT:
+      case SINGTYPE_INT_IMM:
         return;
       default:
         return;
@@ -616,58 +651,91 @@ void SingObj::copy()
 
 void SingObj::cleanup(void)
 {
+    map m;
+    ideal *i;
     if (!needcleanup) return;
     needcleanup = false;
     switch (gtype) {
       case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM:
         nlDelete((number *)(obj.data), NULL);
         break;
       case SINGTYPE_IDEAL:
+      case SINGTYPE_IDEAL_IMM:
         id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_INTMAT:
+      case SINGTYPE_INTMAT_IMM:
       case SINGTYPE_INTVEC:
+      case SINGTYPE_INTVEC_IMM:
         delete (intvec *) (obj.data);
         break;
       case SINGTYPE_LINK:  // Was never copied, so leave untouched
+      case SINGTYPE_LINK_IMM:
         return;
       case SINGTYPE_LIST:
+      case SINGTYPE_LIST_IMM:
         ((lists) (obj.data))->Clean(r);
         break;
       case SINGTYPE_MAP:
-        // FIXME
+      case SINGTYPE_MAP_IMM:
+        m = (map) obj.data;
+        omfree(m->preimage);
+        m->preimage = NULL;
+        i = (ideal *) m;
+        id_Delete(i,r);
         break;
       case SINGTYPE_MATRIX:
+      case SINGTYPE_MATRIX_IMM:
         mp_Delete((matrix *)(obj.data), r);
         break;
       case SINGTYPE_MODULE:
+      case SINGTYPE_MODULE_IMM:
         id_Delete((ideal *)(obj.data), r);
         break;
       case SINGTYPE_NUMBER:
+      case SINGTYPE_NUMBER_IMM:
         n_Delete((number *)(obj.data), r);
         break;
       case SINGTYPE_POLY:
+      case SINGTYPE_POLY_IMM:
         p_Delete((poly *)(obj.data), r);
         break;
       case SINGTYPE_QRING:
+      case SINGTYPE_QRING_IMM:
         return;
       case SINGTYPE_RESOLUTION:
+      case SINGTYPE_RESOLUTION_IMM:
+        syKillComputation((syStrategy) (obj.data),r);
         return;
       case SINGTYPE_RING:
+      case SINGTYPE_RING_IMM:
         return;
       case SINGTYPE_STRING:
+      case SINGTYPE_STRING_IMM:
         omfree( (char *) (obj.data) );
         break;
       case SINGTYPE_VECTOR:
+      case SINGTYPE_VECTOR_IMM:
         p_Delete((poly*)(obj.data), r);
         break;
       case SINGTYPE_INT:
+      case SINGTYPE_INT_IMM:
+        return;
+      default:
         return;
     }
 }
 
 Obj SingObj::gapwrap(void)
 {
+    // check if we should trigger a garbage collection by GASMAN
+    //omInfo_t info = omGetInfo();
+    //if (info.CurrentBytesSystem > gc_omalloc_threshold) {
+//    if ((om_Info.CurrentBytesFromMalloc) > gc_omalloc_threshold) {
+//        CollectBags(0,0);
+//        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
+//    }
     if (!needcleanup) {
         Pr("#W try to GAP-wrap a borrowed Singular object",0L,0L);
     }
@@ -722,33 +790,96 @@ Obj SingObj::gapwrap(void)
 // in this freeing scheme. They do not actually hold a direct
 // reference to a singular object anyway.
 
-extern "C" 
 void _SI_FreeFunc(Obj o)
 {
     UInt type = TYPE_SINGOBJ(o);
     poly p;
     number n;
     ideal id;
+    map m;
+    ideal *i;
 
     switch (type) {
+        case SINGTYPE_QRING:
+        case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
+        case SINGTYPE_RING_IMM:
             rKill( (ring) CXX_SINGOBJ(o) );
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
+        case SINGTYPE_POLY_IMM:
             p = (poly) CXX_SINGOBJ(o);
             p_Delete( &p, SINGRING_SINGOBJ(o) );
             DEC_REFCOUNT( RING_SINGOBJ(o) );
             // Pr("killed a ring element\n",0L,0L);
             break;
         case SINGTYPE_BIGINT:
+        case SINGTYPE_BIGINT_IMM:
             n = (number) CXX_SINGOBJ(o);
             nlDelete(&n,NULL);
             break;
         case SINGTYPE_IDEAL:
+        case SINGTYPE_IDEAL_IMM:
             id = (ideal) CXX_SINGOBJ(o);
             id_Delete(&id,SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_INTMAT:
+        case SINGTYPE_INTMAT_IMM:
+        case SINGTYPE_INTVEC:
+        case SINGTYPE_INTVEC_IMM:
+            delete ((intvec *) CXX_SINGOBJ(o));
+            break;
+        case SINGTYPE_LINK:
+        case SINGTYPE_LINK_IMM:
+            // FIXME: later: slKill( (si_link) CXX_SINGOBJ(o));
+            break;
+        case SINGTYPE_LIST:
+        case SINGTYPE_LIST_IMM:
+            ((lists) (CXX_SINGOBJ(o)))->Clean(SINGRING_SINGOBJ(o));
+            break;
+        case SINGTYPE_MATRIX:
+        case SINGTYPE_MATRIX_IMM:
+            mp_Delete((matrix *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_MODULE:
+        case SINGTYPE_MODULE_IMM:
+            id_Delete((ideal *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_NUMBER:
+        case SINGTYPE_NUMBER_IMM:
+            n_Delete((number *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_STRING:
+        case SINGTYPE_STRING_IMM:
+            omfree( (char *) (CXX_SINGOBJ(o)) );
+            break;
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM:
+            p_Delete((poly*)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        case SINGTYPE_MAP:
+        case SINGTYPE_MAP_IMM:
+            m = (map) CXX_SINGOBJ(o);
+            omfree(m->preimage);
+            m->preimage = NULL;
+            i = (ideal *) m;
+            id_Delete(i,SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+            break;
+        case SINGTYPE_RESOLUTION:
+        case SINGTYPE_RESOLUTION_IMM:
+            syKillComputation((syStrategy) (CXX_SINGOBJ(o)),
+                              SINGRING_SINGOBJ(o));
+            DEC_REFCOUNT( RING_SINGOBJ(o) );
+            break;
+        default:
             break;
     }
 }
@@ -757,7 +888,6 @@ void _SI_FreeFunc(Obj o)
 // collector for T_SINGULAR objects. In the current implementation
 // This function is not actually needed.
 
-extern "C"
 void _SI_ObjMarkFunc(Bag o)
 {
 #if 0
@@ -779,7 +909,6 @@ void _SI_ObjMarkFunc(Bag o)
 // T_SINGULAR. A pointer to it is put into the dispatcher table in the
 // GAP kernel.
 
-extern "C"
 Obj _SI_TypeObj(Obj o)
 {
     return ELM_PLIST(_SI_Types,TYPE_SINGOBJ(o));
@@ -789,7 +918,6 @@ Obj _SI_TypeObj(Obj o)
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
 
-extern "C"
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
@@ -858,11 +986,11 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
 
     // Now allocate int lists for the orderings:
-    ord = (int *) omalloc(sizeof(int) * nrords+1);
+    ord = (int *) omalloc(sizeof(int) * (nrords+1));
     ord[nrords] = 0;
-    block0 = (int *) omalloc(sizeof(int) * nrords);
-    block1 = (int *) omalloc(sizeof(int) * nrords);
-    wvhdl = (int **) omalloc(sizeof(int *) * nrords);
+    block0 = (int *) omalloc(sizeof(int) * (nrords+1));
+    block1 = (int *) omalloc(sizeof(int) * (nrords+1));
+    wvhdl = (int **) omAlloc0(sizeof(int *) * (nrords+1));
     covered = 0;
     for (i = 0;i < nrords;i++) {
         tmp = ELM_LIST(orderings,i+1);
@@ -899,10 +1027,24 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     return tmp;
 }
 
-extern "C"
+Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj )
+{
+   if (TNUM_OBJ(singobj) != T_SINGULAR)
+       ErrorQuit("argument must be singular object.",0L,0L);
+
+   if (SIZE_BAG(singobj) < 3*sizeof(Obj))
+       ErrorQuit("argument must have associated singular ring.",0L,0L);
+
+   return INTOBJ_INT(RING_SINGOBJ(singobj));
+}
+
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
+    /* check arg */
+    if (! (ISSINGOBJ(SINGTYPE_RING, rr) || ISSINGOBJ(SINGTYPE_RING_IMM, rr)))
+       ErrorQuit("argument must be Singular ring.",0L,0L);
+
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt rnr = RING_SINGOBJ(rr);
     UInt nrvars = rVar(r);
@@ -965,7 +1107,6 @@ static poly ParsePoly(ring r, const char *&st)
     }
 }
 
-extern "C"
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
@@ -1009,7 +1150,6 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
     }
 }
 
-extern "C"
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
                                   Obj rr, Obj st)
 {
@@ -1050,7 +1190,6 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rnr);
 }
 
-extern "C"
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -1071,13 +1210,11 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
-extern "C"
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT,_SI_BIGINT_FROM_GAP(nr));
 }
 
-extern "C"
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
@@ -1106,7 +1243,6 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
     }             
 }
 
-extern "C"
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1131,7 +1267,6 @@ Obj Func_SI_intvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC,iv);
 }
 
-extern "C"
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
     if (!ISSINGOBJ(SINGTYPE_INTVEC,iv) ) {
@@ -1150,7 +1285,6 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
-extern "C"
 Obj Func_SI_intmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
@@ -1186,7 +1320,6 @@ Obj Func_SI_intmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
 }
 
-extern "C"
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
     if (!ISSINGOBJ(SINGTYPE_INTMAT, im)) {
@@ -1213,7 +1346,6 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
-extern "C"
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1253,7 +1385,6 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
-extern "C"
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1307,7 +1438,6 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
-extern "C"
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     UInt rnr;
@@ -1325,7 +1455,6 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
 // But _SI_pp_Mult_nn currently cannot do that: It uses SingObj, which
 // converts the GAP (GMP) int into a Singular 'bigint'.
 // But pp_Mult_nn needs a Singular 'number'...
-extern "C"
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
     ring r = SINGRING_SINGOBJ(a);
@@ -1337,14 +1466,13 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
-#include "lowlevel_mappings.cc"
+//#include "lowlevel_mappings.cc"
 
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
 
 static char *_SI_LastOutputBuf = NULL;
 
-extern "C"
 Obj FuncSI_LastOutput(Obj self)
 {
     if (_SI_LastOutputBuf) {
@@ -1358,9 +1486,6 @@ Obj FuncSI_LastOutput(Obj self)
     } else return Fail;
 }
 
-extern int inerror;
-
-extern "C"
 void _SI_ErrorCallback(const char *st)
 {
     UInt len = (UInt) strlen(st);
@@ -1376,7 +1501,6 @@ void _SI_ErrorCallback(const char *st)
     }
 }
 
-extern "C"
 Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
 {
     int i;
@@ -1384,7 +1508,7 @@ Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
     currentVoice=feInitStdin(NULL);
     WerrorS_callback = _SI_ErrorCallback;
-    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i++) {
+    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i += 2) {
         if (GAPtoSingType[i] >= MAX_TOK) {
             Pr("Singular types have changed unforeseen",0L,0L);
             exit(1);
@@ -1394,7 +1518,6 @@ Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
     return NULL;
 }
 
-extern "C"
 Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
     UInt len = GET_LEN_STRING(st);
@@ -1415,7 +1538,6 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     return ObjInt_Int((Int) err);
 }
 
-extern "C"
 Obj FuncSI_ValueOfVar(Obj self, Obj name)
 {
     Int len;
@@ -1472,7 +1594,6 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
     }
 }
 
-extern "C"
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
@@ -1509,7 +1630,6 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
-extern "C"
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 {
     UInt rnr = 0;
@@ -1536,7 +1656,6 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
     UInt rnr = 0;
@@ -1568,7 +1687,6 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
     UInt rnr = 0;
@@ -1608,7 +1726,6 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     return singres.gapwrap();
 }
 
-extern "C"
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     UInt rnr = 0;
@@ -1672,12 +1789,12 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         singres.obj.CleanUp(r);
         return Fail;
     }
+    omFree(sing);
     singres.rnr = rnr;
     singres.needcleanup = true;
     return singres.gapwrap();
 }
 
-extern "C"
 Obj FuncSI_SetCurrRing(Obj self, Obj r)
 {
     if (TNUM_OBJ(r) != T_SINGULAR ||
@@ -1688,5 +1805,95 @@ Obj FuncSI_SetCurrRing(Obj self, Obj r)
     ring rr = SINGRING_SINGOBJ(r);
     if (rr != currRing) rChangeCurrRing(rr);
     return NULL;
+}
+
+Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
+{
+    if (!IsStringConv(name)) {
+        ErrorQuit("First argument must be a string.",0L,0L);
+        return Fail;
+    }
+    if (!IS_LIST(args)) {
+        ErrorQuit("Second argument must be a list.",0L,0L);
+        return Fail;
+    }
+
+    idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
+    if (h == NULL) {
+        ErrorQuit("Proc %s not found in Singular interpreter.",
+                  (Int) CHARS_STRING(name),0L);
+        return Fail;
+    }
+
+    UInt rnr = 0;
+    ring r = NULL;
+    int i;
+    const char *error;
+
+    int nrargs = (int) LEN_LIST(args);
+    SingObj sing1;
+    SingObj sing2;
+    leftv cur,neu;
+    if (nrargs > 0) {
+        sing1.init(ELM_LIST(args,1),rnr,r);
+        if (sing1.error) {
+            error = sing1.error;
+            sing1.cleanup();
+            ErrorQuit(error,0L,0L);
+            return Fail;
+        }
+        cur = &(sing1.obj);
+        for (i = 2;i <= nrargs;i++) {
+            sing2.init(ELM_LIST(args,i),rnr,r);
+            if (sing2.error) {
+                neu = sing1.obj.next;
+                sing1.obj.next = NULL;
+                sing1.cleanup();
+                neu->CleanUp(r);
+                error = sing2.error;
+                sing2.cleanup();
+                ErrorQuit(error,0L,0L);
+            }
+            neu = (leftv) omalloc( sizeof(sleftv) );
+            neu->Init();
+            if (!sing2.needcleanup) sing2.copy();
+            sing2.needcleanup = false;
+            neu->data = sing2.obj.data;
+            neu->rtyp = sing2.obj.rtyp;
+            cur->next = neu;
+            cur = neu;
+        }
+        if (!sing1.needcleanup) sing1.copy();
+        sing1.needcleanup = false;
+    }
+    SingObj singres;
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
+    }
+    SPrintStart();
+    errorreported = 0;
+    leftv ret;
+    currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+    IDRING(currRingHdl) = r;
+    r->ref++;
+    if (nrargs == 0)
+        ret = iiMake_proc(h,NULL,NULL);
+    else
+        ret = iiMake_proc(h,NULL,&(sing1.obj));
+    killhdl(currRingHdl,currPack);
+    _SI_LastOutputBuf = SPrintEnd();
+
+    if (ret == NULL) return Fail;
+    if (ret->next != NULL) {
+        ret->CleanUp(r);
+        ErrorQuit("Multiple return values not yet implemented.",0L,0L);
+        return Fail;
+    }
+    singres.rnr = rnr;
+    singres.needcleanup = true;
+    singres.obj.data = ret->data;
+    singres.obj.rtyp = ret->rtyp;
+    return singres.gapwrap();
 }
 

@@ -1,28 +1,31 @@
-Bugs: ->Mohamed, crashes (see below)
-Mutable/Immutable types
-Void Singular object
-More constructors
-Method installation (->high performance)
-cleanup of internal objects
-more possibilities for proxy objects actually working
-access to subobjects of singular objects
-IsRingElement and other filters at least for polynomials
-Finish low-level interface and implement some functions with it
-Check LIB
-Call Singular-implemented function from the GAP level
-What to autoload?
-How to automatically see what is available?
+_SI_CallFunc{1,2,3} are never used!
 
+If many not so small elements are created on Singular side it can take too
+long until GASMAN starts a garbage collection (the GAP side can hold a huge
+number off small Singular wrapper objects) --- we need a way to trigger
+GASMAN when a lot of memory outside the GAP workspace is used.
+
+
+Bugs: crash (see end of this file)
+More constructors
+  Quick polynomial constructor via data like exponents and coefficients
+Method installation (->high performance)
+  for conveniences like +, -, * etc.
+more possibilities for proxy objects actually working
+  proxy implementation for intmats and intvecs?
+access to subobjects of singular objects
+Finish low-level interface and implement some functions with it
+What to autoload? (from Singular libraries)
+How to automatically see what is available? (Singular("listvar(proc);");)
+
+errorreported nur im Fehlerfall auf 0 setzen
 Fix path in lib/libsing.gi, because it contains the Singular version!
-proxy implementation for intmats and intvecs?
-More constructors (or less, if accessible via high level)
-Quick polynomial constructor
-More view and print routines
+
+More view and print routines (in particular GAP-parsable Print output)
 proxies for Singular interpreter variables
 generic copying for singular objects (and proxy objects)
 access to def and proc ?
 Help-function to see available Singular-Funktions
-Method installations for conveniences like +, -, * etc.
 Better ring constructor
 Try to run manual examples
 Tuning using low level interface
@@ -35,6 +38,9 @@ Debugging
 Explosion of objects like lists (rewrap pieces)
 Assembling of objects losing the wrapping of the pieces
 
+Constructor for PLURAL rings
+
+Make place of libsingular.so and headers configurable at compile time
 
 
 More TODO:
@@ -81,12 +87,46 @@ Get rid of _SI_Plistintvec and use SI_ToGAP
 Get rid of _SI_Matintmat and use SI_ToGAP
 
 
-Implementiere FreeFuncs fuer viele Singular-Typen
-
 Unify SingObj::cleanup and _SI_FreeFunc as far as possible
 
 
 gap> s := SI_ring(3,["a","b"]);
 gap> SI_poly(s,SI_bigint(2));
-
 crashes GAP
+
+
+Bug:
+
+gap> s := SI_ring(0,["a","b"]);
+<singular ring>
+gap> m := SI_matrix(2,2,s,"a,b,ab,1");
+<singular object:
+a, b,
+ab,1 >
+gap> v1 := SI_intvec([1]);
+<singular intvec:[ 1 ]>
+gap> v2 := SI_intvec([2]);
+<singular intvec:[ 2 ]>
+gap> SI_\[(m,2,2);
+<singular poly:1>
+gap> SI_\[(m,v1,v2);
+fail
+gap> SI_Errors;
+"cannot build expression lists from unnamed objects\ncannot build
+expression l\
+ists from unnamed objects\n"
+
+
+
+Bug:
+
+gap> s := SI_ring(0,["a","b","c"]);
+<singular ring>
+gap> m := SI_matrix(4,3,s,"1,0,4,2,0,5,0,0,0,3,0,6");
+<singular object:
+1,0,4,
+2,0,5,
+0,0,0,
+3,0,6 >
+gap> SI_syz(m);
+
