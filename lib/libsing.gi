@@ -97,10 +97,13 @@ InstallMethod( ViewString, "for a singular ideal",
 
 InstallGlobalFunction( _SI_InitInterpreter,
   function( )
-    local path;
+    local path, version;
+    path := Filename(DirectoriesPackageLibrary("libsing","")[1],
+                     "SINGULARVERSION");
+    version := NormalizedWhitespace(StringFile(path));
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "Singular-3-1-5/Singular/libsingular."));
+                     Concatenation("Singular-", version, "/Singular/libsingular.")));
     if ARCH_IS_MAC_OS_X() then
         Append(path,"dylib");
     else
