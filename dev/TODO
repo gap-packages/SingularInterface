@@ -5,6 +5,7 @@ long until GASMAN starts a garbage collection (the GAP side can hold a huge
 number off small Singular wrapper objects) --- we need a way to trigger
 GASMAN when a lot of memory outside the GAP workspace is used.
 
+Disallow SaveWorkspace if libsing is loaded!
 
 Bugs: crash (see end of this file)
 More constructors

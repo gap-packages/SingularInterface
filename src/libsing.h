@@ -163,6 +163,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj);
 Obj FuncSI_LastOutput(Obj self);
 Obj Func_SI_bigint(Obj self, Obj nr);
 Obj Func_SI_Intbigint(Obj self, Obj b);
+Obj Func_SI_number(Obj self, Obj r, Obj nr);
 Obj Func_SI_intvec(Obj self, Obj l);
 Obj Func_SI_Plistintvec(Obj self, Obj iv);
 Obj Func_SI_intmat(Obj self, Obj m);

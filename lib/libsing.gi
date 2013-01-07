@@ -1,6 +1,9 @@
 InstallMethod(SI_bigint,[IsSingularObj],SI_bigint_singular);
 InstallMethod(SI_bigint,[IsInt],_SI_bigint);
 
+InstallMethod(SI_number,[IsSingularRing, IsSingularObj],SI_number_singular);
+InstallMethod(SI_number,[IsSingularRing, IsInt],_SI_number);
+
 InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
 InstallMethod(SI_intvec,[IsList],_SI_intvec);
 
@@ -94,7 +97,10 @@ InstallMethod( ViewString, "for a singular ideal",
 
 InstallGlobalFunction( _SI_InitInterpreter,
   function( )
-    local path;
+    local path, version;
+    path := Filename(DirectoriesPackageLibrary("libsing","")[1],
+                     "SINGULARVERSION");
+    version := NormalizedWhitespace(StringFile(path));
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsing","")[1],
                      "SW/bin/Singular"));

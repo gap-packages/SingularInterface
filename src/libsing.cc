@@ -90,6 +90,11 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)Func_SI_Intbigint,
    "cxxfuncs.cc:Func_SI_Intbigint" },
 
+  {"_SI_number", 2,
+   "ring, nr",
+   (GVarFunc)Func_SI_number,
+   "cxxfuncs.cc:Func_SI_number" },
+
   {"_SI_intvec", 1,
    "l",
    (GVarFunc)Func_SI_intvec,

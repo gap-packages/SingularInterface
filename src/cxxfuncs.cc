@@ -49,11 +49,20 @@ extern void (*WerrorS_callback)(const char *s);
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
 static long gc_omalloc_threshold = 1000000L;
+//static long gcfull_omalloc_threshold = 4000000L;
 
+int GCCOUNT = 0;
 Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
+        if (GCCOUNT == 10) {
+          GCCOUNT = 0;
+          CollectBags(0,1);
+        }
+        else {
+          GCCOUNT++;
+          CollectBags(0,0);
+        }
         //printf("\nGC: %ld -> ",gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
         //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
@@ -67,7 +76,14 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
-        CollectBags(0,0);
+        if (GCCOUNT == 10) {
+          GCCOUNT = 0;
+          CollectBags(0,1);
+        }
+        else {
+          GCCOUNT++;
+          CollectBags(0,0);
+        }
         //printf("\nGC: %ld -> ",gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
         //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
@@ -1243,6 +1259,13 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
     }             
 }
 
+Obj Func_SI_number(Obj self, Obj r, Obj nr)
+{
+    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
+                       _SI_NUMBER_FROM_GAP(SINGRING_SINGOBJ(r), nr),
+                       RING_SINGOBJ(r));
+}
+
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1873,18 +1896,19 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     }
     SPrintStart();
     errorreported = 0;
-    leftv ret;
+    BOOLEAN bool_ret;
     currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
     IDRING(currRingHdl) = r;
     r->ref++;
     if (nrargs == 0)
-        ret = iiMake_proc(h,NULL,NULL);
+        bool_ret = iiMake_proc(h,NULL,NULL);
     else
-        ret = iiMake_proc(h,NULL,&(sing1.obj));
+        bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
     killhdl(currRingHdl,currPack);
     _SI_LastOutputBuf = SPrintEnd();
 
-    if (ret == NULL) return Fail;
+    if (bool_ret == TRUE) return Fail;
+    leftv ret = &iiRETURNEXPR;
     if (ret->next != NULL) {
         ret->CleanUp(r);
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);

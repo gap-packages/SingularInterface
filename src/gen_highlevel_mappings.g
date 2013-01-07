@@ -27,7 +27,7 @@ for op in ops do
         fi;
     od;
     name := Concatenation("SI_",op);
-    if poss{[2..4]} = [fail,fail,fail] then
+    if poss{[2..4]} = [[],[],[]] then
         # occurs only with one argument
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a)\n",
@@ -39,7 +39,7 @@ for op in ops do
                       "    return _SI_CallFunc1(",nr,",a);\n",
                       "  end );\n\n");
         fi;
-    elif poss{[1,3,4]} = [fail,fail,fail] then
+    elif poss{[1,3,4]} = [[],[],[]] then
         # occurs only with two arguments
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b)\n",
@@ -51,7 +51,7 @@ for op in ops do
                       "    return _SI_CallFunc2(",nr,",a,b);\n",
                       "  end );\n\n");
         fi;
-    elif poss{[1,2,4]} = [fail,fail,fail] then
+    elif poss{[1,2,4]} = [[],[],[]] then
         # occurs only with three arguments
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b,c)\n",
