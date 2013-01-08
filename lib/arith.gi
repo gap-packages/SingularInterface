@@ -24,6 +24,8 @@ InstallOtherMethod(\*, ["IsInt","IsSingularObj"], SI_\*);
 InstallOtherMethod(\*, ["IsSingularObj","IsInt"], SI_\*);
 InstallOtherMethod(\*, ["IsSingularPoly","IsSingularPoly"], _SI_p_Mult_q);
 
+InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], SI_\=\=);
+
 # for any singular object that carries a ring
 InstallOtherMethod(One, ["IsSingularObj"], function(sobj)
   return SI_poly(SI_ring(sobj), "1");
