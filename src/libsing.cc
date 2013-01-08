@@ -192,6 +192,9 @@ Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
 Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
+extern "C" Int EqObject(Obj opL, Obj opR);
+// This is defined in arith.c but not exported in arith.h 
+
 /**
 The first function to be called when the library is loaded by the kernel.
 **/
@@ -264,6 +267,34 @@ static Int InitKernel(StructInitInfo* module)
   TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
   InfoBags[T_SINGULAR].name = "singular wrapper object";
 
+  /* TODO:
+   * IsMutableObjFuncs fuer T_SINGULAR
+   * IsCopyableObjFuncs fuer T_SINGULAR
+   * ShallowCopyObjFuncs fuer T_SINGULAR
+   * CopyObjFuncs fuer T_SINGULAR
+   * CleanObjFuncs fuer T_SINGULAR
+   * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
+   * PrintPathFuncs fuer T_SINGULAR
+   * MakeImmutableObjFuncs fuer T_SINGULAR
+   * ZeroFuncs fuer T_SINGULAR ist ZeroObject, OK?
+   * AInvFuncs fuer T_SINGULAR ist AInvObject, OK?
+   * AInvMutFuncs fuer T_SINGULAR ist AInvMutObject, OK?
+   * OneFuncs fuer T_SINGULAR ist OneObject, OK?
+   * OneMutFuncs fuer T_SINGULAR ist OneMutObject, OK?
+   * InvFuncs fuer T_SINGULAR ist InvObject, OK?
+   * InvMutFuncs fuer T_SINGULAR ist InvMutObject, OK?
+   * EqFuncs fuer T_SINGULAR/T_SINGULAR
+   * LtFuncs fuer T_SINGULAR/T_SINGULAR ist LtObject, OK?
+   * InFuncs fuer T_SINGULAR/T_SINGULAR
+   * SumFuncs fuer T_SINGULAR/T_SINGULAR ist SumObject, OK?
+   * DiffFuncs fuer T_SINGULAR/T_SINGULAR ist DiffObject, OK?
+   * ProdFuncs fuer T_SINGULAR/T_SINGULAR ist ProdObject, OK?
+   * QuoFuncs fuer T_SINGULAR/T_SINGULAR ist QuoObject, OK?
+   * LQuoFuncs fuer T_SINGULAR/T_SINGULAR ist LQuoObject, OK?
+   * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
+   * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
+   * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK? */
+  EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
   /* return success                                                      */
   return 0;
 }
