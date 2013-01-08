@@ -7,6 +7,6 @@ tar xzvf Singular-$SINGULARVERSION.tar.gz
 cd Singular-$SINGULARVERSION
 # Create some directories such that one can manually add links to GAP's
 # gmp.h and libgmp.a and libgmp.la:
-mkdir `singuname.sh`
-mkdir `singuname.sh`/include
-mkdir `singuname.sh`/lib
+mkdir `./singuname.sh`
+mkdir `./singuname.sh`/include
+mkdir `./singuname.sh`/lib
