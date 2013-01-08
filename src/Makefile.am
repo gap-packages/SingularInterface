@@ -1,7 +1,7 @@
 BINARCHDIR = bin/$(GAPARCH)
 GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
 if WANT_SW
-  AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
+  AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS) -DWANT_SW
   LDADD = $(LIBSINGULAR_LIBS) -lpthread
 else
 SINGULARNAME = Singular-`cat ../SINGULARVERSION`
@@ -13,7 +13,7 @@ bin_PROGRAMS = gentableforGAP
 
 gentableforGAP_SOURCES = gentableforGAP.cc
 if WANT_SW
-  gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS)
+  gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS) -DWANT_SW
 else 
 gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
 gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
@@ -25,9 +25,9 @@ if WANT_SW
 else 
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
 endif
-libsing_la_LIBADD = 
+libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
 if WANT_SW
-  libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
+  libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS) -DWANT_SW
 else 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 endif

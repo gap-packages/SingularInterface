@@ -99,11 +99,11 @@ InstallGlobalFunction( _SI_InitInterpreter,
   function( )
     local path, version;
     path := Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "SINGULARVERSION");
-    version := NormalizedWhitespace(StringFile(path));
+                     "SINGULARPATH");
+    path := NormalizedWhitespace(StringFile(path));
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "SW/bin/Singular"));
+                     path));
     _SI_INIT_INTERPRETER(path);
   end );
 _SI_InitInterpreter();

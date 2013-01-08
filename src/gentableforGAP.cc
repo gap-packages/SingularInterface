@@ -14,15 +14,19 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifndef WANT_SW
+#include <Singular/mod2.h>
+#else
 #include <kernel/mod2.h>
+#endif
 #include <Singular/tok.h>
 #include <Singular/grammar.h>
 
+#ifdef WANT_SW
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif
-
-
+#endif
 // to produce convert_table.texi for doc:
 //#define CONVERT_TABLE 1
 
@@ -124,7 +128,11 @@ struct sConvertTypes
 #define IPCONV
 #define IPASSIGN
 
+#ifndef WANT_SW
+#include "table.h"
+#else
 #include <Singular/table.h>
+#endif
 
 const char * Tok2Cmdname(int tok)
 {

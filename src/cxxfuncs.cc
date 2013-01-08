@@ -8,15 +8,18 @@ This file contains all of the code that deals with C++ libraries.
 #include "libsing.h"
 #include "singobj.h"
 
+#ifdef WANT_SW
 #include <coeffs/longrat.h>
 #include <kernel/syz.h>
-
 #include <Singular/ipid.h>
 #include <Singular/libsingular.h>
-// To be removed later on:  (FIXME)
 #include <Singular/lists.h>
+#else
+// To be removed later on:  (FIXME)
+#include <singular/lists.h>
+#include <singular/syz.h>
+#endif
 
-#include <string>
 
 extern int inerror; // from Singular/grammar.cc
 
@@ -28,24 +31,27 @@ Obj FuncOmPrintInfo( Obj self )
   return NULL;
 }
 
-// Prevent inline code from using tests which are not in libsingular:
-// #define NDEBUG 1
-// #define OM_NDEBUG 1
 Obj FuncOmCurrentBytes( Obj self )
 {
   omInfo_t info = omGetInfo();
   return INTOBJ_INT(info.CurrentBytesSystem);
 }
 
+#ifdef WANT_SW
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif
 
-extern void (*WerrorS_callback)(const char *s);
-/*
-// To be removed later on:  (FIXME)
-#include <singular/lists.h>
-*/
+#define NL_COPY(A,B) nlCopy(A,B)
+#define MA_COPY(A,B) maCopy(A,B)
+#define MP_COPY(A,B) mp_Copy(A,B)
+#define MP_DELETE(A,B) mp_Delete(A,B)
+#else
+#define NL_COPY(A,B) nlCopy(A)
+#define MA_COPY(A,B) maCopy(A)
+#define MP_COPY(A,B) mp_Copy(A)
+#define MP_DELETE(A,B) mpDelete(A,B)
+#endif
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
 static long gc_omalloc_threshold = 1000000L;
@@ -625,7 +631,7 @@ void SingObj::copy()
     switch (gtype) {
       case SINGTYPE_BIGINT:
       case SINGTYPE_BIGINT_IMM:
-        obj.data = (void *) nlCopy((number) obj.data, coeffs_BIGINT);
+        obj.data = (void *) NL_COPY((number) obj.data, coeffs_BIGINT);
         break;
       case SINGTYPE_IDEAL:
       case SINGTYPE_IDEAL_IMM:
@@ -646,11 +652,11 @@ void SingObj::copy()
         break;
       case SINGTYPE_MAP:
       case SINGTYPE_MAP_IMM:
-        obj.data = (void *) maCopy( (map) obj.data,r);
+        obj.data = (void *) MA_COPY( (map) obj.data,r);
         break;
       case SINGTYPE_MATRIX:
       case SINGTYPE_MATRIX_IMM:
-        obj.data = (void *) mp_Copy( (matrix) obj.data, r );
+        obj.data = (void *) MP_COPY( (matrix) obj.data, r );
         break;
       case SINGTYPE_MODULE:
       case SINGTYPE_MODULE_IMM:
@@ -735,7 +741,7 @@ void SingObj::cleanup(void)
         break;
       case SINGTYPE_MATRIX:
       case SINGTYPE_MATRIX_IMM:
-        mp_Delete((matrix *)(obj.data), r);
+        MP_DELETE((matrix *)(obj.data), r);
         break;
       case SINGTYPE_MODULE:
       case SINGTYPE_MODULE_IMM:
@@ -891,7 +897,7 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix) CXX_SINGOBJ(o);
-            mp_Delete(&m, SINGRING_SINGOBJ(o));
+            MP_DELETE(&m, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
             break; }
         case SINGTYPE_MODULE:
