@@ -10,6 +10,12 @@ This file contains all of the pure C code that deals with GAP.
 
 /******************** The interface to GAP ***************/
 
+Obj Func_SI_debug(Obj self, Obj obj)
+{
+    int i;
+    i = 2;
+    return NULL;
+}
 
 typedef Obj (* GVarFunc)(/*arguments*/);
 
@@ -19,6 +25,11 @@ This is used in InitKernel() and InitLibrary()
 */
 static StructGVarFunc GVarFuncs[] =
 {
+
+  {"_SI_debug", 1,
+   "obj",
+   (GVarFunc)Func_SI_debug,
+   "cxxfuncs.cc:Func_SI_debug" },
 
   {"_SI_ring", 3,
    "characteristic, names, orderings",

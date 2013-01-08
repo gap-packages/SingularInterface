@@ -809,6 +809,8 @@ void _SI_FreeFunc(Obj o)
             break;
         case SINGTYPE_POLY:
         case SINGTYPE_POLY_IMM:
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM:
             p = (poly) CXX_SINGOBJ(o);
             p_Delete( &p, SINGRING_SINGOBJ(o) );
             DEC_REFCOUNT( RING_SINGOBJ(o) );
@@ -840,36 +842,33 @@ void _SI_FreeFunc(Obj o)
             ((lists) (CXX_SINGOBJ(o)))->Clean(SINGRING_SINGOBJ(o));
             break;
         case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM:
-            mpDelete((matrix *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_MATRIX_IMM: {
+            matrix m = (matrix) CXX_SINGOBJ(o);
+            mpDelete(&m, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM:
-            id_Delete((ideal *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_MODULE_IMM: {
+            ideal i = (ideal) CXX_SINGOBJ(o);
+            id_Delete(&i, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM:
-            n_Delete((number *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_NUMBER_IMM: {
+            number n = (number) CXX_SINGOBJ(o);
+            n_Delete(&n, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             omfree( (char *) (CXX_SINGOBJ(o)) );
-            break;
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM:
-            p_Delete((poly*)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
         case SINGTYPE_MAP:
         case SINGTYPE_MAP_IMM:
             m = (map) CXX_SINGOBJ(o);
             omfree(m->preimage);
             m->preimage = NULL;
-            i = (ideal *) m;
-            id_Delete(i,SINGRING_SINGOBJ(o));
+            id_Delete((ideal *) &m,SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
             break;
