@@ -180,7 +180,6 @@ InstallMethod(ViewString, "for a singular proxy object",
     local str;
     str := "<proxy for ";
     Append(str, ViewString(p![1]));
-    Print("[",p![2]);
     Append(str, "[");
     Append(str, ViewString(p![2]));
     if IsBound(p![3]) then

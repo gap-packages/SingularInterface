@@ -485,6 +485,23 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
+    } else if (currgtype == SINGTYPE_INTMAT) {
+        if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+          error = "need two integer indices for matrix proxy element";
+          return NULL;
+        }
+        Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
+        intvec *mat = (intvec *) current;
+        if (row <= 0 || row > mat->rows() ||
+            col <= 0 || col > mat->cols()) {
+            error = "matrix indices out of range";
+            return NULL;
+        }
+        currgtype = SINGTYPE_INT;
+        return (void *) (long) IMATELEM(*mat,row,col);
     } else {
         error = "Singular object has no subobjects";
         return NULL;
