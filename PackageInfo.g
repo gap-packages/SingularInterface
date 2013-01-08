@@ -109,16 +109,16 @@ Persons := [
     IsAuthor      := true,
     IsMaintainer  := true,
     Email         := "mhorn@tu-bs.de",
-    WWWHome       := "http://www.icm.tu-bs.de/~mhorn",
+    WWWHome       := "http://www.quendi.de/",
     PostalAddress := Concatenation(
-                       "AG Algebra und Diskrete Mathematik\n",
-                       "Institut Computational Mathematics\n",
-                       "TU Braunschweig\n",
-                       "Pockelsstr. 14\n",
-                       "D-38106 Braunschweig\n",
+                       "AG Algebra\n",
+                       "Mathematisches Institut\n",
+                       "Justus-Liebig-Universität Gießen\n",
+                       "Arndtstrasse 2\n",
+                       "35392 Giessen\n",
                        "Germany" ),
-    Place         := "Braunschweig",
-    Institution   := "TU Braunschweig"
+    Place         := "Giessen",
+    Institution   := "Justus-Liebig-Universität Gießen"
   ),
   rec(
     LastName      := "Linton",
@@ -131,6 +131,21 @@ Persons := [
     FirstNames    := "Frank",
     IsAuthor      := true,
     IsMaintainer  := true,
+  ),
+  rec(
+    LastName      := "Motsak",
+    FirstNames    := "Oleksandr",
+    IsAuthor      := true,
+    IsMaintainer  := false,
+    Email         := "http://goo.gl/mcpzY",
+    WWWHome       := "http://www.mathematik.uni-kl.de/~motsak/",
+    PostalAddress := Concatenation( [
+                       "Department of Mathematics\n",
+                       "University of Kaiserslautern\n",
+                       "67653 Kaiserslautern\n",
+                       "Germany" ] ),
+    Place         := "Kaiserslautern",
+    Institution   := "University of Kaiserslautern"
   ),
   rec( 
     LastName      := "Neunhoeffer",
