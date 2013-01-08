@@ -797,7 +797,6 @@ void _SI_FreeFunc(Obj o)
     number n;
     ideal id;
     map m;
-    ideal *i;
 
     switch (type) {
         case SINGTYPE_QRING:
@@ -1446,7 +1445,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
-    UInt rnr;
+    UInt rnr = 0;
     poly p = _SI_GET_poly(po,rnr);
     ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
