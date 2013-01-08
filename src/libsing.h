@@ -159,6 +159,7 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);
 Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path);
 Obj Func_SI_EVALUATE(Obj self, Obj st);
 Obj FuncSI_ValueOfVar(Obj self, Obj name);
+Obj Func_SI_SingularProcs(Obj self);
 Obj FuncSI_ToGAP(Obj self, Obj singobj);
 Obj FuncSI_LastOutput(Obj self);
 Obj Func_SI_bigint(Obj self, Obj nr);

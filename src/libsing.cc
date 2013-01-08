@@ -81,6 +81,11 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)FuncSI_ValueOfVar,
    "cxxfuncs.cc:FuncSI_ValueOfVar" },
 
+  {"_SI_SingularProcs", 0,
+   "",
+   (GVarFunc)Func_SI_SingularProcs,
+   "cxxfuncs.cc:Func_SI_SingularProcs" },
+
   {"SI_ToGAP", 1,
    "singobj",
    (GVarFunc)FuncSI_ToGAP,

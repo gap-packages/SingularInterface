@@ -118,6 +118,8 @@ SI_Errors := "";
 
 DeclareGlobalFunction( "SI_CleanupRings" );
 
+DeclareGlobalFunction( "_SI_BindSingularProcs" );
+
 DeclareGlobalFunction( "_SI_InitInterpreter" );
 # This is called automatically from libsing.gi, no need for the user to call it.
 

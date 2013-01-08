@@ -1631,6 +1631,38 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
     }
 }
 
+Obj Func_SI_SingularProcs(Obj self)
+{
+    Obj l;
+    Obj n;
+    int len = 0;
+    UInt slen;
+    int i;
+    idhdl x = IDROOT;
+    while (x) {
+        if (x->typ == PROC_CMD) len++;
+        x = x->next;
+    }
+    l = NEW_PLIST(T_PLIST_DENSE,len);
+    SET_LEN_PLIST(l,0);
+    x = IDROOT;
+    i = 1;
+    while (x) {
+        if (x->typ == PROC_CMD) {
+            slen = (UInt) strlen(x->id);
+            n = NEW_STRING(slen);
+            SET_LEN_STRING(n,slen);
+            memcpy(CHARS_STRING(n),x->id,slen+1);
+            SET_ELM_PLIST(l,i,n);
+            SET_LEN_PLIST(l,i);
+            CHANGED_BAG(l);
+            i++;
+        }
+        x = x->next;
+    }
+    return l;
+}
+
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
