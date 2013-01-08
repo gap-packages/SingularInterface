@@ -526,6 +526,7 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
         UInt len = GET_LEN_STRING(input);
         char *ost = (char *) omalloc((size_t) len + 1);
         memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(input)),len);
+        ost[len] = 0;
         obj.data = (void *) ost;
         obj.rtyp = STRING_CMD;
         gtype = SINGTYPE_STRING;
@@ -1546,7 +1547,8 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     UInt len = GET_LEN_STRING(st);
     char *ost = (char *) omalloc((size_t) len + 10);
     memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
-    memcpy(ost+len,"return();",10);
+    memcpy(ost+len,"return();",9);
+    ost[len+9] = 0;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
