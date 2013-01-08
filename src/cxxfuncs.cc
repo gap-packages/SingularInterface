@@ -205,7 +205,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
 
 static number _SI_BIGINT_FROM_GAP(Obj nr)
 {
-    number n;
+    number n = NULL;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
         if (i >= (-1L << 28) && i < (1L << 28))
@@ -502,6 +502,37 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
+    } else if (currgtype == SINGTYPE_INTMAT) {
+        if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+          error = "need two integer indices for intmat proxy element";
+          return NULL;
+        }
+        Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
+        intvec *mat = (intvec *) current;
+        if (row <= 0 || row > mat->rows() ||
+            col <= 0 || col > mat->cols()) {
+            error = "matrix indices out of range";
+            return NULL;
+        }
+        currgtype = SINGTYPE_INT;
+        return (void *) (long) IMATELEM(*mat,row,col);
+    } else if (currgtype == SINGTYPE_INTVEC) {
+        if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
+          error = "need an integer index for intvec proxy element";
+          return NULL;
+        }
+        Int n = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        intvec *v = (intvec *) current;
+        if (n <= 0 || n > v->length()) {
+            error = "vector index out of range";
+            return NULL;
+        }
+        currgtype = SINGTYPE_INT;
+        return (void *) (long) (*v)[n-1];
     } else {
         error = "Singular object has no subobjects";
         return NULL;
@@ -814,7 +845,6 @@ void _SI_FreeFunc(Obj o)
     number n;
     ideal id;
     map m;
-    ideal *i;
 
     switch (type) {
         case SINGTYPE_QRING:
@@ -826,6 +856,8 @@ void _SI_FreeFunc(Obj o)
             break;
         case SINGTYPE_POLY:
         case SINGTYPE_POLY_IMM:
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM:
             p = (poly) CXX_SINGOBJ(o);
             p_Delete( &p, SINGRING_SINGOBJ(o) );
             DEC_REFCOUNT( RING_SINGOBJ(o) );
@@ -857,36 +889,33 @@ void _SI_FreeFunc(Obj o)
             ((lists) (CXX_SINGOBJ(o)))->Clean(SINGRING_SINGOBJ(o));
             break;
         case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM:
-            mp_Delete((matrix *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_MATRIX_IMM: {
+            matrix m = (matrix) CXX_SINGOBJ(o);
+            mp_Delete(&m, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM:
-            id_Delete((ideal *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_MODULE_IMM: {
+            ideal i = (ideal) CXX_SINGOBJ(o);
+            id_Delete(&i, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM:
-            n_Delete((number *)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
+        case SINGTYPE_NUMBER_IMM: {
+            number n = (number) CXX_SINGOBJ(o);
+            n_Delete(&n, SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
+            break; }
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             omfree( (char *) (CXX_SINGOBJ(o)) );
-            break;
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM:
-            p_Delete((poly*)(CXX_SINGOBJ(o)), SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
         case SINGTYPE_MAP:
         case SINGTYPE_MAP_IMM:
             m = (map) CXX_SINGOBJ(o);
             omfree(m->preimage);
             m->preimage = NULL;
-            i = (ideal *) m;
-            id_Delete(i,SINGRING_SINGOBJ(o));
+            id_Delete((ideal *) &m,SINGRING_SINGOBJ(o));
             DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
             break;
@@ -1383,8 +1412,8 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     }
     ideal id;
     UInt i;
-    Obj t;
-    ring r;
+    Obj t = NULL;
+    ring r = NULL;
     for (i = 1;i <= len;i++) {
         t = ELM_LIST(l,i);
         if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
@@ -1429,8 +1458,8 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     }
     matrix mat;
     Int i;
-    Obj t;
-    ring r;
+    Obj t = NULL;
+    ring r = NULL;
     Int row = 1;
     Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
@@ -1464,7 +1493,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
-    UInt rnr;
+    UInt rnr = 0;
     poly p = _SI_GET_poly(po,rnr);
     ring r = GET_SINGRING(rnr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
