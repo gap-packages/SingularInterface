@@ -489,7 +489,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
-          error = "need two integer indices for matrix proxy element";
+          error = "need two integer indices for intmat proxy element";
           return NULL;
         }
         Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
@@ -502,6 +502,20 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_INT;
         return (void *) (long) IMATELEM(*mat,row,col);
+    } else if (currgtype == SINGTYPE_INTVEC) {
+        if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
+          error = "need an integer index for intvec proxy element";
+          return NULL;
+        }
+        Int n = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        intvec *v = (intvec *) current;
+        if (n <= 0 || n > v->length()) {
+            error = "vector index out of range";
+            return NULL;
+        }
+        currgtype = SINGTYPE_INT;
+        return (void *) (long) (*v)[n-1];
     } else {
         error = "Singular object has no subobjects";
         return NULL;

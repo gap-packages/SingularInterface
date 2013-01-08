@@ -4,3 +4,4 @@ Test(Filename(d,"example0.tst"));
 Test(Filename(d,"example1.tst"));
 Test(Filename(d,"example2.tst"));
 Test(Filename(d,"example3.tst"));
+Test(Filename(d,"example4.tst"));
