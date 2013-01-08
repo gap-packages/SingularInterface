@@ -188,7 +188,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
 
 static number _SI_BIGINT_FROM_GAP(Obj nr)
 {
-    number n;
+    number n = NULL;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
         if (i >= (-1L << 28) && i < (1L << 28))
@@ -1364,8 +1364,8 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     }
     ideal id;
     UInt i;
-    Obj t;
-    ring r;
+    Obj t = NULL;
+    ring r = NULL;
     for (i = 1;i <= len;i++) {
         t = ELM_LIST(l,i);
         if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
@@ -1410,8 +1410,8 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     }
     matrix mat;
     Int i;
-    Obj t;
-    ring r;
+    Obj t = NULL;
+    ring r = NULL;
     Int row = 1;
     Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
