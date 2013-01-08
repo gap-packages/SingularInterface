@@ -1,9 +1,3 @@
-Singular(""); gives no method found although "" seems to be in
-IsStringRep.
-
-SI_bigint(1); does not work, gives:
-<singular bigint:-1408746431>
-
 Tocheck:
 
  - memory management stress test
