@@ -11,7 +11,7 @@
 
 # --prefix=$P 
 
-## ./autogen.sh 
+./autogen.sh 
 
 # && ./configure --with-libpolys=$P && make -j9 all && make -j9 -i -k check
 # -i -k install
