@@ -509,6 +509,7 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
         UInt len = GET_LEN_STRING(input);
         char *ost = (char *) omalloc((size_t) len + 1);
         memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(input)),len);
+        ost[len] = 0;
         obj.data = (void *) ost;
         obj.rtyp = STRING_CMD;
         gtype = SINGTYPE_STRING;
