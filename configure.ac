@@ -58,11 +58,18 @@ if test "$ac_test_CXXFLAGS" != "set"; then
   AC_LANG_POP([C++])
 fi
 
-AC_LIBTOOL_DLOPEN
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
-
-LB_CHECK_LIBSINGULAR
+AC_MSG_CHECKING([for --without-sw])
+AC_ARG_WITH(sw, [AS_HELP_STRING([--with-sw], [enable sw usage])], [], [withval="no"])
+AM_CONDITIONAL(WANT_SW, test x"$with_sw" == xyes)
+if test x"$with_sw" == xyes; then : 
+  AC_MSG_RESULT(with SW!)
+  AC_LIBTOOL_DLOPEN
+  AC_DISABLE_STATIC
+  AC_PROG_LIBTOOL
+  LB_CHECK_LIBSINGULAR
+else
+  AC_MSG_RESULT(without SW)
+fi
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

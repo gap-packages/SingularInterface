@@ -1,27 +1,36 @@
-# TESTS_ENVIRONMENT = SINGULARPATH='$(LIB_HOME)/share/gftables'
-# TESTS_ENVIRONMENT += SINGULAR_ROOT_DIR='$(LIBSINGULARSINGULAR_HOME)' 
-
 BINARCHDIR = bin/$(GAPARCH)
 GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
-
-AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
-LDADD = $(LIBSINGULAR_LIBS)
+if WANT_SW
+  AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
+  LDADD = $(LIBSINGULAR_LIBS) -lpthread
+else
+SINGULARNAME = Singular-`cat ../SINGULARVERSION`
+SINGARCHNAME = `cat ../SINGARCHNAME`
+endif
 
 lib_LTLIBRARIES = libsing.la
 bin_PROGRAMS = gentableforGAP
 
 gentableforGAP_SOURCES = gentableforGAP.cc
-# gentableforGAP_CPPFLAGS = $(LIBSINGULAR_CFLAGS)
-gentableforGAP_LDFLAGS =  $(LIBSINGULAR_LIBS) -lpthread
-
-
-# libsing_la_LIBADD = $(LIBSINGULAR_LIBS)
-# libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
-# libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+if WANT_SW
+  gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS)
+else 
+gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
+gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
+endif
 
 libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc
-libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular $(LIBSINGULAR_LIBS) -lpthread
-libsing_la_CPPFLAGS = $(GAP_CPPFLAGS)  $(LIBSINGULAR_CFLAGS)
+if WANT_SW
+  libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
+else 
+libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
+endif
+libsing_la_LIBADD = 
+if WANT_SW
+  libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
+else 
+libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+endif
 libsing_la_CXXFLAGS = -Wall
 libsing_la_CFLAGS = -Wall
 

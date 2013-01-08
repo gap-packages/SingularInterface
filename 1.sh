@@ -18,4 +18,7 @@
 
 
 
-./configure --with-libSingular=$PWD/SW --with-gaproot=$PWD/../GAP
+./configure --with-sw --with-libSingular=$PWD/SW --with-gaproot=$PWD/../GAP 
+
+make
+
