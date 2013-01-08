@@ -120,6 +120,13 @@ InstallMethod( Singular, "for a string in stringrep",
     return ret;
   end );
 
+# empty string is not in string rep, handle it separately
+InstallMethod( Singular, "for a string in stringrep",
+  [ IsString and IsEmpty ],
+  function( st )
+    return 0;
+  end );
+
 InstallMethod( Singular, "without arguments",
   [ ],
   function()

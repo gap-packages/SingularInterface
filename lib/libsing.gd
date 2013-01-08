@@ -122,6 +122,7 @@ DeclareGlobalFunction( "_SI_InitInterpreter" );
 # This is called automatically from libsing.gi, no need for the user to call it.
 
 DeclareOperation( "Singular", [IsStringRep] );
+DeclareOperation( "Singular", [IsString and IsEmpty] );
 DeclareOperation( "Singular", [] );
 
 BindGlobal("SI_bigint_singular", SI_bigint);
