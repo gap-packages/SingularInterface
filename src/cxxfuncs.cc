@@ -1531,7 +1531,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     char *ost = (char *) omalloc((size_t) len + 10);
     memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
     memcpy(ost+len,"return();",9);
-    ost[ost+len+9] = 0;
+    ost[len+9] = 0;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
