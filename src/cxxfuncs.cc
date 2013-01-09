@@ -2046,7 +2046,7 @@ Obj ZeroSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
-    Pr("Zero\n",0L,0L);
+    //Pr("Zero\n",0L,0L);
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ZERO_SINGOBJ(s);
         if (res != NULL) return res;
@@ -2063,7 +2063,7 @@ Obj OneSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
-    Pr("One\n",0L,0L);
+    //Pr("One\n",0L,0L);
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ONE_SINGOBJ(s);
         if (res != NULL) return res;
