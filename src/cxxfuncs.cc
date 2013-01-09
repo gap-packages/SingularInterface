@@ -58,7 +58,7 @@ static long gc_omalloc_threshold = 1000000L;
 //static long gcfull_omalloc_threshold = 4000000L;
 
 int GCCOUNT = 0;
-Obj NEW_SINGOBJ(UInt type, void *cxx)
+static inline void possiblytriggerGC(void)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
@@ -73,32 +73,36 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
         //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
     }
+}
+
+Obj NEW_SINGOBJ(UInt type, void *cxx)
+{
+    possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
     return tmp;
 }
 
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 {
-    if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
-        if (GCCOUNT == 10) {
-          GCCOUNT = 0;
-          CollectBags(0,1);
-        }
-        else {
-          GCCOUNT++;
-          CollectBags(0,0);
-        }
-        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
-        gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
-        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
-    }
-    Obj tmp = NewBag(T_SINGULAR, 3*sizeof(Obj));
+    possiblytriggerGC();
+    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
-    INC_REFCOUNT(ring);
+    SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
+    return tmp;
+}
+
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
+{
+    possiblytriggerGC();
+    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp,type);
+    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_ZERO_SINGOBJ(tmp,zero);
+    SET_ONE_SINGOBJ(tmp,one);
     return tmp;
 }
 
@@ -106,12 +110,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring)
 
 inline ring SINGRING_SINGOBJ( Obj obj )
 {
-    return (ring) CXX_SINGOBJ(ELM_PLIST( _SI_Rings, RING_SINGOBJ(obj)));
-}
-
-inline ring GET_SINGRING(UInt rnr)
-{
-    return (ring) CXX_SINGOBJ(ELM_PLIST( _SI_Rings, rnr ));
+    return (ring) CXXRING_SINGOBJ( obj );
 }
 
 
@@ -229,34 +228,6 @@ static number _SI_BIGINT_FROM_GAP(Obj nr)
     return n;
 }
 
-// This seems to be no longer needed:
-#if 0
-int _SI_INT_FROM_GAP(Obj nr)
-{
-    if (IS_INTOBJ(nr)) {    // a GAP immediate integer
-        Int i = INT_INTOBJ(nr);
-#ifdef SYS_IS_64_BIT
-        if (i < -1L << 31 || i >= 1L << 31) {
-            ErrorQuit("Argument must be a 32-bit integer",0L,0L);
-            return 0;
-        }
-#endif
-        return (int) i;
-    } else {   // a long GAP integer
-        UInt size = SIZE_INT(nr);
-        if (size * sizeof(mp_limb_t) > 4 ||
-            (size == 1UL && ADDR_INT(nr)[0] > (1UL << 31)) ||
-            (size == 1UL && ADDR_INT(nr)[0] == (1UL << 31) && 
-             TNUM_OBJ(nr) == T_INTPOS)) {
-            ErrorQuit("Argument must be a 32-bit integer",0L,0L);
-            return 0;
-        }
-        return TNUM_OBJ(nr) == T_INTPOS ?
-               (int) ADDR_INT(nr)[0] :
-               -(int) ADDR_INT(nr)[0];
-    }
-}
-#endif
 
 static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 {
@@ -284,15 +255,15 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     return SINGTYPE_BIGINT;
 }
 
-static poly _SI_GET_poly(Obj o, UInt &rnr)
+static poly _SI_GET_poly(Obj o, Obj &rr)
 {
     if (ISSINGOBJ(SINGTYPE_POLY,o)) {
-        rnr = RING_SINGOBJ(o);
+        rr = RING_SINGOBJ(o);
         return (poly) CXX_SINGOBJ(o);
     } else if (TYPE_OBJ(o) == SingularProxiesType) {
         Obj ob = ELM_PLIST(o,1);
         if (ISSINGOBJ(SINGTYPE_IDEAL,ob)) {
-            rnr = RING_SINGOBJ(ob);
+            rr = RING_SINGOBJ(ob);
             int index = INT_INTOBJ(ELM_PLIST(o,2));
             ideal id = (ideal) CXX_SINGOBJ(ob);
             if (index <= 0 || index > IDELEMS(id)) {
@@ -301,7 +272,7 @@ static poly _SI_GET_poly(Obj o, UInt &rnr)
             }
             return id->m[index-1];
         } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob)) {
-            rnr = RING_SINGOBJ(ob);
+            rr = RING_SINGOBJ(ob);
             int row = INT_INTOBJ(ELM_PLIST(o,2));
             int col = INT_INTOBJ(ELM_PLIST(o,3));
             matrix mat = (matrix) CXX_SINGOBJ(ob);
@@ -312,7 +283,7 @@ static poly _SI_GET_poly(Obj o, UInt &rnr)
             }
             return MATELEM(mat,row,col);
         } else if (ISSINGOBJ(SINGTYPE_LIST,ob)) {
-            rnr = RING_SINGOBJ(ob);
+            rr = RING_SINGOBJ(ob);
             int index = INT_INTOBJ(ELM_PLIST(o,2));
             lists l = (lists) CXX_SINGOBJ(ob);
             if (index <= 0 || index > l->nr+1 ) {
@@ -545,11 +516,11 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     }
 }
 
-void SingObj::init(Obj input, UInt &extrnr, ring &extr)
+void SingObj::init(Obj input, Obj &extrr, ring &extr)
 {
     error = NULL;
     r = NULL;
-    rnr = 0;
+    rr = NULL;
     obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
@@ -573,9 +544,9 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
         obj.data = CXX_SINGOBJ(input);
         obj.rtyp = GAPtoSingType[gtype];
         if (HasRingTable[gtype]) {
-            rnr = RING_SINGOBJ(input);
-            r = GET_SINGRING(rnr);
-            extrnr = rnr;
+            rr = RING_SINGOBJ(input);
+            r = (ring) CXXRING_SINGOBJ(input);
+            extrr = rr;
             extr = r;
             if (r != currRing) rChangeCurrRing(r);
         }
@@ -593,9 +564,9 @@ void SingObj::init(Obj input, UInt &extrnr, ring &extr)
             }
             gtype = TYPE_SINGOBJ(ob);
             if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
-                rnr = RING_SINGOBJ(ob);
-                r = GET_SINGRING(rnr);
-                extrnr = rnr;
+                rr = RING_SINGOBJ(ob);
+                r = (ring) CXX_SINGOBJ(rr);
+                extrr = rr;
                 extr = r;
                 if (r != currRing) rChangeCurrRing(r);
             }
@@ -800,37 +771,39 @@ Obj SingObj::gapwrap(void)
       case INT_CMD:
         return ObjInt_Int((long) (obj.Data()));
       case NUMBER_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,obj.Data(),rr);
       case POLY_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rr);
       case INTVEC_CMD:
         return NEW_SINGOBJ(SINGTYPE_INTVEC,obj.Data());
       case INTMAT_CMD:
         return NEW_SINGOBJ(SINGTYPE_INTMAT,obj.Data());
       case VECTOR_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rr);
       case IDEAL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rr);
       case BIGINT_CMD:
         return NEW_SINGOBJ(SINGTYPE_BIGINT,obj.Data());
       case MATRIX_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
       case LIST_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rr);
       case LINK_CMD:
         return NEW_SINGOBJ(SINGTYPE_LINK,obj.Data());
       case RING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_RING,obj.Data());
+        // FIXME: Create zero and one ring element here!
+        return NEW_SINGOBJ_RING(SINGTYPE_RING,obj.Data(),NULL,NULL);
       case QRING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_QRING,obj.Data());
+        // FIXME: Create zero and one ring element here!
+        return NEW_SINGOBJ_RING(SINGTYPE_QRING,obj.Data(),NULL,NULL);
       case RESOLUTION_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,obj.Data(),rr);
       case STRING_CMD:
         return NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
       case MAP_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MAP,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MAP,obj.Data(),rr);
       case MODUL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rnr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
       default:
         obj.CleanUp(r);
         return False;
@@ -843,6 +816,8 @@ Obj SingObj::gapwrap(void)
 // objects do not have TNUM T_SINGULAR and thus are not taking part
 // in this freeing scheme. They do not actually hold a direct
 // reference to a singular object anyway.
+
+// FIXME: Add before and after GC functions.
 
 void _SI_FreeFunc(Obj o)
 {
@@ -857,7 +832,9 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
         case SINGTYPE_RING_IMM:
-            rKill( (ring) CXX_SINGOBJ(o) );
+            // FIXME: Save ring for later deleting, for the time being
+            // we do not kill it at all.
+            //rKill( (ring) CXX_SINGOBJ(o) );
             // Pr("killed a ring\n",0L,0L);
             break;
         case SINGTYPE_POLY:
@@ -866,7 +843,6 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_VECTOR_IMM:
             p = (poly) CXX_SINGOBJ(o);
             p_Delete( &p, SINGRING_SINGOBJ(o) );
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             // Pr("killed a ring element\n",0L,0L);
             break;
         case SINGTYPE_BIGINT:
@@ -878,7 +854,6 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_IDEAL_IMM:
             id = (ideal) CXX_SINGOBJ(o);
             id_Delete(&id,SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
@@ -898,19 +873,16 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix) CXX_SINGOBJ(o);
             MP_DELETE(&m, SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break; }
         case SINGTYPE_MODULE:
         case SINGTYPE_MODULE_IMM: {
             ideal i = (ideal) CXX_SINGOBJ(o);
             id_Delete(&i, SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break; }
         case SINGTYPE_NUMBER:
         case SINGTYPE_NUMBER_IMM: {
             number n = (number) CXX_SINGOBJ(o);
             n_Delete(&n, SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break; }
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
@@ -922,14 +894,11 @@ void _SI_FreeFunc(Obj o)
             omfree(m->preimage);
             m->preimage = NULL;
             id_Delete((ideal *) &m,SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
-            break;
             break;
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
             syKillComputation((syStrategy) (CXX_SINGOBJ(o)),
                               SINGRING_SINGOBJ(o));
-            DEC_REFCOUNT( RING_SINGOBJ(o) );
             break;
         default:
             break;
@@ -942,7 +911,21 @@ void _SI_FreeFunc(Obj o)
 
 void _SI_ObjMarkFunc(Bag o)
 {
+    Bag *ptr;
+    Int gtype = TYPE_SINGOBJ((Obj) o);
+    if (HasRingTable[gtype]) {
+        ptr = PTR_BAG(o);
+        MARK_BAG(ptr[2]);
+    } else if (gtype == SINGTYPE_RING ||
+               gtype == SINGTYPE_RING_IMM ||
+               gtype == SINGTYPE_QRING ||
+               gtype == SINGTYPE_QRING_IMM) {
+        ptr = PTR_BAG(o);
+        MARK_BAG(ptr[2]);   // Mark zero
+        MARK_BAG(ptr[3]);   // Mark one
+    }
 #if 0
+    // this is now old and outdated.
     // Not necessary, since singular objects do not have GAP subobjects!
     Bag *ptr;
     Bag sub;
@@ -1072,22 +1055,27 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
                       nrords,ord,block0,block1,wvhdl);
     r->ref++;
 
-    i = LEN_LIST(_SI_Rings)+1;
-    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,i);
-    ASS_LIST(_SI_Rings,i,tmp);
-    ASS_LIST(_SI_ElCounts,i,INTOBJ_INT(0));
+    // FIXME: Create zero and one for this ring later
+    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,NULL,NULL);
     return tmp;
 }
 
-Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj )
+Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
 {
-   if (TNUM_OBJ(singobj) != T_SINGULAR)
-       ErrorQuit("argument must be singular object.",0L,0L);
-
-   if (SIZE_BAG(singobj) < 3*sizeof(Obj))
+    if (TNUM_OBJ(singobj) != T_SINGULAR)
+        ErrorQuit("argument must be singular object.",0L,0L);
+    Int gtype = TYPE_SINGOBJ(singobj);
+    if (HasRingTable[gtype]) {
+        return RING_SINGOBJ(singobj);
+    } else if (gtype == SINGTYPE_RING ||
+               gtype == SINGTYPE_RING_IMM ||
+               gtype == SINGTYPE_QRING ||
+               gtype == SINGTYPE_QRING_IMM) {
+        return singobj;
+    } else {
        ErrorQuit("argument must have associated singular ring.",0L,0L);
-
-   return INTOBJ_INT(RING_SINGOBJ(singobj));
+       return Fail;
+    }
 }
 
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
@@ -1098,7 +1086,6 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
        ErrorQuit("argument must be Singular ring.",0L,0L);
 
     ring r = (ring) CXX_SINGOBJ(rr);
-    UInt rnr = RING_SINGOBJ(rr);
     UInt nrvars = rVar(r);
     UInt i;
     Obj tmp;
@@ -1110,7 +1097,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
         poly p = p_ISet(1,r);
         pSetExp(p,i,1);
         pSetm(p);
-        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
+        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
         SET_ELM_PLIST(res,i,tmp);
         CHANGED_BAG(res);
     }
@@ -1171,10 +1158,9 @@ Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
         return Fail;
     }
     ring r = (ring) CXX_SINGOBJ(rr);
-    UInt rnr = RING_SINGOBJ(rr);
     const char *p = CSTR_STRING(st);
     poly q = ParsePoly(r,p);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,q,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,q,rr);
     return tmp;
 }
 
@@ -1203,7 +1189,7 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 }
 
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
-                                  Obj rr, Obj st)
+                               Obj rr, Obj st)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
           INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
@@ -1221,7 +1207,6 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
         return Fail;
     }
     ring r = (ring) CXX_SINGOBJ(rr);
-    UInt rnr = RING_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
     const char *p = CSTR_STRING(st);
     poly *polylist;
@@ -1239,13 +1224,12 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
         }
     }
     omFree(polylist);
-    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rnr);
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rr);
 }
 
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
-    UInt rnr = RING_SINGOBJ(rr);
     UInt nrvars = rVar(r);
     UInt i;
     UInt len;
@@ -1258,7 +1242,7 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
             pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
         pSetm(p);
     }
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
     return tmp;
 }
 
@@ -1295,11 +1279,10 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
     }             
 }
 
-Obj Func_SI_number(Obj self, Obj r, Obj nr)
+Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
-                       _SI_NUMBER_FROM_GAP(SINGRING_SINGOBJ(r), nr),
-                       RING_SINGOBJ(r));
+                _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
 Obj Func_SI_intvec(Obj self, Obj l)
@@ -1499,12 +1482,12 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
-    UInt rnr = 0;
-    poly p = _SI_GET_poly(po,rnr);
-    ring r = GET_SINGRING(rnr);
+    Obj rr = 0;
+    poly p = _SI_GET_poly(po,rr);
+    ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rnr);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
     return tmp;
 }
 
@@ -1724,10 +1707,10 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 {
-    UInt rnr = 0;
+    Obj rr = NULL;
     ring r = NULL;
 
-    SingObj sing(input,rnr,r);
+    SingObj sing(input,rr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
     SingObj singres;
     if (_SI_LastOutputBuf) {
@@ -1743,19 +1726,20 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
         singres.obj.CleanUp();  // 
         return Fail;
     }
-    singres.rnr = rnr;   // Set the ring number according to the arguments
+    singres.rr = rr;   // Set the ring according to the arguments
+    singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
 }
 
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
-    UInt rnr = 0;
+    Obj rr = NULL;
     ring r = NULL;
 
-    SingObj singa(a,rnr,r);
+    SingObj singa(a,rr,r);
     if (singa.error) { ErrorQuit(singa.error,0L,0L); }
-    SingObj singb(b,rnr,r);
+    SingObj singb(b,rr,r);
     if (singb.error) {
         singa.cleanup();
         ErrorQuit(singb.error,0L,0L);
@@ -1774,24 +1758,25 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         singres.obj.CleanUp(r);
         return Fail;
     }
-    singres.rnr = rnr;
+    singres.rr = rr;
+    singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
 }
 
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
-    UInt rnr = 0;
+    Obj rr = NULL;
     ring r = NULL;
 
-    SingObj singa(a,rnr,r);
+    SingObj singa(a,rr,r);
     if (singa.error) { ErrorQuit(singa.error,0L,0L); }
-    SingObj singb(b,rnr,r);
+    SingObj singb(b,rr,r);
     if (singb.error) {
         singa.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    SingObj singc(c,rnr,r);
+    SingObj singc(c,rr,r);
     if (singc.error) {
         singa.cleanup();
         singb.cleanup();
@@ -1813,14 +1798,15 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         singres.obj.CleanUp(r);
         return Fail;
     }
-    singres.rnr = rnr;
+    singres.rr = rr;
+    singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
 }
 
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
-    UInt rnr = 0;
+    Obj rr = NULL;
     ring r = NULL;
     int i,j;
     SingObj *sing;
@@ -1829,7 +1815,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     int nrargs = (int) LEN_PLIST(arg);
     sing = new SingObj[nrargs];
     for (i = 0;i < nrargs;i++) {
-        sing[i].init(ELM_PLIST(arg,i+1),rnr,r);
+        sing[i].init(ELM_PLIST(arg,i+1),rr,r);
         if (sing[i].error) {
             for (j = 0;j < i;j++) {
                 sing[j].cleanup();
@@ -1882,20 +1868,21 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         return Fail;
     }
     omFree(sing);
-    singres.rnr = rnr;
+    singres.rr = rr;
+    singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
 }
 
-Obj FuncSI_SetCurrRing(Obj self, Obj r)
+Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 {
-    if (TNUM_OBJ(r) != T_SINGULAR ||
-        TYPE_SINGOBJ(r) != SINGTYPE_RING) {
+    if (TNUM_OBJ(rr) != T_SINGULAR ||
+        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
         ErrorQuit("argument r must be a singular ring",0L,0L);
         return Fail;
     }
-    ring rr = SINGRING_SINGOBJ(r);
-    if (rr != currRing) rChangeCurrRing(rr);
+    ring r = (ring) CXX_SINGOBJ(rr);
+    if (r != currRing) rChangeCurrRing(r);
     return NULL;
 }
 
@@ -1917,7 +1904,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         return Fail;
     }
 
-    UInt rnr = 0;
+    Obj rr = NULL;
     ring r = NULL;
     int i;
     const char *error;
@@ -1927,7 +1914,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     SingObj sing2;
     leftv cur,neu;
     if (nrargs > 0) {
-        sing1.init(ELM_LIST(args,1),rnr,r);
+        sing1.init(ELM_LIST(args,1),rr,r);
         if (sing1.error) {
             error = sing1.error;
             sing1.cleanup();
@@ -1936,7 +1923,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         }
         cur = &(sing1.obj);
         for (i = 2;i <= nrargs;i++) {
-            sing2.init(ELM_LIST(args,i),rnr,r);
+            sing2.init(ELM_LIST(args,i),rr,r);
             if (sing2.error) {
                 neu = sing1.obj.next;
                 sing1.obj.next = NULL;
@@ -1988,7 +1975,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);
         return Fail;
     }
-    singres.rnr = rnr;
+    singres.rr = rr;
+    singres.r = r;
     singres.needcleanup = true;
     singres.obj.data = ret->data;
     singres.obj.rtyp = ret->rtyp;

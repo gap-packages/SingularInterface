@@ -47,15 +47,15 @@ class SingObj {
     bool needcleanup;  // if this is true we have to destruct the Singular
                         // object when this object dies.
     const char *error;  // If non-NULL, an error has happened.
-    UInt rnr;     // GAP number of the underlying Singular ring
-    ring r;       // Underlying Singular ring.
+    Obj rr;     // GAP wrapper of underlying Singular ring
+    ring r;     // Underlying Singular ring.
 
-    SingObj(Obj input, UInt &extrnr, ring &extr)
-      { init(input,extrnr,extr); }
+    SingObj(Obj input, Obj &extrr, ring &extr)
+      { init(input,extrr,extr); }
     SingObj(void)     // Default constructor for empty object
-      : gtype(0), needcleanup(false), error(NULL), rnr(0), r(NULL)
+      : gtype(0), needcleanup(false), error(NULL), rr(NULL), r(NULL)
       { obj.Init(); }
-    void init(Obj input, UInt &extrnr, ring &extr);
+    void init(Obj input, Obj &extrr, ring &extr);
       // This does the actual work
     ~SingObj(void) { cleanup(); }   // a mere convenience
     leftv destructiveuse(void)

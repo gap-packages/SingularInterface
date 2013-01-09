@@ -36,44 +36,51 @@ are to be called from C, or vice-versa.
 //////////////////////////////////////////////////////////////////////////////
 
 extern Obj _SI_Types;    /* A kernel copy of a plain list of types */
-extern Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
-extern Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
 extern Obj SI_Errors;   /* A kernel copy of a string */
 extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
-// 3 words: 
+// There are 3 possibilites: 
+// (1) objects without a ring (2) objects with a ring (3) ring objects.
+// Objects in case (1) consists of 2 words: 
 // First is the GAP type as a small integer pointing into a plain list
-// Second is a pointer to a C++ singular object
-// The third is an index into the list of all singular rings and the
-// corresponding reference counting list.
+// Second is a pointer to a C++ singular object.
+// These are the same for all objects.
+// For type (2) there are 4 words, the first 2 are as above:
+// Third is a reference to the GAP wrapper object of the corresponding
+// ring, this is to keep the ring alive as long as its elements are.
+// Fourth is a pointer to the C++ ring object.
+// For type (3) there are 4 words, the first 2 are as above:
+// Third is a reference to the canonical GAP wrapper of the ring's zero.
+// Fourth is a reference to the canonical GAP wrapper of the ring's one.
 
 inline Int TYPE_SINGOBJ( Obj obj ) { return (Int) ADDR_OBJ(obj)[0]; }
 inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
 { ADDR_OBJ(obj)[0] = (Obj) val; }
+
 inline void *CXX_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[1]; }
 inline void SET_CXX_SINGOBJ( Obj obj, void *val )
 { ADDR_OBJ(obj)[1] = (Obj) val; }
-inline UInt RING_SINGOBJ( Obj obj ) { return (UInt) ADDR_OBJ(obj)[2]; }
-inline void SET_RING_SINGOBJ( Obj obj, UInt val )
-{ ADDR_OBJ(obj)[2] = (Obj) val; }
 
-inline void INC_REFCOUNT( UInt ring )
-{
-    Int count = INT_INTOBJ(ELM_PLIST(_SI_ElCounts,ring));
-    count++;
-    SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
-}
+inline Obj RING_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
+inline void SET_RING_SINGOBJ( Obj obj, Obj rr )
+{ ADDR_OBJ(obj)[2] = rr; }
 
-inline void DEC_REFCOUNT( UInt ring )
-{
-    Int count = INT_INTOBJ(ELM_PLIST(_SI_ElCounts,ring));
-    count--;
-    SET_ELM_PLIST(_SI_ElCounts,ring,INTOBJ_INT(count));
-}
+inline void *CXXRING_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[3]; }
+inline void SET_CXXRING_SINGOBJ( Obj obj, void *r )
+{ ADDR_OBJ(obj)[3] = (Obj) r; }
+
+inline Obj ZERO_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
+inline void SET_ZERO_SINGOBJ( Obj obj, Obj zero )
+{ ADDR_OBJ(obj)[2] = zero; }
+
+inline Obj ONE_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[3]; }
+inline void SET_ONE_SINGOBJ( Obj obj, Obj one )
+{ ADDR_OBJ(obj)[3] = one; }
 
 Obj NEW_SINGOBJ(UInt type, void *cxx);
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, UInt ring);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one);
 
 enum {
     SINGTYPE_VOID          = 1,
@@ -149,7 +156,7 @@ void _SI_ObjMarkFunc(Bag o);
 void _SI_FreeFunc(Obj o);
 Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
-Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj );
+Obj FuncSI_ring_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);

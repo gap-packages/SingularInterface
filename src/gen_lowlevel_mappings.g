@@ -77,7 +77,7 @@ end;;
 SINGULAR_default_ringdep_return := function (type, name)
 	PrintCXXLine("{");
 	indent := indent + 1;
-		PrintCXXLine("Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_",type ,",", name, ",rnr);");
+		PrintCXXLine("Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_",type ,",", name, ",rr);");
 		PrintCXXLine("return tmp;");
 	indent := indent - 1;
 	PrintCXXLine("}");
@@ -316,7 +316,7 @@ GenerateSingularWrapper := function (desc)
 	indent := 1;
 
 	# Declare some variables used throughout the wrapper function body.
-	PrintCXXLine("UInt rnr;");
+	PrintCXXLine("Obj rr;");
 	PrintCXXLine("ring r = currRing;");
 	PrintCXXLine("");
 
@@ -329,12 +329,12 @@ GenerateSingularWrapper := function (desc)
 #	# Ensure right ring is set, and that all ring-depend params use the same ring.
 # 	if Length(ring_users) > 0 then
 # 		PrintCXXLine("// Setup current ring");
-# 		PrintCXXLine("rnr = RING_SINGOBJ(", CXXArgName(ring_users[1]), ");");
+# 		PrintCXXLine("rr = RING_SINGOBJ(", CXXArgName(ring_users[1]), ");");
 # 		for j in ring_users{[2..Length(ring_users)]} do
-# 			PrintCXXLine("if (rnr != RING_SINGOBJ(", CXXArgName(j), "))");
+# 			PrintCXXLine("if (rr != RING_SINGOBJ(", CXXArgName(j), "))");
 # 			PrintCXXLine("    ErrorQuit(\"Elements not over the same ring\\n\",0L,0L);");
 # 		od;
-# 		PrintCXXLine("r = GET_SINGRING(rnr);");
+# 		PrintCXXLine("r = CXX_SINGOBJ(rr);");
 # 		PrintCXXLine("if (r != currRing) rChangeCurrRing(r);");
 # 		PrintCXXLine("");
 # 	fi;
@@ -344,7 +344,7 @@ GenerateSingularWrapper := function (desc)
 	for i in [1 .. Length(desc.params) ] do
 		type := SINGULAR_types.(GetParamTypeName(i));
 		# Extract the underlying Singular data from the GAP input object
-		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", rnr, r);");
+		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", rr, r);");
 		PrintCXXLine("if (",CXXObjName(i),".error) {");
 		indent := indent + 1;
 		    for j in [1..i] do
