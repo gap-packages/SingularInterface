@@ -1600,6 +1600,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     return ObjInt_Int((Int) err);
 }
 
+/* if needed, handle more cases */
 Obj FuncSI_ValueOfVar(Obj self, Obj name)
 {
     Int len;
@@ -1607,7 +1608,7 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
     intvec *v;
     int i,j,k;
     Int rows, cols;
-    number n;
+    /* number n;   */
 
     idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
     if (h == NULL) return Fail;
@@ -1649,7 +1650,7 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
             }
             return tmp;
         case BIGINT_CMD:
-            n = IDBIGINT(h);
+            /* n = IDBIGINT(h); */
             return Fail;
         default:
             return Fail;
@@ -1662,7 +1663,7 @@ Obj Func_SI_SingularProcs(Obj self)
     Obj n;
     int len = 0;
     UInt slen;
-    int i;
+    Int i;
     idhdl x = IDROOT;
     while (x) {
         if (x->typ == PROC_CMD) len++;
