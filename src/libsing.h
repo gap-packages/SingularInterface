@@ -66,8 +66,8 @@ inline Obj RING_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
 inline void SET_RING_SINGOBJ( Obj obj, Obj rr )
 { ADDR_OBJ(obj)[2] = rr; }
 
-inline ring CXXRING_SINGOBJ( Obj obj ) { return (ring) ADDR_OBJ(obj)[3]; }
-inline void SET_CXXRING_SINGOBJ( Obj obj, ring r )
+inline void *CXXRING_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[3]; }
+inline void SET_CXXRING_SINGOBJ( Obj obj, void *r )
 { ADDR_OBJ(obj)[3] = (Obj) r; }
 
 inline Obj ZERO_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
@@ -156,7 +156,7 @@ void _SI_ObjMarkFunc(Bag o);
 void _SI_FreeFunc(Obj o);
 Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
-Obj FuncSI_ringnr_of_singobj( Obj self, Obj singobj );
+Obj FuncSI_ring_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);

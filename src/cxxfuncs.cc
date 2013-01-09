@@ -35,7 +35,7 @@ static long gc_omalloc_threshold = 1000000L;
 //static long gcfull_omalloc_threshold = 4000000L;
 
 int GCCOUNT = 0;
-static inline possiblytriggerGC(void)
+static inline void possiblytriggerGC(void)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
@@ -68,7 +68,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
     SET_TYPE_SINGOBJ(tmp,type);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
-    SET_CXXRING_SINGOBJ(tmp,CXX_SINGOBJ(ring));
+    SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
     return tmp;
 }
 
@@ -87,7 +87,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
 
 inline ring SINGRING_SINGOBJ( Obj obj )
 {
-    return CXXRING_SINGOBJ( obj );
+    return (ring) CXXRING_SINGOBJ( obj );
 }
 
 
@@ -497,7 +497,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
 {
     error = NULL;
     r = NULL;
-    rnr = 0;
+    rr = NULL;
     obj.Init();
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
@@ -522,7 +522,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
         obj.rtyp = GAPtoSingType[gtype];
         if (HasRingTable[gtype]) {
             rr = RING_SINGOBJ(input);
-            r = CXXRING_SINGRING(input);
+            r = (ring) CXXRING_SINGOBJ(input);
             extrr = rr;
             extr = r;
             if (r != currRing) rChangeCurrRing(r);
@@ -542,7 +542,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
             gtype = TYPE_SINGOBJ(ob);
             if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
                 rr = RING_SINGOBJ(ob);
-                r = CXXRING_SINGOBJ(ob);
+                r = (ring) CXX_SINGOBJ(rr);
                 extrr = rr;
                 extr = r;
                 if (r != currRing) rChangeCurrRing(r);
@@ -1258,7 +1258,8 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
-    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,_SI_NUMBER_FROM_GAP(rr, nr),rr);
+    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
+                _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
 Obj Func_SI_intvec(Obj self, Obj l)
@@ -1460,7 +1461,7 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     Obj rr = 0;
     poly p = _SI_GET_poly(po,rr);
-    ring r = CXX_SINGOBJ(rr);
+    ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
@@ -1683,7 +1684,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 {
-    Obj rnr = NULL;
+    Obj rr = NULL;
     ring r = NULL;
 
     SingObj sing(input,rr,r);
@@ -1857,7 +1858,7 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
         ErrorQuit("argument r must be a singular ring",0L,0L);
         return Fail;
     }
-    ring r = CXX_SINGOBJ(rr);
+    ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
     return NULL;
 }

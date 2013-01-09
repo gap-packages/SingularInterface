@@ -166,10 +166,10 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)FuncSI_SetCurrRing,
    "cxx-funcs.cc:FuncSI_SetCurrRing" },
 
-  {"SI_ringnr_of_singobj", 1,
+  {"SI_ring_of_singobj", 1,
    "singobj",
-   (GVarFunc)FuncSI_ringnr_of_singobj,
-   "cxx-funcs.cc:FuncSI_ringnr_of_singobj" },
+   (GVarFunc)FuncSI_ring_of_singobj,
+   "cxx-funcs.cc:FuncSI_ring_of_singobj" },
 
   {"SI_CallProc", 2,
    "name, args",
