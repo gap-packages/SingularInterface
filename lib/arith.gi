@@ -28,21 +28,36 @@ InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 
   function(a,b) return SI_\=\=(a,b) = 1; end);
 
-# for any singular object that carries a ring
-InstallOtherMethod(One, ["IsSingularPoly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "1");
+InstallOtherMethod(Zero, ["IsSingularRing"], function(sobj)
+  Print("ringimm\c"); return MakeImmutable(SI_poly(sobj, "0"));
 end);
-
-InstallOtherMethod(One, ["IsSingularBigInt"], function(sobj)
-  return SI_bigint(1);
+InstallOtherMethod(One, ["IsSingularRing"], function(sobj)
+  Print("ring1imm\c"); return MakeImmutable(SI_poly(sobj, "1"));
 end);
-InstallOtherMethod(Zero, ["IsSingularPoly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "0");
+InstallOtherMethod(ZeroMutable, ["IsSingularRing"], function(sobj)
+  # FIXME: Do we need this faster?
+  Print("ring\c"); return SI_poly(sobj, "0");
+end);
+InstallOtherMethod(ZeroMutable, ["IsSingularPoly"], function(sobj)
+  # FIXME: Do we need this faster?
+  Print("obj\c"); return SI_poly(SI_ring(sobj), "0");
+end);
+InstallOtherMethod(OneMutable, ["IsSingularRing"], function(sobj)
+  # FIXME: Do we need this faster?
+  Print("ring1\c"); return SI_poly(sobj, "1");
+end);
+InstallOtherMethod(OneMutable, ["IsSingularPoly"], function(sobj)
+  # FIXME: Do we need this faster?
+  Print("obj1\c"); return SI_poly(SI_ring(sobj), "1");
 end);
 
 InstallOtherMethod(Zero, ["IsSingularBigInt"], function(sobj)
   return SI_bigint(0);
 end);
+InstallOtherMethod(One, ["IsSingularBigInt"], function(sobj)
+  return SI_bigint(1);
+end);
+
 
 # now we can make use of  the following implication
 InstallTrueMethod(IsRingElementWithOne, IsSingularPoly);

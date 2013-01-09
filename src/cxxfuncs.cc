@@ -239,7 +239,7 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 #endif
             obj.data = (void *) i;
             obj.rtyp = INT_CMD;
-            return SINGTYPE_INT;
+            return SINGTYPE_INT_IMM;
 #ifdef SYS_IS_64_BIT
         } else {
             n = nlRInit(i);
@@ -252,17 +252,17 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     }
     obj.data = n;
     obj.rtyp = BIGINT_CMD;
-    return SINGTYPE_BIGINT;
+    return SINGTYPE_BIGINT_IMM;
 }
 
 static poly _SI_GET_poly(Obj o, Obj &rr)
 {
-    if (ISSINGOBJ(SINGTYPE_POLY,o)) {
+    if (ISSINGOBJ(SINGTYPE_POLY,o) || ISSINGOBJ(SINGTYPE_POLY_IMM,o)) {
         rr = RING_SINGOBJ(o);
         return (poly) CXX_SINGOBJ(o);
     } else if (TYPE_OBJ(o) == SingularProxiesType) {
         Obj ob = ELM_PLIST(o,1);
-        if (ISSINGOBJ(SINGTYPE_IDEAL,ob)) {
+        if (ISSINGOBJ(SINGTYPE_IDEAL,ob) || ISSINGOBJ(SINGTYPE_IDEAL_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
             int index = INT_INTOBJ(ELM_PLIST(o,2));
             ideal id = (ideal) CXX_SINGOBJ(ob);
@@ -271,7 +271,8 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
                 return NULL;
             }
             return id->m[index-1];
-        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob)) {
+        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob) || 
+                   ISSINGOBJ(SINGTYPE_MATRIX_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
             int row = INT_INTOBJ(ELM_PLIST(o,2));
             int col = INT_INTOBJ(ELM_PLIST(o,3));
@@ -282,7 +283,8 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
                 return NULL;
             }
             return MATELEM(mat,row,col);
-        } else if (ISSINGOBJ(SINGTYPE_LIST,ob)) {
+        } else if (ISSINGOBJ(SINGTYPE_LIST,ob) ||
+                   ISSINGOBJ(SINGTYPE_LIST_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
             int index = INT_INTOBJ(ELM_PLIST(o,2));
             lists l = (lists) CXX_SINGOBJ(ob);
@@ -425,7 +427,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         return NULL;
     }
 
-    if (currgtype == SINGTYPE_IDEAL) {
+    if (currgtype == SINGTYPE_IDEAL || currgtype == SINGTYPE_IDEAL_IMM) {
         Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
         ideal id = (ideal) current;
         if (index <= 0 || index > IDELEMS(id)) {
@@ -434,7 +436,8 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_POLY;
         return id->m[index-1];
-    } else if (currgtype == SINGTYPE_MATRIX) {
+    } else if (currgtype == SINGTYPE_MATRIX || 
+               currgtype == SINGTYPE_MATRIX_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
@@ -450,7 +453,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             return NULL;
         }
         return MATELEM(mat,row,col);
-    } else if (currgtype == SINGTYPE_LIST) {
+    } else if (currgtype == SINGTYPE_LIST || currgtype == SINGTYPE_LIST_IMM) {
         lists l = (lists) current;
         Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
         if (index <= 0 || index > l->nr+1 ) {
@@ -460,7 +463,8 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
-    } else if (currgtype == SINGTYPE_INTMAT) {
+    } else if (currgtype == SINGTYPE_INTMAT || 
+               currgtype == SINGTYPE_INTMAT_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
@@ -475,9 +479,10 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             error = "matrix indices out of range";
             return NULL;
         }
-        currgtype = SINGTYPE_INT;
+        currgtype = SINGTYPE_INT_IMM;
         return (void *) (long) IMATELEM(*mat,row,col);
-    } else if (currgtype == SINGTYPE_INTVEC) {
+    } else if (currgtype == SINGTYPE_INTVEC ||
+               currgtype == SINGTYPE_INTVEC_IMM) {
         if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
           error = "need an integer index for intvec proxy element";
@@ -489,7 +494,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             error = "vector index out of range";
             return NULL;
         }
-        currgtype = SINGTYPE_INT;
+        currgtype = SINGTYPE_INT_IMM;
         return (void *) (long) (*v)[n-1];
     } else {
         error = "Singular object has no subobjects";
@@ -506,7 +511,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
     if (IS_INTOBJ(input) || 
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
-        if (gtype == SINGTYPE_INT) {
+        if (gtype == SINGTYPE_INT || gtype == SINGTYPE_INT_IMM) {
             needcleanup = false;
         } else {
             needcleanup = true;
@@ -752,7 +757,7 @@ Obj SingObj::gapwrap(void)
       case INT_CMD:
         return ObjInt_Int((long) (obj.Data()));
       case NUMBER_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,obj.Data(),rr);
+        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.Data(),rr);
       case POLY_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rr);
       case INTVEC_CMD:
@@ -764,25 +769,23 @@ Obj SingObj::gapwrap(void)
       case IDEAL_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rr);
       case BIGINT_CMD:
-        return NEW_SINGOBJ(SINGTYPE_BIGINT,obj.Data());
+        return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.Data());
       case MATRIX_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
       case LIST_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rr);
       case LINK_CMD:
-        return NEW_SINGOBJ(SINGTYPE_LINK,obj.Data());
+        return NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
       case RING_CMD:
-        // FIXME: Create zero and one ring element here!
-        return NEW_SINGOBJ_RING(SINGTYPE_RING,obj.Data(),NULL,NULL);
+        return NEW_SINGOBJ_RING(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
       case QRING_CMD:
-        // FIXME: Create zero and one ring element here!
-        return NEW_SINGOBJ_RING(SINGTYPE_QRING,obj.Data(),NULL,NULL);
+        return NEW_SINGOBJ_RING(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
       case RESOLUTION_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION,obj.Data(),rr);
+        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
       case STRING_CMD:
         return NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
       case MAP_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MAP,obj.Data(),rr);
+        return NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.Data(),rr);
       case MODUL_CMD:
         return NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
       default:
@@ -935,9 +938,9 @@ void _SI_ObjMarkFunc(Bag o)
     if (HasRingTable[gtype]) {
         ptr = PTR_BAG(o);
         MARK_BAG(ptr[2]);
-    } else if (gtype == SINGTYPE_RING ||
+    } else if (/*  gtype == SINGTYPE_RING ||  */
                gtype == SINGTYPE_RING_IMM ||
-               gtype == SINGTYPE_QRING ||
+               /* gtype == SINGTYPE_QRING ||  */
                gtype == SINGTYPE_QRING_IMM) {
         ptr = PTR_BAG(o);
         MARK_BAG(ptr[2]);   // Mark zero
@@ -1074,8 +1077,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
                       nrords,ord,block0,block1,wvhdl);
     r->ref++;
 
-    // FIXME: Create zero and one for this ring later
-    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING,r,NULL,NULL);
+    tmp = NEW_SINGOBJ_RING(SINGTYPE_RING_IMM,r,NULL,NULL);
     return tmp;
 }
 
@@ -1086,9 +1088,9 @@ Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
     Int gtype = TYPE_SINGOBJ(singobj);
     if (HasRingTable[gtype]) {
         return RING_SINGOBJ(singobj);
-    } else if (gtype == SINGTYPE_RING ||
+    } else if (/* gtype == SINGTYPE_RING || */
                gtype == SINGTYPE_RING_IMM ||
-               gtype == SINGTYPE_QRING ||
+               /* gtype == SINGTYPE_QRING || */
                gtype == SINGTYPE_QRING_IMM) {
         return singobj;
     } else {
@@ -1101,7 +1103,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
     /* check arg */
-    if (! (ISSINGOBJ(SINGTYPE_RING, rr) || ISSINGOBJ(SINGTYPE_RING_IMM, rr)))
+    if (! ISSINGOBJ(SINGTYPE_RING_IMM, rr))
        ErrorQuit("argument must be Singular ring.",0L,0L);
 
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -1168,7 +1170,7 @@ static poly ParsePoly(ring r, const char *&st)
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
-    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
+    if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1217,7 +1219,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     }
     Int c_nrrows = INT_INTOBJ(nrrows);
     Int c_nrcols = INT_INTOBJ(nrcols);
-    if (!ISSINGOBJ(SINGTYPE_RING,rr)) {
+    if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -1267,7 +1269,7 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
-    return NEW_SINGOBJ(SINGTYPE_BIGINT,_SI_BIGINT_FROM_GAP(nr));
+    return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,_SI_BIGINT_FROM_GAP(nr));
 }
 
 Obj Func_SI_Intbigint(Obj self, Obj nr)
@@ -1300,7 +1302,7 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
-    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER,
+    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
                 _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
@@ -1325,12 +1327,12 @@ Obj Func_SI_intvec(Obj self, Obj l)
         }
         (*iv)[i-1] = (int) (INT_INTOBJ(t));
     }
-    return NEW_SINGOBJ(SINGTYPE_INTVEC,iv);
+    return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM,iv);
 }
 
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
-    if (!ISSINGOBJ(SINGTYPE_INTVEC,iv) ) {
+    if (!(ISSINGOBJ(SINGTYPE_INTVEC,iv) || ISSINGOBJ(SINGTYPE_INTVEC_IMM,iv))) {
         ErrorQuit("iv must be a singular intvec", 0L, 0L);
         return Fail;
     }
@@ -1378,12 +1380,12 @@ Obj Func_SI_intmat(Obj self, Obj m)
             IMATELEM(*iv,r,c) = (int) (INT_INTOBJ(t));
         }
     }
-    return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
+    return NEW_SINGOBJ(SINGTYPE_INTMAT_IMM,iv);
 }
 
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
-    if (!ISSINGOBJ(SINGTYPE_INTMAT, im)) {
+    if (!ISSINGOBJ(SINGTYPE_INTMAT_IMM,im)) {
         ErrorQuit("im must be a singular intmat", 0L, 0L);
         return Fail;
     }
@@ -1424,7 +1426,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     ring r = NULL;
     for (i = 1;i <= len;i++) {
         t = ELM_LIST(l,i);
-        if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
+        if (!(ISSINGOBJ(SINGTYPE_POLY,t) || ISSINGOBJ(SINGTYPE_POLY_IMM,t))) {
             if (i > 1) id_Delete(&id,r);
             ErrorQuit("l must only contain singular polynomials",0L,0L);
             return Fail;
@@ -1472,7 +1474,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     Int col = 1;
     for (i = 1;i <= len && row <= c_nrrows;i++) {
         t = ELM_LIST(l,i);
-        if (!ISSINGOBJ(SINGTYPE_POLY,t)) {
+        if (!(ISSINGOBJ(SINGTYPE_POLY,t) || ISSINGOBJ(SINGTYPE_POLY_IMM,t))) {
             if (i > 1) id_Delete((ideal *) &mat,r);
             ErrorQuit("l must only contain singular polynomials",0L,0L);
             return Fail;
@@ -1703,6 +1705,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
     }
     switch (TYPE_SINGOBJ(singobj)) {
       case SINGTYPE_STRING:
+      case SINGTYPE_STRING_IMM:
         st = (char *) CXX_SINGOBJ(singobj);
         len = (UInt) strlen(st);
         tmp = NEW_STRING(len);
@@ -1710,6 +1713,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
         memcpy(CHARS_STRING(tmp),st,len+1);
         return tmp;
       case SINGTYPE_INT:
+      case SINGTYPE_INT_IMM:
         i = (Int) CXX_SINGOBJ(singobj);
         return INTOBJ_INT(i);
       default:
@@ -1896,7 +1900,8 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 {
     if (TNUM_OBJ(rr) != T_SINGULAR ||
-        TYPE_SINGOBJ(rr) != SINGTYPE_RING) {
+        (TYPE_SINGOBJ(rr) != SINGTYPE_RING_IMM ||
+         TYPE_SINGOBJ(rr) != SINGTYPE_QRING_IMM)) {
         ErrorQuit("argument r must be a singular ring",0L,0L);
         return Fail;
     }
@@ -2001,4 +2006,57 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     singres.obj.rtyp = ret->rtyp;
     return singres.gapwrap();
 }
+
+//////////////// C++ functions for the jump tables ////////////////////
+
+extern "C" Obj ZeroObject(Obj s);
+extern "C" Obj OneObject(Obj s);
+extern "C" Obj ZeroMutObject(Obj s);
+extern "C" Obj OneMutObject(Obj s);
+
+Int IsMutableSingObj(Obj s)
+{
+    return ((TYPE_SINGOBJ(s)+1) & 1) == 1;
+}
+
+
+void MakeImmutableSingObj(Obj s)
+{
+    SET_TYPE_SINGOBJ(s,TYPE_SINGOBJ(s) | 1);
+}
+
+Obj ZeroSingObj(Obj s)
+{
+    Obj res;
+    int gtype = TYPE_SINGOBJ(s);
+    Pr("Zero\n",0L,0L);
+    if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
+        res = ZERO_SINGOBJ(s);
+        if (res != NULL) return res;
+        res = ZeroObject(s);
+        SET_ZERO_SINGOBJ(s,res);
+        return res;
+    } 
+    if (((gtype + 1) & 1) == 1) return ZeroMutObject(s);
+    if (HasRingTable[gtype]) return ZeroSingObj(RING_SINGOBJ(s));
+    return ZeroObject(s);
+}
+
+Obj OneSingObj(Obj s)
+{
+    Obj res;
+    int gtype = TYPE_SINGOBJ(s);
+    Pr("One\n",0L,0L);
+    if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
+        res = ONE_SINGOBJ(s);
+        if (res != NULL) return res;
+        res = OneObject(s);
+        SET_ONE_SINGOBJ(s,res);
+        return res;
+    } 
+    if (((gtype + 1) & 1) == 1) return OneMutObject(s);
+    if (HasRingTable[gtype]) return OneSingObj(RING_SINGOBJ(s));
+    return OneObject(s);
+}
+
 
