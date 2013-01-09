@@ -11,34 +11,12 @@ Subtitle := "Linking singular as a library into a GAP process",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "0.1",
-Date := "25/5/2011",
-
-##  URL of the archive(s) of the current package release, but *without*
-##  the format extension(s), like '.zoo', which are given next.
-##  The archive file name *must be changed* with each version of the archive
-##  (and probably somehow contain the package name and version).
-##  The paths of the files in the archive must begin with the name of the
-##  directory containing the package (in our "example" probably:
-##  example/init.g, ...    or  example-1.3/init.g, ...  )
-# 
-ArchiveURL := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing-0.1.tar.gz",
-
-##  All provided formats as list of file extensions, separated by white
-##  space or commas.
-##  Currently recognized formats are:
-##      .zoo       the (GAP-traditional) zoo-format with "!TEXT!" comments 
-##                 for text files
-##      .tar.gz    the UNIX standard
-##      .tar.bz2   compressed with 'bzip2', often smaller than with gzip
-##      -win.zip   zip-format for DOS/Windows, text files must have DOS 
-##                 style line breaks (CRLF)
-##  
-##  In the future we may also provide .deb or .rpm formats which allow
-##  a convenient installation and upgrading on Linux systems.
-##  
-# ArchiveFormats := ".zoo", # the others are generated automatically
-ArchiveFormats := ".tar.gz",
+Version := "0.2",
+Date := "09/01/2013",
+##  <#GAPDoc Label="PKGVERSIONDATA">
+##  <!ENTITY VERSION "0.2">
+##  <!ENTITY RELEASEDATE "January 2013">
+##  <#/GAPDoc>
 
 ##  If not all of the archive formats mentioned above are provided, these 
 ##  can be produced at the GAP side. Therefore it is necessary to know which
@@ -193,20 +171,15 @@ Status := "dev",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-##  For a central overview of all packages and a collection of all package
-##  archives it is necessary to have two files accessible which should be
-##  contained in each package:
-##     - A README file, containing a short abstract about the package
-##       content and installation instructions.
-##     - The PackageInfo.g file you are currently reading or editing!
-##  You must specify URLs for these two files, these allow to automate 
-##  the updating of package information on the GAP Website, and inclusion
-##  and updating of the package in the GAP distribution.
-#
-README_URL := 
-  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing/README",
-PackageInfoURL := 
-  "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing/PackageInfo.g",
+BaseURL := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing",
+
+PackageWWWHome := Concatenation( ~.BaseURL, ".html" ),
+
+README_URL     := Concatenation( ~.BaseURL, "/README" ),
+PackageInfoURL := Concatenation( ~.BaseURL, "/PackageInfo.g" ),
+ArchiveURL     := Concatenation( ~.BaseURL, "-", ~.Version ),
+ArchiveFormats := ".tar.gz .tar.bz2",
+
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
@@ -218,8 +191,6 @@ PackageInfoURL :=
 AbstractHTML := 
   "The <span class=\"pkgname\">libsing</span> package links Singular\
   as a library into a GAP process.",
-
-PackageWWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~neunhoef/Computer/Software/Gap/libsing.html",
 
 ##  Here is the information on the help books of the package, used for
 ##  loading into GAP's online help and maybe for an online copy of the 
