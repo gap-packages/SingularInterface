@@ -26,7 +26,7 @@ else
 libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
 endif
 if WANT_SW
-#  libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
+  libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
   libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS) -DWANT_SW
 else 
 libsing_la_LIBADD = 
