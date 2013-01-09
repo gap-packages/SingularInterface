@@ -1905,7 +1905,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 {
     if (TNUM_OBJ(rr) != T_SINGULAR ||
-        (TYPE_SINGOBJ(rr) != SINGTYPE_RING_IMM ||
+        (TYPE_SINGOBJ(rr) != SINGTYPE_RING_IMM &&
          TYPE_SINGOBJ(rr) != SINGTYPE_QRING_IMM)) {
         ErrorQuit("argument r must be a singular ring",0L,0L);
         return Fail;
