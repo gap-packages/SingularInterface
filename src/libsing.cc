@@ -192,8 +192,6 @@ static StructGVarFunc GVarFuncs[] =
 };
 
 Obj _SI_Types;    /* A kernel copy of a plain list of types */
-Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
-Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
 Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
@@ -264,8 +262,6 @@ static Int InitKernel(StructInitInfo* module)
   MakeReadOnlyGVar(gvar);
 
   InitCopyGVar("_SI_Types", &_SI_Types);
-  InitCopyGVar("_SI_Rings", &_SI_Rings);
-  InitCopyGVar("_SI_ElCounts", &_SI_ElCounts);
   InitCopyGVar("SI_Errors", &SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
 

@@ -112,11 +112,7 @@ BindGlobal("_SI_TYPETAB",
 BindGlobal("SingularProxiesType", 
   NewType( SingularFamily, IsSingularProxy and IsMutable));
 
-_SI_Rings := [];
-_SI_ElCounts := [];
 SI_Errors := "";
-
-DeclareGlobalFunction( "SI_CleanupRings" );
 
 DeclareGlobalFunction( "_SI_BindSingularProcs" );
 

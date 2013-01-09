@@ -25,8 +25,8 @@ InstallMethod(SI_ring,[IsInt,IsList],
     return SI_ring(p,l,[["dp",Length(l)]]);
   end);
 
-InstallMethod(SI_ring,[IsSingularObj], obj->
-                                  _SI_Rings[SI_ringnr_of_singobj(obj)]);
+InstallMethod(SI_ring,["IsSingularObj"], SI_ring_of_singobj);
+
 InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
 InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
 
@@ -41,17 +41,6 @@ InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
 #              _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 
-InstallGlobalFunction( SI_CleanupRings,
-  function()
-    local i;
-    for i in [1..Length(_SI_Rings)] do
-        if IsBound(_SI_Rings[i]) and _SI_ElCounts[i] = 0 then
-            Unbind(_SI_Rings[i]);
-            Unbind(_SI_ElCounts[i]);
-        fi;
-    od;
-  end );
-  
 InstallGlobalFunction( _SI_BindSingularProcs,
   function( )
     local n,nn,procs,st,s;
