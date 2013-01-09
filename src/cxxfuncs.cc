@@ -1943,14 +1943,19 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     SPrintStart();
     errorreported = 0;
     BOOLEAN bool_ret;
-    currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
-    IDRING(currRingHdl) = r;
-    if (r) r->ref++;
+    if (r) {
+        currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+        IDRING(currRingHdl) = r;
+        r->ref++;
+    } else {
+        currRingHdl = NULL;
+        currRing = NULL;
+    }
     if (nrargs == 0)
         bool_ret = iiMake_proc(h,NULL,NULL);
     else
         bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
-    killhdl(currRingHdl,currPack);
+    if (r) killhdl(currRingHdl,currPack);
     _SI_LastOutputBuf = SPrintEnd();
 
     if (bool_ret == TRUE) return Fail;
