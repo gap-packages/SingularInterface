@@ -151,7 +151,7 @@ gap>
 gap> ############################################
 gap> # int
 gap> #
-gap>
+gap> 
 gap> a := SI_bigint(2^28-1);
 <singular bigint:268435455>
 gap> b := SI_bigint(2);
