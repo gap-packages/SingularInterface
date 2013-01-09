@@ -38,6 +38,7 @@ are to be called from C, or vice-versa.
 extern Obj _SI_Types;    /* A kernel copy of a plain list of types */
 extern Obj SI_Errors;   /* A kernel copy of a string */
 extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
+extern Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // There are 3 possibilites: 
