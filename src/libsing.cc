@@ -12,8 +12,6 @@ This file contains all of the pure C code that deals with GAP.
 
 Obj Func_SI_debug(Obj self, Obj obj)
 {
-    int i;
-    i = 2;
     return NULL;
 }
 
