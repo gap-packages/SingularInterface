@@ -1654,6 +1654,38 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
     }
 }
 
+Obj Func_SI_SingularProcs(Obj self)
+{
+    Obj l;
+    Obj n;
+    int len = 0;
+    UInt slen;
+    int i;
+    idhdl x = IDROOT;
+    while (x) {
+        if (x->typ == PROC_CMD) len++;
+        x = x->next;
+    }
+    l = NEW_PLIST(T_PLIST_DENSE,len);
+    SET_LEN_PLIST(l,0);
+    x = IDROOT;
+    i = 1;
+    while (x) {
+        if (x->typ == PROC_CMD) {
+            slen = (UInt) strlen(x->id);
+            n = NEW_STRING(slen);
+            SET_LEN_STRING(n,slen);
+            memcpy(CHARS_STRING(n),x->id,slen+1);
+            SET_ELM_PLIST(l,i,n);
+            SET_LEN_PLIST(l,i);
+            CHANGED_BAG(l);
+            i++;
+        }
+        x = x->next;
+    }
+    return l;
+}
+
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
@@ -1934,14 +1966,19 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     SPrintStart();
     errorreported = 0;
     BOOLEAN bool_ret;
-    currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
-    IDRING(currRingHdl) = r;
-    r->ref++;
+    if (r) {
+        currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+        IDRING(currRingHdl) = r;
+        r->ref++;
+    } else {
+        currRingHdl = NULL;
+        currRing = NULL;
+    }
     if (nrargs == 0)
         bool_ret = iiMake_proc(h,NULL,NULL);
     else
         bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
-    killhdl(currRingHdl,currPack);
+    if (r) killhdl(currRingHdl,currPack);
     _SI_LastOutputBuf = SPrintEnd();
 
     if (bool_ret == TRUE) return Fail;

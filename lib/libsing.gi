@@ -52,11 +52,29 @@ InstallGlobalFunction( SI_CleanupRings,
     od;
   end );
   
+InstallGlobalFunction( _SI_BindSingularProcs,
+  function( )
+    local n,nn,procs,st,s;
+    procs := _SI_SingularProcs();
+    st := "";
+    for n in procs do
+        nn := Concatenation("SIL_",n);
+        if not(IsBoundGlobal(nn)) then
+            Append(st,Concatenation("BindGlobal(\"",
+                nn,"\", function(arg) return SI_CallProc(\"",
+                n,"\",arg); end);\n"));
+        fi;
+    od;
+    s := InputTextString(st);
+    Read(s);
+  end );
+
 # This is a dirty hack but seems to work:
 MakeReadWriteGVar("SI_LIB");
 Unbind(SI_LIB);
 BindGlobal("SI_LIB",function(libname)
   SI_load(libname,"with");
+  _SI_BindSingularProcs();
 end);
 
 InstallMethod( ViewString, "for a singular ring",
