@@ -29,9 +29,11 @@ doc/manual.six
 syntax: regexp
 
 ^Singular
+~$
 \.so$
 \.la$
 \.lo$
+\.o$
 Makefile$
 ^config\.
 ^SINGARCHNAME$
@@ -39,3 +41,5 @@ Makefile$
 ^src/\.deps/
 ^src/\.libs/
 ^libtool$
+^spielwiese/
+^SW/

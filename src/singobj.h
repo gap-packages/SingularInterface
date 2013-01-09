@@ -2,12 +2,16 @@
 #define SINGOBJ_H
 
 // Prevent inline code from using tests which are not in libsingular:
+#ifdef WANT_SW
+#include <Singular/libsingular.h>
+#else
 #define NDEBUG 1
 #define OM_NDEBUG 1
 
 //#include <string>
 #include <libsingular.h>
 
+#endif
 
 
 class SingObj {

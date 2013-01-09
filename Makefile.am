@@ -20,8 +20,16 @@ dist2: distdir
 	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
 	$(am__remove_distdir)
 	
+if WANT_SW
+dofetchsingular:
+	./fetchsingular.sw
+
+domakesingular:
+	./makesingular.sw
+else
 dofetchsingular:
 	./fetchsingular
 
 domakesingular:
 	./makesingular
+endif

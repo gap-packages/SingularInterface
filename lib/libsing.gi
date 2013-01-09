@@ -117,16 +117,11 @@ InstallGlobalFunction( _SI_InitInterpreter,
   function( )
     local path, version;
     path := Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "SINGULARVERSION");
-    version := NormalizedWhitespace(StringFile(path));
+                     "SINGULARPATH");
+    path := NormalizedWhitespace(StringFile(path));
     path := ShallowCopy(
             Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     Concatenation("Singular-", version, "/Singular/libsingular.")));
-    if ARCH_IS_MAC_OS_X() then
-        Append(path,"dylib");
-    else
-        Append(path,"so");
-    fi;
+                     path));
     _SI_INIT_INTERPRETER(path);
   end );
 _SI_InitInterpreter();

@@ -58,6 +58,26 @@ if test "$ac_test_CXXFLAGS" != "set"; then
   AC_LANG_POP([C++])
 fi
 
+AC_MSG_CHECKING([for --without-sw])
+AC_ARG_WITH(sw, [AS_HELP_STRING([--with-sw], [switch to spielwiese usage instead of classical libsingular])], [], [withval="no"])
+AM_CONDITIONAL(WANT_SW, test x"$with_sw" == xyes)
+if test x"$with_sw" == xyes; then : 
+  AC_MSG_RESULT(with SW!)
+  AC_LIBTOOL_DLOPEN
+  AC_DISABLE_STATIC
+  AC_PROG_LIBTOOL
+  LB_CHECK_LIBSINGULAR
+  SINGULAR_PATH=[SW/bin/Singular]
+else
+  AC_MSG_RESULT(without SW)
+  SINGULARVERSION=`cat ./SINGULARVERSION`
+  SINGULAR_PATH="Singular-$SINGULARVERSION/Singular/testgh"
+fi
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_MSG_CHECKING([for SINGULAR_PATH])
+AC_MSG_RESULT($SINGULAR_PATH)
+
+AC_SUBST(SINGULAR_PATH)
+
+AC_CONFIG_FILES([Makefile src/Makefile SINGULARPATH])
 AC_OUTPUT
