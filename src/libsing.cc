@@ -197,6 +197,7 @@ Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 extern "C" Int EqObject(Obj opL, Obj opR);
 // This is defined in arith.c but not exported in arith.h 
 
+
 /**
 The first function to be called when the library is loaded by the kernel.
 **/
@@ -269,15 +270,15 @@ static Int InitKernel(StructInitInfo* module)
   InfoBags[T_SINGULAR].name = "singular wrapper object";
 
   /* TODO:
-   * IsMutableObjFuncs fuer T_SINGULAR
    * IsCopyableObjFuncs fuer T_SINGULAR
    * ShallowCopyObjFuncs fuer T_SINGULAR
    * CopyObjFuncs fuer T_SINGULAR
    * CleanObjFuncs fuer T_SINGULAR
    * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
    * PrintPathFuncs fuer T_SINGULAR
-   * MakeImmutableObjFuncs fuer T_SINGULAR
+   * IsMutableObjFunc fuer T_SINGULAR
    * ZeroFuncs fuer T_SINGULAR ist ZeroObject, OK?
+   * ZeroMutFuncs fuer T_SINGULAR ist ZeroMutObject, OK?
    * AInvFuncs fuer T_SINGULAR ist AInvObject, OK?
    * AInvMutFuncs fuer T_SINGULAR ist AInvMutObject, OK?
    * OneFuncs fuer T_SINGULAR ist OneObject, OK?
@@ -295,6 +296,10 @@ static Int InitKernel(StructInitInfo* module)
    * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
    * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
    * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK? */
+  IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
+  MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
+  ZeroFuncs[T_SINGULAR] = ZeroSingObj;
+  OneFuncs[T_SINGULAR] = OneSingObj;
   EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
 
   InstallPrePostGCFuncs();

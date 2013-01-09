@@ -194,5 +194,13 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
 Obj FuncOmPrintInfo(Obj self);
 Obj FuncOmCurrentBytes(Obj self);
 
+//////////////// C++ functions for the jump tables ////////////////////
+
+Int IsMutableSingObj(Obj s);
+void MakeImmutableSingObj(Obj s);
+Obj ZeroSingObj(Obj s);
+Obj OneSingObj(Obj s);
+
+
 #endif //#define LIBSING_H
 
