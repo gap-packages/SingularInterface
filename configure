@@ -1448,7 +1448,8 @@ Optional Packages:
                           instead of guessing
   --with-gaproot=<path>   specify root of GAP installation
   --with-gaparch=<path>   override GAP architecture string
-  --with-sw               enable sw usage
+  --with-sw               switch to spielwiese usage instead of classical
+                          libsingular
   --with-libSingular= <path>|yes Use libSingular library. If argument is yes or <empty> that means
    	       		 the library is reachable with the standard search path
 			 "/usr" or "/usr/local" (set as default). Otherwise you
