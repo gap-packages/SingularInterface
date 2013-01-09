@@ -294,6 +294,9 @@ static Int InitKernel(StructInitInfo* module)
    * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
    * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK? */
   EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
+
+  InstallPrePostGCFuncs();
+
   /* return success                                                      */
   return 0;
 }

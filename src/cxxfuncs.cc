@@ -798,7 +798,47 @@ Obj SingObj::gapwrap(void)
 // in this freeing scheme. They do not actually hold a direct
 // reference to a singular object anyway.
 
-// FIXME: Add before and after GC functions.
+static ring *SingularRingsToCleanup = NULL;
+static int SRTC_nr = 0;
+static int SRTC_capacity = 0;
+
+static void AddSingularRingToCleanup(ring r)
+{
+    if (SingularRingsToCleanup == NULL) {
+        SingularRingsToCleanup = (ring *) malloc(100*sizeof(ring));
+        SRTC_nr = 0;
+        SRTC_capacity = 100;
+    } else if (SRTC_nr == SRTC_capacity) {
+        SRTC_capacity *= 2;
+        SingularRingsToCleanup = (ring *) realloc(SingularRingsToCleanup,
+                                                  SRTC_capacity*sizeof(ring));
+    }
+    SingularRingsToCleanup[SRTC_nr++] = r;
+}
+
+static TNumCollectFuncBags oldpostGCfunc = NULL;
+// From the GAP kernel, not exported there:
+extern TNumCollectFuncBags BeforeCollectFuncBags;
+extern TNumCollectFuncBags AfterCollectFuncBags;
+
+static void SingularRingCleaner(void)
+{
+    int i;
+    for (i = 0;i < SRTC_nr;i++) {
+        rKill( SingularRingsToCleanup[i] );
+        // Pr("killed a ring\n",0L,0L);
+    }
+    SRTC_nr = 0;
+    oldpostGCfunc();
+}
+
+void InstallPrePostGCFuncs(void)
+{
+    TNumCollectFuncBags oldpreGCfunc = BeforeCollectFuncBags;
+    oldpostGCfunc = AfterCollectFuncBags;
+
+    InitCollectFuncBags(oldpreGCfunc, SingularRingCleaner);
+}
 
 void _SI_FreeFunc(Obj o)
 {
@@ -813,10 +853,8 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
         case SINGTYPE_RING_IMM:
-            // FIXME: Save ring for later deleting, for the time being
-            // we do not kill it at all.
-            //rKill( (ring) CXX_SINGOBJ(o) );
-            // Pr("killed a ring\n",0L,0L);
+            // Pr("scheduled a ring for killing\n",0L,0L);
+            AddSingularRingToCleanup((ring) CXX_SINGOBJ(o));
             break;
         case SINGTYPE_POLY:
         case SINGTYPE_POLY_IMM:
