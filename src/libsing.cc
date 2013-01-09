@@ -12,8 +12,6 @@ This file contains all of the pure C code that deals with GAP.
 
 Obj Func_SI_debug(Obj self, Obj obj)
 {
-    int i;
-    i = 2;
     return NULL;
 }
 
@@ -166,10 +164,10 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)FuncSI_SetCurrRing,
    "cxx-funcs.cc:FuncSI_SetCurrRing" },
 
-  {"SI_ringnr_of_singobj", 1,
+  {"SI_ring_of_singobj", 1,
    "singobj",
-   (GVarFunc)FuncSI_ringnr_of_singobj,
-   "cxx-funcs.cc:FuncSI_ringnr_of_singobj" },
+   (GVarFunc)FuncSI_ring_of_singobj,
+   "cxx-funcs.cc:FuncSI_ring_of_singobj" },
 
   {"SI_CallProc", 2,
    "name, args",
@@ -192,8 +190,6 @@ static StructGVarFunc GVarFuncs[] =
 };
 
 Obj _SI_Types;    /* A kernel copy of a plain list of types */
-Obj _SI_Rings;    /* A kernel copy of a plain list of rings */
-Obj _SI_ElCounts; /* A kernel copy of a plain list of ref counts */
 Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 
@@ -264,8 +260,6 @@ static Int InitKernel(StructInitInfo* module)
   MakeReadOnlyGVar(gvar);
 
   InitCopyGVar("_SI_Types", &_SI_Types);
-  InitCopyGVar("_SI_Rings", &_SI_Rings);
-  InitCopyGVar("_SI_ElCounts", &_SI_ElCounts);
   InitCopyGVar("SI_Errors", &SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
 

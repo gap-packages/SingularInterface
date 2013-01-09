@@ -11,10 +11,10 @@ Subtitle := "Linking singular as a library into a GAP process",
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
 ##  you must provide a new version number even after small changes.
-Version := "0.2",
+Version := "0.3",
 Date := "09/01/2013",
 ##  <#GAPDoc Label="PKGVERSIONDATA">
-##  <!ENTITY VERSION "0.2">
+##  <!ENTITY VERSION "0.3">
 ##  <!ENTITY RELEASEDATE "January 2013">
 ##  <#/GAPDoc>
 
