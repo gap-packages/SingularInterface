@@ -59,7 +59,7 @@ if test "$ac_test_CXXFLAGS" != "set"; then
 fi
 
 AC_MSG_CHECKING([for --without-sw])
-AC_ARG_WITH(sw, [AS_HELP_STRING([--with-sw], [enable sw usage])], [], [withval="no"])
+AC_ARG_WITH(sw, [AS_HELP_STRING([--with-sw], [switch to spielwiese usage instead of classical libsingular])], [], [withval="no"])
 AM_CONDITIONAL(WANT_SW, test x"$with_sw" == xyes)
 if test x"$with_sw" == xyes; then : 
   AC_MSG_RESULT(with SW!)

@@ -49,7 +49,7 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #else
 #define NL_COPY(A,B) nlCopy(A)
 #define MA_COPY(A,B) maCopy(A)
-#define MP_COPY(A,B) mp_Copy(A)
+#define MP_COPY(A,B) mpCopy(A)
 #define MP_DELETE(A,B) mpDelete(A,B)
 #endif
 /* We add hooks to the wrapper functions to call a garbage collection

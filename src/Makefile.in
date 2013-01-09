@@ -101,8 +101,7 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-libsing_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libsing_la_DEPENDENCIES =
 am_libsing_la_OBJECTS = libsing_la-libsing.lo libsing_la-cxxfuncs.lo \
 	libsing_la-lowlevel_mappings.lo
 libsing_la_OBJECTS = $(am_libsing_la_OBJECTS)
@@ -113,6 +112,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_gentableforGAP_OBJECTS = gentableforGAP-gentableforGAP.$(OBJEXT)
 gentableforGAP_OBJECTS = $(am_gentableforGAP_OBJECTS)
 gentableforGAP_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
 @WANT_SW_TRUE@gentableforGAP_DEPENDENCIES = $(am__DEPENDENCIES_1)
 gentableforGAP_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
@@ -288,13 +288,14 @@ lib_LTLIBRARIES = libsing.la
 gentableforGAP_SOURCES = gentableforGAP.cc
 @WANT_SW_FALSE@gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
 @WANT_SW_TRUE@gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS) -DWANT_SW
-@WANT_SW_FALSE@gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
+@WANT_SW_FALSE@gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
 libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc
-@WANT_SW_FALSE@libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -lpthread
+@WANT_SW_FALSE@libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
 @WANT_SW_TRUE@libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
-libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
 @WANT_SW_FALSE@libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+#  libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
 @WANT_SW_TRUE@libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS) -DWANT_SW
+@WANT_SW_FALSE@libsing_la_LIBADD = 
 libsing_la_CXXFLAGS = -Wall
 libsing_la_CFLAGS = -Wall
 BUILT_SOURCES = \
