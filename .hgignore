@@ -16,6 +16,14 @@ src/lowlevel_mappings_table.h
 src/pkgconfig.h
 src/stamp-h1
 
+doc/chap*.txt
+doc/chap*.html
+doc/libsing.idx
+doc/libsing.log
+doc/libsing.out
+doc/libsing.tex
+doc/manual.pdf
+doc/manual.six
 
 # switch to regexp syntax.
 syntax: regexp

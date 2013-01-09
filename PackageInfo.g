@@ -13,6 +13,10 @@ Subtitle := "Linking singular as a library into a GAP process",
 ##  you must provide a new version number even after small changes.
 Version := "0.2",
 Date := "09/01/2013",
+##  <#GAPDoc Label="PKGVERSIONDATA">
+##  <!ENTITY VERSION "0.2">
+##  <!ENTITY RELEASEDATE "January 2013">
+##  <#/GAPDoc>
 
 ##  If not all of the archive formats mentioned above are provided, these 
 ##  can be produced at the GAP side. Therefore it is necessary to know which
