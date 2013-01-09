@@ -40,6 +40,8 @@ extern Obj SI_Errors;   /* A kernel copy of a string */
 extern Obj SingularProxiesType;   /* A kernel copy of the type of proxy els */
 extern Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
+void InstallPrePostGCFuncs(void);
+
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // There are 3 possibilites: 
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
