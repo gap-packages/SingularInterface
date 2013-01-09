@@ -68,11 +68,11 @@ if test x"$with_sw" == xyes; then :
   AC_DISABLE_STATIC
   AC_PROG_LIBTOOL
   LB_CHECK_LIBSINGULAR
-  SINGULAR_PATH=[SW/bin/Singular]
+  SINGULAR_PATH="$LIBSINGULAR_HOME/bin/Singular"
 else
   AC_MSG_RESULT(without SW)
   SINGULARVERSION=`cat ./SINGULARVERSION`
-  SINGULAR_PATH="Singular-$SINGULARVERSION/Singular/testgh"
+  SINGULAR_PATH="$PWD/Singular-$SINGULARVERSION/Singular/testgh"
 fi
 
 AC_MSG_CHECKING([for SINGULAR_PATH])

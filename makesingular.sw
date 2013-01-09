@@ -4,10 +4,10 @@ cd spielwiese/src
 ./autogen.sh
 cd -
 
-#mkdir -p spielwiese/BUILD
+mkdir -p spielwiese/BUILD
 
 cd spielwiese/BUILD
-../src/configure --disable-debug --without-dynamic-kernel --disable-python --without-python --with-python=no --without-MP --prefix=$PWD/../../SW || exit 1
+../src/configure --prefix=$PWD/../../SW || exit 1
 #  LDFLAGS='-ltcmalloc'
 
 # MAKE='remake -j -l8'

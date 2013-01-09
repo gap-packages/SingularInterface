@@ -48,7 +48,7 @@ done
 if test "x$LIBSINGULAR_found" = "xyes"; then
 	AC_DEFINE(HAVE_LIBSINGULAR,1,[Enable libSingular])
 	AC_DEFINE_UNQUOTED(LIBSINGULAR_HOME,"$LIBSINGULAR_HOME",Prefix for libSingular)
-  AC_SUBST(LIBSINGULAR_HOME)
+        AC_SUBST(LIBSINGULAR_HOME)
 else
 	AC_MSG_RESULT(not found)
 fi

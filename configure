@@ -17424,12 +17424,12 @@ fi
 
 
 
-  SINGULAR_PATH=SW/bin/Singular
+  SINGULAR_PATH="$LIBSINGULAR_HOME/bin/Singular"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: without SW" >&5
 $as_echo "without SW" >&6; }
   SINGULARVERSION=`cat ./SINGULARVERSION`
-  SINGULAR_PATH="Singular-$SINGULARVERSION/Singular/testgh"
+  SINGULAR_PATH="$PWD/Singular-$SINGULARVERSION/Singular/testgh"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SINGULAR_PATH" >&5

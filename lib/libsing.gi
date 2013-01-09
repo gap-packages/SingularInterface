@@ -113,9 +113,6 @@ InstallGlobalFunction( _SI_InitInterpreter,
     path := Filename(DirectoriesPackageLibrary("libsing","")[1],
                      "SINGULARPATH");
     path := NormalizedWhitespace(StringFile(path));
-    path := ShallowCopy(
-            Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     path));
     _SI_INIT_INTERPRETER(path);
   end );
 _SI_InitInterpreter();
