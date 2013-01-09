@@ -28,21 +28,21 @@ InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 
   function(a,b) return SI_\=\=(a,b) = 1; end);
 
-# for any singular object that carries a ring
-InstallOtherMethod(One, ["IsSingularPoly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "1");
-end);
+# zero/one methods
 
-InstallOtherMethod(One, ["IsSingularBigInt"], function(sobj)
-  return SI_bigint(1);
-end);
-InstallOtherMethod(Zero, ["IsSingularPoly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "0");
-end);
+InstallOtherMethod(Zero, ["IsSingularPoly"], sobj -> SI_poly(SI_ring(sobj), "0"));
+InstallOtherMethod(ZeroMutable, ["IsSingularPoly"], sobj -> SI_poly(SI_ring(sobj), "0"));
+InstallOtherMethod(One, ["IsSingularPoly"], sobj -> SI_poly(SI_ring(sobj), "1"));
+InstallOtherMethod(OneMutable, ["IsSingularPoly"], sobj -> SI_poly(SI_ring(sobj), "1"));
 
-InstallOtherMethod(Zero, ["IsSingularBigInt"], function(sobj)
-  return SI_bigint(0);
-end);
+InstallOtherMethod(Zero, ["IsSingularBigInt"], sobj -> SI_bigint(0));
+InstallOtherMethod(ZeroMutable, ["IsSingularBigInt"], sobj -> SI_bigint(0));
+InstallOtherMethod(One, ["IsSingularBigInt"], sobj -> SI_bigint(1));
+InstallOtherMethod(OneMutable, ["IsSingularBigInt"], sobj -> SI_bigint(1));
+
+# HACK: Fallback (works correctly only for objects that support subtracting
+InstallOtherMethod(Zero, ["IsSingularObj"], sobj -> sobj - sobj);
+InstallOtherMethod(ZeroMutable, ["IsSingularObj"], sobj -> sobj - sobj);
 
 # now we can make use of  the following implication
 InstallTrueMethod(IsRingElementWithOne, IsSingularPoly);
