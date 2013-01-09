@@ -22,3 +22,4 @@
 
 make
 
+$PWD/../GAP/bin/gap.sh tst/testall.g
