@@ -3,24 +3,28 @@
 _SI_Types := [];
 
 SingularFamily := NewFamily("SingularFamily");
+Setter(ElementsFamily)(SingularFamily, SingularFamily); # Grrrrrrrrr
+
 DeclareCategory( "IsSingularObj", IsObject );
 DeclareCategory( "IsSingularVoid", IsSingularObj );
-DeclareCategory( "IsSingularBigInt", IsSingularObj );
+DeclareCategory( "IsSingularBigInt", IsSingularObj and IsRingElementWithOne );
 DeclareCategory( "IsSingularIdeal", IsSingularObj );
-DeclareCategory( "IsSingularIntMat", IsSingularObj );
-DeclareCategory( "IsSingularIntVec", IsSingularObj );
+DeclareCategory( "IsSingularIntMat", IsSingularObj and IsList );
+DeclareCategory( "IsSingularIntVec", IsSingularObj and IsList );
 DeclareCategory( "IsSingularLink", IsSingularObj );
-DeclareCategory( "IsSingularList", IsSingularObj );
+DeclareCategory( "IsSingularList", IsSingularObj and IsList);
 DeclareCategory( "IsSingularMap", IsSingularObj );
 DeclareCategory( "IsSingularMatrix", IsSingularObj );
 DeclareCategory( "IsSingularModule", IsSingularObj );
-DeclareCategory( "IsSingularNumber", IsSingularObj );
-DeclareCategory( "IsSingularPoly", IsSingularObj and IsRingElementWithOne);
-DeclareCategory( "IsSingularQRing", IsSingularObj );
+DeclareCategory( "IsSingularNumber", IsSingularObj and IsRingElementWithOne );
+DeclareCategory( "IsSingularPoly", IsSingularObj and IsRingElementWithOne );
+DeclareCategory( "IsSingularQRing", IsSingularObj and IsAdditiveMagmaWithZero 
+                  and IsRingWithOne );
 DeclareCategory( "IsSingularResolution", IsSingularObj );
-DeclareCategory( "IsSingularRing", IsSingularObj );
-DeclareCategory( "IsSingularString", IsSingularObj );
-DeclareCategory( "IsSingularVector", IsSingularObj );
+DeclareCategory( "IsSingularRing", IsSingularObj and IsAdditiveMagmaWithZero 
+                  and IsRingWithOne );
+DeclareCategory( "IsSingularString", IsSingularObj and IsList );
+DeclareCategory( "IsSingularVector", IsSingularObj and IsList );
 DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
 
 _SI_Types[_SI_TYPENRS.SINGTYPE_VOID]
