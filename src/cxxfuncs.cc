@@ -332,25 +332,6 @@ static poly _SI_GET_poly(Obj o, UInt &rnr)
     return NULL;   // To please the compiler
 }
 
-static inline poly _SI_GET_IDEAL_ELM_PROXY_NC(Obj p)
-{
-    Obj id = ELM_PLIST(p,1);
-    ideal ide = (ideal) CXX_SINGOBJ(id);
-    return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
-}
-
-static poly _SI_GET_IDEAL_ELM_PROXY(Obj p)
-{
-    if (TYPE_OBJ(p) != SingularProxiesType) {
-        ErrorQuit("p must be a singular proxy object",0L,0L);
-        return NULL;
-    }
-    Obj id = ELM_PLIST(p,1);
-    /*...*/
-    ideal ide = (ideal) CXX_SINGOBJ(id);
-    return ide->m[INT_INTOBJ(ELM_PLIST(p,2))-1];
-}
-
 // The following table maps GAP type numbers for singular objects to
 // Singular type numbers for Singular objects:
 
