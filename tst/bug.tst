@@ -14,3 +14,7 @@ gap> SI_syz(m);
 0,
 1,
 0 >
+gap> r := SI_ring(3,["a","b"]);
+<singular ring>
+gap> x := SI_poly(r,SI_bigint(2));
+<singular poly:-1>

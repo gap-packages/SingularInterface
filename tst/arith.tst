@@ -75,7 +75,8 @@ gap> a - a;
 gap> 
 gap> 
 gap> a * b;
-<singular poly:169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906x3y5z10+x3yz14+6x4y5>
+<singular poly:169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906x3y5z10+x3\
+yz14+6x4y5>
 gap> a * b = b * a;
 true
 gap> a * a = a^2;
@@ -132,7 +133,8 @@ gap> Zero(a);
 <singular poly:0>
 gap> 
 gap> a * b;
-<singular poly:169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906x3y5z10+x3yz14+6x4y5>
+<singular poly:169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906x3y5z10+x3\
+yz14+6x4y5>
 gap> a * b = b * a;
 true
 gap> a * a = a^2;
@@ -149,7 +151,7 @@ gap>
 gap> ############################################
 gap> # int
 gap> #
-gap>
+gap> 
 gap> a := SI_bigint(2^28-1);
 <singular bigint:268435455>
 gap> b := SI_bigint(2);

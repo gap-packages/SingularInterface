@@ -192,6 +192,7 @@ static StructGVarFunc GVarFuncs[] =
 Obj _SI_Types;    /* A kernel copy of a plain list of types */
 Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
+Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
 extern "C" Int EqObject(Obj opL, Obj opR);
 // This is defined in arith.c but not exported in arith.h 
@@ -262,6 +263,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("_SI_Types", &_SI_Types);
   InitCopyGVar("SI_Errors", &SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
+  InitCopyGVar("SI_CurrentRingObj", &SI_CurrentRingObj); // FIXME: Can we do this w/o exposing the var on the interpreter level?
 
   TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
   InfoBags[T_SINGULAR].name = "singular wrapper object";

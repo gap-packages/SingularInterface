@@ -24,6 +24,9 @@ This file contains all of the code that deals with C++ libraries.
 extern int inerror; // from Singular/grammar.cc
 
 
+static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
+
+
 // get omalloc statistics 
 Obj FuncOmPrintInfo( Obj self )
 {
@@ -1746,7 +1749,8 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
         singres.obj.CleanUp();  // 
         return Fail;
     }
-    singres.rr = rr;   // Set the ring according to the arguments
+
+    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
@@ -1778,7 +1782,7 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         singres.obj.CleanUp(r);
         return Fail;
     }
-    singres.rr = rr;
+    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
@@ -1818,7 +1822,7 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         singres.obj.CleanUp(r);
         return Fail;
     }
-    singres.rr = rr;
+    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
@@ -1888,7 +1892,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         return Fail;
     }
     omFree(sing);
-    singres.rr = rr;
+    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;
     return singres.gapwrap();
@@ -1903,7 +1907,19 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
     }
     ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
+    SI_CurrentRingObj = rr;
     return NULL;
+}
+
+static Obj SI_GetRingForObj(Obj rr, SingObj &sobj) {
+	if (rr == 0 && HasRingTable[SingtoGAPType[sobj.obj.Typ()]]) {
+		if (SI_CurrentRingObj == 0)
+			ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
+		rr = SI_CurrentRingObj;
+		if (currRing != (ring) CXX_SINGOBJ(rr))
+			ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
+	}
+	return rr;
 }
 
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
@@ -1995,7 +2011,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);
         return Fail;
     }
-    singres.rr = rr;
+    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;
     singres.obj.data = ret->data;
