@@ -258,6 +258,7 @@ static Int InitKernel(StructInitInfo* module)
    * LtFuncs fuer T_SINGULAR/T_SINGULAR ist LtObject, OK?
    * InFuncs fuer T_SINGULAR/T_SINGULAR
    * SumFuncs fuer T_SINGULAR/T_SINGULAR ist SumObject, OK?
+   // SumFuncs[T_SINGULAR][T_SINGULAR] = SumSingObjs;
    * DiffFuncs fuer T_SINGULAR/T_SINGULAR ist DiffObject, OK?
    * ProdFuncs fuer T_SINGULAR/T_SINGULAR ist ProdObject, OK?
    * QuoFuncs fuer T_SINGULAR/T_SINGULAR ist QuoObject, OK?

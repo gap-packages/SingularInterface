@@ -149,6 +149,7 @@ Int IsMutableSingObj(Obj s);
 void MakeImmutableSingObj(Obj s);
 Obj ZeroSMSingObj(Obj s);
 Obj OneSMSingObj(Obj s);
+Obj SumSingObjs(Obj a, Obj b);
 
 
 #endif //#define LIBSING_H

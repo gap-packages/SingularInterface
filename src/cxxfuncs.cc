@@ -7,6 +7,7 @@ This file contains all of the code that deals with C++ libraries.
 
 #include "libsing.h"
 #include "singobj.h"
+#include "lowlevel_mappings.h"
 
 #ifdef WANT_SW
 #include <coeffs/longrat.h>
@@ -1983,6 +1984,27 @@ Obj OneSMSingObj(Obj s)
         // Rings are always immutable!
         return OneSMSingObj(RING_SINGOBJ(s));
     return OneMutObject(s);
+}
+
+/* this is to test the performance gain, when we avoid the method selection
+for \+ of Singular polynomials by a SumFuncs function.
+The gain seem pretty small - this was tested with zero polyomials.
+So: for the moment we just leave the generic functions in the kernel
+tables.   */
+/* from GAP kernel */
+Obj SumObject(Obj l, Obj r);
+
+Obj SumSingObjs(Obj a, Obj b)
+{
+    int atype, btype;
+    atype = TYPE_SINGOBJ(a);
+    btype = TYPE_SINGOBJ(b);
+    if ((atype == SINGTYPE_POLY || atype == SINGTYPE_POLY_IMM) &&
+        (btype == SINGTYPE_POLY || btype == SINGTYPE_POLY_IMM))    {
+       return Func_SI_p_Add_q(NULL, a, b);
+    } else {
+      return SumObject(a, b);
+    }
 }
 
 
