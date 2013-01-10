@@ -36,9 +36,7 @@ InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], _SI_Comparer);
 InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"], _SI_Comparer);
 
 # Zero and One for rings and polys:
-InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], function(sobj)
-  return ZeroSM(sobj);
-end);
+InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], ZeroSM);
 InstallOtherMethod(ZeroImmutable, ["IsSingularPoly"], function(sobj)
   return ZeroSM(SI_ring(sobj));
 end);

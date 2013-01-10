@@ -84,6 +84,7 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     return tmp;
 }
@@ -93,6 +94,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
     SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
@@ -104,6 +106,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_ZERO_SINGOBJ(tmp,zero);
     SET_ONE_SINGOBJ(tmp,one);
