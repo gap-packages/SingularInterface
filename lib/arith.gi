@@ -85,3 +85,22 @@ BindGlobal("SI_Entry", function(sobj, i)
   return _SI_CallFunc2(91, sobj, i); end);
 #    this is not used in GAP 4.5.5, kernel complains
 InstallOtherMethod(\[\], [IsSingularObj, IsInt], SI_Entry);
+
+# multiplicative inverses, first the generic delegation to Singular
+InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
+  return SI_\/(1, sobj);
+end);
+# above doesn't handle non-constant polynomials correctly:
+InstallOtherMethod(InverseSM, ["IsSingularPoly"], function(pol)
+  if SI_deg(pol) > 0 or IsZero(pol) then
+    return fail;
+  else
+    return SI_\/(1, pol);
+  fi;
+end);
+
+InstallOtherMethod(QUO, ["IsSingularObj", "IsSingularObj"], function(a, b)
+  return SI_\/(a, b);
+end);
+
+
