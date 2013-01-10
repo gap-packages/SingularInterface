@@ -1,3 +1,4 @@
+AM_LIBTOOLFLAGS=--silent
 BINARCHDIR = bin/$(GAPARCH)
 GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
 if WANT_SW

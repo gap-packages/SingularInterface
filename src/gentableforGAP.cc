@@ -236,7 +236,7 @@ void ttGen1()
 {
   iparith_inc=strdup("highlevel_mappings_table.g");
   FILE *outfile = fopen(iparith_inc,"w");
-  int i,j,l1=0,l2=0;
+  int i;
   fprintf(outfile,
   "#########################################\n"
   "#  Computer Algebra System SINGULAR     #\n"

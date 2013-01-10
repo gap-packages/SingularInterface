@@ -6,6 +6,7 @@ AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([cnf])
 AM_INIT_AUTOMAKE([foreign])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
 AM_MAINTAINER_MODE
 LT_INIT([disable-static dlopen win32-dll])
 
