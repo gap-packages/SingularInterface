@@ -1,3 +1,6 @@
+look at qrings and see if they can be used in SI_matrix_from_String and
+  places, do they work at all? How to make them?
+
 If many not so small elements are created on Singular side it can take too
 long until GASMAN starts a garbage collection (the GAP side can hold a huge
 number off small Singular wrapper objects) --- we need a way to trigger
