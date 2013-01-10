@@ -199,9 +199,30 @@ Obj SI_Errors;   /* A kernel copy of a string */
 Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
 Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
+// This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
-// This is defined in arith.c but not exported in arith.h 
 
+// The following are not exported in lists.h:
+extern "C" Int IsListObject(Obj obj);
+extern "C" Int IsSmallListObject(Obj obj);
+extern "C" Int LenListObject(Obj obj);
+extern "C" Obj LengthObject(Obj obj);
+extern "C" Int IsbListObject(Obj obj, Int pos);
+extern "C" Int IsbbListObject(Obj obj, Obj pos);
+extern "C" Obj Elm0ListObject(Obj obj, Int pos);
+extern "C" Obj ElmListObject(Obj obj, Int pos);
+extern "C" Obj ElmsListObject(Obj ob, Obj possj);
+extern "C" void UnbListObject(Obj obj, Int pos);
+extern "C" void UnbbListObject(Obj ob, Obj poss);
+extern "C" void AssListObject(Obj list, Int pos, Obj obj);
+extern "C" void AssbListObject(Obj list, Obj pos, Obj obj);
+extern "C" void AsssListObject(Obj list, Obj poss, Obj obj);
+extern "C" Int IsDenseListObject(Obj obj);
+extern "C" Int IsHomogListObject(Obj obj);
+extern "C" Int IsTableListObject(Obj obj);
+extern "C" Int IsSSortListObject(Obj obj);
+extern "C" Int IsPossListObject(Obj obj);
+extern "C" Obj PosListObject(Obj list, Obj obj, Obj start);
 
 /**
 The first function to be called when the library is loaded by the kernel.
@@ -295,13 +316,39 @@ static Int InitKernel(StructInitInfo* module)
    * LQuoFuncs fuer T_SINGULAR/T_SINGULAR ist LQuoObject, OK?
    * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
    * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
-   * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK? */
+   * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK?
+   * IsListFuncs fuer T_SINGULAR ist 
+   * IsSmallListFuncs fuer T_SINGULAR ist */
   IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
   MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
   // The following are OK, see dev/ZEROONECHAOS for details!
   ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
   OneMutFuncs[T_SINGULAR] = OneSMSingObj;
   EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
+  IsListFuncs[ T_SINGULAR ] = IsListObject;
+  IsSmallListFuncs[ T_SINGULAR ] = IsSmallListObject;
+  LenListFuncs[ T_SINGULAR ] = LenListObject;
+  LengthFuncs[ T_SINGULAR ] = LengthObject;
+  IsbListFuncs[ T_SINGULAR ] = IsbListObject;
+  IsbvListFuncs[ T_SINGULAR ] = IsbListObject;
+  IsbbListFuncs[ T_SINGULAR ] = IsbbListObject;
+  Elm0ListFuncs[ T_SINGULAR ] = Elm0ListObject;
+  Elm0vListFuncs[ T_SINGULAR ] = Elm0ListObject;
+  ElmListFuncs[  T_SINGULAR ] = ElmListObject;
+  ElmvListFuncs[ T_SINGULAR ] = ElmListObject;
+  ElmwListFuncs[ T_SINGULAR ] = ElmListObject;
+  ElmsListFuncs[ T_SINGULAR ] = ElmsListObject;
+  UnbListFuncs[ T_SINGULAR ] = UnbListObject;
+  UnbbListFuncs[ T_SINGULAR ] = UnbbListObject;
+  AssListFuncs[ T_SINGULAR ] = AssListObject;
+  AssbListFuncs[ T_SINGULAR ] = AssbListObject;
+  AsssListFuncs[ T_SINGULAR ] = AsssListObject;
+  IsDenseListFuncs[ T_SINGULAR ] = IsDenseListObject;
+  IsHomogListFuncs[ T_SINGULAR ] = IsHomogListObject;
+  IsTableListFuncs[ T_SINGULAR ] = IsTableListObject;
+  IsSSortListFuncs[ T_SINGULAR ] = IsSSortListObject;
+  IsPossListFuncs[ T_SINGULAR ] = IsPossListObject;
+  PosListFuncs[ T_SINGULAR ] = PosListObject;
 
   InstallPrePostGCFuncs();
 
