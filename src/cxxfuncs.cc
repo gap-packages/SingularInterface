@@ -1476,18 +1476,10 @@ void _SI_ErrorCallback(const char *st)
 
 Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
 {
-    int i;
     // init path names etc.
     siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
     currentVoice=feInitStdin(NULL);
     WerrorS_callback = _SI_ErrorCallback;
-    for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i += 2) {
-        if (GAPtoSingType[i] >= MAX_TOK) {
-            Pr("Singular types have changed unforeseen",0L,0L);
-            exit(1);
-        }
-        SingtoGAPType[GAPtoSingType[i]] = i;
-    }
     return NULL;
 }
 
