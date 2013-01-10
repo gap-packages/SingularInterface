@@ -13,7 +13,8 @@ tests := DirectoryContents(d[1]);
 tests := Filtered(tests, name -> HasSuffix(name, ".tst"));
 Sort(tests);
 
+# Convert tests to filenames
+tests := List(tests, test -> Filename(d,test));
+
 # Run the tests
-for test in tests do
-  Test(Filename(d,test));
-od;
+for test in tests do Test(test); od;
