@@ -186,6 +186,7 @@ Generate_SINGULAR_funcs := function()
 
 		# TODO: Add support for void functions
 		if ret_type = "VOID" then
+			Print("WARNING: void functions are not yet supported, skipping '", func_name, "'\n");
 			continue;
 		fi;
 
