@@ -59,6 +59,7 @@ SINGULAR_string_return := function (type, name)
 		PrintCXXLine("Obj tmp = NEW_STRING(len);");
 		PrintCXXLine("SET_LEN_STRING(tmp,len);");
 		PrintCXXLine("memcpy(CHARS_STRING(tmp),", name, ", len+1);");
+		PrintCXXLine("omFreeSize(", name, ", len+1);");
 		PrintCXXLine("return tmp;");
 	indent := indent - 1;
 	PrintCXXLine("}");
