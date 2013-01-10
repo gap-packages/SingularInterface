@@ -25,10 +25,15 @@ InstallOtherMethod(\*, ["IsSingularPoly","IsSingularPoly"], _SI_p_Mult_q);
 
 InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 
-InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 
-  function(a,b) return SI_\=\=(a,b) = 1; end);
-InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"],
-  function(a,b) return SI_\=\=(a,b) = 1; end);
+InstallGlobalFunction( _SI_Comparer,
+  function(a,b) 
+    local r;
+    r := SI_\=\=(a,b);
+    if r = fail then Error("cannot compare ",a," and ",b); fi;
+    return r = 1; 
+  end);
+InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], _SI_Comparer);
+InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"], _SI_Comparer);
 
 # Zero and One for rings and polys:
 InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], function(sobj)
