@@ -1,4 +1,4 @@
-gap> SI_LIB("matrix.lib");
+gap> if not IsBound(SIL_submat) then SI_LIB("matrix.lib"); fi;
 gap> Singular("listvar(proc);");
 0
 gap> s := SI_ring(0,["a","b"]);
