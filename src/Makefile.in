@@ -88,7 +88,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 @WANT_SW_TRUE@libsing_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_libsing_la_OBJECTS = libsing_la-libsing.lo libsing_la-cxxfuncs.lo \
-	libsing_la-lowlevel_mappings.lo
+	libsing_la-lowlevel_mappings.lo libsing_la-singtypes.lo
 libsing_la_OBJECTS = $(am_libsing_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -294,7 +294,7 @@ gentableforGAP_SOURCES = gentableforGAP.cc
 @WANT_SW_FALSE@gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
 @WANT_SW_TRUE@gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS) -DWANT_SW
 @WANT_SW_FALSE@gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
-libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc
+libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc singtypes.cc
 @WANT_SW_FALSE@libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
 @WANT_SW_TRUE@libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
 @WANT_SW_FALSE@libsing_la_LIBADD = 
@@ -368,7 +368,6 @@ distclean-hdr:
 	-rm -f pkgconfig.h stamp-h1
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
 	@list='$(lib_LTLIBRARIES)'; test -n "$(libdir)" || list=; \
 	list2=; for p in $$list; do \
 	  if test -f $$p; then \
@@ -376,6 +375,8 @@ install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	  else :; fi; \
 	done; \
 	test -z "$$list2" || { \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(libdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(libdir)" || exit 1; \
 	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(libdir)'"; \
 	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(libdir)"; \
 	}
@@ -401,8 +402,11 @@ libsing.la: $(libsing_la_OBJECTS) $(libsing_la_DEPENDENCIES) $(EXTRA_libsing_la_
 	$(AM_V_CXXLD)$(libsing_la_LINK) -rpath $(libdir) $(libsing_la_OBJECTS) $(libsing_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p || test -f $$p1; \
@@ -456,6 +460,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-cxxfuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-libsing.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-lowlevel_mappings.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libsing_la-singtypes.Plo@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -498,6 +503,13 @@ libsing_la-lowlevel_mappings.lo: lowlevel_mappings.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='lowlevel_mappings.cc' object='libsing_la-lowlevel_mappings.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CXXFLAGS) $(CXXFLAGS) -c -o libsing_la-lowlevel_mappings.lo `test -f 'lowlevel_mappings.cc' || echo '$(srcdir)/'`lowlevel_mappings.cc
+
+libsing_la-singtypes.lo: singtypes.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CXXFLAGS) $(CXXFLAGS) -MT libsing_la-singtypes.lo -MD -MP -MF $(DEPDIR)/libsing_la-singtypes.Tpo -c -o libsing_la-singtypes.lo `test -f 'singtypes.cc' || echo '$(srcdir)/'`singtypes.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libsing_la-singtypes.Tpo $(DEPDIR)/libsing_la-singtypes.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='singtypes.cc' object='libsing_la-singtypes.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libsing_la_CPPFLAGS) $(CPPFLAGS) $(libsing_la_CXXFLAGS) $(CXXFLAGS) -c -o libsing_la-singtypes.lo `test -f 'singtypes.cc' || echo '$(srcdir)/'`singtypes.cc
 
 gentableforGAP-gentableforGAP.o: gentableforGAP.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gentableforGAP_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT gentableforGAP-gentableforGAP.o -MD -MP -MF $(DEPDIR)/gentableforGAP-gentableforGAP.Tpo -c -o gentableforGAP-gentableforGAP.o `test -f 'gentableforGAP.cc' || echo '$(srcdir)/'`gentableforGAP.cc

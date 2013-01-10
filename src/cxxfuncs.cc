@@ -307,112 +307,6 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
     }
     return NULL;   // To please the compiler
 }
-
-// The following table maps GAP type numbers for singular objects to
-// Singular type numbers for Singular objects:
-
-static const int GAPtoSingType[] =
-  { 0, /* NOTUSED */
-    0, /* VOID */
-    BIGINT_CMD,
-    BIGINT_CMD,
-    DEF_CMD ,
-    DEF_CMD ,
-    IDEAL_CMD,
-    IDEAL_CMD,
-    INT_CMD,
-    INT_CMD,
-    INTMAT_CMD,
-    INTMAT_CMD,
-    INTVEC_CMD,
-    INTVEC_CMD,
-    LINK_CMD,
-    LINK_CMD,
-    LIST_CMD,
-    LIST_CMD,
-    MAP_CMD,
-    MAP_CMD,
-    MATRIX_CMD,
-    MATRIX_CMD,
-    MODUL_CMD,
-    MODUL_CMD,
-    NUMBER_CMD,
-    NUMBER_CMD,
-    PACKAGE_CMD,
-    PACKAGE_CMD,
-    POLY_CMD,
-    POLY_CMD,
-    PROC_CMD,
-    PROC_CMD,
-    QRING_CMD,
-    QRING_CMD,
-    RESOLUTION_CMD,
-    RESOLUTION_CMD,
-    RING_CMD,
-    RING_CMD,
-    STRING_CMD,
-    STRING_CMD,
-    VECTOR_CMD,
-    VECTOR_CMD,
-    0, /* USERDEF */
-    0, /* USERDEF */
-    0, /* PYOBJECT */
-    0 /* PYOBJECT */
-  };
-
-static int SingtoGAPType[MAX_TOK];
-/* Also adjust Func_SI_INIT_INTERPRETER where this is initialised,
-   when the set of types changes. */
-
-static const int HasRingTable[] =
-  { 0, // NOTUSED
-    0, // SINGTYPE_VOID          = 1
-    0, // SINGTYPE_BIGINT        = 2,
-    0, // SINGTYPE_BIGINT_IMM    = 3,
-    0, // SINGTYPE_DEF           = 4,
-    0, // SINGTYPE_DEF_IMM       = 5,
-    1, // SINGTYPE_IDEAL         = 6,
-    1, // SINGTYPE_IDEAL_IMM     = 7,
-    0, // SINGTYPE_INT           = 8,
-    0, // SINGTYPE_INT_IMM       = 9,
-    0, // SINGTYPE_INTMAT        = 10,
-    0, // SINGTYPE_INTMAT_IMM    = 11,
-    0, // SINGTYPE_INTVEC        = 12,
-    0, // SINGTYPE_INTVEC_IMM    = 13,
-    0, // SINGTYPE_LINK          = 14,
-    0, // SINGTYPE_LINK_IMM      = 15,
-    1, // SINGTYPE_LIST          = 16,
-    1, // SINGTYPE_LIST_IMM      = 17,
-    1, // SINGTYPE_MAP           = 18,
-    1, // SINGTYPE_MAP_IMM       = 19,
-    1, // SINGTYPE_MATRIX        = 20,
-    1, // SINGTYPE_MATRIX_IMM    = 21,
-    1, // SINGTYPE_MODULE        = 22,
-    1, // SINGTYPE_MODULE_IMM    = 23,
-    1, // SINGTYPE_NUMBER        = 24,
-    1, // SINGTYPE_NUMBER_IMM    = 25,
-    0, // SINGTYPE_PACKAGE       = 26,
-    0, // SINGTYPE_PACKAGE_IMM   = 27,
-    1, // SINGTYPE_POLY          = 28,
-    1, // SINGTYPE_POLY_IMM      = 29,
-    0, // SINGTYPE_PROC          = 30,
-    0, // SINGTYPE_PROC_IMM      = 31,
-    0, // SINGTYPE_QRING         = 32,
-    0, // SINGTYPE_QRING_IMM     = 33,
-    1, // SINGTYPE_RESOLUTION    = 34,
-    1, // SINGTYPE_RESOLUTION_IMM= 35,
-    0, // SINGTYPE_RING          = 36,
-    0, // SINGTYPE_RING_IMM      = 37,
-    0, // SINGTYPE_STRING        = 38,
-    0, // SINGTYPE_STRING_IMM    = 39,
-    1, // SINGTYPE_VECTOR        = 40,
-    1, // SINGTYPE_VECTOR_IMM    = 41,
-    0, // SINGTYPE_USERDEF       = 42,
-    0, // SINGTYPE_USERDEF_IMM   = 43,
-    0, // SINGTYPE_PYOBJECT      = 44,
-    0  // SINGTYPE_PYOBJECT_IMM  = 45,
-  };
-
 static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                            const char *(&error))
 // proxy is a GAP proxy object, pos is a position in it, the first
@@ -963,15 +857,6 @@ void _SI_ObjMarkFunc(Bag o)
         }
     }
 #endif
-}
-
-// The following function returns the GAP type of an object with TNUM
-// T_SINGULAR. A pointer to it is put into the dispatcher table in the
-// GAP kernel.
-
-Obj _SI_TypeObj(Obj o)
-{
-    return ELM_PLIST(_SI_Types,TYPE_SINGOBJ(o));
 }
 
 // The following functions are implementations of functions which
