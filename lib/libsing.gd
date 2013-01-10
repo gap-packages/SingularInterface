@@ -179,7 +179,7 @@ BindGlobal("SI_ideal_singular", SI_ideal);
 MakeReadWriteGVar("SI_ideal");
 Unbind(SI_ideal);
 DeclareOperation("SI_ideal",[IsSingularObj]);
-DeclareOperation("SI_ideal",[IsPosInt, IsPosInt, IsSingularRing, IsStringRep]);
+DeclareOperation("SI_ideal",[IsSingularRing, IsStringRep]);
 DeclareOperation("SI_ideal",[IsList]);
 
 DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt] );

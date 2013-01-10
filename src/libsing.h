@@ -163,6 +163,7 @@ Obj FuncSI_ring_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,Obj rr, Obj st);
+Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj Func_SI_COPY_POLY(Obj self, Obj po);
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);

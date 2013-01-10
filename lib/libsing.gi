@@ -37,8 +37,7 @@ InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
 InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsList], _SI_matrix_from_els);
 
 InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
-#InstallMethod(SI_ideal,[IsPosInt, IsPosInt, IsSingularRing, IsStringRep],
-#              _SI_ideal_from_String);
+InstallMethod(SI_ideal,[IsSingularRing, IsStringRep], _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 
 InstallGlobalFunction( _SI_BindSingularProcs,

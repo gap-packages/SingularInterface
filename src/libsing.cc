@@ -49,6 +49,11 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)Func_SI_matrix_from_String,
    "cxxfuncs.cc:Func_SI_matrix_from_String" },
 
+  {"_SI_ideal_from_String", 2,
+   "rr, st",
+   (GVarFunc)Func_SI_ideal_from_String,
+   "cxxfuncs.cc:Func_SI_ideal_from_String" },
+
   {"_SI_MONOMIAL", 3,
    "ring, coeff, exponents",
    (GVarFunc)Func_SI_MONOMIAL,
