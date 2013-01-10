@@ -290,7 +290,7 @@ static Int InitKernel(StructInitInfo* module)
   InitCopyGVar("_SI_Types", &_SI_Types);
   InitCopyGVar("SI_Errors", &SI_Errors);
   InitCopyGVar("SingularProxiesType", &SingularProxiesType);
-  InitCopyGVar("SI_CurrentRingObj", &SI_CurrentRingObj); // FIXME: Can we do this w/o exposing the var on the interpreter level?
+  InitGlobalBag( &SI_CurrentRingObj, "libsing:SI_CurrentRingObj" );
 
   TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
   InfoBags[T_SINGULAR].name = "singular wrapper object";
