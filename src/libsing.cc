@@ -196,7 +196,7 @@ static StructGVarFunc GVarFuncs[] =
 
 Obj _SI_Types;    /* A kernel copy of a plain list of types */
 Obj SI_Errors;   /* A kernel copy of a string */
-Obj SingularProxiesType;  /* A kernel copy of the type of proxies */
+Obj _SI_ProxiesType;  /* A kernel copy of the type of proxies */
 Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
 // This is defined in arith.c but not exported in arith.h:
@@ -289,7 +289,7 @@ static Int InitKernel(StructInitInfo* module)
 
   InitCopyGVar("_SI_Types", &_SI_Types);
   InitCopyGVar("SI_Errors", &SI_Errors);
-  InitCopyGVar("SingularProxiesType", &SingularProxiesType);
+  InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
   InitGlobalBag( &SI_CurrentRingObj, "libsing:SI_CurrentRingObj" );
 
   TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;

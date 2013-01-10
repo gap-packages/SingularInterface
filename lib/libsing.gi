@@ -156,7 +156,7 @@ InstallMethod(SI_Proxy, "for a singular object and a positive integer",
   function( o, i )
     local l;
     l := [o,i];
-    Objectify(SingularProxiesType, l);
+    Objectify(_SI_ProxiesType, l);
     return l;
   end );
 
@@ -165,7 +165,7 @@ InstallMethod(SI_Proxy, "for a singular object and two positive integers",
   function( o, i, j)
     local l;
     l := [o,i,j];
-    Objectify(SingularProxiesType, l);
+    Objectify(_SI_ProxiesType, l);
     return l;
   end );
 
@@ -174,7 +174,7 @@ InstallMethod(SI_Proxy, "for a singular object and a string",
   function( o, s)
     local l;
     l := [o,s];
-    Objectify(SingularProxiesType, l);
+    Objectify(_SI_ProxiesType, l);
     return l;
   end );
 

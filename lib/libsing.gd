@@ -113,7 +113,7 @@ BindGlobal("_SI_TYPETAB",
          vector := IsSingularVector,
        ));
 
-BindGlobal("SingularProxiesType", 
+BindGlobal("_SI_ProxiesType",
   NewType( SingularFamily, IsSingularProxy and IsMutable));
 
 SI_Errors := "";

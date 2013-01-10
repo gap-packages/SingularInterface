@@ -263,7 +263,7 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
     if (ISSINGOBJ(SINGTYPE_POLY,o) || ISSINGOBJ(SINGTYPE_POLY_IMM,o)) {
         rr = RING_SINGOBJ(o);
         return (poly) CXX_SINGOBJ(o);
-    } else if (TYPE_OBJ(o) == SingularProxiesType) {
+    } else if (TYPE_OBJ(o) == _SI_ProxiesType) {
         Obj ob = ELM_PLIST(o,1);
         if (ISSINGOBJ(SINGTYPE_IDEAL,ob) || ISSINGOBJ(SINGTYPE_IDEAL_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
@@ -540,7 +540,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
             if (r != currRing) rChangeCurrRing(r);
         }
         needcleanup = false;
-    } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == SingularProxiesType) {
+    } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == _SI_ProxiesType) {
         if (IS_INTOBJ(ELM_PLIST(input,2))) {
             // This is a proxy object for a subobject:
             Obj ob = ELM_PLIST(input,1);
