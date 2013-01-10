@@ -303,8 +303,9 @@ static Int InitKernel(StructInitInfo* module)
    * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK? */
   IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
   MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
-  ZeroFuncs[T_SINGULAR] = ZeroSingObj;
-  OneFuncs[T_SINGULAR] = OneSingObj;
+  // The following are OK, see dev/ZEROONECHAOS for details!
+  ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
+  OneMutFuncs[T_SINGULAR] = OneSMSingObj;
   EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
 
   InstallPrePostGCFuncs();

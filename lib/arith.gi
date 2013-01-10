@@ -28,28 +28,38 @@ InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 
   function(a,b) return SI_\=\=(a,b) = 1; end);
 
-InstallOtherMethod(Zero, ["IsSingularRing"], function(sobj)
-  return MakeImmutable(SI_poly(sobj, "0"));
+# Zero and One for rings and polys:
+InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], function(sobj)
+  return ZeroSM(sobj);
 end);
-InstallOtherMethod(One, ["IsSingularRing"], function(sobj)
-  return MakeImmutable(SI_poly(sobj, "1"));
+InstallOtherMethod(ZeroImmutable, ["IsSingularPoly"], function(sobj)
+  return ZeroSM(SI_ring(sobj));
 end);
 InstallOtherMethod(ZeroMutable, ["IsSingularRing"], function(sobj)
-  # FIXME: Do we need this faster?
   return SI_poly(sobj, "0");
 end);
 InstallOtherMethod(ZeroMutable, ["IsSingularPoly"], function(sobj)
-  # FIXME: Do we need this faster?
   return SI_poly(SI_ring(sobj), "0");
 end);
+# ZeroSM for rings and polys is done in the kernel!
+# This is efficient for rings and immutable polys and
+# for mutable polys it delegates to ZeroMutable and method selection!
+
+InstallOtherMethod(OneImmutable, ["IsSingularRing"], function(sobj)
+  return OneSM(sobj);
+end);
+InstallOtherMethod(OneImmutable, ["IsSingularPoly"], function(sobj)
+  return OneSM(SI_ring(sobj));
+end);
 InstallOtherMethod(OneMutable, ["IsSingularRing"], function(sobj)
-  # FIXME: Do we need this faster?
   return SI_poly(sobj, "1");
 end);
 InstallOtherMethod(OneMutable, ["IsSingularPoly"], function(sobj)
-  # FIXME: Do we need this faster?
   return SI_poly(SI_ring(sobj), "1");
 end);
+# OneSM for rings and polys is done in the kernel!
+# This is efficient for rings and immutable polys and
+# for mutable polys it delegates to OneMutable and method selection!
 
 InstallOtherMethod(Zero, ["IsSingularBigInt"], sobj -> SI_bigint(0));
 InstallOtherMethod(ZeroMutable, ["IsSingularBigInt"], sobj -> SI_bigint(0));

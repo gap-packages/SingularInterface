@@ -199,8 +199,8 @@ Obj FuncOmCurrentBytes(Obj self);
 
 Int IsMutableSingObj(Obj s);
 void MakeImmutableSingObj(Obj s);
-Obj ZeroSingObj(Obj s);
-Obj OneSingObj(Obj s);
+Obj ZeroSMSingObj(Obj s);
+Obj OneSMSingObj(Obj s);
 
 
 #endif //#define LIBSING_H

@@ -70,6 +70,12 @@ InstallMethod( ViewString, "for a singular ring",
   function( r )
     return "<singular ring>";
   end );
+# As long as the library has a ViewObj for ring-with-one method, we need:
+InstallMethod( ViewObj, "for a singular ring",
+  [ IsSingularRing ],
+  function( r )
+    Print("<singular ring>");
+  end );
 
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],

@@ -1,0 +1,33 @@
+Both Zero and One have three variants each:
+
+  ZeroImmutable, ZeroSameMutability, ZeroMutable
+  OneImmutable, OneSameMutability, OneMutable
+
+Shortcuts:
+
+  Zero for ZeroImmutable, ZeroSM for ZeroSameMutability
+  One for OneImmutable, OneSM for OneSameMutability
+
+On the kernel level things are less clean:
+
+There is a kernel jump table for
+  ZeroSameMutability called ZeroFuncs used my the macro ZERO
+    the method selection C function is ZeroObject
+  ZeroMutable called ZeroMutFuncs used by the macro ZERO_MUT
+    the method selection C function is ZeroMutObject
+  OneSameMutability called OneMutFuncs used by the macro ONE_MUT
+    the method selection C function is OneMutObject
+  OneMutable called OneFuncs used by the macro ONE
+    the method selection C function is OneObject
+
+There is no kernel jump table for
+  ZeroImmutable and OneImmutable
+
+Therefore I recommend:
+
+  * Make as much immutable as possible
+  * Use ZeroSM and OneSM throughout
+  * On the kernel level use ZERO and ONE_MUT
+
+As documented, 0*x is equivalent to ZeroSM and thus ZERO in the kernel
+          and  x^0 is equivalent to OneSM  and thus ONE_MUT in the kernel

@@ -2064,7 +2064,7 @@ void MakeImmutableSingObj(Obj s)
     SET_TYPE_SINGOBJ(s,TYPE_SINGOBJ(s) | 1);
 }
 
-Obj ZeroSingObj(Obj s)
+Obj ZeroSMSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
@@ -2072,16 +2072,21 @@ Obj ZeroSingObj(Obj s)
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ZERO_SINGOBJ(s);
         if (res != NULL) return res;
-        res = ZeroObject(s);
+        res = ZeroMutObject(s);  // This makes a mutable zero
+        MakeImmutable(res);
         SET_ZERO_SINGOBJ(s,res);
         return res;
     } 
-    if (((gtype + 1) & 1) == 1) return ZeroMutObject(s);
-    if (HasRingTable[gtype]) return ZeroSingObj(RING_SINGOBJ(s));
+    if (((gtype + 1) & 1) == 1)    // we are mutable
+        return ZeroMutObject(s);
+    // Here we are immutable:
+    if (HasRingTable[gtype]) 
+        // Rings are always immutable!
+        return ZeroSMSingObj(RING_SINGOBJ(s));
     return ZeroObject(s);
 }
 
-Obj OneSingObj(Obj s)
+Obj OneSMSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
@@ -2089,13 +2094,18 @@ Obj OneSingObj(Obj s)
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ONE_SINGOBJ(s);
         if (res != NULL) return res;
-        res = OneObject(s);
+        res = OneObject(s);   // This is OneMutable and gives us mutable
+        MakeImmutable(res);
         SET_ONE_SINGOBJ(s,res);
         return res;
     } 
-    if (((gtype + 1) & 1) == 1) return OneMutObject(s);
-    if (HasRingTable[gtype]) return OneSingObj(RING_SINGOBJ(s));
-    return OneObject(s);
+    if (((gtype + 1) & 1) == 1)   // we are mutable!
+        return OneObject(s);  // This is OneMutable
+    // Here we are immutable:
+    if (HasRingTable[gtype]) 
+        // Rings are always immutable!
+        return OneSMSingObj(RING_SINGOBJ(s));
+    return OneMutObject(s);
 }
 
 
