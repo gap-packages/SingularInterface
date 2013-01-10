@@ -1,5 +1,5 @@
 gap> r := SI_ring(0,["x","y"]);
-<ring-with-one>
+<singular ring>
 gap> i := SI_ideal(r,"x2,y2,xy");
 <singular ideal>
 gap> i[1];

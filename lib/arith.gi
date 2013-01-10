@@ -27,6 +27,8 @@ InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 
 InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 
   function(a,b) return SI_\=\=(a,b) = 1; end);
+InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"],
+  function(a,b) return SI_\=\=(a,b) = 1; end);
 
 # Zero and One for rings and polys:
 InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], function(sobj)
