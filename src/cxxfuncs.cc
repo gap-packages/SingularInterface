@@ -1824,7 +1824,7 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 }
 
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj) {
-	if (rr == 0 && HasRingTable[SingtoGAPType[sobj.obj.Typ()]]) {
+	if (rr == 0 && RingDependend(sobj.obj.Typ())) {
 		if (SI_CurrentRingObj == 0)
 			ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
 		rr = SI_CurrentRingObj;
