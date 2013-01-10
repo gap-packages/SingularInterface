@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/sh -ev
 SINGULARVERSION=`cat SINGULARVERSION`
 export CC="gcc -fpic -DPIC -DLIBSINGULAR"
 export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
