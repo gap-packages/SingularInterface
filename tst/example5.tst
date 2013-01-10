@@ -1,7 +1,7 @@
 gap> LoadPackage("libsing");
 true
 gap> if SI_ValueOfVar("ver") <> fail then Singular("kill ver;"); fi;
-gap> Singular("int ver=system(\"version\");");
+gap> Singular("int ver=3160;");
 0
 gap> SI_ValueOfVar("ver");
 3160
