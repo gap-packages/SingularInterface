@@ -88,19 +88,39 @@ InstallOtherMethod(\[\], [IsSingularObj, IsInt], SI_Entry);
 
 # multiplicative inverses, first the generic delegation to Singular
 InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
-  return SI_\/(1, sobj);
+  local res;
+  res := SI_\/(One(sobj), sobj);
+  if not IsMutable(sobj) then
+    MakeImmutable(res);
+  fi;
+  return res;
 end);
 # above doesn't handle non-constant polynomials correctly:
 InstallOtherMethod(InverseSM, ["IsSingularPoly"], function(pol)
+  local res;
   if SI_deg(pol) > 0 or IsZero(pol) then
     return fail;
-  else
-    return SI_\/(1, pol);
   fi;
+  res := SI_\/(1, pol);
+  if not IsMutable(pol) then
+    MakeImmutable(res);
+  fi;
+  return res;
+end);
+InstallOtherMethod(InverseMutable, ["IsSingularPoly"], function(pol)
+  if SI_deg(pol) > 0 or IsZero(pol) then
+    return fail;
+  fi;
+  return SI_\/(1, pol);
 end);
 
 InstallOtherMethod(QUO, ["IsSingularObj", "IsSingularObj"], function(a, b)
   return SI_\/(a, b);
 end);
 
-
+# this causes that DefaultRing of a Singular object with ring returns that ring
+InstallOtherMethod(DefaultRingByGenerators, fam-> 
+    fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_ring(l[1]));
+InstallMethod(\in, ["IsSingularPoly", "IsRing"], function(pol, r)
+  return SI_ring(pol) = r;
+end);

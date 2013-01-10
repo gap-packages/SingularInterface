@@ -201,6 +201,7 @@ Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
+extern "C" Int InObject(Obj opL, Obj opR);
 
 // The following are not exported in lists.h:
 extern "C" Int IsListObject(Obj obj);
@@ -256,7 +257,7 @@ static Int InitKernel(StructInitInfo* module)
    * InvMutFuncs fuer T_SINGULAR ist InvMutObject, OK?
    * EqFuncs fuer T_SINGULAR/T_SINGULAR
    * LtFuncs fuer T_SINGULAR/T_SINGULAR ist LtObject, OK?
-   * InFuncs fuer T_SINGULAR/T_SINGULAR
+   // InFuncs fuer T_SINGULAR/T_SINGULAR
    * SumFuncs fuer T_SINGULAR/T_SINGULAR ist SumObject, OK?
    // SumFuncs[T_SINGULAR][T_SINGULAR] = SumSingObjs;
    * DiffFuncs fuer T_SINGULAR/T_SINGULAR ist DiffObject, OK?
@@ -271,6 +272,7 @@ static Int InitKernel(StructInitInfo* module)
   IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
   MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
   // The following are OK, see dev/ZEROONECHAOS for details!
+  InFuncs[T_SINGULAR][T_SINGULAR] = InObject;
   ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
   OneMutFuncs[T_SINGULAR] = OneSMSingObj;
   EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
