@@ -281,13 +281,8 @@ static Int InitKernel(StructInitInfo* module)
    * CleanObjFuncs fuer T_SINGULAR
    * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
    * PrintPathFuncs fuer T_SINGULAR
-   * IsMutableObjFunc fuer T_SINGULAR
-   * ZeroFuncs fuer T_SINGULAR ist ZeroObject, OK?
-   * ZeroMutFuncs fuer T_SINGULAR ist ZeroMutObject, OK?
    * AInvFuncs fuer T_SINGULAR ist AInvObject, OK?
    * AInvMutFuncs fuer T_SINGULAR ist AInvMutObject, OK?
-   * OneFuncs fuer T_SINGULAR ist OneObject, OK?
-   * OneMutFuncs fuer T_SINGULAR ist OneMutObject, OK?
    * InvFuncs fuer T_SINGULAR ist InvObject, OK?
    * InvMutFuncs fuer T_SINGULAR ist InvMutObject, OK?
    * EqFuncs fuer T_SINGULAR/T_SINGULAR
