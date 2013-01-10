@@ -1763,6 +1763,9 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     errorreported = 0;
     BOOLEAN ret;
     switch (nrargs) {
+        case 0:
+            ret = iiExprArithM(&(singres.obj),NULL,INT_INTOBJ(op));
+            break;
         case 1:
             ret = iiExprArith1(&(singres.obj),sing[0].destructiveuse(),
                                INT_INTOBJ(op));
