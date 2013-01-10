@@ -11,6 +11,11 @@ gap> v1 := SI_intvec([1]);
 <singular intvec:[ 1 ]>
 gap> v2 := SI_intvec([2]);
 <singular intvec:[ 2 ]>
-gap> a := SI_CallProc("submat",[m,v1,v2]);
+gap> x := SI_CallProc("submat",[m,v1,v2]);
 <singular object:
 b>
+gap> y := SIL_submat(m,v1,v2);
+<singular object:
+b>
+gap> x = y;
+true
