@@ -1722,9 +1722,11 @@ Obj Func_SI_SingularProcs(Obj self)
     return l;
 }
 
+/**
+ * Tries to transform a singular object to a GAP object.
+ * Currently does small integers and strings.
+ */
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
-// Tries to transform a singular object to a GAP object.
-// Currently does small integers and strings
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR) {
         ErrorQuit("singobj must be a wrapped Singular object",0L,0L);

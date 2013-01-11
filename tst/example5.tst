@@ -31,24 +31,24 @@ gap> SI_ValueOfVar("y");
 gap> s := SI_ring(3,["a","b"]);
 <singular ring>
 gap> i := SI_Indeterminates(s);
-[ <singular poly:a>, <singular poly:b> ]
+[ <singular poly (mutable):a>, <singular poly (mutable):b> ]
 gap> _SI_p_String(i[1]);
 "a"
 gap> _SI_p_String(i[2]);
 "b"
 gap> a := _SI_MONOMIAL(s,2,[2,3]);
-<singular poly:-a2b3>
+<singular poly (mutable):-a2b3>
 gap> aa := _SI_MULT_POLY_NUMBER(a,2);
-<singular poly:a2b3>
+<singular poly (mutable):a2b3>
 gap> #aa := _SI_pp_Mult_nn(a,2);
 gap> b := _SI_MONOMIAL(s,2,[4,5]);
-<singular poly:-a4b5>
+<singular poly (mutable):-a4b5>
 gap> c := _SI_p_Add_q(a,b);
-<singular poly:-a4b5-a2b3>
+<singular poly (mutable):-a4b5-a2b3>
 gap> d := _SI_pp_Mult_qq(a,b);
-<singular poly:a6b8>
+<singular poly (mutable):a6b8>
 gap> e := _SI_p_Neg(a);
-<singular poly:a2b3>
+<singular poly (mutable):a2b3>
 gap> _SI_p_String(a);
 "-a2b3"
 gap> _SI_p_String(b);
@@ -111,30 +111,38 @@ true
 gap> s := SI_ring(17,["a","b"]);
 <singular ring>
 gap> ind := SI_Indeterminates(s);
-[ <singular poly:a>, <singular poly:b> ]
+[ <singular poly (mutable):a>, <singular poly (mutable):b> ]
 gap> id := SI_ideal(ind);
-<singular ideal>
+<singular ideal (mutable):
+a,
+b>
 gap> x := _SI_MONOMIAL(s,12,[2,3]);
-<singular poly:-5a2b3>
+<singular poly (mutable):-5a2b3>
 gap> y := _SI_MONOMIAL(s,2,[4,3]);
-<singular poly:2a4b3>
+<singular poly (mutable):2a4b3>
 gap> _SI_p_Add_q(x,y);
-<singular poly:2a4b3-5a2b3>
+<singular poly (mutable):2a4b3-5a2b3>
 gap> id := SI_ideal([x,y]);
-<singular ideal>
+<singular ideal (mutable):
+-5a2b3,
+2a4b3>
 gap> p1 := SI_Proxy(id,1);
-<proxy for <singular ideal>[1]>
+<proxy for <singular ideal (mutable):
+-5a2b3,
+2a4b3>[1]>
 gap> p2 := SI_Proxy(id,2);
-<proxy for <singular ideal>[2]>
+<proxy for <singular ideal (mutable):
+-5a2b3,
+2a4b3>[2]>
 gap> _SI_COPY_POLY(p1);
-<singular poly:-5a2b3>
+<singular poly (mutable):-5a2b3>
 gap> _SI_COPY_POLY(p2);
-<singular poly:2a4b3>
+<singular poly (mutable):2a4b3>
 gap> _SI_p_Add_q(x,p2);
-<singular poly:2a4b3-5a2b3>
+<singular poly (mutable):2a4b3-5a2b3>
 gap> _SI_p_Add_q(p2,y);
-<singular poly:4a4b3>
+<singular poly (mutable):4a4b3>
 gap> _SI_p_Add_q(p2,p1);
-<singular poly:2a4b3-5a2b3>
+<singular poly (mutable):2a4b3-5a2b3>
 gap> 
 gap> 

@@ -4,7 +4,7 @@ gap> Singular("listvar(proc);");
 gap> s := SI_ring(0,["a","b"]);
 <singular ring>
 gap> m := SI_matrix(s,2,2,"a,b,ab,1");
-<singular object:
+<singular matrix (mutable):
 a, b,
 ab,1 >
 gap> v1 := SI_intvec([1]);
@@ -12,10 +12,10 @@ gap> v1 := SI_intvec([1]);
 gap> v2 := SI_intvec([2]);
 <singular intvec:[ 2 ]>
 gap> x := SI_CallProc("submat",[m,v1,v2]);
-<singular object:
+<singular matrix (mutable):
 b>
 gap> y := SIL_submat(m,v1,v2);
-<singular object:
+<singular matrix (mutable):
 b>
 gap> x = y;
 true

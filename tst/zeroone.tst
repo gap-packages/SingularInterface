@@ -1,13 +1,13 @@
 gap> r := SI_ring(0,["x","y"]);
 <singular ring>
 gap> a := SI_poly(r,"xy");
-<singular poly:xy>
+<singular poly (mutable):xy>
 gap> IsMutable(r);
 false
 gap> IsMutable(a);
 true
 gap> ai := SI_poly(r,"xx");
-<singular poly:x2>
+<singular poly (mutable):x2>
 gap> MakeImmutable(ai);
 <singular poly:x2>
 gap> IsMutable(ai);
@@ -17,7 +17,7 @@ gap> x := OneSM(r);
 gap> IsMutable(x);
 false
 gap> x := OneSM(a);
-<singular poly:1>
+<singular poly (mutable):1>
 gap> IsMutable(x);
 true
 gap> x := OneSM(ai);
@@ -25,15 +25,15 @@ gap> x := OneSM(ai);
 gap> IsMutable(x);
 false
 gap> x := OneMutable(r);
-<singular poly:1>
+<singular poly (mutable):1>
 gap> IsMutable(x);
 true
 gap> x := OneMutable(a);
-<singular poly:1>
+<singular poly (mutable):1>
 gap> IsMutable(x);
 true
 gap> x := OneMutable(ai);
-<singular poly:1>
+<singular poly (mutable):1>
 gap> IsMutable(x);
 true
 gap> x := OneImmutable(r);
@@ -53,7 +53,7 @@ gap> x := ZeroSM(r);
 gap> IsMutable(x);
 false
 gap> x := ZeroSM(a);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> IsMutable(x);
 true
 gap> x := ZeroSM(ai);
@@ -61,15 +61,15 @@ gap> x := ZeroSM(ai);
 gap> IsMutable(x);
 false
 gap> x := ZeroMutable(r);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> IsMutable(x);
 true
 gap> x := ZeroMutable(a);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> IsMutable(x);
 true
 gap> x := ZeroMutable(ai);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> IsMutable(x);
 true
 gap> x := ZeroImmutable(r);
@@ -91,8 +91,8 @@ gap> y := ZeroSM(r);
 gap> IsIdenticalObj(x,y);
 true
 gap> x := ZeroMutable(r);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> y := ZeroMutable(r);
-<singular poly:0>
+<singular poly (mutable):0>
 gap> IsIdenticalObj(x,y);
 false
