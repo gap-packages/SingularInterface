@@ -2,13 +2,27 @@
 # install various arithmetic functions as methods
 
 # Generic \+, faster method for polys
-InstallOtherMethod(\+, ["IsSingularObj","IsSingularObj"], SI_\+);
-InstallOtherMethod(\+, ["IsInt","IsSingularObj"], SI_\+);
-InstallOtherMethod(\+, ["IsSingularObj","IsInt"], SI_\+);
+InstallGlobalFunction( _SI_Addition,
+  function(a,b)
+    local c;
+    c := SI_\*(a,b);
+    if not(IsMutable(a)) and not(IsMutable(b)) then MakeImmutable(c); fi;
+    return c;
+  end );
+InstallOtherMethod(\+, ["IsSingularObj","IsSingularObj"], _SI_Addition);
+InstallOtherMethod(\+, ["IsInt","IsSingularObj"], _SI_Addition);
+InstallOtherMethod(\+, ["IsSingularObj","IsInt"], _SI_Addition);
 
 # For small polynomials this variant can be 30%  faster. If SI_\+ were
 # using SI_CallFuncM, it  would be slower again by a similar factor.
-InstallOtherMethod(\+, ["IsSingularPoly","IsSingularPoly"], _SI_p_Add_q);
+InstallGlobalFunction( _SI_Addition_fast,
+  function(a,b)
+    local c;
+    c := _SI_p_Add_q(a,b);
+    if not(IsMutable(a)) and not(IsMutable(b)) then MakeImmutable(c); fi;
+    return c;
+  end );
+InstallOtherMethod(\+, ["IsSingularPoly","IsSingularPoly"], _SI_Addition_fast);
 
 InstallOtherMethod(\-, ["IsSingularObj","IsSingularObj"], SI_\-);
 InstallOtherMethod(\-, ["IsInt","IsSingularObj"], SI_\-);
