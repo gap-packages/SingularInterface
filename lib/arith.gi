@@ -5,9 +5,9 @@
 InstallGlobalFunction( _SI_Addition,
   function(a,b)
     local c;
-    c := SI_\*(a,b);
-    if not(IsMutable(a)) and not(IsMutable(b)) then MakeImmutable(c); fi;
-    return c;
+    c := SI_\+(a,b);
+    if IsMutable(a) or IsMutable(b) then return c;
+    else return MakeImmutable(c); fi;
   end );
 InstallOtherMethod(\+, ["IsSingularObj","IsSingularObj"], _SI_Addition);
 InstallOtherMethod(\+, ["IsInt","IsSingularObj"], _SI_Addition);
@@ -19,17 +19,38 @@ InstallGlobalFunction( _SI_Addition_fast,
   function(a,b)
     local c;
     c := _SI_p_Add_q(a,b);
-    if not(IsMutable(a)) and not(IsMutable(b)) then MakeImmutable(c); fi;
-    return c;
+    if IsMutable(a) or IsMutable(b) then return c; 
+    else return MakeImmutable(c); fi;
   end );
 InstallOtherMethod(\+, ["IsSingularPoly","IsSingularPoly"], _SI_Addition_fast);
 
-InstallOtherMethod(\-, ["IsSingularObj","IsSingularObj"], SI_\-);
-InstallOtherMethod(\-, ["IsInt","IsSingularObj"], SI_\-);
-InstallOtherMethod(\-, ["IsSingularObj","IsInt"], SI_\-);
+InstallGlobalFunction( _SI_Subtraction,
+  function(a,b)
+    local c;
+    c := SI_\-(a,b);
+    if IsMutable(a) or IsMutable(b) then return c;
+    else return MakeImmutable(c); fi;
+  end );
+InstallOtherMethod(\-, ["IsSingularObj","IsSingularObj"], _SI_Subtraction);
+InstallOtherMethod(\-, ["IsInt","IsSingularObj"], _SI_Subtraction);
+InstallOtherMethod(\-, ["IsSingularObj","IsInt"], _SI_Subtraction);
 
-InstallOtherMethod(AINV, ["IsSingularObj"], SI_\-);
-InstallOtherMethod(AINV, ["IsSingularPoly"], _SI_p_Neg);
+InstallGlobalFunction( _SI_Negation,
+  function(a)
+    local c;
+    c := SI_\-(a);
+    if IsMutable(a) then return c; 
+    else return MakeImmutable(c); fi;
+  end );
+InstallGlobalFunction( _SI_Negation_fast,
+  function(a)
+    local c;
+    c := _SI_p_Neg(a);
+    if IsMutable(a) then return c; 
+    else return MakeImmutable(c); fi;
+  end );
+InstallOtherMethod(AINV, ["IsSingularObj"], _SI_Negation);
+InstallOtherMethod(AINV, ["IsSingularPoly"], _SI_Negation_fast);
 
 
 InstallOtherMethod(\*, ["IsSingularObj","IsSingularObj"], SI_\*);

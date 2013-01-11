@@ -129,6 +129,9 @@ DeclareGlobalFunction( "_SI_BindSingularProcs" );
 
 DeclareGlobalFunction( "_SI_Addition" );
 DeclareGlobalFunction( "_SI_Addition_fast" );
+DeclareGlobalFunction( "_SI_Subtraction" );
+DeclareGlobalFunction( "_SI_Negation" );
+DeclareGlobalFunction( "_SI_Negation_fast" );
 
 DeclareGlobalFunction( "_SI_InitInterpreter" );
 # This is called automatically from libsing.gi, no need for the user to call it.
