@@ -84,6 +84,7 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     return tmp;
 }
@@ -93,6 +94,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
     SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
@@ -104,6 +106,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
+    SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_ZERO_SINGOBJ(tmp,zero);
     SET_ONE_SINGOBJ(tmp,one);
@@ -308,6 +311,7 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
     }
     return NULL;   // To please the compiler
 }
+
 static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                            const char *(&error))
 // proxy is a GAP proxy object, pos is a position in it, the first
@@ -427,6 +431,8 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
         gtype = TYPE_SINGOBJ(input);
         obj.data = CXX_SINGOBJ(input);
         obj.rtyp = GAPtoSingType[gtype];
+        obj.flag = FLAGS_SINGOBJ(input);
+        obj.attribute = (attr) ATTRIB_SINGOBJ(input);
         if (HasRingTable[gtype]) {
             rr = RING_SINGOBJ(input);
             r = (ring) CXXRING_SINGOBJ(input);
@@ -483,6 +489,7 @@ void SingObj::copy()
 // is already a copy.
 {
     ring ri;
+    if (obj.attribute) obj.attribute = obj.attribute->Copy();
     switch (gtype) {
       case SINGTYPE_BIGINT:
       case SINGTYPE_BIGINT_IMM:
@@ -564,6 +571,7 @@ void SingObj::cleanup(void)
     ideal *i;
     if (!needcleanup) return;
     needcleanup = false;
+    if (obj.attribute) obj.attribute->killAll(r);
     switch (gtype) {
       case SINGTYPE_BIGINT:
       case SINGTYPE_BIGINT_IMM:
@@ -645,6 +653,7 @@ Obj SingObj::gapwrap(void)
 //        CollectBags(0,0);
 //        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
 //    }
+    Obj res;
     if (!needcleanup) {
         Pr("#W try to GAP-wrap a borrowed Singular object",0L,0L);
     }
@@ -655,41 +664,64 @@ Obj SingObj::gapwrap(void)
       case INT_CMD:
         return ObjInt_Int((long) (obj.Data()));
       case NUMBER_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.Data(),rr);
+        break;
       case POLY_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rr);
+        break;
       case INTVEC_CMD:
-        return NEW_SINGOBJ(SINGTYPE_INTVEC,obj.Data());
+        res = NEW_SINGOBJ(SINGTYPE_INTVEC,obj.Data());
+        break;
       case INTMAT_CMD:
-        return NEW_SINGOBJ(SINGTYPE_INTMAT,obj.Data());
+        res = NEW_SINGOBJ(SINGTYPE_INTMAT,obj.Data());
+        break;
       case VECTOR_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rr);
+        break;
       case IDEAL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rr);
+        break;
       case BIGINT_CMD:
-        return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.Data());
+        res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.Data());
+        break;
       case MATRIX_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
+        break;
       case LIST_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rr);
+        break;
       case LINK_CMD:
-        return NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
+        res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
+        break;
       case RING_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
+        res = NEW_SINGOBJ_RING(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
+        break;
       case QRING_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
+        res = NEW_SINGOBJ_RING(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
+        break;
       case RESOLUTION_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
+        break;
       case STRING_CMD:
-        return NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
+        res = NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
+        break;
       case MAP_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.Data(),rr);
+        break;
       case MODUL_CMD:
-        return NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
+        res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
+        break;
       default:
         obj.CleanUp(r);
         return False;
     }
+    if (obj.flag) SET_FLAGS_SINGOBJ(res,obj.flag);
+    if (obj.attribute) {
+        SET_ATTRIB_SINGOBJ(res,(void *) obj.attribute);
+        obj.attribute = NULL;
+    }
+    obj.data = NULL;
+    return res;
 }
 
 // The following function is called from the garbage collector, it
@@ -749,6 +781,10 @@ void _SI_FreeFunc(Obj o)
     ideal id;
     map m;
 
+    if (ATTRIB_SINGOBJ(o)) {
+        attr a = (attr) ATTRIB_SINGOBJ(o);
+        a->killAll(SINGRING_SINGOBJ(o));
+    }
     switch (type) {
         case SINGTYPE_QRING:
         case SINGTYPE_QRING_IMM:
@@ -1296,7 +1332,8 @@ Obj Func_SI_intmat(Obj self, Obj m)
 
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
-    if (!ISSINGOBJ(SINGTYPE_INTMAT_IMM,im)) {
+    if (!(ISSINGOBJ(SINGTYPE_INTMAT_IMM,im) ||
+          ISSINGOBJ(SINGTYPE_INTMAT,im))) {
         ErrorQuit("im must be a singular intmat", 0L, 0L);
         return Fail;
     }
@@ -1924,6 +1961,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     singres.needcleanup = true;
     singres.obj.data = ret->data;
     singres.obj.rtyp = ret->rtyp;
+    singres.obj.attribute = ret->attribute;
+    singres.obj.flag = ret->flag;
     return singres.gapwrap();
 }
 

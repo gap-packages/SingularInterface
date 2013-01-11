@@ -47,6 +47,7 @@ void InstallPrePostGCFuncs(void);
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
 // Objects in case (1) consists of 2 words: 
 // First is the GAP type as a small integer pointing into a plain list
+// together with some bits for the special attributes.
 // Second is a pointer to a C++ singular object.
 // These are the same for all objects.
 // For type (2) there are 4 words, the first 2 are as above:
@@ -56,10 +57,69 @@ void InstallPrePostGCFuncs(void);
 // For type (3) there are 4 words, the first 2 are as above:
 // Third is a reference to the canonical GAP wrapper of the ring's zero.
 // Fourth is a reference to the canonical GAP wrapper of the ring's one.
+//
+// Additionally, all object wrappers can have an additional word
+// for the extended attributes.
 
-inline Int TYPE_SINGOBJ( Obj obj ) { return (Int) ADDR_OBJ(obj)[0]; }
+#ifdef SYS_IS_64_BIT
+typedef struct { 
+    unsigned int flags;
+    int type;
+  } SingObj_FirstWord;
+
+inline Int TYPE_SINGOBJ( Obj obj ) 
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    return (Int) (p->type);
+}
+
 inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
-{ ADDR_OBJ(obj)[0] = (Obj) val; }
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    p->type = (int) val;
+}
+
+inline unsigned int FLAGS_SINGOBJ( Obj obj )
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    return (unsigned int) p->flags;
+}
+
+inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    p->flags = val;
+}
+#else
+typedef struct { 
+    unsigned short int flags;
+    short int type;
+  } SingObj_FirstWord;
+
+inline Int TYPE_SINGOBJ( Obj obj ) 
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    return (Int) (p->type);
+}
+
+inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    p->type = (short int) val;
+}
+
+inline unsigned int FLAGS_SINGOBJ( Obj obj )
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    return (unsigned int) p->flags;
+}
+
+inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
+{ 
+    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
+    p->flags = (unsigned short int) val;
+}
+#endif
 
 inline void *CXX_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[1]; }
 inline void SET_CXX_SINGOBJ( Obj obj, void *val )
@@ -81,6 +141,37 @@ inline Obj ONE_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[3]; }
 inline void SET_ONE_SINGOBJ( Obj obj, Obj one )
 { ADDR_OBJ(obj)[3] = one; }
 
+inline void *ATTRIB_SINGOBJ( Obj obj )
+{
+    Int t = TYPE_SINGOBJ(obj);
+    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
+        if (SIZE_BAG(obj) == 4*sizeof(Obj))
+            return NULL;
+        else
+            return (void *) (ADDR_OBJ(obj)[4]);
+    } else {
+        if (SIZE_BAG(obj) == 2*sizeof(Obj))
+            return NULL;
+        else
+            return (void *) (ADDR_OBJ(obj)[2]);
+    }
+}
+
+inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
+{
+    Int t = TYPE_SINGOBJ(obj);
+    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
+        if (SIZE_BAG(obj) == 4*sizeof(Obj))
+            ResizeBag(obj,5*sizeof(Obj));
+        ADDR_OBJ(obj)[4] = (Obj) a;
+    } else {
+        if (SIZE_BAG(obj) == 2*sizeof(Obj))
+            ResizeBag(obj,3*sizeof(Obj));
+        ADDR_OBJ(obj)[2] = (Obj) a;
+    }
+}
+
+       
 Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one);
