@@ -24,24 +24,6 @@ This file contains all of the code that deals with C++ libraries.
 #endif
 
 
-extern int inerror; // from Singular/grammar.cc
-
-
-static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
-
-
-// get omalloc statistics
-Obj Func_SI_OmPrintInfo( Obj self )
-{
-  omPrintInfo(stdout);
-  return NULL;
-}
-
-Obj Func_SI_OmCurrentBytes( Obj self )
-{
-  omInfo_t info = omGetInfo();
-  return INTOBJ_INT(info.CurrentBytesSystem);
-}
 
 #ifdef WANT_SW
 #ifdef HAVE_FACTORY
@@ -60,22 +42,35 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #define MP_DELETE(A,B) mpDelete(A,B)
 #define BIGINTMAT(A,B,C) bigintmat(A,B)
 #endif
+
+
+// The following should be in rational.h but isn't:
+#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
+#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+
+
+
+extern int inerror; // from Singular/grammar.cc
+
+
+static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
+
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
 static long gc_omalloc_threshold = 1000000L;
 //static long gcfull_omalloc_threshold = 4000000L;
 
-int GCCOUNT = 0;
+static int GCCOUNT = 0;
+
 static inline void possiblytriggerGC(void)
 {
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
-          GCCOUNT = 0;
-          CollectBags(0,1);
-        }
-        else {
-          GCCOUNT++;
-          CollectBags(0,0);
+            GCCOUNT = 0;
+            CollectBags(0,1);
+        } else {
+            GCCOUNT++;
+            CollectBags(0,0);
         }
         //printf("\nGC: %ld -> ",gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
@@ -83,6 +78,24 @@ static inline void possiblytriggerGC(void)
     }
 }
 
+// get omalloc statistics
+Obj Func_SI_OmPrintInfo( Obj self )
+{
+    omPrintInfo(stdout);
+    return NULL;
+}
+
+Obj Func_SI_OmCurrentBytes( Obj self )
+{
+    omInfo_t info = omGetInfo();
+    return INTOBJ_INT(info.CurrentBytesSystem);
+}
+
+//! Wrap a singular object that is not ring dependent inside GAP object.
+//!
+//! \param[in] type  the type of the singular object
+//! \param[in] cxx   point to the singular object
+//! \return  a GAP object wrapping the singular object
 Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     possiblytriggerGC();
@@ -93,6 +106,12 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
     return tmp;
 }
 
+//! Wrap a ring dependent singular object inside GAP object.
+//!
+//! \param[in] type  the type of the singular object
+//! \param[in] cxx   point to the singular object
+//! \param[in] ring  a GAP-wrapped singular ring
+//! \return  a GAP object wrapping the singular object
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 {
     possiblytriggerGC();
@@ -105,7 +124,17 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
     return tmp;
 }
 
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
+//! Wrap a ring or qring inside GAP object.
+//!
+//! Optionally allows setting zero and one elements for that ring,
+//! which GAP operations like Zero() and One() will return.
+//!
+//! \param[in] type  the type of the singular object
+//! \param[in] cxx   point to the singular object
+//! \param[in] zero  a GAP-wrapped element of the (q)ring, may be NULL
+//! \param[in] one   a GAP-wrapped element of the (q)ring, may be NULL
+//! \return  a GAP object wrapping the singular (q)ring
+Obj NEW_SINGOBJ_ZERO_ONE(UInt type, void *cxx, Obj zero, Obj one)
 {
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
@@ -117,22 +146,21 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one)
     return tmp;
 }
 
-// Some convenience for C++:
-
+//! Convenience method for accessing the singular ring of a
+//! a GAP-wrapped ring-dependent singular object.
 inline ring SINGRING_SINGOBJ( Obj obj )
 {
     return (ring) CXXRING_SINGOBJ( obj );
 }
 
 
-// The following should be in rational.h but isn't:
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+//! \defgroup CxxHelper C++ helpers for converting between GAP and Singular
+//! The following functions are helpers on the C++ level. They
+//! are not exposed to the GAP level. They are mainly used to dig out
+//! proper singular elements from their GAP wrappers or from real GAP
+//! objects.
+//! @{
 
-// The following functions are helpers on the C++ level. They
-// are not exposed to the GAP level. They are mainly used to dig out
-// proper singular elements from their GAP wrappers or from real GAP
-// objects.
 
 static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
 {
@@ -725,10 +753,10 @@ Obj SingObj::gapwrap(void)
         res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
         break;
       case RING_CMD:
-        res = NEW_SINGOBJ_RING(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
+        res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
         break;
       case QRING_CMD:
-        res = NEW_SINGOBJ_RING(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
+        res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
         break;
       case RESOLUTION_CMD:
         res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
@@ -754,6 +782,9 @@ Obj SingObj::gapwrap(void)
     obj.data = NULL;
     return res;
 }
+
+//! @}  end group CxxHelper
+
 
 // The following function is called from the garbage collector, it
 // needs to free the underlying singular object. Since objects are

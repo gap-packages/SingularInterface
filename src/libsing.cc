@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 /**
-@file libsing.c
+@file libsing.cc
 This file contains all of the pure C code that deals with GAP.
 **/
 //////////////////////////////////////////////////////////////////////////////
@@ -108,8 +108,8 @@ static Int InitKernel(StructInitInfo* module)
 {
   /* init filters and functions                                          */
   InitHdlrFuncsFromTable( GVarFuncs );
-  InitFreeFuncBag(T_SINGULAR,&_SI_FreeFunc);
-  InitMarkFuncBags(T_SINGULAR,&_SI_ObjMarkFunc);
+  InitFreeFuncBag(T_SINGULAR, &_SI_FreeFunc);
+  InitMarkFuncBags(T_SINGULAR, &_SI_ObjMarkFunc);
 
   InitSingTypesFromKernel();
 
