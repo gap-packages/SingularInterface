@@ -188,6 +188,12 @@ DeclareOperation("SI_matrix",[IsSingularObj,IsPosInt,IsPosInt]);
 DeclareOperation("SI_matrix",[IsSingularRing, IsPosInt, IsPosInt, IsStringRep]);
 DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsList]);
 
+BindGlobal("SI_vector_singular", SI_vector);
+MakeReadWriteGVar("SI_vector");
+Unbind(SI_vector);
+DeclareOperation("SI_vector",[IsSingularObj]);
+DeclareOperation("SI_vector",[IsSingularRing, IsPosInt, IsStringRep]);
+
 BindGlobal("SI_ideal_singular", SI_ideal);
 MakeReadWriteGVar("SI_ideal");
 Unbind(SI_ideal);

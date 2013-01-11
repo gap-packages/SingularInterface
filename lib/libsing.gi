@@ -40,6 +40,15 @@ InstallMethod(SI_matrix,[IsSingularRing, IsPosInt, IsPosInt, IsStringRep],
               _SI_matrix_from_String);
 InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsList], _SI_matrix_from_els);
 
+# a Singular vector is a "polynomial" in which each monomial also carries
+# its position
+InstallMethod(SI_vector,[IsSingularRing, IsPosInt, IsStringRep], 
+function(r, len, str)
+  local mat;
+  mat := SI_matrix(r, len, 1, str);
+  # this returns the first column(!) of mat as vector
+  return SI_\[(mat,1);
+end);
 InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
 InstallMethod(SI_ideal,[IsSingularRing, IsStringRep], _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
