@@ -145,15 +145,13 @@ inline void *ATTRIB_SINGOBJ( Obj obj )
 {
     Int t = TYPE_SINGOBJ(obj);
     if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
-        if (SIZE_BAG(obj) == 4*sizeof(Obj))
+        if (SIZE_BAG(obj) <= 4*sizeof(Obj))
             return NULL;
-        else
-            return (void *) (ADDR_OBJ(obj)[4]);
+        return (void *) (ADDR_OBJ(obj)[4]);
     } else {
-        if (SIZE_BAG(obj) == 2*sizeof(Obj))
+        if (SIZE_BAG(obj) <= 2*sizeof(Obj))
             return NULL;
-        else
-            return (void *) (ADDR_OBJ(obj)[2]);
+        return (void *) (ADDR_OBJ(obj)[2]);
     }
 }
 
@@ -161,12 +159,12 @@ inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 {
     Int t = TYPE_SINGOBJ(obj);
     if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
-        if (SIZE_BAG(obj) == 4*sizeof(Obj))
-            ResizeBag(obj,5*sizeof(Obj));
+        if (SIZE_BAG(obj) <= 4*sizeof(Obj))
+            ResizeBag(obj, 5*sizeof(Obj));
         ADDR_OBJ(obj)[4] = (Obj) a;
     } else {
-        if (SIZE_BAG(obj) == 2*sizeof(Obj))
-            ResizeBag(obj,3*sizeof(Obj));
+        if (SIZE_BAG(obj) <= 2*sizeof(Obj))
+            ResizeBag(obj, 3*sizeof(Obj));
         ADDR_OBJ(obj)[2] = (Obj) a;
     }
 }
