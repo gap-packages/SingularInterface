@@ -19,10 +19,10 @@ DeclareCategory( "IsSingularMatrix", IsSingularObj );
 DeclareCategory( "IsSingularModule", IsSingularObj );
 DeclareCategory( "IsSingularNumber", IsSingularObj and IsRingElementWithOne );
 DeclareCategory( "IsSingularPoly", IsSingularObj and IsRingElementWithOne );
-DeclareCategory( "IsSingularQRing", IsSingularObj and IsAdditiveMagmaWithZero 
+DeclareCategory( "IsSingularQRing", IsSingularObj and IsAdditiveMagmaWithZero
                   and IsRingWithOne );
 DeclareCategory( "IsSingularResolution", IsSingularObj );
-DeclareCategory( "IsSingularRing", IsSingularObj and IsAdditiveMagmaWithZero 
+DeclareCategory( "IsSingularRing", IsSingularObj and IsAdditiveMagmaWithZero
                   and IsRingWithOne );
 DeclareCategory( "IsSingularString", IsSingularObj and IsList );
 DeclareCategory( "IsSingularVector", IsSingularObj and IsList );
@@ -78,23 +78,23 @@ _SI_Types[_SI_TYPENRS.SINGTYPE_POLY]
    := NewType(SingularFamily,IsSingularPoly and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_POLY_IMM]
    := NewType(SingularFamily,IsSingularPoly);
-_SI_Types[_SI_TYPENRS.SINGTYPE_QRING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_QRING]
    := NewType(SingularFamily,IsSingularQRing and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_QRING_IMM] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_QRING_IMM]
    := NewType(SingularFamily,IsSingularQRing);
-_SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION]
    := NewType(SingularFamily,IsSingularResolution and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION_IMM]
    := NewType(SingularFamily,IsSingularResolution);
-_SI_Types[_SI_TYPENRS.SINGTYPE_RING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RING]
    := NewType(SingularFamily,IsSingularRing and IsMutable);
-_SI_Types[_SI_TYPENRS.SINGTYPE_RING_IMM] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_RING_IMM]
    := NewType(SingularFamily,IsSingularRing);
-_SI_Types[_SI_TYPENRS.SINGTYPE_STRING] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_STRING]
    := NewType(SingularFamily,IsSingularString and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_STRING_IMM]
    := NewType(SingularFamily,IsSingularString);
-_SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR] 
+_SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR]
    := NewType(SingularFamily,IsSingularVector and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR_IMM]
    := NewType(SingularFamily,IsSingularVector);

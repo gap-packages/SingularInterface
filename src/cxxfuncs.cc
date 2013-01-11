@@ -30,7 +30,7 @@ extern int inerror; // from Singular/grammar.cc
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
 
 
-// get omalloc statistics 
+// get omalloc statistics
 Obj FuncOmPrintInfo( Obj self )
 {
   omPrintInfo(stdout);
@@ -168,7 +168,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         // We are in characteristic p, so number is just an integer:
         if (IS_INTOBJ(n)) {
             return n_Init((int) (INT_INTOBJ(n) % rChar(r)),r);
-        } 
+        }
         // Maybe allow for finite field elements here, but check
         // characteristic!
         ErrorQuit("Argument must be an immediate integer.\n",0L,0L);
@@ -307,7 +307,7 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
                 return NULL;
             }
             return id->m[index-1];
-        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob) || 
+        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob) ||
                    ISSINGOBJ(SINGTYPE_MATRIX_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
             int row = INT_INTOBJ(ELM_PLIST(o,2));
@@ -367,7 +367,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_POLY;
         return id->m[index-1];
-    } else if (currgtype == SINGTYPE_MATRIX || 
+    } else if (currgtype == SINGTYPE_MATRIX ||
                currgtype == SINGTYPE_MATRIX_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
@@ -394,7 +394,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
-    } else if (currgtype == SINGTYPE_INTMAT || 
+    } else if (currgtype == SINGTYPE_INTMAT ||
                currgtype == SINGTYPE_INTMAT_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
@@ -439,7 +439,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
     r = NULL;
     rr = NULL;
     obj.Init();
-    if (IS_INTOBJ(input) || 
+    if (IS_INTOBJ(input) ||
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
         if (gtype == SINGTYPE_INT || gtype == SINGTYPE_INT_IMM) {
@@ -944,7 +944,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     Int j;
     int covered;
     Obj tmp,tmp2;
-    
+
     // Some checks:
     if (!IS_INTOBJ(charact) || !IS_LIST(names) || !IS_LIST(orderings)) {
         ErrorQuit("Need immediate integer and two lists",0L,0L);
@@ -991,7 +991,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         ErrorQuit("Orderings do not cover exactly the variables",0L,0L);
         return Fail;
     }
-            
+
     // Now allocate strings for the variable names:
     array = (char **) omalloc(sizeof(char *) * nrvars);
     for (i = 0;i < nrvars;i++)
@@ -1069,7 +1069,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     Obj tmp;
 
     if (r != currRing) rChangeCurrRing(r);
-        
+
     res = NEW_PLIST(T_PLIST_DENSE,nrvars);
     for (i = 1;i <= nrvars;i++) {
         poly p = p_ISet(1,r);
@@ -1168,7 +1168,7 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 }
 
 // Installed as SI_matrix method
-Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
                                Obj rr, Obj st)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1268,7 +1268,7 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 Obj Func_SI_bigintmat(Obj self, Obj m)
 {
     // TODO: This function is untested! add test cases!!!
-    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 &&
            IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
         ErrorQuit("m must be a list of lists",0L,0L);
         return Fail;
@@ -1383,7 +1383,7 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
 // Installed as SI_matrix method
 Obj Func_SI_intmat(Obj self, Obj m)
 {
-    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 &&
            IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
         ErrorQuit("m must be a list of lists",0L,0L);
         return Fail;
@@ -1779,7 +1779,7 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
                                INT_INTOBJ(op));
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp();  // 
+        singres.obj.CleanUp();  //
         return Fail;
     }
 
@@ -1949,14 +1949,14 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 }
 
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj) {
-	if (rr == 0 && RingDependend(sobj.obj.Typ())) {
-		if (SI_CurrentRingObj == 0)
-			ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
-		rr = SI_CurrentRingObj;
-		if (currRing != (ring) CXX_SINGOBJ(rr))
-			ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
-	}
-	return rr;
+    if (rr == 0 && RingDependend(sobj.obj.Typ())) {
+        if (SI_CurrentRingObj == 0)
+            ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
+        rr = SI_CurrentRingObj;
+        if (currRing != (ring) CXX_SINGOBJ(rr))
+            ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
+    }
+    return rr;
 }
 
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
@@ -2088,11 +2088,11 @@ Obj ZeroSMSingObj(Obj s)
         MakeImmutable(res);
         SET_ZERO_SINGOBJ(s,res);
         return res;
-    } 
+    }
     if (((gtype + 1) & 1) == 1)    // we are mutable
         return ZeroMutObject(s);
     // Here we are immutable:
-    if (HasRingTable[gtype]) 
+    if (HasRingTable[gtype])
         // Rings are always immutable!
         return ZeroSMSingObj(RING_SINGOBJ(s));
     return ZeroObject(s);
@@ -2110,11 +2110,11 @@ Obj OneSMSingObj(Obj s)
         MakeImmutable(res);
         SET_ONE_SINGOBJ(s,res);
         return res;
-    } 
+    }
     if (((gtype + 1) & 1) == 1)   // we are mutable!
         return OneObject(s);  // This is OneMutable
     // Here we are immutable:
-    if (HasRingTable[gtype]) 
+    if (HasRingTable[gtype])
         // Rings are always immutable!
         return OneSMSingObj(RING_SINGOBJ(s));
     return OneMutObject(s);

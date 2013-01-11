@@ -31,7 +31,7 @@ extern "C" {
 //////////////////////////////////////////////////////////////////////////////
 /**
 @file libsing.h
-This C header file file contains all of declarations for C++ functions that 
+This C header file file contains all of declarations for C++ functions that
 are to be called from C, or vice-versa.
 **/
 //////////////////////////////////////////////////////////////////////////////
@@ -43,9 +43,9 @@ extern Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring
 void InstallPrePostGCFuncs(void);
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
-// There are 3 possibilites: 
+// There are 3 possibilites:
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
-// Objects in case (1) consists of 2 words: 
+// Objects in case (1) consists of 2 words:
 // First is the GAP type as a small integer pointing into a plain list
 // together with some bits for the special attributes.
 // Second is a pointer to a C++ singular object.

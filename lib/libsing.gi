@@ -128,7 +128,7 @@ InstallGlobalFunction( _SI_InitInterpreter,
 _SI_InitInterpreter();
 
 InstallMethod( Singular, "for a string in stringrep",
-  [ IsStringRep ], 
+  [ IsStringRep ],
   function( st )
     local ret;
     SI_Errors := "";

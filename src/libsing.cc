@@ -277,7 +277,7 @@ static Int InitKernel(StructInitInfo* module)
    * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
    * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
    * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK?
-   * IsListFuncs fuer T_SINGULAR ist 
+   * IsListFuncs fuer T_SINGULAR ist
    * IsSmallListFuncs fuer T_SINGULAR ist */
   IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
   MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
