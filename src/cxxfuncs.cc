@@ -14,10 +14,12 @@ This file contains all of the code that deals with C++ libraries.
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/libsingular.h>
+#include <Singular/bigintmat.h>
 #include <Singular/lists.h>
 #else
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
+#include <singular/bigintmat.h>
 #include <singular/syz.h>
 #endif
 
@@ -260,6 +262,33 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     obj.data = n;
     obj.rtyp = BIGINT_CMD;
     return SINGTYPE_BIGINT_IMM;
+}
+
+static Obj _SI_BIGINT_OR_INT_TO_GAP(number n)
+{
+    if (SR_HDL(n) & SR_INT) {
+        // an immediate integer
+        return INTOBJ_INT(SR_TO_INT(n));
+    } else {
+        Obj res;
+        Int size = n->z->_mp_size;
+        int sign = size > 0 ? 1 : -1;
+        size = abs(size);
+#ifdef SYS_IS_64_BIT
+        if (size == 1) {
+            if (sign > 0)
+                return ObjInt_UInt(n->z->_mp_d[0]);
+            else
+                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
+        }
+#endif
+        if (sign > 0)
+            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
+        else
+            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
+        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
+        return res;
+    }
 }
 
 static poly _SI_GET_poly(Obj o, Obj &rr)
@@ -1222,30 +1251,69 @@ Obj Func_SI_bigint(Obj self, Obj nr)
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
-    Obj res;
-    if (SR_HDL(n) & SR_INT) {
-        // an immediate integer
-        return INTOBJ_INT(SR_TO_INT(n));
-    } else {
-        Int size = n->z->_mp_size;
-        int sign = size > 0 ? 1 : -1;
-        size = abs(size);
-#ifdef SYS_IS_64_BIT
-        if (size == 1) {
-            if (sign > 0)
-                return ObjInt_UInt(n->z->_mp_d[0]);
-            else
-                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
-        }
-#endif
-        if (sign > 0)
-            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
-        else
-            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
-        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
-        return res;
-    }             
+    return _SI_BIGINT_OR_INT_TO_GAP(n);
 }
+
+Obj Func_SI_bigintmat(Obj self, Obj m)
+{
+    // TODO: This function is untested! add test cases!!!
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
+           IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
+        ErrorQuit("m must be a list of lists",0L,0L);
+        return Fail;
+    }
+    Int rows = LEN_LIST(m);
+    Int cols = LEN_LIST(ELM_LIST(m,1));
+    Int r,c;
+    Obj therow;
+    bigintmat *bim = new bigintmat(rows,cols);
+    for (r = 1;r <= rows;r++) {
+        therow = ELM_LIST(m,r);
+        if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
+            delete bim;
+            ErrorQuit("m must be a matrix",0L,0L);
+            return Fail;
+        }
+        for (c = 1; c <= cols; c++) {
+            Obj t = ELM_LIST(therow,c);
+            if (! (IS_INTOBJ(t) || TNUM_OBJ(t) == T_INTPOS || TNUM_OBJ(t) == T_INTNEG)) {
+                delete bim;
+                ErrorQuit("m must contain integers", 0L, 0L);
+            }
+            BIMATELEM(*bim,r,c) = _SI_BIGINT_FROM_GAP(t);
+        }
+    }
+    return NEW_SINGOBJ(SINGTYPE_BIGINTMAT_IMM,bim);
+}
+
+Obj Func_SI_Matbigintmat(Obj self, Obj im)
+{
+    // TODO: This function is untested! add test cases!!!
+    if (!ISSINGOBJ(SINGTYPE_BIGINTMAT_IMM,im)) {
+        ErrorQuit("im must be a singular bigintmat", 0L, 0L);
+        return Fail;
+    }
+    bigintmat *bim = (bigintmat *) CXX_SINGOBJ(im);
+    UInt rows = bim->rows();
+    UInt cols = bim->cols();
+    Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
+    SET_LEN_PLIST(ret,rows);
+    UInt r,c;
+    for (r = 1;r <= rows;r++) {
+        Obj tmp;
+        tmp = NEW_PLIST(T_PLIST_CYC,cols);
+        SET_ELM_PLIST(ret,r,tmp);
+        CHANGED_BAG(ret);
+        for (c = 1;c <= cols;c++) {
+            number n = BIMATELEM(*bim,r,c);
+            SET_ELM_PLIST(tmp,c,_SI_BIGINT_OR_INT_TO_GAP(n));
+            CHANGED_BAG(tmp);
+        }
+        SET_LEN_PLIST(tmp,cols);
+    }
+    return ret;
+}
+
 
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
@@ -1635,28 +1703,31 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
 {
-    char *st;
-    UInt len;
-    Obj tmp;
-    Int i;
-
     if (TNUM_OBJ(singobj) != T_SINGULAR) {
         ErrorQuit("singobj must be a wrapped Singular object",0L,0L);
         return Fail;
     }
     switch (TYPE_SINGOBJ(singobj)) {
       case SINGTYPE_STRING:
-      case SINGTYPE_STRING_IMM:
-        st = (char *) CXX_SINGOBJ(singobj);
-        len = (UInt) strlen(st);
-        tmp = NEW_STRING(len);
+      case SINGTYPE_STRING_IMM: {
+        char *st = (char *) CXX_SINGOBJ(singobj);
+        UInt len = (UInt) strlen(st);
+        Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
         memcpy(CHARS_STRING(tmp),st,len+1);
         return tmp;
+        }
       case SINGTYPE_INT:
-      case SINGTYPE_INT_IMM:
-        i = (Int) CXX_SINGOBJ(singobj);
+      case SINGTYPE_INT_IMM: {
+        Int i = (Int) CXX_SINGOBJ(singobj);
         return INTOBJ_INT(i);
+        }
+      case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM: {
+        // TODO
+        number n = (number) CXX_SINGOBJ(singobj);
+        return _SI_BIGINT_OR_INT_TO_GAP(n);
+        }
       default:
         return Fail;
     }

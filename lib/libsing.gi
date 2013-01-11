@@ -1,6 +1,10 @@
 InstallMethod(SI_bigint,[IsSingularObj],SI_bigint_singular);
 InstallMethod(SI_bigint,[IsInt],_SI_bigint);
 
+InstallMethod(SI_bigintmat,[IsSingularObj],SI_bigintmat_singular);
+#InstallMethod(SI_bigintmat,[IsSingularObj,IsPosInt,IsPosInt],SI_bigintmat_singular);
+InstallMethod(SI_bigintmat,[IsList],_SI_bigintmat);
+
 InstallMethod(SI_number,[IsSingularRing, IsSingularObj],SI_number_singular);
 InstallMethod(SI_number,[IsSingularRing, IsInt],_SI_number);
 
@@ -87,6 +91,12 @@ InstallMethod( ViewString, "for a singular bigint",
   [ IsSingularBigInt ],
   function( r )
     return STRINGIFY("<singular bigint:",_SI_Intbigint(r),">");
+  end );
+
+InstallMethod( ViewString, "for a singular bigintmat",
+  [ IsSingularBigIntMat ],
+  function( i )
+    return STRINGIFY("<singular intmat:",_SI_Matbigintmat(i),">");
   end );
 
 InstallMethod( ViewString, "for a singular intvec",

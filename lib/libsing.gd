@@ -8,6 +8,7 @@ Setter(ElementsFamily)(SingularFamily, SingularFamily); # Grrrrrrrrr
 DeclareCategory( "IsSingularObj", IsObject );
 DeclareCategory( "IsSingularVoid", IsSingularObj );
 DeclareCategory( "IsSingularBigInt", IsSingularObj and IsRingElementWithOne );
+DeclareCategory( "IsSingularBigIntMat", IsSingularObj and IsList );
 DeclareCategory( "IsSingularIdeal", IsSingularObj );
 DeclareCategory( "IsSingularIntMat", IsSingularObj and IsList );
 DeclareCategory( "IsSingularIntVec", IsSingularObj and IsList );
@@ -33,6 +34,10 @@ _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT]
    := NewType(SingularFamily,IsSingularBigInt and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT_IMM]
    := NewType(SingularFamily,IsSingularBigInt);
+_SI_Types[_SI_TYPENRS.SINGTYPE_BIGINTMAT]
+   := NewType(SingularFamily,IsSingularBigIntMat and IsMutable);
+_SI_Types[_SI_TYPENRS.SINGTYPE_BIGINTMAT_IMM]
+   := NewType(SingularFamily,IsSingularBigIntMat);
 _SI_Types[_SI_TYPENRS.SINGTYPE_IDEAL]
    := NewType(SingularFamily,IsSingularIdeal and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_IDEAL_IMM]
@@ -96,6 +101,7 @@ _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR_IMM]
 
 BindGlobal("_SI_TYPETAB",
     rec( bigint := IsSingularBigInt,
+         bigintmat := IsSingularBigIntMat,
          ideal := IsSingularIdeal,
          intmat := IsSingularIntMat,
          intvec := IsSingularIntVec,
@@ -132,6 +138,13 @@ MakeReadWriteGVar("SI_bigint");
 Unbind(SI_bigint);
 DeclareOperation("SI_bigint",[IsSingularObj]);
 DeclareOperation("SI_bigint",[IsInt]);
+
+BindGlobal("SI_bigintmat_singular", SI_bigintmat);
+MakeReadWriteGVar("SI_bigintmat");
+Unbind(SI_bigintmat);
+DeclareOperation("SI_bigintmat",[IsSingularObj]);
+#DeclareOperation("SI_bigintmat",[IsSingularObj,IsPosInt,IsPosInt]);
+DeclareOperation("SI_bigintmat",[IsList]);
 
 BindGlobal("SI_number_singular", SI_number);
 MakeReadWriteGVar("SI_number");
@@ -188,4 +201,4 @@ DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
 
 DeclareGlobalFunction( "_SI_Comparer" );
 
-
+DeclareGlobalFunction( "SI_AddGAPFunctionToSingularInterpreter" );
