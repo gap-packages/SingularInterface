@@ -11,11 +11,11 @@ This file contains all of the code that deals with C++ libraries.
 
 #ifdef WANT_SW
 #include <coeffs/longrat.h>
+#include <coeffs/bigintmat.h>
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
-#include <Singular/libsingular.h>
-#include <Singular/bigintmat.h>
 #include <Singular/lists.h>
+// #include <Singular/libsingular.h>
 #else
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
@@ -52,11 +52,13 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #define MA_COPY(A,B) maCopy(A,B)
 #define MP_COPY(A,B) mp_Copy(A,B)
 #define MP_DELETE(A,B) mp_Delete(A,B)
+#define BIGINTMAT(A,B,C) bigintmat(A,B,C)
 #else
 #define NL_COPY(A,B) nlCopy(A)
 #define MA_COPY(A,B) maCopy(A)
 #define MP_COPY(A,B) mpCopy(A)
 #define MP_DELETE(A,B) mpDelete(A,B)
+#define BIGINTMAT(A,B,C) bigintmat(A,B)
 #endif
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
@@ -1277,7 +1279,7 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
     Int cols = LEN_LIST(ELM_LIST(m,1));
     Int r,c;
     Obj therow;
-    bigintmat *bim = new bigintmat(rows,cols);
+    bigintmat *bim = new BIGINTMAT(rows,cols,coeffs_BIGINT);
     for (r = 1;r <= rows;r++) {
         therow = ELM_LIST(m,r);
         if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
