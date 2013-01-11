@@ -6,6 +6,7 @@ SingularFamily := NewFamily("SingularFamily");
 Setter(ElementsFamily)(SingularFamily, SingularFamily); # Grrrrrrrrr
 
 DeclareCategory( "IsSingularObj", IsObject );
+DeclareOperation( "_SI_TypeName", [IsSingularObj] );
 DeclareCategory( "IsSingularVoid", IsSingularObj );
 DeclareCategory( "IsSingularBigInt", IsSingularObj and IsRingElementWithOne );
 DeclareCategory( "IsSingularBigIntMat", IsSingularObj and IsList );
