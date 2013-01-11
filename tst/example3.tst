@@ -3,7 +3,7 @@ gap> Singular("listvar(proc);");
 0
 gap> s := SI_ring(0,["a","b"]);
 <singular ring>
-gap> m := SI_matrix(2,2,s,"a,b,ab,1");
+gap> m := SI_matrix(s,2,2,"a,b,ab,1");
 <singular object:
 a, b,
 ab,1 >

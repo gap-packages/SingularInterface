@@ -46,7 +46,7 @@ static StructGVarFunc GVarFuncs[] =
    "cxxfuncs.cc:Func_SI_poly_from_String" },
 
   {"_SI_matrix_from_String", 4,
-   "nrrows, nrcols, rr, st",
+   "rr, nrrows, nrcols, st",
    (GVarFunc)Func_SI_matrix_from_String,
    "cxxfuncs.cc:Func_SI_matrix_from_String" },
 

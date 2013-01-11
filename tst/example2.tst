@@ -1,6 +1,6 @@
 gap> s := SI_ring(3,["a","b"],[["dp",2]]);
 <singular ring>
-gap> p := SI_matrix(1,1,s,"a+b+ab");
+gap> p := SI_matrix(s,1,1,"a+b+ab");
 <singular object:
 ab+a+b>
 gap> SI_\[(p,1);
@@ -15,7 +15,7 @@ gap> SI_\[(p,3);
 gap> SI_\[(p,4);
 <singular object:
 [0]>
-gap> m := SI_matrix(2,2,s,"a,b,ab,2");
+gap> m := SI_matrix(s,2,2,"a,b,ab,2");
 <singular object:
 a, b,
 ab,-1>
