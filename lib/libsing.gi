@@ -126,6 +126,16 @@ InstallMethod( ViewString, "for a singular intmat",
     return STRINGIFY("<singular intmat",ii,":",_SI_Matintmat(i),">");
   end );
 
+InstallMethod( ViewString, "for a singular ideal",
+  [ IsSingularIdeal ],
+  function( ideal )
+    local ii;
+    if IsMutable(ideal) then ii := " (mutable)"; else ii := ""; fi;
+    return STRINGIFY("<singular ideal",ii,", ",SI_ncols(ideal),
+                                  "gens of deg <= ",SI_deg(ideal),">");
+  end );
+
+
 InstallGlobalFunction( _SI_InitInterpreter,
   function( )
     local path, version;
