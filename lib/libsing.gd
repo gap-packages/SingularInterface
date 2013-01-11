@@ -189,6 +189,9 @@ DeclareOperation("SI_matrix",[IsSingularObj,IsPosInt,IsPosInt]);
 DeclareOperation("SI_matrix",[IsSingularRing, IsPosInt, IsPosInt, IsStringRep]);
 DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsList]);
 
+DeclareOperation("SI_ZeroMat",[IsSingularRing, IsPosInt, IsPosInt]);
+DeclareOperation("SI_IdentityMat",[IsSingularRing, IsPosInt]);
+
 BindGlobal("SI_ideal_singular", SI_ideal);
 MakeReadWriteGVar("SI_ideal");
 Unbind(SI_ideal);
@@ -203,3 +206,4 @@ DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
 DeclareGlobalFunction( "_SI_Comparer" );
 
 DeclareGlobalFunction( "SI_AddGAPFunctionToSingularInterpreter" );
+
