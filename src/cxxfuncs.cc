@@ -716,7 +716,11 @@ Obj SingObj::gapwrap(void)
         return False;
     }
     if (obj.flag) SET_FLAGS_SINGOBJ(res,obj.flag);
-    if (obj.attribute) SET_ATTRIB_SINGOBJ(res,(void *) obj.attribute);
+    if (obj.attribute) {
+        SET_ATTRIB_SINGOBJ(res,(void *) obj.attribute);
+        obj.attribute = NULL;
+    }
+    obj.data = NULL;
     return res;
 }
 
