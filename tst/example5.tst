@@ -113,7 +113,7 @@ gap> s := SI_ring(17,["a","b"]);
 gap> ind := SI_Indeterminates(s);
 [ <singular poly (mutable):a>, <singular poly (mutable):b> ]
 gap> id := SI_ideal(ind);
-<singular ideal (mutable), 2gens of deg <= 1>
+<singular ideal (mutable), 2 gens of deg <= 1>
 gap> x := _SI_MONOMIAL(s,12,[2,3]);
 <singular poly (mutable):-5a2b3>
 gap> y := _SI_MONOMIAL(s,2,[4,3]);
@@ -121,11 +121,11 @@ gap> y := _SI_MONOMIAL(s,2,[4,3]);
 gap> _SI_p_Add_q(x,y);
 <singular poly (mutable):2a4b3-5a2b3>
 gap> id := SI_ideal([x,y]);
-<singular ideal (mutable), 2gens of deg <= 7>
+<singular ideal (mutable), 2 gens of deg <= 7>
 gap> p1 := SI_Proxy(id,1);
-<proxy for <singular ideal (mutable), 2gens of deg <= 7>[1]>
+<proxy for <singular ideal (mutable), 2 gens of deg <= 7>[1]>
 gap> p2 := SI_Proxy(id,2);
-<proxy for <singular ideal (mutable), 2gens of deg <= 7>[2]>
+<proxy for <singular ideal (mutable), 2 gens of deg <= 7>[2]>
 gap> _SI_COPY_POLY(p1);
 <singular poly (mutable):-5a2b3>
 gap> _SI_COPY_POLY(p2);
