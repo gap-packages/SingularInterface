@@ -1332,7 +1332,8 @@ Obj Func_SI_intmat(Obj self, Obj m)
 
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
-    if (!ISSINGOBJ(SINGTYPE_INTMAT_IMM,im)) {
+    if (!(ISSINGOBJ(SINGTYPE_INTMAT_IMM,im) ||
+          ISSINGOBJ(SINGTYPE_INTMAT,im))) {
         ErrorQuit("im must be a singular intmat", 0L, 0L);
         return Fail;
     }
@@ -1960,6 +1961,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     singres.needcleanup = true;
     singres.obj.data = ret->data;
     singres.obj.rtyp = ret->rtyp;
+    singres.obj.attribute = ret->attribute;
+    singres.obj.flag = ret->flag;
     return singres.gapwrap();
 }
 
