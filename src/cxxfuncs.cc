@@ -929,6 +929,7 @@ void _SI_ObjMarkFunc(Bag o)
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
 
+// Installed as SI_ring method
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
@@ -1035,6 +1036,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     return tmp;
 }
 
+// Installed as SI_ring method
 Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR)
@@ -1053,6 +1055,7 @@ Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
     }
 }
 
+// TODO: SI_Indeterminates is only used by examples, do we still need it? For what?
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
@@ -1121,6 +1124,7 @@ static poly ParsePoly(ring r, const char *&st)
     }
 }
 
+// Installed as SI_poly method
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
@@ -1163,6 +1167,7 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
     }
 }
 
+// Installed as SI_matrix method
 Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
                                Obj rr, Obj st)
 {
@@ -1202,6 +1207,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rr);
 }
 
+// Installed as SI_ideal method
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
 {
     if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
@@ -1224,6 +1230,7 @@ Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,rr);
 }
 
+// TODO: _SI_MONOMIAL is only used by examples, do we still need it? For what?
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -1243,17 +1250,21 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
+// Installed as SI_bigint method
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,_SI_BIGINT_FROM_GAP(nr));
 }
 
+// Used for bigint ViewString method.
+// TODO: get rid of _SI_Intbigint and use SI_ToGAP instead ?
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
     return _SI_BIGINT_OR_INT_TO_GAP(n);
 }
 
+// Installed as SI_bigintmat method
 Obj Func_SI_bigintmat(Obj self, Obj m)
 {
     // TODO: This function is untested! add test cases!!!
@@ -1286,6 +1297,8 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_BIGINTMAT_IMM,bim);
 }
 
+// Used for bigintmat ViewString method.
+// TODO: get rid of _SI_Matbigintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matbigintmat(Obj self, Obj im)
 {
     // TODO: This function is untested! add test cases!!!
@@ -1315,12 +1328,14 @@ Obj Func_SI_Matbigintmat(Obj self, Obj im)
 }
 
 
+// Installed as SI_number method
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
                 _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
+// Installed as SI_intvec method
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1345,6 +1360,8 @@ Obj Func_SI_intvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM,iv);
 }
 
+// Used for intvec ViewString method.
+// TODO: get rid of _SI_Plistintvec and use SI_ToGAP instead ?
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
     if (!(ISSINGOBJ(SINGTYPE_INTVEC,iv) || ISSINGOBJ(SINGTYPE_INTVEC_IMM,iv))) {
@@ -1363,6 +1380,7 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
+// Installed as SI_matrix method
 Obj Func_SI_intmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
@@ -1398,6 +1416,8 @@ Obj Func_SI_intmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT_IMM,iv);
 }
 
+// Used for intmat ViewString method.
+// TODO: get rid of _SI_Matintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
     if (!(ISSINGOBJ(SINGTYPE_INTMAT_IMM,im) ||
@@ -1425,6 +1445,7 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
+// Installed as SI_ideal method
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1464,6 +1485,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
+// Installed as SI_matrix method
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1517,6 +1539,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
+// TODO: _SI_COPY_POLY is only used by examples, do we still need it? For what?
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     Obj rr = 0;
@@ -1544,8 +1567,6 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
-
-//#include "lowlevel_mappings.cc"
 
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.

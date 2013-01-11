@@ -11,7 +11,6 @@ GASMAN when a lot of memory outside the GAP workspace is used.
 
 Disallow SaveWorkspace if libsing is loaded!
 
-Bugs: crash (see end of this file)
 More constructors
   Quick polynomial constructor via data like exponents and coefficients
 Method installation (->high performance)
@@ -24,7 +23,6 @@ What to autoload? (from Singular libraries)
 How to automatically see what is available? (Singular("listvar(proc);");)
 
 errorreported nur im Fehlerfall auf 0 setzen
-Fix path in lib/libsing.gi, because it contains the Singular version!
 
 More view and print routines (in particular GAP-parsable Print output)
 proxies for Singular interpreter variables
@@ -59,16 +57,6 @@ const char *p_Read(const char *st, poly &rc, const ring r)
 returns how far it has parsed
 if equal to input, then nothing read --> error
 
-poly a;
-poly b;
-
-a = p_Add(a,b);
-danach ist b undefiniert, nullen
-
-
-Vektor machen:
-
-
 
 
 Noch benoetigt:
@@ -80,44 +68,7 @@ Noch benoetigt:
 - Fix Makematrix_from_String if not enough polys are given
 - hole ring von Singular object
 
-Fragen:
-
-
-Naming convention questions:
-
 How about:
-
-Get rid of _SI_Intbigint and use SI_ToGAP
-Get rid of _SI_Plistintvec and use SI_ToGAP
-Get rid of _SI_Matintmat and use SI_ToGAP
 
 
 Unify SingObj::cleanup and _SI_FreeFunc as far as possible
-
-
-gap> s := SI_ring(3,["a","b"]);
-gap> SI_poly(s,SI_bigint(2));
-crashes GAP
-
-
-Bug:
-
-gap> s := SI_ring(0,["a","b"]);
-<singular ring>
-gap> m := SI_matrix(2,2,s,"a,b,ab,1");
-<singular object:
-a, b,
-ab,1 >
-gap> v1 := SI_intvec([1]);
-<singular intvec:[ 1 ]>
-gap> v2 := SI_intvec([2]);
-<singular intvec:[ 2 ]>
-gap> SI_\[(m,2,2);
-<singular poly:1>
-gap> SI_\[(m,v1,v2);
-fail
-gap> SI_Errors;
-"cannot build expression lists from unnamed objects\ncannot build
-expression l\
-ists from unnamed objects\n"
-
