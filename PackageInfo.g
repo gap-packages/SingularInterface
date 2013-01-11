@@ -290,7 +290,8 @@ AvailabilityTest := function()
     path := DirectoriesPackagePrograms("libsing");
     if not "libsing" in SHOW_STAT() and 
        Filename(path, "libsing.so") = fail then
-      Info(InfoWarning, 1, "libsing: compiled kernel module not present.");
+      #Info(InfoWarning, 1, "libsing: compiled kernel module not present.");
+      return fail;
     fi;
     return true;
   end,
@@ -330,7 +331,7 @@ TestFile := "tst/testall.g",
 
 ##  *Optional*: Here you can list some keyword related to the topic 
 ##  of the package.
-Keywords := ["Singular", "polynomials"]
+Keywords := ["Singular", "polynomials", "groebner"]
 
 ));
 
