@@ -62,60 +62,60 @@ void InstallPrePostGCFuncs(void);
 // for the extended attributes.
 
 #ifdef SYS_IS_64_BIT
-typedef struct { 
+typedef struct {
     unsigned int flags;
     int type;
   } SingObj_FirstWord;
 
-inline Int TYPE_SINGOBJ( Obj obj ) 
-{ 
+inline Int TYPE_SINGOBJ( Obj obj )
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    return (Int) (p->type);
+    return (SingType) (p->type);
 }
 
 inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     p->type = (int) val;
 }
 
 inline unsigned int FLAGS_SINGOBJ( Obj obj )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     return (unsigned int) p->flags;
 }
 
 inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     p->flags = val;
 }
 #else
-typedef struct { 
+typedef struct {
     unsigned short int flags;
     short int type;
   } SingObj_FirstWord;
 
-inline Int TYPE_SINGOBJ( Obj obj ) 
-{ 
+inline Int TYPE_SINGOBJ( Obj obj )
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     return (Int) (p->type);
 }
 
 inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     p->type = (short int) val;
 }
 
 inline unsigned int FLAGS_SINGOBJ( Obj obj )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     return (unsigned int) p->flags;
 }
 
 inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
-{ 
+{
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     p->flags = (unsigned short int) val;
 }
@@ -171,7 +171,7 @@ inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
     }
 }
 
-       
+
 Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj zero, Obj one);
