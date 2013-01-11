@@ -18,177 +18,51 @@ Obj Func_SI_debug(Obj self, Obj obj)
 
 typedef Obj (* GVarFunc)(/*arguments*/);
 
+#define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
+  {#name, nparam, \
+   params, \
+   (GVarFunc)Func##name, \
+   srcfile ":Func" #name }
+
 /**
 Details of the functions to make available to GAP.
 This is used in InitKernel() and InitLibrary()
 */
 static StructGVarFunc GVarFuncs[] =
 {
-
-  {"_SI_debug", 1,
-   "obj",
-   (GVarFunc)Func_SI_debug,
-   "cxxfuncs.cc:Func_SI_debug" },
-
-  {"_SI_ring", 3,
-   "characteristic, names, orderings",
-   (GVarFunc)Func_SI_ring,
-   "cxxfuncs.cc:Func_SI_ring" },
-
-  {"SI_Indeterminates", 1,
-   "ring",
-   (GVarFunc)FuncSI_Indeterminates,
-   "cxxfuncs.cc:FuncSI_Indeterminates" },
-
-  {"_SI_poly_from_String", 2,
-   "rr, st",
-   (GVarFunc)Func_SI_poly_from_String,
-   "cxxfuncs.cc:Func_SI_poly_from_String" },
-
-  {"_SI_matrix_from_String", 4,
-   "rr, nrrows, nrcols, st",
-   (GVarFunc)Func_SI_matrix_from_String,
-   "cxxfuncs.cc:Func_SI_matrix_from_String" },
-
-  {"_SI_ideal_from_String", 2,
-   "rr, st",
-   (GVarFunc)Func_SI_ideal_from_String,
-   "cxxfuncs.cc:Func_SI_ideal_from_String" },
-
-  {"_SI_MONOMIAL", 3,
-   "ring, coeff, exponents",
-   (GVarFunc)Func_SI_MONOMIAL,
-   "cxxfuncs.cc:Func_SI_MONOMIAL" },
-
-  {"_SI_COPY_POLY", 1,
-   "poly",
-   (GVarFunc)Func_SI_COPY_POLY,
-   "cxxfuncs.cc:Func_SI_COPY_POLY" },
-
-  {"_SI_MULT_POLY_NUMBER", 2,
-   "a, b",
-   (GVarFunc)Func_SI_MULT_POLY_NUMBER,
-   "cxxfuncs.cc:Func_SI_MULT_POLY_NUMBER" },
-
-  {"_SI_INIT_INTERPRETER", 1,
-   "path",
-   (GVarFunc)Func_SI_INIT_INTERPRETER,
-   "cxxfuncs.cc:Func_SI_INIT_INTERPRETER" },
-
-  {"_SI_EVALUATE", 1,
-   "st",
-   (GVarFunc)Func_SI_EVALUATE,
-   "cxxfuncs.cc:Func_SI_EVALUATE" },
-
-  {"SI_ValueOfVar", 1,
-   "name",
-   (GVarFunc)FuncSI_ValueOfVar,
-   "cxxfuncs.cc:FuncSI_ValueOfVar" },
-
-  {"_SI_SingularProcs", 0,
-   "",
-   (GVarFunc)Func_SI_SingularProcs,
-   "cxxfuncs.cc:Func_SI_SingularProcs" },
-
-  {"SI_ToGAP", 1,
-   "singobj",
-   (GVarFunc)FuncSI_ToGAP,
-   "cxxfuncs.cc:FuncSI_ToGAP" },
-
-  {"SI_LastOutput", 0,
-   "",
-   (GVarFunc)FuncSI_LastOutput,
-   "cxxfuncs.cc:FuncSI_LastOutput" },
-
-  {"_SI_bigint", 1,
-   "nr",
-   (GVarFunc)Func_SI_bigint,
-   "cxxfuncs.cc:Func_SI_bigint" },
-
-  {"_SI_Intbigint", 1,
-   "nr",
-   (GVarFunc)Func_SI_Intbigint,
-   "cxxfuncs.cc:Func_SI_Intbigint" },
-
-  {"_SI_bigintmat", 1,
-   "m",
-   (GVarFunc)Func_SI_bigintmat,
-   "cxxfuncs.cc:Func_SI_bigintmat" },
-
-  {"_SI_Matbigintmat", 1,
-   "im",
-   (GVarFunc)Func_SI_Matbigintmat,
-   "cxxfuncs.cc:Func_SI_Matbigintmat" },
-
-  {"_SI_number", 2,
-   "ring, nr",
-   (GVarFunc)Func_SI_number,
-   "cxxfuncs.cc:Func_SI_number" },
-
-  {"_SI_intvec", 1,
-   "l",
-   (GVarFunc)Func_SI_intvec,
-   "cxxfuncs.cc:Func_SI_intvec" },
-
-  {"_SI_Plistintvec", 1,
-   "iv",
-   (GVarFunc)Func_SI_Plistintvec,
-   "cxxfuncs.cc:Func_SI_Plistintvec" },
-
-  {"_SI_intmat", 1,
-   "m",
-   (GVarFunc)Func_SI_intmat,
-   "cxxfuncs.cc:Func_SI_intmat" },
-
-  {"_SI_Matintmat", 1,
-   "im",
-   (GVarFunc)Func_SI_Matintmat,
-   "cxxfuncs.cc:Func_SI_Matintmat" },
-
-  {"_SI_ideal_from_els", 1,
-   "l",
-   (GVarFunc)Func_SI_ideal_from_els,
-   "cxxfuncs.cc:Func_SI_ideal_from_els" },
-
-  {"_SI_matrix_from_els", 3,
-   "nrrows, nrcols, l",
-   (GVarFunc)Func_SI_matrix_from_els,
-   "cxxfuncs.cc:Func_SI_matrix_from_els" },
-
-  {"_SI_CallFunc1", 2,
-   "op, input",
-   (GVarFunc)Func_SI_CallFunc1,
-   "cxxfuncs.cc:Func_SI_CallFunc1" },
-
-  {"_SI_CallFunc2", 3,
-   "op, a, b",
-   (GVarFunc)Func_SI_CallFunc2,
-   "cxxfuncs.cc:Func_SI_CallFunc2" },
-
-  {"_SI_CallFunc3", 4,
-   "op, a, b, c",
-   (GVarFunc)Func_SI_CallFunc3,
-   "cxxfuncs.cc:Func_SI_CallFunc3" },
-
-  {"_SI_CallFuncM", 2,
-   "op, arg",
-   (GVarFunc)Func_SI_CallFuncM,
-   "cxxfuncs.cc:Func_SI_CallFuncM" },
-
-  {"SI_SetCurrRing", 1,
-   "r",
-   (GVarFunc)FuncSI_SetCurrRing,
-   "cxx-funcs.cc:FuncSI_SetCurrRing" },
-
-  {"SI_ring_of_singobj", 1,
-   "singobj",
-   (GVarFunc)FuncSI_ring_of_singobj,
-   "cxx-funcs.cc:FuncSI_ring_of_singobj" },
-
-  {"SI_CallProc", 2,
-   "name, args",
-   (GVarFunc)FuncSI_CallProc,
-   "cxxfuncs.cc:FuncSI_CallProc" },
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_debug, 1, "obj"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_poly_from_String, 2, "rr, st"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_matrix_from_String, 4, "rr, nrrows, nrcols, st"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_String, 2, "rr, st"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_COPY_POLY, 1, "poly"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MULT_POLY_NUMBER, 2, "a, b"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_INIT_INTERPRETER, 1, "path"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ValueOfVar, 1, "name"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_SingularProcs, 0, ""),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ToGAP, 1, "singobj"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_LastOutput, 0, ""),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_bigint, 1, "nr"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Intbigint, 1, "nr"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_bigintmat, 1, "m"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Matbigintmat, 1, "im"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_number, 2, "ring, nr"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_intvec, 1, "l"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Plistintvec, 1, "iv"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_intmat, 1, "m"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Matintmat, 1, "im"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_els, 1, "l"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_matrix_from_els, 3, "nrrows, nrcols, l"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_CallFunc1, 2, "op, input"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_CallFunc2, 3, "op, a, b"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_CallFunc3, 4, "op, a, b, c"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_CallFuncM, 2, "op, arg"),
+  GVAR_FUNC_TABLE_ENTRY("cxx-funcs.cc", SI_SetCurrRing, 1, "r"),
+  GVAR_FUNC_TABLE_ENTRY("cxx-funcs.cc", SI_ring_of_singobj, 1, "singobj"),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_CallProc, 2, "name, args"),
 
   {"_SI_OmPrintInfo", 0,
    "",
@@ -205,9 +79,9 @@ static StructGVarFunc GVarFuncs[] =
   { 0 } /* Finish with an empty entry */
 };
 
-Obj SI_Errors;   /* A kernel copy of a string */
-Obj _SI_ProxiesType;  /* A kernel copy of the type of proxies */
-Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring */
+Obj SI_Errors;   //! A kernel copy of a string
+Obj _SI_ProxiesType;  //! A kernel copy of the type of proxies
+Obj SI_CurrentRingObj;   //! The GAP wrapper for the current Singular ring
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
