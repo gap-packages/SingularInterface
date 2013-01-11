@@ -45,12 +45,12 @@ InstallMethod(SI_ideal,[IsSingularRing, IsStringRep], _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 
 InstallGlobalFunction( _SI_BindSingularProcs,
-  function( )
+  function( prefix )
     local n,nn,procs,st,s;
     procs := _SI_SingularProcs();
     st := "";
     for n in procs do
-        nn := Concatenation("SIL_",n);
+        nn := Concatenation(prefix,n);
         if not(IsBoundGlobal(nn)) then
             Append(st,Concatenation("BindGlobal(\"",
                 nn,"\", function(arg) return SI_CallProc(\"",
@@ -66,7 +66,7 @@ MakeReadWriteGVar("SI_LIB");
 Unbind(SI_LIB);
 BindGlobal("SI_LIB",function(libname)
   SI_load(libname,"with");
-  _SI_BindSingularProcs();
+  _SI_BindSingularProcs("SIL_");
 end);
 
 InstallMethod( ViewString, "for a singular ring",
