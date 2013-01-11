@@ -12,7 +12,6 @@
  - cleanup: separate type-dependent stuff in libsing.*
  - look at qrings and see if they can be used in SI_matrix_from_String and
    places, do they work at all? How to make them?
- - nicer view/print methods to say which singular type it is
  - performance test/memory management
  - proxy elements (esp. access to interpreter variables)
  - try to run manual examples
