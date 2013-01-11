@@ -31,7 +31,7 @@ extern "C" {
 //////////////////////////////////////////////////////////////////////////////
 /**
 @file libsing.h
-This C header file file contains all of declarations for C++ functions that 
+This C header file file contains all of declarations for C++ functions that
 are to be called from C, or vice-versa.
 **/
 //////////////////////////////////////////////////////////////////////////////
@@ -43,9 +43,9 @@ extern Obj SI_CurrentRingObj;   /* The GAP wrapper for the current Singular ring
 void InstallPrePostGCFuncs(void);
 
 //////////////// Layout of the T_SINGULAR objects /////////////////////
-// There are 3 possibilites: 
+// There are 3 possibilites:
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
-// Objects in case (1) consists of 2 words: 
+// Objects in case (1) consists of 2 words:
 // First is the GAP type as a small integer pointing into a plain list
 // together with some bits for the special attributes.
 // Second is a pointer to a C++ singular object.
@@ -214,6 +214,8 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj);
 Obj FuncSI_LastOutput(Obj self);
 Obj Func_SI_bigint(Obj self, Obj nr);
 Obj Func_SI_Intbigint(Obj self, Obj b);
+Obj Func_SI_bigintmat(Obj self, Obj m);
+Obj Func_SI_Matbigintmat(Obj self, Obj im);
 Obj Func_SI_number(Obj self, Obj r, Obj nr);
 Obj Func_SI_intvec(Obj self, Obj l);
 Obj Func_SI_Plistintvec(Obj self, Obj iv);
@@ -240,7 +242,6 @@ Int IsMutableSingObj(Obj s);
 void MakeImmutableSingObj(Obj s);
 Obj ZeroSMSingObj(Obj s);
 Obj OneSMSingObj(Obj s);
-Obj SumSingObjs(Obj a, Obj b);
 
 
 #endif //#define LIBSING_H

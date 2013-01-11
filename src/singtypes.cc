@@ -27,8 +27,10 @@ const int GAPtoSingType[] =
     0, /* VOID */
     BIGINT_CMD,
     BIGINT_CMD,
-    DEF_CMD ,
-    DEF_CMD ,
+    BIGINTMAT_CMD,
+    BIGINTMAT_CMD,
+    DEF_CMD,
+    DEF_CMD,
     IDEAL_CMD,
     IDEAL_CMD,
     INT_CMD,
@@ -80,48 +82,55 @@ const int HasRingTable[] =
     0, // SINGTYPE_VOID          = 1
     0, // SINGTYPE_BIGINT        = 2,
     0, // SINGTYPE_BIGINT_IMM    = 3,
-    0, // SINGTYPE_DEF           = 4,
-    0, // SINGTYPE_DEF_IMM       = 5,
-    1, // SINGTYPE_IDEAL         = 6,
-    1, // SINGTYPE_IDEAL_IMM     = 7,
-    0, // SINGTYPE_INT           = 8,
-    0, // SINGTYPE_INT_IMM       = 9,
-    0, // SINGTYPE_INTMAT        = 10,
-    0, // SINGTYPE_INTMAT_IMM    = 11,
-    0, // SINGTYPE_INTVEC        = 12,
-    0, // SINGTYPE_INTVEC_IMM    = 13,
-    0, // SINGTYPE_LINK          = 14,
-    0, // SINGTYPE_LINK_IMM      = 15,
-    1, // SINGTYPE_LIST          = 16,
-    1, // SINGTYPE_LIST_IMM      = 17,
-    1, // SINGTYPE_MAP           = 18,
-    1, // SINGTYPE_MAP_IMM       = 19,
-    1, // SINGTYPE_MATRIX        = 20,
-    1, // SINGTYPE_MATRIX_IMM    = 21,
-    1, // SINGTYPE_MODULE        = 22,
-    1, // SINGTYPE_MODULE_IMM    = 23,
-    1, // SINGTYPE_NUMBER        = 24,
-    1, // SINGTYPE_NUMBER_IMM    = 25,
-    0, // SINGTYPE_PACKAGE       = 26,
-    0, // SINGTYPE_PACKAGE_IMM   = 27,
-    1, // SINGTYPE_POLY          = 28,
-    1, // SINGTYPE_POLY_IMM      = 29,
-    0, // SINGTYPE_PROC          = 30,
-    0, // SINGTYPE_PROC_IMM      = 31,
-    0, // SINGTYPE_QRING         = 32,
-    0, // SINGTYPE_QRING_IMM     = 33,
-    1, // SINGTYPE_RESOLUTION    = 34,
-    1, // SINGTYPE_RESOLUTION_IMM= 35,
-    0, // SINGTYPE_RING          = 36,
-    0, // SINGTYPE_RING_IMM      = 37,
-    0, // SINGTYPE_STRING        = 38,
-    0, // SINGTYPE_STRING_IMM    = 39,
-    1, // SINGTYPE_VECTOR        = 40,
-    1, // SINGTYPE_VECTOR_IMM    = 41,
-    0, // SINGTYPE_USERDEF       = 42,
-    0, // SINGTYPE_USERDEF_IMM   = 43,
-    0, // SINGTYPE_PYOBJECT      = 44,
-    0  // SINGTYPE_PYOBJECT_IMM  = 45,
+    0, // SINGTYPE_BIGINTMAT     = 4,
+    0, // SINGTYPE_BIGINTMAT_IMM = 5,
+    0, // SINGTYPE_DEF           = 6,
+    0, // SINGTYPE_DEF_IMM       = 7,
+    1, // SINGTYPE_IDEAL         = 8,
+    1, // SINGTYPE_IDEAL_IMM     = 9,
+    0, // SINGTYPE_INT           = 10,
+    0, // SINGTYPE_INT_IMM       = 11,
+    0, // SINGTYPE_INTMAT        = 12,
+    0, // SINGTYPE_INTMAT_IMM    = 13,
+    0, // SINGTYPE_INTVEC        = 14,
+    0, // SINGTYPE_INTVEC_IMM    = 15,
+    0, // SINGTYPE_LINK          = 16,
+    0, // SINGTYPE_LINK_IMM      = 17,
+    1, // SINGTYPE_LIST          = 18,
+    1, // SINGTYPE_LIST_IMM      = 19,
+    1, // SINGTYPE_MAP           = 20,
+    1, // SINGTYPE_MAP_IMM       = 21,
+    1, // SINGTYPE_MATRIX        = 22,
+    1, // SINGTYPE_MATRIX_IMM    = 23,
+    1, // SINGTYPE_MODULE        = 24,
+    1, // SINGTYPE_MODULE_IMM    = 25,
+    1, // SINGTYPE_NUMBER        = 26,
+    1, // SINGTYPE_NUMBER_IMM    = 27,
+    0, // SINGTYPE_PACKAGE       = 28,
+    0, // SINGTYPE_PACKAGE_IMM   = 29,
+    1, // SINGTYPE_POLY          = 30,
+    1, // SINGTYPE_POLY_IMM      = 31,
+    0, // SINGTYPE_PROC          = 32,
+    0, // SINGTYPE_PROC_IMM      = 33,
+    0, // SINGTYPE_QRING         = 34,
+    0, // SINGTYPE_QRING_IMM     = 35,
+    1, // SINGTYPE_RESOLUTION    = 36,
+    1, // SINGTYPE_RESOLUTION_IMM= 37,
+    0, // SINGTYPE_RING          = 38,
+    0, // SINGTYPE_RING_IMM      = 39,
+    0, // SINGTYPE_STRING        = 40,
+    0, // SINGTYPE_STRING_IMM    = 41,
+    1, // SINGTYPE_VECTOR        = 42,
+    1, // SINGTYPE_VECTOR_IMM    = 43,
+    0, // SINGTYPE_USERDEF       = 44,
+    0, // SINGTYPE_USERDEF_IMM   = 45,
+       // TODO (?): cone
+       // TODO (?): fan
+       // TODO (?): polytope
+    0, // SINGTYPE_PYOBJECT      = 46,
+    0  // SINGTYPE_PYOBJECT_IMM  = 47,
+       // TODO (?): reference
+       // TODO (?): shared
   };
 
 
@@ -142,6 +151,8 @@ void InitSingTypesFromKernel()
     AssPRec(tmp,RNamName("SINGTYPE_VOID"), INTOBJ_INT(SINGTYPE_VOID));
     AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
     AssPRec(tmp,RNamName("SINGTYPE_BIGINT_IMM"), INTOBJ_INT(SINGTYPE_BIGINT_IMM));
+    AssPRec(tmp,RNamName("SINGTYPE_BIGINTMAT"), INTOBJ_INT(SINGTYPE_BIGINTMAT));
+    AssPRec(tmp,RNamName("SINGTYPE_BIGINTMAT_IMM"), INTOBJ_INT(SINGTYPE_BIGINTMAT_IMM));
     AssPRec(tmp,RNamName("SINGTYPE_DEF"), INTOBJ_INT(SINGTYPE_DEF));
     AssPRec(tmp,RNamName("SINGTYPE_DEF_IMM"), INTOBJ_INT(SINGTYPE_DEF_IMM));
     AssPRec(tmp,RNamName("SINGTYPE_IDEAL"), INTOBJ_INT(SINGTYPE_IDEAL));
@@ -182,8 +193,13 @@ void InitSingTypesFromKernel()
     AssPRec(tmp,RNamName("SINGTYPE_VECTOR_IMM"), INTOBJ_INT(SINGTYPE_VECTOR_IMM));
     AssPRec(tmp,RNamName("SINGTYPE_USERDEF"), INTOBJ_INT(SINGTYPE_USERDEF));
     AssPRec(tmp,RNamName("SINGTYPE_USERDEF_IMM"), INTOBJ_INT(SINGTYPE_USERDEF_IMM));
+    // TODO (?): cone
+    // TODO (?): fan
+    // TODO (?): polytope
     AssPRec(tmp,RNamName("SINGTYPE_PYOBJECT"), INTOBJ_INT(SINGTYPE_PYOBJECT));
     AssPRec(tmp,RNamName("SINGTYPE_PYOBJECT_IMM"), INTOBJ_INT(SINGTYPE_PYOBJECT_IMM));
+    // TODO (?): reference
+    // TODO (?): shared
     gvar = GVarName("_SI_TYPENRS");
     MakeReadWriteGVar(gvar);
     AssGVar(gvar,tmp);

@@ -28,7 +28,7 @@ class SingObj {
     //
     // For the usual constructor taking a GAP object:
     // The GAP object input can be GAP integers (which produce
-    // machine integers if possible and otherwise bigints), 
+    // machine integers if possible and otherwise bigints),
     // GAP strings, GAP wrappers for Singular objects, which produce the
     // corresponding Singular object, GAP proxy objects for subobjects
     // of other Singular objects, or GAP proxy objects for values in

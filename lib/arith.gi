@@ -6,8 +6,8 @@ InstallOtherMethod(\+, ["IsSingularObj","IsSingularObj"], SI_\+);
 InstallOtherMethod(\+, ["IsInt","IsSingularObj"], SI_\+);
 InstallOtherMethod(\+, ["IsSingularObj","IsInt"], SI_\+);
 
-# For small polynomials this variant can be 30%  faster. If SI_\+ were 
-# using SI_CallFuncM, it  would be slower again by a similar factor. 
+# For small polynomials this variant can be 30%  faster. If SI_\+ were
+# using SI_CallFuncM, it  would be slower again by a similar factor.
 InstallOtherMethod(\+, ["IsSingularPoly","IsSingularPoly"], _SI_p_Add_q);
 
 InstallOtherMethod(\-, ["IsSingularObj","IsSingularObj"], SI_\-);
@@ -26,11 +26,11 @@ InstallOtherMethod(\*, ["IsSingularPoly","IsSingularPoly"], _SI_p_Mult_q);
 InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
 
 InstallGlobalFunction( _SI_Comparer,
-  function(a,b) 
+  function(a,b)
     local r;
     r := SI_\=\=(a,b);
     if r = fail then Error("cannot compare ",a," and ",b); fi;
-    return r = 1; 
+    return r = 1;
   end);
 InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], _SI_Comparer);
 InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"], _SI_Comparer);
@@ -117,7 +117,7 @@ InstallOtherMethod(QUO, ["IsSingularObj", "IsSingularObj"], function(a, b)
 end);
 
 # this causes that DefaultRing of a Singular object with ring returns that ring
-InstallOtherMethod(DefaultRingByGenerators, fam-> 
+InstallOtherMethod(DefaultRingByGenerators, fam->
     fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_ring(l[1]));
 InstallMethod(\in, ["IsSingularPoly", "IsRing"], function(pol, r)
   return SI_ring(pol) = r;

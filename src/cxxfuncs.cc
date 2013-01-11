@@ -14,10 +14,12 @@ This file contains all of the code that deals with C++ libraries.
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/libsingular.h>
+#include <Singular/bigintmat.h>
 #include <Singular/lists.h>
 #else
 // To be removed later on:  (FIXME)
 #include <singular/lists.h>
+#include <singular/bigintmat.h>
 #include <singular/syz.h>
 #endif
 
@@ -28,7 +30,7 @@ extern int inerror; // from Singular/grammar.cc
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
 
 
-// get omalloc statistics 
+// get omalloc statistics
 Obj FuncOmPrintInfo( Obj self )
 {
   omPrintInfo(stdout);
@@ -166,7 +168,7 @@ static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         // We are in characteristic p, so number is just an integer:
         if (IS_INTOBJ(n)) {
             return n_Init((int) (INT_INTOBJ(n) % rChar(r)),r);
-        } 
+        }
         // Maybe allow for finite field elements here, but check
         // characteristic!
         ErrorQuit("Argument must be an immediate integer.\n",0L,0L);
@@ -262,6 +264,33 @@ static int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     return SINGTYPE_BIGINT_IMM;
 }
 
+static Obj _SI_BIGINT_OR_INT_TO_GAP(number n)
+{
+    if (SR_HDL(n) & SR_INT) {
+        // an immediate integer
+        return INTOBJ_INT(SR_TO_INT(n));
+    } else {
+        Obj res;
+        Int size = n->z->_mp_size;
+        int sign = size > 0 ? 1 : -1;
+        size = abs(size);
+#ifdef SYS_IS_64_BIT
+        if (size == 1) {
+            if (sign > 0)
+                return ObjInt_UInt(n->z->_mp_d[0]);
+            else
+                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
+        }
+#endif
+        if (sign > 0)
+            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
+        else
+            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
+        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
+        return res;
+    }
+}
+
 static poly _SI_GET_poly(Obj o, Obj &rr)
 {
     if (ISSINGOBJ(SINGTYPE_POLY,o) || ISSINGOBJ(SINGTYPE_POLY_IMM,o)) {
@@ -278,7 +307,7 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
                 return NULL;
             }
             return id->m[index-1];
-        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob) || 
+        } else if (ISSINGOBJ(SINGTYPE_MATRIX,ob) ||
                    ISSINGOBJ(SINGTYPE_MATRIX_IMM,ob)) {
             rr = RING_SINGOBJ(ob);
             int row = INT_INTOBJ(ELM_PLIST(o,2));
@@ -338,7 +367,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_POLY;
         return id->m[index-1];
-    } else if (currgtype == SINGTYPE_MATRIX || 
+    } else if (currgtype == SINGTYPE_MATRIX ||
                currgtype == SINGTYPE_MATRIX_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
@@ -365,7 +394,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
-    } else if (currgtype == SINGTYPE_INTMAT || 
+    } else if (currgtype == SINGTYPE_INTMAT ||
                currgtype == SINGTYPE_INTMAT_IMM) {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
@@ -410,7 +439,7 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
     r = NULL;
     rr = NULL;
     obj.Init();
-    if (IS_INTOBJ(input) || 
+    if (IS_INTOBJ(input) ||
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
         if (gtype == SINGTYPE_INT || gtype == SINGTYPE_INT_IMM) {
@@ -900,6 +929,7 @@ void _SI_ObjMarkFunc(Bag o)
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
 
+// Installed as SI_ring method
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
@@ -914,7 +944,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     Int j;
     int covered;
     Obj tmp,tmp2;
-    
+
     // Some checks:
     if (!IS_INTOBJ(charact) || !IS_LIST(names) || !IS_LIST(orderings)) {
         ErrorQuit("Need immediate integer and two lists",0L,0L);
@@ -961,7 +991,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         ErrorQuit("Orderings do not cover exactly the variables",0L,0L);
         return Fail;
     }
-            
+
     // Now allocate strings for the variable names:
     array = (char **) omalloc(sizeof(char *) * nrvars);
     for (i = 0;i < nrvars;i++)
@@ -1006,6 +1036,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     return tmp;
 }
 
+// Installed as SI_ring method
 Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR)
@@ -1024,6 +1055,7 @@ Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
     }
 }
 
+// TODO: SI_Indeterminates is only used by examples, do we still need it? For what?
 Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
@@ -1037,7 +1069,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     Obj tmp;
 
     if (r != currRing) rChangeCurrRing(r);
-        
+
     res = NEW_PLIST(T_PLIST_DENSE,nrvars);
     for (i = 1;i <= nrvars;i++) {
         poly p = p_ISet(1,r);
@@ -1092,6 +1124,7 @@ static poly ParsePoly(ring r, const char *&st)
     }
 }
 
+// Installed as SI_poly method
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
@@ -1134,7 +1167,8 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
     }
 }
 
-Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols, 
+// Installed as SI_matrix method
+Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
                                Obj rr, Obj st)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1173,6 +1207,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rr);
 }
 
+// Installed as SI_ideal method
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
 {
     if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
@@ -1195,6 +1230,7 @@ Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,rr);
 }
 
+// TODO: _SI_MONOMIAL is only used by examples, do we still need it? For what?
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
     ring r = (ring) CXX_SINGOBJ(rr);
@@ -1214,45 +1250,92 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
+// Installed as SI_bigint method
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,_SI_BIGINT_FROM_GAP(nr));
 }
 
+// Used for bigint ViewString method.
+// TODO: get rid of _SI_Intbigint and use SI_ToGAP instead ?
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
     number n = (number) CXX_SINGOBJ(nr);
-    Obj res;
-    if (SR_HDL(n) & SR_INT) {
-        // an immediate integer
-        return INTOBJ_INT(SR_TO_INT(n));
-    } else {
-        Int size = n->z->_mp_size;
-        int sign = size > 0 ? 1 : -1;
-        size = abs(size);
-#ifdef SYS_IS_64_BIT
-        if (size == 1) {
-            if (sign > 0)
-                return ObjInt_UInt(n->z->_mp_d[0]);
-            else
-                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
-        }
-#endif
-        if (sign > 0)
-            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
-        else
-            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
-        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
-        return res;
-    }             
+    return _SI_BIGINT_OR_INT_TO_GAP(n);
 }
 
+// Installed as SI_bigintmat method
+Obj Func_SI_bigintmat(Obj self, Obj m)
+{
+    // TODO: This function is untested! add test cases!!!
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 &&
+           IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
+        ErrorQuit("m must be a list of lists",0L,0L);
+        return Fail;
+    }
+    Int rows = LEN_LIST(m);
+    Int cols = LEN_LIST(ELM_LIST(m,1));
+    Int r,c;
+    Obj therow;
+    bigintmat *bim = new bigintmat(rows,cols);
+    for (r = 1;r <= rows;r++) {
+        therow = ELM_LIST(m,r);
+        if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
+            delete bim;
+            ErrorQuit("m must be a matrix",0L,0L);
+            return Fail;
+        }
+        for (c = 1; c <= cols; c++) {
+            Obj t = ELM_LIST(therow,c);
+            if (! (IS_INTOBJ(t) || TNUM_OBJ(t) == T_INTPOS || TNUM_OBJ(t) == T_INTNEG)) {
+                delete bim;
+                ErrorQuit("m must contain integers", 0L, 0L);
+            }
+            BIMATELEM(*bim,r,c) = _SI_BIGINT_FROM_GAP(t);
+        }
+    }
+    return NEW_SINGOBJ(SINGTYPE_BIGINTMAT_IMM,bim);
+}
+
+// Used for bigintmat ViewString method.
+// TODO: get rid of _SI_Matbigintmat and use SI_ToGAP instead ?
+Obj Func_SI_Matbigintmat(Obj self, Obj im)
+{
+    // TODO: This function is untested! add test cases!!!
+    if (!ISSINGOBJ(SINGTYPE_BIGINTMAT_IMM,im)) {
+        ErrorQuit("im must be a singular bigintmat", 0L, 0L);
+        return Fail;
+    }
+    bigintmat *bim = (bigintmat *) CXX_SINGOBJ(im);
+    UInt rows = bim->rows();
+    UInt cols = bim->cols();
+    Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
+    SET_LEN_PLIST(ret,rows);
+    UInt r,c;
+    for (r = 1;r <= rows;r++) {
+        Obj tmp;
+        tmp = NEW_PLIST(T_PLIST_CYC,cols);
+        SET_ELM_PLIST(ret,r,tmp);
+        CHANGED_BAG(ret);
+        for (c = 1;c <= cols;c++) {
+            number n = BIMATELEM(*bim,r,c);
+            SET_ELM_PLIST(tmp,c,_SI_BIGINT_OR_INT_TO_GAP(n));
+            CHANGED_BAG(tmp);
+        }
+        SET_LEN_PLIST(tmp,cols);
+    }
+    return ret;
+}
+
+
+// Installed as SI_number method
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
                 _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
+// Installed as SI_intvec method
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1277,6 +1360,8 @@ Obj Func_SI_intvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM,iv);
 }
 
+// Used for intvec ViewString method.
+// TODO: get rid of _SI_Plistintvec and use SI_ToGAP instead ?
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
     if (!(ISSINGOBJ(SINGTYPE_INTVEC,iv) || ISSINGOBJ(SINGTYPE_INTVEC_IMM,iv))) {
@@ -1295,9 +1380,10 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
+// Installed as SI_matrix method
 Obj Func_SI_intmat(Obj self, Obj m)
 {
-    if (! (IS_LIST(m) && LEN_LIST(m) > 0 && 
+    if (! (IS_LIST(m) && LEN_LIST(m) > 0 &&
            IS_LIST(ELM_LIST(m,1)) && LEN_LIST(ELM_LIST(m,1)) > 0)) {
         ErrorQuit("m must be a list of lists",0L,0L);
         return Fail;
@@ -1330,6 +1416,8 @@ Obj Func_SI_intmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT_IMM,iv);
 }
 
+// Used for intmat ViewString method.
+// TODO: get rid of _SI_Matintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
     if (!(ISSINGOBJ(SINGTYPE_INTMAT_IMM,im) ||
@@ -1357,6 +1445,7 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
+// Installed as SI_ideal method
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1396,6 +1485,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
+// Installed as SI_matrix method
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
@@ -1449,6 +1539,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
 
+// TODO: _SI_COPY_POLY is only used by examples, do we still need it? For what?
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     Obj rr = 0;
@@ -1476,8 +1567,6 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
     return tmp;
 }
-
-//#include "lowlevel_mappings.cc"
 
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
@@ -1635,28 +1724,31 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 // Tries to transform a singular object to a GAP object.
 // Currently does small integers and strings
 {
-    char *st;
-    UInt len;
-    Obj tmp;
-    Int i;
-
     if (TNUM_OBJ(singobj) != T_SINGULAR) {
         ErrorQuit("singobj must be a wrapped Singular object",0L,0L);
         return Fail;
     }
     switch (TYPE_SINGOBJ(singobj)) {
       case SINGTYPE_STRING:
-      case SINGTYPE_STRING_IMM:
-        st = (char *) CXX_SINGOBJ(singobj);
-        len = (UInt) strlen(st);
-        tmp = NEW_STRING(len);
+      case SINGTYPE_STRING_IMM: {
+        char *st = (char *) CXX_SINGOBJ(singobj);
+        UInt len = (UInt) strlen(st);
+        Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
         memcpy(CHARS_STRING(tmp),st,len+1);
         return tmp;
+        }
       case SINGTYPE_INT:
-      case SINGTYPE_INT_IMM:
-        i = (Int) CXX_SINGOBJ(singobj);
+      case SINGTYPE_INT_IMM: {
+        Int i = (Int) CXX_SINGOBJ(singobj);
         return INTOBJ_INT(i);
+        }
+      case SINGTYPE_BIGINT:
+      case SINGTYPE_BIGINT_IMM: {
+        // TODO
+        number n = (number) CXX_SINGOBJ(singobj);
+        return _SI_BIGINT_OR_INT_TO_GAP(n);
+        }
       default:
         return Fail;
     }
@@ -1687,7 +1779,7 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
                                INT_INTOBJ(op));
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp();  // 
+        singres.obj.CleanUp();  //
         return Fail;
     }
 
@@ -1857,14 +1949,14 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 }
 
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj) {
-	if (rr == 0 && RingDependend(sobj.obj.Typ())) {
-		if (SI_CurrentRingObj == 0)
-			ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
-		rr = SI_CurrentRingObj;
-		if (currRing != (ring) CXX_SINGOBJ(rr))
-			ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
-	}
-	return rr;
+    if (rr == 0 && RingDependend(sobj.obj.Typ())) {
+        if (SI_CurrentRingObj == 0)
+            ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
+        rr = SI_CurrentRingObj;
+        if (currRing != (ring) CXX_SINGOBJ(rr))
+            ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
+    }
+    return rr;
 }
 
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
@@ -1996,11 +2088,11 @@ Obj ZeroSMSingObj(Obj s)
         MakeImmutable(res);
         SET_ZERO_SINGOBJ(s,res);
         return res;
-    } 
+    }
     if (((gtype + 1) & 1) == 1)    // we are mutable
         return ZeroMutObject(s);
     // Here we are immutable:
-    if (HasRingTable[gtype]) 
+    if (HasRingTable[gtype])
         // Rings are always immutable!
         return ZeroSMSingObj(RING_SINGOBJ(s));
     return ZeroObject(s);
@@ -2018,11 +2110,11 @@ Obj OneSMSingObj(Obj s)
         MakeImmutable(res);
         SET_ONE_SINGOBJ(s,res);
         return res;
-    } 
+    }
     if (((gtype + 1) & 1) == 1)   // we are mutable!
         return OneObject(s);  // This is OneMutable
     // Here we are immutable:
-    if (HasRingTable[gtype]) 
+    if (HasRingTable[gtype])
         // Rings are always immutable!
         return OneSMSingObj(RING_SINGOBJ(s));
     return OneMutObject(s);

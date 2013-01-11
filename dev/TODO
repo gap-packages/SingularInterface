@@ -1,123 +1,43 @@
-look at qrings and see if they can be used in SI_matrix_from_String and
-  places, do they work at all? How to make them?
-Setting of attributes, currently they can only be set in the Singular
-  interpreter and are then stored and reattached when an object goes
-  back to Singular
+ - Setting of attributes
+ - more constructors: vector, list, map, module, poly (quick, geobuckets),
+   resolution, ring, qring?
+ - constructing of identity and zero matrices
+ - dummy singular type collecting whatever e.g. user defined
+ - number constructor (on the fly) for other coefficient domains
+   finite fields, rationals, extensions
+ - magic for GAP lists as arguments, automatically transformed into singular
+ - cleanup: separate type-dependent stuff in libsing.*
+ - look at qrings and see if they can be used in SI_matrix_from_String and
+   places, do they work at all? How to make them?
+ - nicer view/print methods to say which singular type it is
+ - documentation
+ - < and = methods
+ - list type methods
+ - performance test/memory management
+ - proxy elements (esp. access to interpreter variables)
+ - try to run manual examples
+ - make place of libsingular.so and headers configurable at compile time
+   --> more robust build system
+ - more ToGAP functionality, especially polynomials, matrices of polys, etc.
+ - disallow SaveWorkspace if libsing is loaded!
+ - methods for polynomials (Value, coefficients, extrep)
+ - sort out copying (Shallow/Structural) for GAP
+ - position of ring in arguments should be front, e.g. SI_matrix
+   constructor
+ - highlevel interface: return value ring dependent, args not, make sure
+   that we handle this case, possibly not using arg-list GAP func.
+ - access to matrix entries, read and write
+ 
+Future:
+ - polymake objekte?
+ - save/load workspace
+ - revisit automatic type casts in singular interpreter
+ - unify SingObj::cleanup and _SI_FreeFunc as far as possible
+ - Explosion of objects like lists (rewrap pieces)
+ - Assembling of objects losing the wrapping of the pieces
+ - Constructor for PLURAL rings
 
-If many not so small elements are created on Singular side it can take too
-long until GASMAN starts a garbage collection (the GAP side can hold a huge
-number off small Singular wrapper objects) --- we need a way to trigger
-GASMAN when a lot of memory outside the GAP workspace is used.
-
-Disallow SaveWorkspace if libsing is loaded!
-
-Bugs: crash (see end of this file)
-More constructors
-  Quick polynomial constructor via data like exponents and coefficients
-Method installation (->high performance)
-  for conveniences like +, -, * etc.
-more possibilities for proxy objects actually working
-  proxy implementation for intmats and intvecs?
-access to subobjects of singular objects
-Finish low-level interface and implement some functions with it
-What to autoload? (from Singular libraries)
-How to automatically see what is available? (Singular("listvar(proc);");)
-
-errorreported nur im Fehlerfall auf 0 setzen
-Fix path in lib/libsing.gi, because it contains the Singular version!
-
-More view and print routines (in particular GAP-parsable Print output)
-proxies for Singular interpreter variables
-generic copying for singular objects (and proxy objects)
-access to def and proc ?
-Help-function to see available Singular-Funktions
-Better ring constructor
-Try to run manual examples
-Tuning using low level interface
-get rid of SING_GETPOLY
-check automatic type changes
-explicit type casts?
-Write access to Singular interpreter variables
-Documentation
-Debugging
-Explosion of objects like lists (rewrap pieces)
-Assembling of objects losing the wrapping of the pieces
-
-Constructor for PLURAL rings
-
-Make place of libsingular.so and headers configurable at compile time
-
-
-More TODO:
-
-proxy objects to look into matrices
-why does SI_print do nothing (or does it do anything?)
-
-
-
-const char *p_Read(const char *st, poly &rc, const ring r)
-returns how far it has parsed
-if equal to input, then nothing read --> error
-
-poly a;
-poly b;
-
-a = p_Add(a,b);
-danach ist b undefiniert, nullen
-
-
-Vektor machen:
-
-
-
-
-Noch benoetigt:
-
-- Zugriff auf Matrixeintraege, lesen und schreiben
-- Verhindere Abstuerze bei falschen Aufrufen
-- unsere Polynome sind "IsRingElement"
-- String methode
-- Fix Makematrix_from_String if not enough polys are given
-- hole ring von Singular object
-
-Fragen:
-
-
-Naming convention questions:
-
-How about:
-
-Get rid of _SI_Intbigint and use SI_ToGAP
-Get rid of _SI_Plistintvec and use SI_ToGAP
-Get rid of _SI_Matintmat and use SI_ToGAP
-
-
-Unify SingObj::cleanup and _SI_FreeFunc as far as possible
-
-
-gap> s := SI_ring(3,["a","b"]);
-gap> SI_poly(s,SI_bigint(2));
-crashes GAP
-
-
-Bug:
-
-gap> s := SI_ring(0,["a","b"]);
-<singular ring>
-gap> m := SI_matrix(2,2,s,"a,b,ab,1");
-<singular object:
-a, b,
-ab,1 >
-gap> v1 := SI_intvec([1]);
-<singular intvec:[ 1 ]>
-gap> v2 := SI_intvec([2]);
-<singular intvec:[ 2 ]>
-gap> SI_\[(m,2,2);
-<singular poly:1>
-gap> SI_\[(m,v1,v2);
-fail
-gap> SI_Errors;
-"cannot build expression lists from unnamed objects\ncannot build
-expression l\
-ists from unnamed objects\n"
+Setting of attributes: 
+  currently they can only be set in the Singular interpreter and are
+  then stored and reattached when an object goes back to Singular
 

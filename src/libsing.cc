@@ -110,6 +110,16 @@ static StructGVarFunc GVarFuncs[] =
    (GVarFunc)Func_SI_Intbigint,
    "cxxfuncs.cc:Func_SI_Intbigint" },
 
+  {"_SI_bigintmat", 1,
+   "m",
+   (GVarFunc)Func_SI_bigintmat,
+   "cxxfuncs.cc:Func_SI_bigintmat" },
+
+  {"_SI_Matbigintmat", 1,
+   "im",
+   (GVarFunc)Func_SI_Matbigintmat,
+   "cxxfuncs.cc:Func_SI_Matbigintmat" },
+
   {"_SI_number", 2,
    "ring, nr",
    (GVarFunc)Func_SI_number,
@@ -267,7 +277,7 @@ static Int InitKernel(StructInitInfo* module)
    * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
    * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
    * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK?
-   * IsListFuncs fuer T_SINGULAR ist 
+   * IsListFuncs fuer T_SINGULAR ist
    * IsSmallListFuncs fuer T_SINGULAR ist */
   IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
   MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
