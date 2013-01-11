@@ -1,7 +1,6 @@
  - create mailing list
  - add commit notifications
- - position of ring in arguments should be front, e.g. SI_matrix
-   constructor
+ - bind things from standard.lib both under SI_ and SIL_
  - constructing of identity and zero matrices
  - more constructors: vector, list, map, module, poly (quick, geobuckets),
    resolution, ring, qring?

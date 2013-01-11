@@ -1168,8 +1168,8 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 }
 
 // Installed as SI_matrix method
-Obj Func_SI_matrix_from_String(Obj self, Obj nrrows, Obj nrcols,
-                               Obj rr, Obj st)
+Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
+                               Obj st)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
           INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {

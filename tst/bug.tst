@@ -3,7 +3,7 @@ gap> # A collection of tests that use to produce errors crashes
 gap> #
 gap> s := SI_ring(0,["a","b","c"]);
 <singular ring>
-gap> m := SI_matrix(4,3,s,"1,0,4,2,0,5,0,0,0,3,0,6");
+gap> m := SI_matrix(s,4,3,"1,0,4,2,0,5,0,0,0,3,0,6");
 <singular object:
 1,0,4,
 2,0,5,
