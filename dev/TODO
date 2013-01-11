@@ -6,7 +6,8 @@
    finite fields, rationals, extensions
  - documentation
  - < and = methods
- - fix: * method for matrices gives mutable if both factors are immutable
+ - fix: -,*,/ etc. method for matrices gives mutable if both factors are 
+   immutable
  - list type methods
  - more tests
  - cleanup: separate type-dependent stuff in libsing.*
