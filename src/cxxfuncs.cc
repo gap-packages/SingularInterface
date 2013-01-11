@@ -31,13 +31,13 @@ static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
 
 
 // get omalloc statistics
-Obj FuncOmPrintInfo( Obj self )
+Obj Func_SI_OmPrintInfo( Obj self )
 {
   omPrintInfo(stdout);
   return NULL;
 }
 
-Obj FuncOmCurrentBytes( Obj self )
+Obj Func_SI_OmCurrentBytes( Obj self )
 {
   omInfo_t info = omGetInfo();
   return INTOBJ_INT(info.CurrentBytesSystem);

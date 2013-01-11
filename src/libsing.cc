@@ -63,16 +63,8 @@ static StructGVarFunc GVarFuncs[] =
   GVAR_FUNC_TABLE_ENTRY("cxx-funcs.cc", SI_SetCurrRing, 1, "r"),
   GVAR_FUNC_TABLE_ENTRY("cxx-funcs.cc", SI_ring_of_singobj, 1, "singobj"),
   GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_CallProc, 2, "name, args"),
-
-  {"_SI_OmPrintInfo", 0,
-   "",
-   (GVarFunc)FuncOmPrintInfo,
-   "cxxfuncs.cc:FuncOmPrintInfo" },
-
-  {"_SI_OmCurrentBytes", 0,
-   "",
-   (GVarFunc)FuncOmCurrentBytes,
-   "cxxfuncs.cc:FuncOmCurrentBytes" },
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmPrintInfo, 0, ""),
+  GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmCurrentBytes, 0, ""),
 
 #include "lowlevel_mappings_table.h"
 

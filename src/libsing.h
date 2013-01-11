@@ -233,8 +233,8 @@ Obj FuncSI_SetCurrRing(Obj self, Obj r);
 
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args);
 
-Obj FuncOmPrintInfo(Obj self);
-Obj FuncOmCurrentBytes(Obj self);
+Obj Func_SI_OmPrintInfo(Obj self);
+Obj Func_SI_OmCurrentBytes(Obj self);
 
 //////////////// C++ functions for the jump tables ////////////////////
 
