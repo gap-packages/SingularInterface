@@ -1,18 +1,20 @@
- - Setting of attributes
+ - create mailing list
+ - add commit notifications
+ - position of ring in arguments should be front, e.g. SI_matrix
+   constructor
+ - constructing of identity and zero matrices
  - more constructors: vector, list, map, module, poly (quick, geobuckets),
    resolution, ring, qring?
- - constructing of identity and zero matrices
- - dummy singular type collecting whatever e.g. user defined
  - number constructor (on the fly) for other coefficient domains
    finite fields, rationals, extensions
- - magic for GAP lists as arguments, automatically transformed into singular
+ - documentation
+ - < and = methods
+ - list type methods
+ - more tests
  - cleanup: separate type-dependent stuff in libsing.*
  - look at qrings and see if they can be used in SI_matrix_from_String and
    places, do they work at all? How to make them?
  - nicer view/print methods to say which singular type it is
- - documentation
- - < and = methods
- - list type methods
  - performance test/memory management
  - proxy elements (esp. access to interpreter variables)
  - try to run manual examples
@@ -22,11 +24,12 @@
  - disallow SaveWorkspace if libsing is loaded!
  - methods for polynomials (Value, coefficients, extrep)
  - sort out copying (Shallow/Structural) for GAP
- - position of ring in arguments should be front, e.g. SI_matrix
-   constructor
  - highlevel interface: return value ring dependent, args not, make sure
    that we handle this case, possibly not using arg-list GAP func.
  - access to matrix entries, read and write
+ - Setting of Singular attributes
+ - dummy singular type collecting whatever e.g. user defined
+ - magic for GAP lists as arguments, automatically transformed into singular
  
 Future:
  - polymake objekte?
@@ -37,7 +40,7 @@ Future:
  - Assembling of objects losing the wrapping of the pieces
  - Constructor for PLURAL rings
 
-Setting of attributes: 
+Setting of Singular attributes: 
   currently they can only be set in the Singular interpreter and are
   then stored and reattached when an object goes back to Singular
 
