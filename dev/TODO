@@ -1,3 +1,5 @@
+ - create mailing list
+ - add commit notifications
  - position of ring in arguments should be front, e.g. SI_matrix
    constructor
  - constructing of identity and zero matrices
