@@ -388,7 +388,9 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         return NULL;
     }
 
-    if (currgtype == SINGTYPE_IDEAL || currgtype == SINGTYPE_IDEAL_IMM) {
+    switch (currgtype) {
+    case SINGTYPE_IDEAL:
+    case SINGTYPE_IDEAL_IMM: {
         Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
         ideal id = (ideal) current;
         if (index <= 0 || index > IDELEMS(id)) {
@@ -397,8 +399,9 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_POLY;
         return id->m[index-1];
-    } else if (currgtype == SINGTYPE_MATRIX ||
-               currgtype == SINGTYPE_MATRIX_IMM) {
+        }
+    case SINGTYPE_MATRIX:
+    case SINGTYPE_MATRIX_IMM: {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
@@ -414,7 +417,9 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             return NULL;
         }
         return MATELEM(mat,row,col);
-    } else if (currgtype == SINGTYPE_LIST || currgtype == SINGTYPE_LIST_IMM) {
+        }
+    case SINGTYPE_LIST:
+    case SINGTYPE_LIST_IMM: {
         lists l = (lists) current;
         Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
         if (index <= 0 || index > l->nr+1 ) {
@@ -424,8 +429,9 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         currgtype = SingtoGAPType[l->m[index-1].Typ()];
         current = l->m[index-1].Data();
         return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
-    } else if (currgtype == SINGTYPE_INTMAT ||
-               currgtype == SINGTYPE_INTMAT_IMM) {
+        }
+    case SINGTYPE_INTMAT:
+    case SINGTYPE_INTMAT_IMM: {
         if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
@@ -437,13 +443,14 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         intvec *mat = (intvec *) current;
         if (row <= 0 || row > mat->rows() ||
             col <= 0 || col > mat->cols()) {
-            error = "matrix indices out of range";
+            error = "intmat indices out of range";
             return NULL;
         }
         currgtype = SINGTYPE_INT_IMM;
         return (void *) (long) IMATELEM(*mat,row,col);
-    } else if (currgtype == SINGTYPE_INTVEC ||
-               currgtype == SINGTYPE_INTVEC_IMM) {
+        }
+    case SINGTYPE_INTVEC:
+    case SINGTYPE_INTVEC_IMM: {
         if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
             !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
           error = "need an integer index for intvec proxy element";
@@ -457,7 +464,27 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         currgtype = SINGTYPE_INT_IMM;
         return (void *) (long) (*v)[n-1];
-    } else {
+        }
+    case SINGTYPE_BIGINTMAT:
+    case SINGTYPE_BIGINTMAT_IMM: {
+        if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
+            !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+          error = "need two integer indices for bigintmat proxy element";
+          return NULL;
+        }
+        Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
+        Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
+        bigintmat *mat = (bigintmat *) current;
+        if (row <= 0 || row > mat->rows() ||
+            col <= 0 || col > mat->cols()) {
+            error = "bigintmat indices out of range";
+            return NULL;
+        }
+        currgtype = SINGTYPE_BIGINT_IMM;
+        return (void *) (long) BIMATELEM(*mat,row,col);
+        }
+    default:
         error = "Singular object has no subobjects";
         return NULL;
     }
@@ -554,6 +581,10 @@ void SingObj::copy()
       case SINGTYPE_BIGINT_IMM:
         obj.data = (void *) NL_COPY((number) obj.data, coeffs_BIGINT);
         break;
+      case SINGTYPE_BIGINTMAT:
+      case SINGTYPE_BIGINTMAT_IMM:
+        obj.data = (void *) new bigintmat((bigintmat *) obj.data);
+        break;
       case SINGTYPE_IDEAL:
       case SINGTYPE_IDEAL_IMM:
         obj.data = (void *) id_Copy((ideal) obj.data,r);
@@ -635,6 +666,10 @@ void SingObj::cleanup(void)
       case SINGTYPE_BIGINT:
       case SINGTYPE_BIGINT_IMM:
         nlDelete((number *)(obj.data), NULL);
+        break;
+      case SINGTYPE_BIGINTMAT:
+      case SINGTYPE_BIGINTMAT_IMM:
+        delete (bigintmat *) (obj.data);
         break;
       case SINGTYPE_IDEAL:
       case SINGTYPE_IDEAL_IMM:
@@ -742,6 +777,9 @@ Obj SingObj::gapwrap(void)
         break;
       case BIGINT_CMD:
         res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.Data());
+        break;
+      case BIGINTMAT_CMD:
+        res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,obj.Data());
         break;
       case MATRIX_CMD:
         res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
@@ -867,6 +905,10 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_BIGINT_IMM:
             n = (number) CXX_SINGOBJ(o);
             nlDelete(&n,NULL);
+            break;
+        case SINGTYPE_BIGINTMAT:
+        case SINGTYPE_BIGINTMAT_IMM:
+            delete ((bigintmat *) CXX_SINGOBJ(o));
             break;
         case SINGTYPE_IDEAL:
         case SINGTYPE_IDEAL_IMM:
