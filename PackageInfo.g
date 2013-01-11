@@ -105,7 +105,7 @@ Persons := [
     IsMaintainer  := true,
   ),
   rec(
-    LastName      := "Luebeck",
+    LastName      := "Lübeck",
     FirstNames    := "Frank",
     IsAuthor      := true,
     IsMaintainer  := true,
