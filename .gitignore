@@ -37,3 +37,6 @@ doc/libsing.tex
 doc/manual.pdf
 doc/manual.six
 src/bin/
+
+bin/
+src/gentableforGAP-gentableforGAP.o
