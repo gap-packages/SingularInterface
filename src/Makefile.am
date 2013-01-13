@@ -33,8 +33,8 @@ else
 libsing_la_LIBADD = 
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 endif
-libsing_la_CXXFLAGS = -Wall
-libsing_la_CFLAGS = -Wall
+libsing_la_CXXFLAGS = -Wall -Wmissing-prototypes
+libsing_la_CFLAGS = -Wall -Wmissing-prototypes
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
