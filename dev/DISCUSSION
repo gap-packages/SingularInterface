@@ -1,0 +1,14 @@
+Mutability of arithmetic results:
+  binary + and - and unary - are done.
+  However, binary - seems to delegate to unary - and +.
+
+  Anyway, should we generally impose the immutability law for arithmetic
+  operations to all singular function calls?
+    (i.e. if all arguments are immutable, then the result is as well)
+  This could be done in the kernel rather efficiently.
+
+  Also, for singular objects, one can change from immutable back to
+  mutable relatively easily. So the above could be a good default
+  in any case.
+
+  This would simplify and speed up quite a lot of code with the arithmetic.

@@ -1,12 +1,13 @@
  - create mailing list
  - add commit notifications
- - constructing of identity and zero matrices
  - more constructors: vector, list, map, module, poly (quick, geobuckets),
    resolution, ring, qring?
  - number constructor (on the fly) for other coefficient domains
    finite fields, rationals, extensions
  - documentation
  - < and = methods
+ - fix: -,*,/ etc. method for matrices gives mutable if both factors are 
+   immutable, see DISCUSSION file
  - list type methods
  - more tests
  - cleanup: separate type-dependent stuff in libsing.*

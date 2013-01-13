@@ -127,6 +127,12 @@ SI_Errors := "";
 
 DeclareGlobalFunction( "_SI_BindSingularProcs" );
 
+DeclareGlobalFunction( "_SI_Addition" );
+DeclareGlobalFunction( "_SI_Addition_fast" );
+DeclareGlobalFunction( "_SI_Subtraction" );
+DeclareGlobalFunction( "_SI_Negation" );
+DeclareGlobalFunction( "_SI_Negation_fast" );
+
 DeclareGlobalFunction( "_SI_InitInterpreter" );
 # This is called automatically from libsing.gi, no need for the user to call it.
 
@@ -194,6 +200,8 @@ MakeReadWriteGVar("SI_vector");
 Unbind(SI_vector);
 DeclareOperation("SI_vector",[IsSingularObj]);
 DeclareOperation("SI_vector",[IsSingularRing, IsPosInt, IsStringRep]);
+DeclareOperation("SI_ZeroMat",[IsSingularRing, IsPosInt, IsPosInt]);
+DeclareOperation("SI_IdentityMat",[IsSingularRing, IsPosInt]);
 
 BindGlobal("SI_ideal_singular", SI_ideal);
 MakeReadWriteGVar("SI_ideal");
@@ -209,3 +217,4 @@ DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
 DeclareGlobalFunction( "_SI_Comparer" );
 
 DeclareGlobalFunction( "SI_AddGAPFunctionToSingularInterpreter" );
+

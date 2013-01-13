@@ -34,11 +34,18 @@ InstallMethod(SI_ring,["IsSingularObj"], SI_ring_of_singobj);
 InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
 InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
 
-InstallMethod(SI_matrix,[IsSingularObj],SI_matrix_singular);
-InstallMethod(SI_matrix,[IsSingularObj,IsPosInt,IsPosInt],SI_matrix_singular);
-InstallMethod(SI_matrix,[IsSingularRing, IsPosInt, IsPosInt, IsStringRep],
+InstallMethod(SI_matrix,["IsSingularObj"],SI_matrix_singular);
+InstallMethod(SI_matrix,["IsSingularObj","IsPosInt","IsPosInt"],
+  SI_matrix_singular);
+InstallMethod(SI_matrix,["IsSingularRing","IsPosInt","IsPosInt","IsStringRep"],
               _SI_matrix_from_String);
-InstallMethod(SI_matrix,[IsPosInt, IsPosInt, IsList], _SI_matrix_from_els);
+InstallMethod(SI_matrix,["IsPosInt", "IsPosInt", "IsList"], 
+              _SI_matrix_from_els);
+
+InstallMethod(SI_ZeroMat,["IsSingularRing", "IsPosInt", "IsPosInt"],
+  function(r,rows,cols) return SI_matrix(r,rows,cols," "); end );
+InstallMethod(SI_IdentityMat,["IsSingularRing", "IsPosInt"],
+  function(r,rows) return SI_matrix(SI_freemodule(r,rows)); end );
 
 # a Singular vector is a "polynomial" in which each monomial also carries
 # its position
