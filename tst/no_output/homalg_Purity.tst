@@ -1,36 +1,37 @@
 gap> SI_option("notWarnSB");;
-gap> DeclareGlobalFunction( "SIH_ZeroColumns" );
-gap> DeclareGlobalFunction( "SIH_ZeroRows" );
-gap> DeclareGlobalFunction( "SIH_BasisOfColumnModule" );
-gap> DeclareGlobalFunction( "SIH_BasisOfRowModule" );
-gap> DeclareGlobalFunction( "SIH_BasisOfColumnsCoeff" );
-gap> DeclareGlobalFunction( "SIH_BasisOfRowsCoeff" );
-gap> DeclareGlobalFunction( "SIH_DecideZeroColumns" );
-gap> DeclareGlobalFunction( "SIH_DecideZeroRows" );
-gap> DeclareGlobalFunction( "SIH_DecideZeroColumnsEffectively" );
-gap> DeclareGlobalFunction( "SIH_DecideZeroRowsEffectively" );
-gap> DeclareGlobalFunction( "SIH_SyzygiesGeneratorsOfColumns" );
-gap> DeclareGlobalFunction( "SIH_SyzygiesGeneratorsOfRows" );
-gap> DeclareGlobalFunction( "SIH_RelativeSyzygiesGeneratorsOfColumns" );
-gap> DeclareGlobalFunction( "SIH_RelativeSyzygiesGeneratorsOfRows" );
-gap> DeclareGlobalFunction( "SIH_ReducedSyzygiesGeneratorsOfColumns" );
-gap> DeclareGlobalFunction( "SIH_ReducedSyzygiesGeneratorsOfRows" );
-gap> DeclareGlobalFunction( "SIH_Submatrix" );
-gap> DeclareGlobalFunction( "SIH_UnionOfRows" );
-gap> DeclareGlobalFunction( "SIH_UnionOfColumns" );
-gap> InstallGlobalFunction( SIH_BasisOfColumnModule,
+gap> if not IsBound( SIH_ZeroColumns ) then
+> DeclareGlobalFunction( "SIH_ZeroColumns" );
+> DeclareGlobalFunction( "SIH_ZeroRows" );
+> DeclareGlobalFunction( "SIH_BasisOfColumnModule" );
+> DeclareGlobalFunction( "SIH_BasisOfRowModule" );
+> DeclareGlobalFunction( "SIH_BasisOfColumnsCoeff" );
+> DeclareGlobalFunction( "SIH_BasisOfRowsCoeff" );
+> DeclareGlobalFunction( "SIH_DecideZeroColumns" );
+> DeclareGlobalFunction( "SIH_DecideZeroRows" );
+> DeclareGlobalFunction( "SIH_DecideZeroColumnsEffectively" );
+> DeclareGlobalFunction( "SIH_DecideZeroRowsEffectively" );
+> DeclareGlobalFunction( "SIH_SyzygiesGeneratorsOfColumns" );
+> DeclareGlobalFunction( "SIH_SyzygiesGeneratorsOfRows" );
+> DeclareGlobalFunction( "SIH_RelativeSyzygiesGeneratorsOfColumns" );
+> DeclareGlobalFunction( "SIH_RelativeSyzygiesGeneratorsOfRows" );
+> DeclareGlobalFunction( "SIH_ReducedSyzygiesGeneratorsOfColumns" );
+> DeclareGlobalFunction( "SIH_ReducedSyzygiesGeneratorsOfRows" );
+> DeclareGlobalFunction( "SIH_Submatrix" );
+> DeclareGlobalFunction( "SIH_UnionOfRows" );
+> DeclareGlobalFunction( "SIH_UnionOfColumns" );
+> InstallGlobalFunction( SIH_BasisOfColumnModule,
 >  function( M )
 >    
 >    return SI_matrix( SI_std( M ) );
 >    
 > end );
-gap> InstallGlobalFunction( SIH_BasisOfRowModule,
+> InstallGlobalFunction( SIH_BasisOfRowModule,
 >  function( M )
 >    
 >    return SI_transpose( SIH_BasisOfColumnModule( SI_transpose( M ) ) );
 >    
 > end );
-gap> InstallGlobalFunction( SIH_BasisOfColumnsCoeff,
+> InstallGlobalFunction( SIH_BasisOfColumnsCoeff,
 >   function( M )
 >     local B;
 >     
@@ -39,25 +40,25 @@ gap> InstallGlobalFunction( SIH_BasisOfColumnsCoeff,
 >     return [ B, SI_lift( M, B ) ];
 >     
 > end );
-gap> InstallGlobalFunction( SIH_BasisOfRowsCoeff,
+> InstallGlobalFunction( SIH_BasisOfRowsCoeff,
 >   function( M )
 >     
 >     return List( SIH_BasisOfColumnsCoeff( SI_transpose( M ) ), SI_transpose );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_DecideZeroColumns,
+> InstallGlobalFunction( SIH_DecideZeroColumns,
 >   function( A, B )
 >     
 >     return SI_matrix( SI_reduce( A, B ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_DecideZeroRows,
+> InstallGlobalFunction( SIH_DecideZeroRows,
 >   function( A, B )
 >     
 >     return SI_transpose( SIH_DecideZeroColumns( SI_transpose( A ), SI_transpose( B ) ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_DecideZeroColumnsEffectively,
+> InstallGlobalFunction( SIH_DecideZeroColumnsEffectively,
 >   function( A, B )
 >     local M;
 >     
@@ -66,49 +67,49 @@ gap> InstallGlobalFunction( SIH_DecideZeroColumnsEffectively,
 >     return [ M, SI_lift( B, M - A ) ];
 >     
 > end );
-gap> InstallGlobalFunction( SIH_DecideZeroRowsEffectively,
+> InstallGlobalFunction( SIH_DecideZeroRowsEffectively,
 >   function( A, B )
 >     
 >     return List( SIH_DecideZeroColumnsEffectively( SI_transpose( A ), SI_transpose( B ) ), SI_transpose );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_SyzygiesGeneratorsOfColumns,
+> InstallGlobalFunction( SIH_SyzygiesGeneratorsOfColumns,
 >   function( M )
 >     
 >     return SI_matrix( SI_syz( M ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_SyzygiesGeneratorsOfRows,
+> InstallGlobalFunction( SIH_SyzygiesGeneratorsOfRows,
 >   function( M )
 >     
 >     return SI_transpose( SIH_SyzygiesGeneratorsOfColumns( SI_transpose( M ) ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_RelativeSyzygiesGeneratorsOfColumns,
+> InstallGlobalFunction( SIH_RelativeSyzygiesGeneratorsOfColumns,
 >   function( M, M2 )
 >     
 >     return SIH_BasisOfColumnModule( SI_modulo( M, M2 ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_RelativeSyzygiesGeneratorsOfRows,
+> InstallGlobalFunction( SIH_RelativeSyzygiesGeneratorsOfRows,
 >   function( M, M2 )
 >     
 >     return SI_transpose( SIH_RelativeSyzygiesGeneratorsOfColumns( SI_transpose( M ), SI_transpose( M2 ) ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_ReducedSyzygiesGeneratorsOfColumns,
+> InstallGlobalFunction( SIH_ReducedSyzygiesGeneratorsOfColumns,
 >   function( M )
 >     
 >     return SI_nres( M, 2 )[2];
 >     
 > end );
-gap> InstallGlobalFunction( SIH_ReducedSyzygiesGeneratorsOfRows,
+> InstallGlobalFunction( SIH_ReducedSyzygiesGeneratorsOfRows,
 >   function( M )
 >     
 >     return SI_transpose( SIH_ReducedSyzygiesGeneratorsOfColumns( SI_transpose( M ) ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_ZeroColumns,
+> InstallGlobalFunction( SIH_ZeroColumns,
 >   function( M )
 >     local zero;
 >     
@@ -120,13 +121,13 @@ gap> InstallGlobalFunction( SIH_ZeroColumns,
 >     return Filtered( [ 1 .. SI_ncols( M ) ], i -> SI_\=\=( M[i], zero ) = 1 );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_ZeroRows,
+> InstallGlobalFunction( SIH_ZeroRows,
 >   function( M )
 >     
 >     return SIH_ZeroColumns( SI_transpose( M ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_Submatrix,
+> InstallGlobalFunction( SIH_Submatrix,
 >   function( M, row_range, col_range )
 >     local N;
 >     
@@ -135,7 +136,7 @@ gap> InstallGlobalFunction( SIH_Submatrix,
 >     return SI_matrix( Length( row_range ), Length( col_range ), N );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_UnionOfRows,
+> InstallGlobalFunction( SIH_UnionOfRows,
 >   function( M, N )
 >     local rM, cM, rN;
 >     
@@ -149,7 +150,7 @@ gap> InstallGlobalFunction( SIH_UnionOfRows,
 >     return SI_matrix( rM + rN, cM, Flat( Concatenation( M, N ) ) );
 >     
 > end );
-gap> InstallGlobalFunction( SIH_UnionOfColumns,
+> InstallGlobalFunction( SIH_UnionOfColumns,
 >   function( M, N )
 >     local rM, cM, cN;
 >     
@@ -167,6 +168,7 @@ gap> InstallGlobalFunction( SIH_UnionOfColumns,
 >                         ) ) );
 >     
 > end );
+> fi;
 gap> homalg_variable_1 := SI_ring( 0, [ "dummy_variable" ] );;
 gap> homalg_variable_2 := Zero( homalg_variable_1 );;
 gap> homalg_variable_3 := One( homalg_variable_1 );;

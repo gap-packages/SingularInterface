@@ -333,8 +333,8 @@ libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc singt
 @WANT_SW_TRUE@libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
 @WANT_SW_FALSE@libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 @WANT_SW_TRUE@libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS) -DWANT_SW
-libsing_la_CXXFLAGS = -Wall
-libsing_la_CFLAGS = -Wall
+libsing_la_CXXFLAGS = -Wall -Wmissing-prototypes
+libsing_la_CFLAGS = -Wall -Wmissing-prototypes
 BUILT_SOURCES = \
 	lowlevel_mappings.cc \
 	lowlevel_mappings.h \
