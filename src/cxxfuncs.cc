@@ -592,6 +592,10 @@ void SingObj::copy()
         case SINGTYPE_IDEAL_IMM:
             obj.data = (void *) id_Copy((ideal) obj.data,r);
             break;
+        case SINGTYPE_INT:
+        case SINGTYPE_INT_IMM:
+            // do nothing and return immediately; do not set needcleanup to true
+            return;
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
         case SINGTYPE_INTVEC:
@@ -600,6 +604,7 @@ void SingObj::copy()
             break;
         case SINGTYPE_LINK:  // Do not copy here since it does not make sense
         case SINGTYPE_LINK_IMM:
+            // do nothing and return immediately; do not set needcleanup to true
             return;
         case SINGTYPE_LIST:
         case SINGTYPE_LIST_IMM:
@@ -649,11 +654,9 @@ void SingObj::copy()
         case SINGTYPE_VECTOR_IMM:
             obj.data = (void *) p_Copy((poly) obj.data,r);
             break;
-        case SINGTYPE_INT:
-        case SINGTYPE_INT_IMM:
-            return;
         default:
-            return;
+            ErrorQuit("SingObj::copy: unsupported gtype",0L,0L);
+            break;
     }
     needcleanup = true;
 }
@@ -682,6 +685,10 @@ void SingObj::cleanup()
         case SINGTYPE_IDEAL:
         case SINGTYPE_IDEAL_IMM:
             id_Delete((ideal *)data, r);
+            break;
+        case SINGTYPE_INT:
+        case SINGTYPE_INT_IMM:
+            // do nothing
             break;
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
@@ -738,11 +745,9 @@ void SingObj::cleanup()
         case SINGTYPE_VECTOR_IMM:
             p_Delete((poly*)data, r);
             break;
-        case SINGTYPE_INT:
-        case SINGTYPE_INT_IMM:
-            return;
         default:
-            return;
+            ErrorQuit("SingObj::cleanup: unsupported gtype",0L,0L);
+            break;
     }
 }
 
@@ -901,15 +906,6 @@ void _SI_FreeFunc(Obj o)
             // Pr("scheduled a ring for killing\n",0L,0L);
             AddSingularRingToCleanup((ring) data);
             break;
-        case SINGTYPE_POLY:
-        case SINGTYPE_POLY_IMM:
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM: {
-            poly p = (poly)data;
-            p_Delete( &p, r );
-            // Pr("killed a ring element\n",0L,0L);
-            break;
-        }
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM: {
             number n = (number)data;
@@ -926,6 +922,10 @@ void _SI_FreeFunc(Obj o)
             id_Delete(&id, r);
             break;
         }
+        case SINGTYPE_INT:
+        case SINGTYPE_INT_IMM:
+            // do nothing
+            break;
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
         case SINGTYPE_INTVEC:
@@ -940,6 +940,14 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_LIST_IMM:
             ((lists)data)->Clean(r);
             break;
+        case SINGTYPE_MAP:
+        case SINGTYPE_MAP_IMM: {
+            map m = (map)data;
+            omfree(m->preimage);
+            m->preimage = NULL;
+            id_Delete((ideal *) &m,r);
+            break;
+        }
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix)data;
@@ -958,23 +966,25 @@ void _SI_FreeFunc(Obj o)
             n_Delete(&n, r);
             break;
         }
-        case SINGTYPE_STRING:
-        case SINGTYPE_STRING_IMM:
-            omfree( (char *)data );
-            break;
-        case SINGTYPE_MAP:
-        case SINGTYPE_MAP_IMM: {
-            map m = (map)data;
-            omfree(m->preimage);
-            m->preimage = NULL;
-            id_Delete((ideal *) &m,r);
+        case SINGTYPE_POLY:
+        case SINGTYPE_POLY_IMM:
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM: {
+            poly p = (poly)data;
+            p_Delete( &p, r );
+            // Pr("killed a ring element\n",0L,0L);
             break;
         }
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
             syKillComputation((syStrategy)data, r);
             break;
+        case SINGTYPE_STRING:
+        case SINGTYPE_STRING_IMM:
+            omfree( (char *)data );
+            break;
         default:
+            ErrorQuit("_SI_FreeFunc: unsupported gtype",0L,0L);
             break;
     }
 }
