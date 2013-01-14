@@ -16,7 +16,7 @@
 
 
 
-Obj _SI_Types;    /* A kernel copy of a plain list of types */
+static Obj _SI_Types;    /* A kernel copy of a plain list of types */
 
 
 // The following table maps GAP type numbers for singular objects to

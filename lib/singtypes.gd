@@ -3,9 +3,8 @@
 SingularFamily := NewFamily("SingularFamily");
 Setter(ElementsFamily)(SingularFamily, SingularFamily); # HACK: Grrrrrrrrr
 
-_SI_Types := [];
-
 DeclareCategory( "IsSingularObj", IsObject );
+
 DeclareCategory( "IsSingularVoid", IsSingularObj );
 DeclareCategory( "IsSingularBigInt", IsSingularObj and IsRingElementWithOne );
 DeclareCategory( "IsSingularBigIntMat", IsSingularObj and IsList );
@@ -27,6 +26,8 @@ DeclareCategory( "IsSingularRing", IsSingularObj and IsAdditiveMagmaWithZero
 DeclareCategory( "IsSingularString", IsSingularObj and IsList );
 DeclareCategory( "IsSingularVector", IsSingularObj and IsList );
 DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
+
+_SI_Types := [];
 
 _SI_Types[_SI_TYPENRS.SINGTYPE_VOID]
    := NewType(SingularFamily,IsSingularVoid);
