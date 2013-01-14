@@ -15,9 +15,14 @@ src/lowlevel_mappings_table.h
 
 src/pkgconfig.h
 src/stamp-h1
+libtool
+src/.deps
+src/.libs/
 
 doc/chap*.txt
-doc/chap*.html
+doc/*.html
+doc/*.css
+doc/*.js
 doc/libsing.idx
 doc/libsing.log
 doc/libsing.out
@@ -37,9 +42,7 @@ syntax: regexp
 Makefile$
 ^config\.
 ^SINGARCHNAME$
+/SINGULARPATH
 ^autom4te\.cache/
-^src/\.deps/
-^src/\.libs/
-^libtool$
 ^spielwiese/
 ^SW/
