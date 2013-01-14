@@ -2063,18 +2063,18 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
     }
     ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
-    SI_CurrentRingObj = rr;
     return NULL;
 }
 
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj)
 {
     if (rr == 0 && RingDependend(sobj.obj.Typ())) {
-        if (SI_CurrentRingObj == 0)
-            ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
-        rr = SI_CurrentRingObj;
+        if (currRing->ext_ref == 0) {
+            NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
+        }
+        rr = (Obj)currRing->ext_ref;
         if (currRing != (ring) CXX_SINGOBJ(rr))
-            ErrorQuit("current ring setting is out of sync between GAP and Singular",0L,0L);
+            ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
     return rr;
 }

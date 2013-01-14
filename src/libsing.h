@@ -38,7 +38,6 @@ extern "C" {
 
 extern Obj SI_Errors;   //!< A kernel copy of a string
 extern Obj _SI_ProxiesType;   //!< A kernel copy of the type of proxy elements
-extern Obj SI_CurrentRingObj;   //!< The GAP wrapper for the current Singular ring
 
 void InstallPrePostGCFuncs(void);
 

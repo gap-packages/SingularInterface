@@ -74,7 +74,6 @@ static StructGVarFunc GVarFuncs[] = {
 
 Obj SI_Errors;
 Obj _SI_ProxiesType;
-Obj SI_CurrentRingObj;
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
@@ -116,7 +115,6 @@ static Int InitKernel(StructInitInfo* module)
 
     InitCopyGVar("SI_Errors", &SI_Errors);
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
-    InitGlobalBag( &SI_CurrentRingObj, "libsing:SI_CurrentRingObj" );
 
     TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
     InfoBags[T_SINGULAR].name = "singular wrapper object";
