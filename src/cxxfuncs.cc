@@ -52,8 +52,10 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 
 extern int inerror; // from Singular/grammar.cc
 
-
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
+static void _SI_ErrorCallback(const char *st);
+
+
 
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
@@ -2203,6 +2205,7 @@ The gain seem pretty small - this was tested with zero polyomials.
 So: for the moment we just leave the generic functions in the kernel
 tables.   */
 /* from GAP kernel */
+/*
 Obj SumObject(Obj l, Obj r);
 
 Obj SumSingObjs(Obj a, Obj b)
@@ -2217,5 +2220,4 @@ Obj SumSingObjs(Obj a, Obj b)
       return SumObject(a, b);
     }
 }
-
-
+*/

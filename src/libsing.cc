@@ -11,7 +11,9 @@ This file contains all of the pure C code that deals with GAP.
 
 /******************** The interface to GAP ***************/
 
-Obj Func_SI_debug(Obj self, Obj obj)
+static Obj Func_SI_debug(Obj self, Obj obj);
+
+static Obj Func_SI_debug(Obj self, Obj obj)
 {
     return NULL;
 }
