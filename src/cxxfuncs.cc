@@ -659,78 +659,82 @@ void SingObj::copy()
 
 void SingObj::cleanup(void)
 {
-    map m;
-    ideal *i;
     if (!needcleanup) return;
     needcleanup = false;
-    if (obj.attribute) obj.attribute->killAll(r);
+
+    void *data = obj.data;
+    attr a = obj.attribute;
+
+    if (a) {
+        a->killAll(r);
+    }
+
     switch (gtype) {
       case SINGTYPE_BIGINT:
       case SINGTYPE_BIGINT_IMM:
-        nlDelete((number *)(obj.data), NULL);
+        nlDelete((number *)data, NULL);
         break;
       case SINGTYPE_BIGINTMAT:
       case SINGTYPE_BIGINTMAT_IMM:
-        delete (bigintmat *) (obj.data);
+        delete (bigintmat *)data;
         break;
       case SINGTYPE_IDEAL:
       case SINGTYPE_IDEAL_IMM:
-        id_Delete((ideal *)(obj.data), r);
+        id_Delete((ideal *)data, r);
         break;
       case SINGTYPE_INTMAT:
       case SINGTYPE_INTMAT_IMM:
       case SINGTYPE_INTVEC:
       case SINGTYPE_INTVEC_IMM:
-        delete (intvec *) (obj.data);
+        delete (intvec *)data;
         break;
       case SINGTYPE_LINK:  // Was never copied, so leave untouched
       case SINGTYPE_LINK_IMM:
         return;
       case SINGTYPE_LIST:
       case SINGTYPE_LIST_IMM:
-        ((lists) (obj.data))->Clean(r);
+        ((lists)data)->Clean(r);
         break;
       case SINGTYPE_MAP:
-      case SINGTYPE_MAP_IMM:
-        m = (map) obj.data;
+      case SINGTYPE_MAP_IMM: {
+        map m = (map)data;
         omfree(m->preimage);
         m->preimage = NULL;
-        i = (ideal *) m;
-        id_Delete(i,r);
-        break;
+        id_Delete((ideal *)m,r);
+        break; }
       case SINGTYPE_MATRIX:
       case SINGTYPE_MATRIX_IMM:
-        MP_DELETE((matrix *)(obj.data), r);
+        MP_DELETE((matrix *)data, r);
         break;
       case SINGTYPE_MODULE:
       case SINGTYPE_MODULE_IMM:
-        id_Delete((ideal *)(obj.data), r);
+        id_Delete((ideal *)data, r);
         break;
       case SINGTYPE_NUMBER:
       case SINGTYPE_NUMBER_IMM:
-        n_Delete((number *)(obj.data), r);
+        n_Delete((number *)data, r);
         break;
       case SINGTYPE_POLY:
       case SINGTYPE_POLY_IMM:
-        p_Delete((poly *)(obj.data), r);
+        p_Delete((poly *)data, r);
         break;
       case SINGTYPE_QRING:
       case SINGTYPE_QRING_IMM:
         return;
       case SINGTYPE_RESOLUTION:
       case SINGTYPE_RESOLUTION_IMM:
-        syKillComputation((syStrategy) (obj.data),r);
+        syKillComputation((syStrategy)data, r);
         return;
       case SINGTYPE_RING:
       case SINGTYPE_RING_IMM:
         return;
       case SINGTYPE_STRING:
       case SINGTYPE_STRING_IMM:
-        omfree( (char *) (obj.data) );
+        omfree( (char *)data );
         break;
       case SINGTYPE_VECTOR:
       case SINGTYPE_VECTOR_IMM:
-        p_Delete((poly*)(obj.data), r);
+        p_Delete((poly*)data, r);
         break;
       case SINGTYPE_INT:
       case SINGTYPE_INT_IMM:
@@ -877,90 +881,88 @@ void InstallPrePostGCFuncs(void)
 
 void _SI_FreeFunc(Obj o)
 {
-    UInt type = TYPE_SINGOBJ(o);
-    poly p;
-    number n;
-    ideal id;
-    map m;
+    UInt gtype = TYPE_SINGOBJ(o);
+    void *data = CXX_SINGOBJ(o);
+    attr a = (attr)ATTRIB_SINGOBJ(o);
+    ring r = HasRingTable[gtype] ? SINGRING_SINGOBJ(o) : 0;
 
-    if (ATTRIB_SINGOBJ(o)) {
-        attr a = (attr) ATTRIB_SINGOBJ(o);
-        a->killAll(SINGRING_SINGOBJ(o));
+    if (a) {
+        a->killAll(r);
     }
-    switch (type) {
+
+    switch (gtype) {
         case SINGTYPE_QRING:
         case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
         case SINGTYPE_RING_IMM:
             // Pr("scheduled a ring for killing\n",0L,0L);
-            AddSingularRingToCleanup((ring) CXX_SINGOBJ(o));
+            AddSingularRingToCleanup((ring) data);
             break;
         case SINGTYPE_POLY:
         case SINGTYPE_POLY_IMM:
         case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM:
-            p = (poly) CXX_SINGOBJ(o);
-            p_Delete( &p, SINGRING_SINGOBJ(o) );
+        case SINGTYPE_VECTOR_IMM: {
+            poly p = (poly)data;
+            p_Delete( &p, r );
             // Pr("killed a ring element\n",0L,0L);
-            break;
+            break; }
         case SINGTYPE_BIGINT:
-        case SINGTYPE_BIGINT_IMM:
-            n = (number) CXX_SINGOBJ(o);
+        case SINGTYPE_BIGINT_IMM: {
+            number n = (number)data;
             nlDelete(&n,NULL);
-            break;
+            break; }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM:
-            delete ((bigintmat *) CXX_SINGOBJ(o));
+            delete ((bigintmat *)data);
             break;
         case SINGTYPE_IDEAL:
-        case SINGTYPE_IDEAL_IMM:
-            id = (ideal) CXX_SINGOBJ(o);
-            id_Delete(&id,SINGRING_SINGOBJ(o));
-            break;
+        case SINGTYPE_IDEAL_IMM: {
+            ideal id = (ideal)data;
+            id_Delete(&id, r);
+            break; }
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
         case SINGTYPE_INTVEC:
         case SINGTYPE_INTVEC_IMM:
-            delete ((intvec *) CXX_SINGOBJ(o));
+            delete ((intvec *)data);
             break;
         case SINGTYPE_LINK:
         case SINGTYPE_LINK_IMM:
-            // FIXME: later: slKill( (si_link) CXX_SINGOBJ(o));
+            // FIXME: later: slKill( (si_link)data);
             break;
         case SINGTYPE_LIST:
         case SINGTYPE_LIST_IMM:
-            ((lists) (CXX_SINGOBJ(o)))->Clean(SINGRING_SINGOBJ(o));
+            ((lists)data)->Clean(r);
             break;
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
-            matrix m = (matrix) CXX_SINGOBJ(o);
-            MP_DELETE(&m, SINGRING_SINGOBJ(o));
+            matrix m = (matrix)data;
+            MP_DELETE(&m, r);
             break; }
         case SINGTYPE_MODULE:
         case SINGTYPE_MODULE_IMM: {
-            ideal i = (ideal) CXX_SINGOBJ(o);
-            id_Delete(&i, SINGRING_SINGOBJ(o));
+            ideal i = (ideal)data;
+            id_Delete(&i, r);
             break; }
         case SINGTYPE_NUMBER:
         case SINGTYPE_NUMBER_IMM: {
-            number n = (number) CXX_SINGOBJ(o);
-            n_Delete(&n, SINGRING_SINGOBJ(o));
+            number n = (number)data;
+            n_Delete(&n, r);
             break; }
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
-            omfree( (char *) (CXX_SINGOBJ(o)) );
+            omfree( (char *)data );
             break;
         case SINGTYPE_MAP:
-        case SINGTYPE_MAP_IMM:
-            m = (map) CXX_SINGOBJ(o);
+        case SINGTYPE_MAP_IMM: {
+            map m = (map)data;
             omfree(m->preimage);
             m->preimage = NULL;
-            id_Delete((ideal *) &m,SINGRING_SINGOBJ(o));
-            break;
+            id_Delete((ideal *) &m,r);
+            break; }
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
-            syKillComputation((syStrategy) (CXX_SINGOBJ(o)),
-                              SINGRING_SINGOBJ(o));
+            syKillComputation((syStrategy)data, r);
             break;
         default:
             break;
