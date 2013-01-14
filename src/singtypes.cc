@@ -22,8 +22,8 @@ Obj _SI_Types;    /* A kernel copy of a plain list of types */
 // The following table maps GAP type numbers for singular objects to
 // Singular type numbers for Singular objects:
 
-const int GAPtoSingType[] =
-  { 0, /* NOTUSED */
+const int GAPtoSingType[] = {
+    0, /* NOTUSED */
     0, /* VOID */
     BIGINT_CMD,
     BIGINT_CMD,
@@ -71,14 +71,14 @@ const int GAPtoSingType[] =
     0, /* USERDEF */
     0, /* PYOBJECT */
     0 /* PYOBJECT */
-  };
+};
 
 int SingtoGAPType[MAX_TOK];
 /* Also adjust Func_SI_INIT_INTERPRETER where this is initialised,
    when the set of types changes. */
 
-const int HasRingTable[] =
-  { 0, // NOTUSED
+const int HasRingTable[] = {
+    0, // NOTUSED
     0, // SINGTYPE_VOID          = 1
     0, // SINGTYPE_BIGINT        = 2,
     0, // SINGTYPE_BIGINT_IMM    = 3,
@@ -124,14 +124,14 @@ const int HasRingTable[] =
     1, // SINGTYPE_VECTOR_IMM    = 43,
     0, // SINGTYPE_USERDEF       = 44,
     0, // SINGTYPE_USERDEF_IMM   = 45,
-       // TODO (?): cone
-       // TODO (?): fan
-       // TODO (?): polytope
+    // TODO (?): cone
+    // TODO (?): fan
+    // TODO (?): polytope
     0, // SINGTYPE_PYOBJECT      = 46,
     0  // SINGTYPE_PYOBJECT_IMM  = 47,
-       // TODO (?): reference
-       // TODO (?): shared
-  };
+    // TODO (?): reference
+    // TODO (?): shared
+};
 
 
 void InitSingTypesFromKernel()

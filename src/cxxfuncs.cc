@@ -401,14 +401,14 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             }
             currgtype = SINGTYPE_POLY;
             return id->m[index-1];
-            }
+        }
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
             if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
-              error = "need two integer indices for matrix proxy element";
-              return NULL;
+                error = "need two integer indices for matrix proxy element";
+                return NULL;
             }
             Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
             Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
@@ -419,7 +419,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                 return NULL;
             }
             return MATELEM(mat,row,col);
-            }
+        }
         case SINGTYPE_LIST:
         case SINGTYPE_LIST_IMM: {
             lists l = (lists) current;
@@ -431,14 +431,14 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             currgtype = SingtoGAPType[l->m[index-1].Typ()];
             current = l->m[index-1].Data();
             return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
-            }
+        }
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM: {
             if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
-              error = "need two integer indices for intmat proxy element";
-              return NULL;
+                error = "need two integer indices for intmat proxy element";
+                return NULL;
             }
             Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
             Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
@@ -450,13 +450,13 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             }
             currgtype = SINGTYPE_INT_IMM;
             return (void *) (long) IMATELEM(*mat,row,col);
-            }
+        }
         case SINGTYPE_INTVEC:
         case SINGTYPE_INTVEC_IMM: {
             if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
-              error = "need an integer index for intvec proxy element";
-              return NULL;
+                error = "need an integer index for intvec proxy element";
+                return NULL;
             }
             Int n = INT_INTOBJ(ELM_PLIST(proxy,pos));
             intvec *v = (intvec *) current;
@@ -466,14 +466,14 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             }
             currgtype = SINGTYPE_INT_IMM;
             return (void *) (long) (*v)[n-1];
-            }
+        }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM: {
             if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
                 !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
-              error = "need two integer indices for bigintmat proxy element";
-              return NULL;
+                error = "need two integer indices for bigintmat proxy element";
+                return NULL;
             }
             Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
             Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
@@ -485,7 +485,7 @@ static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
             }
             currgtype = SINGTYPE_BIGINT_IMM;
             return (void *) (long) BIMATELEM(*mat,row,col);
-            }
+        }
         default:
             error = "Singular object has no subobjects";
             return NULL;
@@ -638,8 +638,8 @@ void SingObj::copy()
             ri = (ring) obj.data;
             ri->ref++;   // We fake a copy since this will be decreased later on
             return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
-                            // indeed, we never want to do this, therefore we increase
-                            // the reference count
+            // indeed, we never want to do this, therefore we increase
+            // the reference count
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             obj.data = (void *) omStrDup( (char *) obj.data);
@@ -669,7 +669,7 @@ void SingObj::cleanup(void)
         a->killAll(r);
     }
 
-     switch (gtype) {
+    switch (gtype) {
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM:
             nlDelete((number *)data, NULL);
@@ -701,7 +701,8 @@ void SingObj::cleanup(void)
             omfree(m->preimage);
             m->preimage = NULL;
             id_Delete((ideal *)m,r);
-            break; }
+            break;
+        }
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM:
             MP_DELETE((matrix *)data, r);
@@ -851,7 +852,7 @@ static void AddSingularRingToCleanup(ring r)
     } else if (SRTC_nr == SRTC_capacity) {
         SRTC_capacity *= 2;
         SingularRingsToCleanup = (ring *) realloc(SingularRingsToCleanup,
-                                                  SRTC_capacity*sizeof(ring));
+                                 SRTC_capacity*sizeof(ring));
     }
     SingularRingsToCleanup[SRTC_nr++] = r;
 }
@@ -864,7 +865,7 @@ extern TNumCollectFuncBags AfterCollectFuncBags;
 static void SingularRingCleaner(void)
 {
     int i;
-    for (i = 0;i < SRTC_nr;i++) {
+    for (i = 0; i < SRTC_nr; i++) {
         rKill( SingularRingsToCleanup[i] );
         // Pr("killed a ring\n",0L,0L);
     }
@@ -906,12 +907,14 @@ void _SI_FreeFunc(Obj o)
             poly p = (poly)data;
             p_Delete( &p, r );
             // Pr("killed a ring element\n",0L,0L);
-            break; }
+            break;
+        }
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM: {
             number n = (number)data;
             nlDelete(&n,NULL);
-            break; }
+            break;
+        }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM:
             delete ((bigintmat *)data);
@@ -920,7 +923,8 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_IDEAL_IMM: {
             ideal id = (ideal)data;
             id_Delete(&id, r);
-            break; }
+            break;
+        }
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM:
         case SINGTYPE_INTVEC:
@@ -939,17 +943,20 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix)data;
             MP_DELETE(&m, r);
-            break; }
+            break;
+        }
         case SINGTYPE_MODULE:
         case SINGTYPE_MODULE_IMM: {
             ideal i = (ideal)data;
             id_Delete(&i, r);
-            break; }
+            break;
+        }
         case SINGTYPE_NUMBER:
         case SINGTYPE_NUMBER_IMM: {
             number n = (number)data;
             n_Delete(&n, r);
-            break; }
+            break;
+        }
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             omfree( (char *)data );
@@ -960,7 +967,8 @@ void _SI_FreeFunc(Obj o)
             omfree(m->preimage);
             m->preimage = NULL;
             id_Delete((ideal *) &m,r);
-            break; }
+            break;
+        }
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
             syKillComputation((syStrategy)data, r);
@@ -982,9 +990,9 @@ void _SI_ObjMarkFunc(Bag o)
         ptr = PTR_BAG(o);
         MARK_BAG(ptr[2]);
     } else if (/*  gtype == SINGTYPE_RING ||  */
-               gtype == SINGTYPE_RING_IMM ||
-               /* gtype == SINGTYPE_QRING ||  */
-               gtype == SINGTYPE_QRING_IMM) {
+        gtype == SINGTYPE_RING_IMM ||
+        /* gtype == SINGTYPE_QRING ||  */
+        gtype == SINGTYPE_QRING_IMM) {
         ptr = PTR_BAG(o);
         MARK_BAG(ptr[2]);   // Mark zero
         MARK_BAG(ptr[3]);   // Mark one
@@ -997,7 +1005,7 @@ void _SI_ObjMarkFunc(Bag o)
     UInt i;
     if (SIZE_BAG(o) > 2*sizeof(Bag)) {
         ptr = PTR_BAG(o);
-        for (i = 2;i < SIZE_BAG(o)/sizeof(Bag);i++) {
+        for (i = 2; i < SIZE_BAG(o)/sizeof(Bag); i++) {
             sub = ptr[i];
             MARK_BAG( sub );
         }
@@ -1031,7 +1039,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         return Fail;
     }
     nrvars = LEN_LIST(names);
-    for (i = 1;i <= nrvars;i++) {
+    for (i = 1; i <= nrvars; i++) {
         if (!IS_STRING_REP(ELM_LIST(names,i))) {
             ErrorQuit("Variable names must be strings",0L,0L);
             return Fail;
@@ -1041,7 +1049,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     // First check that the orderings cover exactly all variables:
     covered = 0;
     nrords = LEN_LIST(orderings);
-    for (i = 1;i <= nrords;i++) {
+    for (i = 1; i <= nrords; i++) {
         tmp = ELM_LIST(orderings,i);
         if (!IS_LIST(tmp) || LEN_LIST(tmp) != 2) {
             ErrorQuit("Orderings must be lists of length 2",0L,0L);
@@ -1055,7 +1063,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         if (IS_INTOBJ(tmp2)) covered += (int) INT_INTOBJ(tmp2);
         else if (IS_LIST(tmp2)) {
             covered += (int) LEN_LIST(tmp2);
-            for (j = 1;j <= LEN_LIST(tmp2);j++) {
+            for (j = 1; j <= LEN_LIST(tmp2); j++) {
                 if (!IS_INTOBJ(ELM_LIST(tmp2,j))) {
                     ErrorQuit("Weights must be immediate integers",0L,0L);
                     return Fail;
@@ -1074,7 +1082,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 
     // Now allocate strings for the variable names:
     array = (char **) omalloc(sizeof(char *) * nrvars);
-    for (i = 0;i < nrvars;i++)
+    for (i = 0; i < nrvars; i++)
         array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
 
     // Now allocate int lists for the orderings:
@@ -1084,7 +1092,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     block1 = (int *) omalloc(sizeof(int) * (nrords+1));
     wvhdl = (int **) omAlloc0(sizeof(int *) * (nrords+1));
     covered = 0;
-    for (i = 0;i < nrords;i++) {
+    for (i = 0; i < nrords; i++) {
         tmp = ELM_LIST(orderings,i+1);
         p = omStrDup(CSTR_STRING(ELM_LIST(tmp,1)));
         ord[i] = rOrderName(p);
@@ -1102,7 +1110,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         } else {   // IS_LIST(tmp2) and consisting of immediate integers
             block1[i] = covered+(int) (LEN_LIST(tmp2));
             wvhdl[i] = (int *) omalloc(sizeof(int) * LEN_LIST(tmp2));
-            for (j = 0;j < LEN_LIST(tmp2);j++) {
+            for (j = 0; j < LEN_LIST(tmp2); j++) {
                 wvhdl[i][j] = (int) (INT_INTOBJ(ELM_LIST(tmp2,j+1)));
             }
         }
@@ -1125,13 +1133,13 @@ Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
     if (HasRingTable[gtype]) {
         return RING_SINGOBJ(singobj);
     } else if (/* gtype == SINGTYPE_RING || */
-               gtype == SINGTYPE_RING_IMM ||
-               /* gtype == SINGTYPE_QRING || */
-               gtype == SINGTYPE_QRING_IMM) {
+        gtype == SINGTYPE_RING_IMM ||
+        /* gtype == SINGTYPE_QRING || */
+        gtype == SINGTYPE_QRING_IMM) {
         return singobj;
     } else {
-       ErrorQuit("argument must have associated singular ring.",0L,0L);
-       return Fail;
+        ErrorQuit("argument must have associated singular ring.",0L,0L);
+        return Fail;
     }
 }
 
@@ -1141,7 +1149,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     Obj res;
     /* check arg */
     if (! ISSINGOBJ(SINGTYPE_RING_IMM, rr))
-       ErrorQuit("argument must be Singular ring.",0L,0L);
+        ErrorQuit("argument must be Singular ring.",0L,0L);
 
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt nrvars = rVar(r);
@@ -1151,7 +1159,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     if (r != currRing) rChangeCurrRing(r);
 
     res = NEW_PLIST(T_PLIST_DENSE,nrvars);
-    for (i = 1;i <= nrvars;i++) {
+    for (i = 1; i <= nrvars; i++) {
         poly p = p_ISet(1,r);
         pSetExp(p,i,1);
         pSetm(p);
@@ -1275,7 +1283,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
     Int i;
     Int row = 1;
     Int col = 1;
-    for (i = 0;i < len && row <= c_nrrows;i++) {
+    for (i = 0; i < len && row <= c_nrrows; i++) {
         MATELEM(mat,row,col) = polylist[i];
         col++;
         if (col > c_nrcols) {
@@ -1305,7 +1313,7 @@ Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
     Int len = ParsePolyList(r, p, 100, polylist);
     ideal id = idInit(len,1);
     Int i;
-    for (i = 0;i < len;i++) id->m[i] = polylist[i];
+    for (i = 0; i < len; i++) id->m[i] = polylist[i];
     omFree(polylist);
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,rr);
 }
@@ -1322,7 +1330,7 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     if (p != NULL) {
         len = LEN_LIST(exps);
         if (len < nrvars) nrvars = len;
-        for (i = 1;i <= nrvars;i++)
+        for (i = 1; i <= nrvars; i++)
             pSetExp(p,i,INT_INTOBJ(ELM_LIST(exps,i)));
         pSetm(p);
     }
@@ -1358,7 +1366,7 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
     Int r,c;
     Obj therow;
     bigintmat *bim = new BIGINTMAT(rows,cols,coeffs_BIGINT);
-    for (r = 1;r <= rows;r++) {
+    for (r = 1; r <= rows; r++) {
         therow = ELM_LIST(m,r);
         if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
             delete bim;
@@ -1392,12 +1400,12 @@ Obj Func_SI_Matbigintmat(Obj self, Obj im)
     Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
     SET_LEN_PLIST(ret,rows);
     UInt r,c;
-    for (r = 1;r <= rows;r++) {
+    for (r = 1; r <= rows; r++) {
         Obj tmp;
         tmp = NEW_PLIST(T_PLIST_CYC,cols);
         SET_ELM_PLIST(ret,r,tmp);
         CHANGED_BAG(ret);
-        for (c = 1;c <= cols;c++) {
+        for (c = 1; c <= cols; c++) {
             number n = BIMATELEM(*bim,r,c);
             SET_ELM_PLIST(tmp,c,_SI_BIGINT_OR_INT_TO_GAP(n));
             CHANGED_BAG(tmp);
@@ -1412,7 +1420,7 @@ Obj Func_SI_Matbigintmat(Obj self, Obj im)
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
-                _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
+                            _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
 // Installed as SI_intvec method
@@ -1425,7 +1433,7 @@ Obj Func_SI_intvec(Obj self, Obj l)
     UInt len = LEN_LIST(l);
     UInt i;
     intvec *iv = new intvec(len);
-    for (i = 1;i <= len;i++) {
+    for (i = 1; i <= len; i++) {
         Obj t = ELM_LIST(l,i);
         if (!IS_INTOBJ(t)
 #ifdef SYS_IS_64_BIT
@@ -1452,7 +1460,7 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     UInt len = i->length();
     Obj ret = NEW_PLIST(T_PLIST_CYC,len);
     UInt j;
-    for (j = 1;j <= len;j++) {
+    for (j = 1; j <= len; j++) {
         SET_ELM_PLIST(ret,j,ObjInt_Int( (Int) ((*i)[j-1])));
         CHANGED_BAG(ret);
     }
@@ -1473,7 +1481,7 @@ Obj Func_SI_intmat(Obj self, Obj m)
     Int r,c;
     Obj therow;
     intvec *iv = new intvec(rows,cols,0);
-    for (r = 1;r <= rows;r++) {
+    for (r = 1; r <= rows; r++) {
         therow = ELM_LIST(m,r);
         if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
             delete iv;
@@ -1511,12 +1519,12 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     Obj ret = NEW_PLIST(T_PLIST_DENSE,rows);
     SET_LEN_PLIST(ret,rows);
     UInt r,c;
-    for (r = 1;r <= rows;r++) {
+    for (r = 1; r <= rows; r++) {
         Obj tmp;
         tmp = NEW_PLIST(T_PLIST_CYC,cols);
         SET_ELM_PLIST(ret,r,tmp);
         CHANGED_BAG(ret);
-        for (c = 1;c <= cols;c++) {
+        for (c = 1; c <= cols; c++) {
             SET_ELM_PLIST(tmp,c,ObjInt_Int(IMATELEM(*i,r,c)));
             CHANGED_BAG(tmp);
         }
@@ -1541,7 +1549,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     UInt i;
     Obj t = NULL;
     ring r = NULL;
-    for (i = 1;i <= len;i++) {
+    for (i = 1; i <= len; i++) {
         t = ELM_LIST(l,i);
         if (!(ISSINGOBJ(SINGTYPE_POLY,t) || ISSINGOBJ(SINGTYPE_POLY_IMM,t))) {
             if (i > 1) id_Delete(&id,r);
@@ -1590,7 +1598,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     ring r = NULL;
     Int row = 1;
     Int col = 1;
-    for (i = 1;i <= len && row <= c_nrrows;i++) {
+    for (i = 1; i <= len && row <= c_nrrows; i++) {
         t = ELM_LIST(l,i);
         if (!(ISSINGOBJ(SINGTYPE_POLY,t) || ISSINGOBJ(SINGTYPE_POLY_IMM,t))) {
             if (i > 1) id_Delete((ideal *) &mat,r);
@@ -1737,7 +1745,7 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
             len = (Int) v->length();
             tmp = NEW_PLIST(T_PLIST_CYC,len);
             SET_LEN_PLIST(tmp,len);
-            for (i = 0; i < len;i++) {
+            for (i = 0; i < len; i++) {
                 SET_ELM_PLIST(tmp,i+1,ObjInt_Int( (Int) ((*v)[i]) ));
                 CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
             }
@@ -1749,12 +1757,12 @@ Obj FuncSI_ValueOfVar(Obj self, Obj name)
             tmp = NEW_PLIST(T_PLIST_DENSE,rows);
             SET_LEN_PLIST(tmp,rows);
             k = 0;
-            for (i = 0; i < rows;i++) {
+            for (i = 0; i < rows; i++) {
                 tmp2 = NEW_PLIST(T_PLIST_CYC,cols);
                 SET_LEN_PLIST(tmp2,cols);
                 SET_ELM_PLIST(tmp,i+1,tmp2);
                 CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
-                for (j = 0; j < cols;j++) {
+                for (j = 0; j < cols; j++) {
                     SET_ELM_PLIST(tmp2,j+1,ObjInt_Int( (Int) ((*v)[k++])));
                     CHANGED_BAG(tmp2);
                 }
@@ -1819,18 +1827,18 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
             SET_LEN_STRING(tmp,len);
             memcpy(CHARS_STRING(tmp),st,len+1);
             return tmp;
-            }
+        }
         case SINGTYPE_INT:
         case SINGTYPE_INT_IMM: {
             Int i = (Int) CXX_SINGOBJ(singobj);
             return INTOBJ_INT(i);
-            }
+        }
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM: {
             // TODO
             number n = (number) CXX_SINGOBJ(singobj);
             return _SI_BIGINT_OR_INT_TO_GAP(n);
-            }
+        }
         default:
             return Fail;
     }
@@ -1891,7 +1899,7 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     SPrintStart();
     errorreported = 0;
     BOOLEAN ret = iiExprArith2(&(singres.obj),singa.destructiveuse(),
-                    INT_INTOBJ(op),singb.destructiveuse());
+                               INT_INTOBJ(op),singb.destructiveuse());
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         singres.obj.CleanUp(r);
@@ -1953,10 +1961,10 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 
     int nrargs = (int) LEN_PLIST(arg);
     sing = new SingObj[nrargs];
-    for (i = 0;i < nrargs;i++) {
+    for (i = 0; i < nrargs; i++) {
         sing[i].init(ELM_PLIST(arg,i+1),rr,r);
         if (sing[i].error) {
-            for (j = 0;j < i;j++) {
+            for (j = 0; j < i; j++) {
                 sing[j].cleanup();
             }
             error = sing[i].error;
@@ -1996,7 +2004,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
                                sing[2].destructiveuse());
             break;
         default:
-            for (j = 1;j < nrargs;j++) {
+            for (j = 1; j < nrargs; j++) {
                 sing[j].needcleanup = false;
                 // The linked list takes care of all cleanup automatically
             }
@@ -2030,7 +2038,8 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
     return NULL;
 }
 
-static Obj SI_GetRingForObj(Obj rr, SingObj &sobj) {
+static Obj SI_GetRingForObj(Obj rr, SingObj &sobj)
+{
     if (rr == 0 && RingDependend(sobj.obj.Typ())) {
         if (SI_CurrentRingObj == 0)
             ErrorQuit("no current ring set in GAP, but we need one",0L,0L);
@@ -2077,7 +2086,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
             return Fail;
         }
         cur = &(sing1.obj);
-        for (i = 2;i <= nrargs;i++) {
+        for (i = 2; i <= nrargs; i++) {
             sing2.init(ELM_LIST(args,i),rr,r);
             if (sing2.error) {
                 neu = sing1.obj.next;

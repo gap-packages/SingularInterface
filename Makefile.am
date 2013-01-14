@@ -34,3 +34,6 @@ dofetchsingular:
 domakesingular:
 	./makesingular
 endif
+
+indent:
+	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc

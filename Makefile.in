@@ -811,6 +811,9 @@ dist2: distdir
 @WANT_SW_FALSE@domakesingular:
 @WANT_SW_FALSE@	./makesingular
 
+indent:
+	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
