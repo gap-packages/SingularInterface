@@ -100,26 +100,6 @@ _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR]
 _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR_IMM]
    := NewType(SingularFamily,IsSingularVector);
 
-BindGlobal("_SI_TYPETAB",
-    rec( bigint := IsSingularBigInt,
-         bigintmat := IsSingularBigIntMat,
-         ideal := IsSingularIdeal,
-         intmat := IsSingularIntMat,
-         intvec := IsSingularIntVec,
-         link := IsSingularLink,
-         list := IsSingularList,
-         map := IsSingularMap,
-         matrix := IsSingularMatrix,
-         module := IsSingularModule,
-         number := IsSingularNumber,
-         poly := IsSingularPoly,
-         qring := IsSingularQRing,
-         resolution := IsSingularResolution,
-         ring := IsSingularRing,
-         string := IsSingularString,
-         vector := IsSingularVector,
-       ));
-
 BindGlobal("_SI_ProxiesType",
   NewType( SingularFamily, IsSingularProxy and IsMutable));
 
