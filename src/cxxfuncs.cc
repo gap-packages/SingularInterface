@@ -571,13 +571,14 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
     }
 }
 
+/// Copies a singular object using the appropriate function according
+/// to its type, unless it is a link, a qring or a ring, or unless it
+/// is already a copy.
 void SingObj::copy()
-// Copies a singular object using the appropriate function according
-// to its type, unless it is a link, a qring or a ring, or unless it
-// is already a copy.
 {
     ring ri;
     if (obj.attribute) obj.attribute = obj.attribute->Copy();
+
     switch (gtype) {
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM:
@@ -657,7 +658,7 @@ void SingObj::copy()
     needcleanup = true;
 }
 
-void SingObj::cleanup(void)
+void SingObj::cleanup()
 {
     if (!needcleanup) return;
     needcleanup = false;
@@ -745,7 +746,7 @@ void SingObj::cleanup(void)
     }
 }
 
-Obj SingObj::gapwrap(void)
+Obj SingObj::gapwrap()
 {
     // check if we should trigger a garbage collection by GASMAN
     //omInfo_t info = omGetInfo();
@@ -2109,7 +2110,6 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         if (!sing1.needcleanup) sing1.copy();
         sing1.needcleanup = false;
     }
-    SingObj singres;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
@@ -2139,6 +2139,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);
         return Fail;
     }
+    SingObj singres;
     singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
     singres.r = r;
     singres.needcleanup = true;

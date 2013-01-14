@@ -72,9 +72,9 @@ static StructGVarFunc GVarFuncs[] = {
     { 0 } /* Finish with an empty entry */
 };
 
-Obj SI_Errors;   //! A kernel copy of a string
-Obj _SI_ProxiesType;  //! A kernel copy of the type of proxies
-Obj SI_CurrentRingObj;   //! The GAP wrapper for the current Singular ring
+Obj SI_Errors;
+Obj _SI_ProxiesType;
+Obj SI_CurrentRingObj;
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
