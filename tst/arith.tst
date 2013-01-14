@@ -217,19 +217,19 @@ gap> b := SI_intvec([-4,-2,4]);
 <singular intvec:[ -4, -2, 4 ]>
 gap> 
 gap> a + b;
-<singular intvec (mutable):[ -3, 0, 7 ]>
+<singular intvec:[ -3, 0, 7 ]>
 gap> a - b;
-<singular intvec (mutable):[ 5, 4, -1 ]>
+<singular intvec:[ 5, 4, -1 ]>
 gap> a * 10;
-<singular intvec (mutable):[ 10, 20, 30 ]>
+<singular intvec:[ 10, 20, 30 ]>
 gap> 10 * a;
-<singular intvec (mutable):[ 10, 20, 30 ]>
+<singular intvec:[ 10, 20, 30 ]>
 gap> a * 32003;
-<singular intvec (mutable):[ 32003, 64006, 96009 ]>
+<singular intvec:[ 32003, 64006, 96009 ]>
 gap> 32003 * a;
-<singular intvec (mutable):[ 32003, 64006, 96009 ]>
+<singular intvec:[ 32003, 64006, 96009 ]>
 gap> -a;
-<singular intvec (mutable):[ -1, -2, -3 ]>
+<singular intvec:[ -1, -2, -3 ]>
 gap> a = b;
 false
 gap> a = a;
@@ -241,6 +241,6 @@ false
 gap> 0 * a;
 <singular intvec:[ 0, 0, 0 ]>
 gap> a - a;
-<singular intvec (mutable):[ 0, 0, 0 ]>
+<singular intvec:[ 0, 0, 0 ]>
 gap> Zero(a);
-<singular intvec (mutable):[ 0, 0, 0 ]>
+<singular intvec:[ 0, 0, 0 ]>
