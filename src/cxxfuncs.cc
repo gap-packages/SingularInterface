@@ -54,7 +54,7 @@ extern int inerror; // from Singular/grammar.cc
 
 static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
 static void _SI_ErrorCallback(const char *st);
-
+static Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring cxx, Obj zero, Obj one);
 
 
 /* We add hooks to the wrapper functions to call a garbage collection
@@ -108,7 +108,7 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
     return tmp;
 }
 
-//! Wrap a ring dependent singular object inside GAP object.
+//! Wrap a ring-dependent singular object inside GAP object.
 //!
 //! \param[in] type  the type of the singular object
 //! \param[in] cxx   point to the singular object
@@ -136,15 +136,25 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 //! \param[in] zero  a GAP-wrapped element of the (q)ring, may be NULL
 //! \param[in] one   a GAP-wrapped element of the (q)ring, may be NULL
 //! \return  a GAP object wrapping the singular (q)ring
-Obj NEW_SINGOBJ_ZERO_ONE(UInt type, void *cxx, Obj zero, Obj one)
+Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one)
 {
+    // Check if the ring has already been wrapped.
+    if (r->ext_ref != 0) {
+        // TODO: In the future, if we detect a wrapper, simply return that:
+        //   return (Obj)r->ext_ref;
+        // But right now, this should never happen, so instead use this for
+        // another paranoid check:
+        ErrorQuit("NEW_SINGOBJ_ZERO_ONE: Singular ring already has a GAP wrapper",0L,0L);
+    }
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
     SET_FLAGS_SINGOBJ(tmp,0u);
-    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_CXX_SINGOBJ(tmp,r);
     SET_ZERO_SINGOBJ(tmp,zero);
     SET_ONE_SINGOBJ(tmp,one);
+    // store ref to GAP wrapper in Singular ring
+    r->ext_ref = tmp;
     return tmp;
 }
 
@@ -813,10 +823,10 @@ Obj SingObj::gapwrap()
             res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
             break;
         case RING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,obj.Data(),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)obj.Data(),NULL,NULL);
             break;
         case QRING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,obj.Data(),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)obj.Data(),NULL,NULL);
             break;
         case RESOLUTION_CMD:
             res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
