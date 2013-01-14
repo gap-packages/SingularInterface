@@ -18,3 +18,8 @@ gap> r := SI_ring(3,["a","b"]);
 <singular ring>
 gap> x := SI_poly(r,SI_bigint(2));
 <singular poly (mutable):-1>
+gap> #
+gap> # The following used to segfault, due to bugs in SingObj::cleanup
+gap> #
+gap> SI_\+(3^60, []);
+Error, Argument to Singular call is no valid Singular object

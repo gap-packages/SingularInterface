@@ -674,18 +674,27 @@ void SingObj::cleanup()
     }
 
     switch (gtype) {
-        case SINGTYPE_BIGINT:
-        case SINGTYPE_BIGINT_IMM:
-            nlDelete((number *)data, NULL);
+        case SINGTYPE_QRING:
+        case SINGTYPE_QRING_IMM:
+        case SINGTYPE_RING:
+        case SINGTYPE_RING_IMM:
             break;
+        case SINGTYPE_BIGINT:
+        case SINGTYPE_BIGINT_IMM: {
+            number n = (number)data;
+            nlDelete(&n,NULL);
+            break;
+        }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM:
             delete (bigintmat *)data;
             break;
         case SINGTYPE_IDEAL:
-        case SINGTYPE_IDEAL_IMM:
-            id_Delete((ideal *)data, r);
+        case SINGTYPE_IDEAL_IMM: {
+            ideal id = (ideal)data;
+            id_Delete(&id, r);
             break;
+        }
         case SINGTYPE_INT:
         case SINGTYPE_INT_IMM:
             // do nothing
@@ -708,42 +717,42 @@ void SingObj::cleanup()
             map m = (map)data;
             omfree(m->preimage);
             m->preimage = NULL;
-            id_Delete((ideal *)m,r);
+            id_Delete((ideal *) &m,r);
             break;
         }
         case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM:
-            MP_DELETE((matrix *)data, r);
+        case SINGTYPE_MATRIX_IMM: {
+            matrix m = (matrix)data;
+            MP_DELETE(&m, r);
             break;
+        }
         case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM:
-            id_Delete((ideal *)data, r);
+        case SINGTYPE_MODULE_IMM: {
+            ideal i = (ideal)data;
+            id_Delete(&i, r);
             break;
+        }
         case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM:
-            n_Delete((number *)data, r);
+        case SINGTYPE_NUMBER_IMM: {
+            number n = (number)data;
+            n_Delete(&n, r);
             break;
+        }
         case SINGTYPE_POLY:
         case SINGTYPE_POLY_IMM:
-            p_Delete((poly *)data, r);
+        case SINGTYPE_VECTOR:
+        case SINGTYPE_VECTOR_IMM: {
+            poly p = (poly)data;
+            p_Delete( &p, r );
             break;
-        case SINGTYPE_QRING:
-        case SINGTYPE_QRING_IMM:
-            return;
+        }
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
             syKillComputation((syStrategy)data, r);
             return;
-        case SINGTYPE_RING:
-        case SINGTYPE_RING_IMM:
-            return;
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             omfree( (char *)data );
-            break;
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM:
-            p_Delete((poly*)data, r);
             break;
         default:
             ErrorQuit("SingObj::cleanup: unsupported gtype",0L,0L);
@@ -972,7 +981,6 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_VECTOR_IMM: {
             poly p = (poly)data;
             p_Delete( &p, r );
-            // Pr("killed a ring element\n",0L,0L);
             break;
         }
         case SINGTYPE_RESOLUTION:
