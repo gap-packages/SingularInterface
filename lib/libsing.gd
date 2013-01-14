@@ -91,5 +91,3 @@ DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
 
 DeclareGlobalFunction( "_SI_Comparer" );
 
-DeclareGlobalFunction( "SI_AddGAPFunctionToSingularInterpreter" );
-
