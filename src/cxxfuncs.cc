@@ -183,10 +183,10 @@ static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
 }
 
 
+/// This internal function converts a GAP number n into a coefficient
+/// number for the ring r. n can be an immediate integer, a GMP integer
+/// or a rational number. If anything goes wrong, NULL is returned.
 static number _SI_NUMBER_FROM_GAP(ring r, Obj n)
-// This internal function converts a GAP number n into a coefficient
-// number for the ring r. n can be an immediate integer, a GMP integer
-// or a rational number. If anything goes wrong, NULL is returned.
 {
     if (r != currRing) rChangeCurrRing(r);
 
@@ -383,18 +383,20 @@ static poly _SI_GET_poly(Obj o, Obj &rr)
     return NULL;   // To please the compiler
 }
 
+/// This function returns the Singular object referenced by the proxy
+/// object. This function implements the recursion needed for deeply
+/// nested Singular objects. If anything goes wrong, error is set to a
+/// message and NULL is returned.
+/// \param[in] proxy is a GAP proxy object
+/// \param[in] pos is a position in proxy, the first being 2
+/// \param[in] current is a pointer to a Singular object
+/// \param[in] currgtype is the GAP type of the Singular object current
 static void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                            const char *(&error))
-// proxy is a GAP proxy object, pos is a position in it, the first
-// being 2, current is a pointer to a Singular object of type
-// currgtype (as a GAP type number). This function returns the
-// Singular object referenced by the proxy object. This function
-// implements the recursion needed for deeply nested Singular objects.
-// If anything goes wrong, error is set to a message and NULL is
-// returned.
 {
     // To end the recursion:
-    if ((UInt) pos >= SIZE_OBJ(proxy)/sizeof(UInt)) return current;
+    if ((UInt) pos >= SIZE_OBJ(proxy)/sizeof(UInt))
+        return current;
     if (!IS_INTOBJ(ELM_PLIST(proxy,pos))) {
         error = "proxy index must be an immediate integer";
         return NULL;
@@ -782,11 +784,11 @@ static Obj gapwrap(sleftv &obj, Obj rr)
 //    }
 
     if (rr == 0 && RingDependend(obj.Typ())) {
-		if (currRing->ext_ref == 0)
-			NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
-		rr = (Obj)currRing->ext_ref;
-		if (currRing != (ring) CXX_SINGOBJ(rr))
-			ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
+        if (currRing->ext_ref == 0)
+            NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
+        rr = (Obj)currRing->ext_ref;
+        if (currRing != (ring) CXX_SINGOBJ(rr))
+            ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
 
     Obj res;
@@ -1013,10 +1015,9 @@ void _SI_FreeFunc(Obj o)
     }
 }
 
-// The following function is the marking function for the garbage
-// collector for T_SINGULAR objects. In the current implementation
-// This function is not actually needed.
-
+/// The following function is the marking function for the garbage
+/// collector for T_SINGULAR objects. In the current implementation
+/// this function is not actually needed.
 void _SI_ObjMarkFunc(Bag o)
 {
     Bag *ptr;
@@ -1052,7 +1053,7 @@ void _SI_ObjMarkFunc(Bag o)
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
 
-// Installed as SI_ring method
+/// Installed as SI_ring method
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
     char **array;
@@ -1159,7 +1160,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     return tmp;
 }
 
-// Installed as SI_ring method
+/// Installed as SI_ring method
 Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR)
@@ -1247,7 +1248,7 @@ static poly ParsePoly(ring r, const char *&st)
     }
 }
 
-// Installed as SI_poly method
+/// Installed as SI_poly method
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
@@ -1290,7 +1291,7 @@ static int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
     }
 }
 
-// Installed as SI_matrix method
+/// Installed as SI_matrix method
 Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
                                Obj st)
 {
@@ -1330,7 +1331,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rr);
 }
 
-// Installed as SI_ideal method
+/// Installed as SI_ideal method
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
 {
     if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
@@ -1373,13 +1374,13 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
     return tmp;
 }
 
-// Installed as SI_bigint method
+/// Installed as SI_bigint method
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
     return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,_SI_BIGINT_FROM_GAP(nr));
 }
 
-// Used for bigint ViewString method.
+/// Used for bigint ViewString method.
 // TODO: get rid of _SI_Intbigint and use SI_ToGAP instead ?
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
@@ -1387,7 +1388,7 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
     return _SI_BIGINT_OR_INT_TO_GAP(n);
 }
 
-// Installed as SI_bigintmat method
+/// Installed as SI_bigintmat method
 Obj Func_SI_bigintmat(Obj self, Obj m)
 {
     // TODO: This function is untested! add test cases!!!
@@ -1420,7 +1421,7 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_BIGINTMAT_IMM,bim);
 }
 
-// Used for bigintmat ViewString method.
+/// Used for bigintmat ViewString method.
 // TODO: get rid of _SI_Matbigintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matbigintmat(Obj self, Obj im)
 {
@@ -1451,14 +1452,14 @@ Obj Func_SI_Matbigintmat(Obj self, Obj im)
 }
 
 
-// Installed as SI_number method
+/// Installed as SI_number method
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
                             _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }
 
-// Installed as SI_intvec method
+/// Installed as SI_intvec method
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1483,7 +1484,7 @@ Obj Func_SI_intvec(Obj self, Obj l)
     return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM,iv);
 }
 
-// Used for intvec ViewString method.
+/// Used for intvec ViewString method.
 // TODO: get rid of _SI_Plistintvec and use SI_ToGAP instead ?
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
@@ -1503,7 +1504,7 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
     return ret;
 }
 
-// Installed as SI_matrix method
+/// Installed as SI_matrix method
 Obj Func_SI_intmat(Obj self, Obj m)
 {
     if (! (IS_LIST(m) && LEN_LIST(m) > 0 &&
@@ -1539,7 +1540,7 @@ Obj Func_SI_intmat(Obj self, Obj m)
     return NEW_SINGOBJ(SINGTYPE_INTMAT_IMM,iv);
 }
 
-// Used for intmat ViewString method.
+/// Used for intmat ViewString method.
 // TODO: get rid of _SI_Matintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matintmat(Obj self, Obj im)
 {
@@ -1568,7 +1569,7 @@ Obj Func_SI_Matintmat(Obj self, Obj im)
     return ret;
 }
 
-// Installed as SI_ideal method
+/// Installed as SI_ideal method
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
@@ -1608,7 +1609,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
 }
 
-// Installed as SI_matrix method
+/// Installed as SI_matrix method
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
 {
     if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
