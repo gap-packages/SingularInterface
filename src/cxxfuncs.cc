@@ -2109,15 +2109,13 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
             }
             neu = (leftv) omalloc( sizeof(sleftv) );
             neu->Init();
-            if (!sing2.needcleanup) sing2.copy();
-            sing2.needcleanup = false;
+            sing2.destructiveuse();
             neu->data = sing2.obj.data;
             neu->rtyp = sing2.obj.rtyp;
             cur->next = neu;
             cur = neu;
         }
-        if (!sing1.needcleanup) sing1.copy();
-        sing1.needcleanup = false;
+        sing1.destructiveuse();
     }
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
