@@ -65,15 +65,23 @@ for op in ops do
         fi;
     else
         # generic Case:
+        poss := Filtered([1..Length(poss)], i -> [] <> poss[i]);
         if needring then
+            poss := poss + 1;
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
+                    "    if not Length(arg) in ", String(poss), " then\n",
+                    "      Error(\"incorrect number of arguments\");\n",
+                    "    fi;\n",
                     "    SI_SetCurrRing(arg[1]);\n",
                     "    return _SI_CallFuncM(",nr,",arg{[2..Length(arg)]});\n",
                     "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
-                      "    return _SI_CallFuncM(",nr,",arg);\n",
-                      "  end );\n\n");
+                    "    if not Length(arg) in ", String(poss), " then\n",
+                    "      Error(\"incorrect number of arguments\");\n",
+                    "    fi;\n",
+                    "    return _SI_CallFuncM(",nr,",arg);\n",
+                    "  end );\n\n");
         fi;
     fi;
   fi;
