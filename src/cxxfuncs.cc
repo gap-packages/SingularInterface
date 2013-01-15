@@ -52,9 +52,9 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 
 extern int inerror; // from Singular/grammar.cc
 
-static Obj SI_GetRingForObj(Obj rr, SingObj &sobj);
 static void _SI_ErrorCallback(const char *st);
 static Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring cxx, Obj zero, Obj one);
+static Obj gapwrap(sleftv &obj, Obj rr);
 
 
 /* We add hooks to the wrapper functions to call a garbage collection
@@ -770,7 +770,8 @@ void SingObj::cleanup()
     }
 }
 
-Obj SingObj::gapwrap()
+/// Wrap the content of a Singular interpreter object in a GAP object.
+static Obj gapwrap(sleftv &obj, Obj rr)
 {
     // check if we should trigger a garbage collection by GASMAN
     //omInfo_t info = omGetInfo();
@@ -779,11 +780,16 @@ Obj SingObj::gapwrap()
 //        CollectBags(0,0);
 //        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
 //    }
-    Obj res;
-    if (!needcleanup) {
-        Pr("#W try to GAP-wrap a borrowed Singular object",0L,0L);
+
+    if (rr == 0 && RingDependend(obj.Typ())) {
+		if (currRing->ext_ref == 0)
+			NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
+		rr = (Obj)currRing->ext_ref;
+		if (currRing != (ring) CXX_SINGOBJ(rr))
+			ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
-    needcleanup = false;
+
+    Obj res;
     switch (obj.Typ()) {
         case NONE:
             return True;
@@ -841,7 +847,7 @@ Obj SingObj::gapwrap()
             res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
             break;
         default:
-            obj.CleanUp(r);
+            obj.CleanUp(rr ? (ring)CXX_SINGOBJ(rr) : 0);
             return False;
     }
     if (obj.flag)
@@ -1887,25 +1893,22 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 
     SingObj sing(input,rr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
-    SingObj singres;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith1(&(singres.obj),sing.destructiveuse(),
+    sleftv result;
+    BOOLEAN ret = iiExprArith1(&result,sing.destructiveuse(),
                                INT_INTOBJ(op));
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp();  //
+        result.CleanUp(r);  //
         return Fail;
     }
 
-    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
-    singres.r = r;
-    singres.needcleanup = true;
-    return singres.gapwrap();
+    return gapwrap(result, rr);
 }
 
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
@@ -1920,24 +1923,21 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         singa.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    SingObj singres;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith2(&(singres.obj),singa.destructiveuse(),
+    sleftv result;
+    BOOLEAN ret = iiExprArith2(&result,singa.destructiveuse(),
                                INT_INTOBJ(op),singb.destructiveuse());
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp(r);
+        result.CleanUp(r);
         return Fail;
     }
-    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
-    singres.r = r;
-    singres.needcleanup = true;
-    return singres.gapwrap();
+    return gapwrap(result, rr);
 }
 
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
@@ -1958,26 +1958,23 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         singb.cleanup();
         ErrorQuit(singc.error,0L,0L);
     }
-    SingObj singres;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
     }
     SPrintStart();
     errorreported = 0;
-    BOOLEAN ret = iiExprArith3(&(singres.obj),INT_INTOBJ(op),
+    sleftv result;
+    BOOLEAN ret = iiExprArith3(&result,INT_INTOBJ(op),
                                singa.destructiveuse(),
                                singb.destructiveuse(),
                                singc.destructiveuse());
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp(r);
+        result.CleanUp(r);
         return Fail;
     }
-    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
-    singres.r = r;
-    singres.needcleanup = true;
-    return singres.gapwrap();
+    return gapwrap(result, rr);
 }
 
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
@@ -2002,7 +1999,6 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         }
         if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
-    SingObj singres;
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
@@ -2010,24 +2006,25 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     SPrintStart();
     errorreported = 0;
     BOOLEAN ret;
+    sleftv result;
     switch (nrargs) {
         case 0:
-            ret = iiExprArithM(&(singres.obj),NULL,INT_INTOBJ(op));
+            ret = iiExprArithM(&result,NULL,INT_INTOBJ(op));
             break;
         case 1:
-            ret = iiExprArith1(&(singres.obj),sing[0].destructiveuse(),
+            ret = iiExprArith1(&result,sing[0].destructiveuse(),
                                INT_INTOBJ(op));
             break;
         case 2:
             sing[0].obj.next = NULL;
-            ret = iiExprArith2(&(singres.obj),sing[0].destructiveuse(),
+            ret = iiExprArith2(&result,sing[0].destructiveuse(),
                                INT_INTOBJ(op),
                                sing[1].destructiveuse());
             break;
         case 3:
             sing[0].obj.next = NULL;
             sing[1].obj.next = NULL;
-            ret = iiExprArith3(&(singres.obj),INT_INTOBJ(op),
+            ret = iiExprArith3(&result,INT_INTOBJ(op),
                                sing[0].destructiveuse(),
                                sing[1].destructiveuse(),
                                sing[2].destructiveuse());
@@ -2037,20 +2034,17 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
                 sing[j].needcleanup = false;
                 // The linked list takes care of all cleanup automatically
             }
-            ret = iiExprArithM(&(singres.obj),sing[0].destructiveuse(),
+            ret = iiExprArithM(&result,sing[0].destructiveuse(),
                                INT_INTOBJ(op));
             break;
     }
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
-        singres.obj.CleanUp(r);
+        result.CleanUp(r);
         return Fail;
     }
     omFree(sing);
-    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
-    singres.r = r;
-    singres.needcleanup = true;
-    return singres.gapwrap();
+    return gapwrap(result, rr);
 }
 
 Obj FuncSI_SetCurrRing(Obj self, Obj rr)
@@ -2064,19 +2058,6 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
     ring r = (ring) CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
     return NULL;
-}
-
-static Obj SI_GetRingForObj(Obj rr, SingObj &sobj)
-{
-    if (rr == 0 && RingDependend(sobj.obj.Typ())) {
-        if (currRing->ext_ref == 0) {
-            NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
-        }
-        rr = (Obj)currRing->ext_ref;
-        if (currRing != (ring) CXX_SINGOBJ(rr))
-            ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
-    }
-    return rr;
 }
 
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
@@ -2167,15 +2148,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         ErrorQuit("Multiple return values not yet implemented.",0L,0L);
         return Fail;
     }
-    SingObj singres;
-    singres.rr = SI_GetRingForObj(rr, singres);   // Set the ring according to the arguments
-    singres.r = r;
-    singres.needcleanup = true;
-    singres.obj.data = ret->data;
-    singres.obj.rtyp = ret->rtyp;
-    singres.obj.attribute = ret->attribute;
-    singres.obj.flag = ret->flag;
-    return singres.gapwrap();
+
+    return gapwrap(*ret, rr);
 }
 
 //////////////// C++ functions for the jump tables ////////////////////

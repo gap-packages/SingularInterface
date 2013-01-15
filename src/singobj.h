@@ -84,7 +84,6 @@ public:
     }
     void copy();      ///< Makes a copy if it is not already one
     void cleanup();   ///< Frees object if it was a copy
-    Obj gapwrap();    ///< GAP-wraps the object
 };
 
 #endif
