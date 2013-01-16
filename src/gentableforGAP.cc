@@ -123,6 +123,7 @@ struct sConvertTypes
 
 
 #define D(A)    2
+#define NULL_VAL 0
 #define IPARITH
 #define GENTABLE
 #define IPCONV
