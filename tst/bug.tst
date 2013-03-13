@@ -18,8 +18,22 @@ gap> r := SI_ring(3,["a","b"]);
 <singular ring>
 gap> x := SI_poly(r,SI_bigint(2));
 <singular poly (mutable):-1>
+gap> 
 gap> #
 gap> # The following used to segfault, due to bugs in SingObj::cleanup
 gap> #
 gap> SI_\+(3^60, []);
 Error, Argument to Singular call is no valid Singular object
+gap> 
+gap> #
+gap> # Former segfault due to insufficient arg checking
+gap> #
+gap> R := SI_ring( 0, [ "x" ] );
+<singular ring>
+gap> M := SI_matrix( R, 2, 2, "0" );
+<singular matrix (mutable):
+0,0,
+0,0 >
+gap> f := function( M ) SI_\[(M,1,1,SI_poly(R,"1")); end;;
+gap> f(M);
+Error, incorrect number of arguments
