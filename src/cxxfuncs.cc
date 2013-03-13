@@ -761,7 +761,7 @@ void SingObj::cleanup()
         case SINGTYPE_RESOLUTION:
         case SINGTYPE_RESOLUTION_IMM:
             syKillComputation((syStrategy)data, r);
-            return;
+            break;
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM:
             omfree( (char *)data );
@@ -941,7 +941,7 @@ void _SI_FreeFunc(Obj o)
         }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM:
-            delete ((bigintmat *)data);
+            delete (bigintmat *)data;
             break;
         case SINGTYPE_IDEAL:
         case SINGTYPE_IDEAL_IMM: {
@@ -957,7 +957,7 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_INTMAT_IMM:
         case SINGTYPE_INTVEC:
         case SINGTYPE_INTVEC_IMM:
-            delete ((intvec *)data);
+            delete (intvec *)data;
             break;
         case SINGTYPE_LINK:
         case SINGTYPE_LINK_IMM:

@@ -1,11 +1,9 @@
 InstallMethod( _SI_TypeName, ["IsSingularVoid"], x->"void" );
 InstallMethod( _SI_TypeName, ["IsSingularBigInt and IsMutable"], x->"bigint" );
 InstallMethod( _SI_TypeName, ["IsSingularBigInt"], x->"bigint" );
-InstallMethod( _SI_TypeName, ["IsSingularBigIntMat and IsMutable"], 
-    x->"bigintmat (mutable)" );
+InstallMethod( _SI_TypeName, ["IsSingularBigIntMat and IsMutable"], x->"bigintmat (mutable)" );
 InstallMethod( _SI_TypeName, ["IsSingularBigIntMat"], x->"bigintmat" );
-InstallMethod( _SI_TypeName, ["IsSingularIdeal and IsMutable"], 
-    x->"ideal (mutable)" );
+InstallMethod( _SI_TypeName, ["IsSingularIdeal and IsMutable"], x->"ideal (mutable)" );
 InstallMethod( _SI_TypeName, ["IsSingularIdeal"], x->"ideal" );
 InstallMethod( _SI_TypeName, ["IsSingularIntMat and IsMutable"], x->"intmat (mutable)" );
 InstallMethod( _SI_TypeName, ["IsSingularIntMat"], x->"intmat" );
