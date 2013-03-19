@@ -157,3 +157,10 @@ InstallOtherMethod(DefaultRingByGenerators, fam->
 InstallMethod(\in, ["IsSingularPoly", "IsRing"], function(pol, r)
   return SI_ring(pol) = r;
 end);
+
+# HACK for demo in Konstanz
+InstallMethod(AssignGeneratorVariables, ["IsSingularRing"], function(r)
+  local gens;
+  gens := SI_Indeterminates(r);
+  DoAssignGenVars(gens);
+end);
