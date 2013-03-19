@@ -789,7 +789,7 @@ static Obj gapwrap(sleftv &obj, Obj rr)
 //        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
 //    }
 
-    if (rr == 0 && RingDependend(obj.Typ())) {
+    if (rr == 0 && obj.RingDependend()) {
         if (currRing == 0)
             ErrorQuit("Result is ring dependenant but can't figure out what the ring should be",0L,0L);
         if (currRing->ext_ref == 0)
