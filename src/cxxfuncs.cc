@@ -539,6 +539,12 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
             extrr = rr;
             extr = r;
             if (r != currRing) rChangeCurrRing(r);
+        } else if (/*  gtype == SINGTYPE_RING ||  */
+                    gtype == SINGTYPE_RING_IMM ||
+                    /* gtype == SINGTYPE_QRING ||  */
+                    gtype == SINGTYPE_QRING_IMM) {
+            extrr = input;
+            extr = (ring) CXX_SINGOBJ(input);
         }
         needcleanup = false;
     } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == _SI_ProxiesType) {
@@ -784,6 +790,8 @@ static Obj gapwrap(sleftv &obj, Obj rr)
 //    }
 
     if (rr == 0 && RingDependend(obj.Typ())) {
+        if (currRing == 0)
+            ErrorQuit("Result is ring dependenant but can't figure out what the ring should be",0L,0L);
         if (currRing->ext_ref == 0)
             NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
         rr = (Obj)currRing->ext_ref;

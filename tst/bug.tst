@@ -37,3 +37,30 @@ gap> M := SI_matrix( R, 2, 2, "0" );
 gap> f := function( M ) SI_\[(M,1,1,SI_poly(R,"1")); end;;
 gap> f(M);
 Error, incorrect number of arguments
+gap> 
+gap> r := SI_ring(0,["x","y","z"],[["lp",3]]);
+<singular ring>
+gap> SI_ringlist(r);
+<singular list (mutable):
+[1]:
+   0
+[2]:
+   [1]:
+      x
+   [2]:
+      y
+   [3]:
+      z
+[3]:
+   [1]:
+      [1]:
+         lp
+      [2]:
+         1,1,1
+   [2]:
+      [1]:
+         c
+      [2]:
+         0
+[4]:
+   _[1]=0>
