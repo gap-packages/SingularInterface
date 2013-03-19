@@ -2180,6 +2180,7 @@ Obj ZeroSMSingObj(Obj s)
         res = ZeroMutObject(s);  // This makes a mutable zero
         MakeImmutable(res);
         SET_ZERO_SINGOBJ(s,res);
+        CHANGED_BAG(s);
         return res;
     }
     if (((gtype + 1) & 1) == 1)    // we are mutable
@@ -2202,6 +2203,7 @@ Obj OneSMSingObj(Obj s)
         res = OneObject(s);   // This is OneMutable and gives us mutable
         MakeImmutable(res);
         SET_ONE_SINGOBJ(s,res);
+        CHANGED_BAG(s);
         return res;
     }
     if (((gtype + 1) & 1) == 1)   // we are mutable!
