@@ -38,6 +38,9 @@ gap> f := function( M ) SI_\[(M,1,1,SI_poly(R,"1")); end;;
 gap> f(M);
 Error, incorrect number of arguments
 gap> 
+gap> #
+gap> # The following used to segfault
+gap> #
 gap> r := SI_ring(0,["x","y","z"],[["lp",3]]);
 <singular ring>
 gap> SI_ringlist(r);
@@ -64,3 +67,12 @@ gap> SI_ringlist(r);
          0
 [4]:
    _[1]=0>
+gap> 
+gap> #
+gap> # The following used to segfault
+gap> #
+gap> SI_LIB("ring.lib");
+gap> SIL_defring("0",5,"u","ls");
+<singular ring>
+gap> SIL_groebner("bla");
+fail

@@ -2135,12 +2135,14 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     BOOLEAN bool_ret;
     if (r) {
         currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+        assert(currRingHdl);
         IDRING(currRingHdl) = r;
         r->ref++;
     } else {
         currRingHdl = NULL;
         currRing = NULL;
     }
+    iiRETURNEXPR.Init();
     if (nrargs == 0)
         bool_ret = iiMake_proc(h,NULL,NULL);
     else
