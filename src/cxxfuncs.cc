@@ -23,6 +23,7 @@ This file contains all of the code that deals with C++ libraries.
 #include <singular/syz.h>
 #endif
 
+#include <assert.h>
 
 
 #ifdef WANT_SW
