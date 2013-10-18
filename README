@@ -1,0 +1,119 @@
+libsing -- a GAP package for interfacing with Singular
+=======
+
+libsing interfaces to the Singular interface on the kernel level.
+
+This differentiates it from e.g. the GAP package "singular", which
+instead starts a regular Singular binary as a subprocess,
+and communicates with that by sending text commands (just
+as a user would), and then parsing the text replies Singular
+issues.
+
+Directly interfacing with the Singular C kernel is more complicated,
+but has the advantage of avoiding parsing issues due to changed
+output formatting, and also in general tends to be much, much
+faster.
+
+Obtaining libsing
+=================
+You can obtain the latest version of libsing from
+
+  https://github.com/gap-system/libsing
+
+
+Requirements
+============
+Currently libsing should work on any UNIX-like platform, including Linux
+and Mac OS X.
+
+Right now, there is no support for Windows, mainly because none of the
+libsing developers uses Windows, but also because running GAP and
+Singular on Windows is a bit tricky. If you are interested in Windows
+support, please contact us.
+
+You will likely need the following tools to build libsing:
+
+* GNU autoconf
+* GNU automake
+* GNU libtool
+* git
+
+Most Linux distributions (such as Ubuntu, Fedora, Gentoo, ...) already
+provide suitable packages for all of these. On Mac OS X, the most
+convenient way to install them is also via a package manager like Fink,
+MacPorts or Homebrew. Alternatively, you can install any of the above
+manually.
+   
+
+Compiling libsing
+=================
+Unfortunately, libsing cannot simply use an already existing Singular on
+your system. Instead, one has to compile Singular in a special mode to
+ensure it will be compatible with your GAP installation.
+
+Therefore, the first step towards compiling libsing is to build such a
+special version of Singular. Right now, there are two options you have
+for that:
+
+  I. Use a classic version of Singular (such as 3-1-6)
+
+ II. Use the development version of Singular (a.k.a. "spielwiese"),
+     which will eventually become Singular 4.0.
+
+Most regular users will want to use option I for now, but for libsing
+developers option II may be interesting to ensure libsing will work
+with future Singular versions.
+
+The following instructions should get you going.
+
+0. If you obtained libsing directly from its git repository, the first thing
+   to do is setup its build system. Run this command:
+
+   ./autogen.sh
+
+1. Fetch the Singular source code. We provide shell scripts which
+   do this for you by directly using the Singular git repository.
+   If you want to go with option I, run
+     ./fetchsingular
+  For option II, run 
+     ./fetchsingular.sw
+
+
+2. Prepare Singular for compilation, by running
+     ./configuresingular
+  For option II, run 
+     ./configuresingular.sw
+
+3. Compile Singular (this step is separate from step 2 to help libsing
+   developers who may wish to modify the Singular code, then recompile it).
+     ./makesingular
+  For option II, run 
+     ./makesingular.sw
+
+4. Prepare libsing for compilation, by running
+    ./configure --with-gaproot=PATH_TO_GAP
+  For option II, run 
+    ./configure --with-gaproot=PATH_TO_GAP --with-sw --with-libSingular=$PWD/SW
+
+5. Compile libsing:
+    make
+
+
+
+Using libsing
+=============
+TODO
+
+
+
+
+Contact
+=======
+You can contact the libsing team by sending an email to
+
+  gapsing AT mathematik DOT uni-kl DOT de
+
+Bug reports or code contributions can be submitted via the issues
+tracker respectively via pull requests at
+
+  https://github.com/gap-system/libsing
