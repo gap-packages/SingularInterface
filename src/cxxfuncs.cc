@@ -90,8 +90,8 @@ Obj Func_SI_OmPrintInfo( Obj self )
 
 Obj Func_SI_OmCurrentBytes( Obj self )
 {
-    omInfo_t info = omGetInfo();
-    return INTOBJ_INT(info.CurrentBytesSystem);
+    omUpdateInfo();
+    return INTOBJ_INT(om_Info.CurrentBytesSystem);
 }
 
 //! Wrap a singular object that is not ring dependent inside GAP object.
