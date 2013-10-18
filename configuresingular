@@ -1,0 +1,11 @@
+#!/bin/sh -ev
+SINGULARVERSION=`cat SINGULARVERSION`
+export CC="gcc -fpic -DPIC -DLIBSINGULAR"
+export CXX="g++ -fpic -DPIC -DLIBSINGULAR"
+export CFLAGS="-O0 -g"
+export CXXFLAGS="-O0 -g"
+cd Singular-$SINGULARVERSION
+
+./configure --without-dynamic-kernel --without-MP
+#./configure --without-dynamic-kernel --without-MP --without-omalloc
+
