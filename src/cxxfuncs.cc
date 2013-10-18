@@ -2045,7 +2045,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         result.CleanUp(r);
         return Fail;
     }
-    omFree(sing);
+    delete [] sing;
     return gapwrap(result, rr);
 }
 
