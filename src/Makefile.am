@@ -5,8 +5,8 @@ if WANT_SW
   AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS) -DWANT_SW
   LDADD = $(LIBSINGULAR_LIBS) -lpthread
 else
-SINGULARNAME = Singular-`cat ../SINGULARVERSION`
-SINGARCHNAME = `cat ../SINGARCHNAME`
+  SINGULARNAME = Singular-`cat ../SINGULARVERSION`
+  SINGARCHNAME = `cat ../SINGARCHNAME`
 endif
 
 lib_LTLIBRARIES = libsing.la
@@ -16,22 +16,19 @@ gentableforGAP_SOURCES = gentableforGAP.cc
 if WANT_SW
   gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS) -DWANT_SW
 else 
-gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
-gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
+  gentableforGAP_CPPFLAGS = -I../${SINGULARNAME} -I../${SINGULARNAME}/Singular
+  gentableforGAP_LDFLAGS = -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
 endif
 
 libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc singtypes.cc
 if WANT_SW
   libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
-else 
-libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
-endif
-if WANT_SW
   libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
   libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS) -DWANT_SW
 else 
-libsing_la_LIBADD = 
-libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
+  libsing_la_LDFLAGS = -module -avoid-version -R${abs_top_srcdir}/${SINGULARNAME}/Singular -L${abs_top_srcdir}/${SINGULARNAME}/Singular -R${abs_top_srcdir}/${SINGULARNAME}/${SINGARCHNAME}/lib -lsingular -ldl -lpthread
+  libsing_la_LIBADD =
+  libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) -I../${SINGULARNAME}/${SINGARCHNAME}/include
 endif
 libsing_la_CXXFLAGS = -Wall -Wmissing-prototypes
 libsing_la_CFLAGS = -Wall -Wmissing-prototypes
