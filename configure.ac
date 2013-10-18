@@ -71,8 +71,7 @@ if test x"$with_sw" == xyes; then :
   SINGULAR_PATH="$LIBSINGULAR_HOME/bin/Singular"
 else
   AC_MSG_RESULT(without SW)
-  SINGULARVERSION=`cat ./SINGULARVERSION`
-  SINGULAR_PATH="$PWD/Singular-$SINGULARVERSION/Singular/testgh"
+  SINGULAR_PATH="$PWD/Singular/Singular/testgh"
 fi
 
 AC_MSG_CHECKING([for SINGULAR_PATH])

@@ -1,12 +1,13 @@
-#!/bin/sh
-SINGULARVERSION=`cat SINGULARVERSION`
-rm -f Singular-${SINGULARVERSION}.tar.gz
-wget ftp://www.mathematik.uni-kl.de/pub/Math/Singular/UNIX/nightly_builds/Singular-${SINGULARVERSION}.tar.gz
-rm -rf Singular-$SINGULARVERSION
-tar xzvf Singular-$SINGULARVERSION.tar.gz
-cd Singular-$SINGULARVERSION
+#!/bin/sh -ev
+
+mkdir -p Singular
+
+git clone -b master https://github.com/Singular/Sources.git Singular
+
+cd Singular
+
 # Create some directories such that one can manually add links to GAP's
 # gmp.h and libgmp.a and libgmp.la:
-mkdir `./singuname.sh`
-mkdir `./singuname.sh`/include
-mkdir `./singuname.sh`/lib
+mkdir -p `./singuname.sh`
+mkdir -p `./singuname.sh`/include
+mkdir -p `./singuname.sh`/lib
