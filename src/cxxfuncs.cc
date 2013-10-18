@@ -784,7 +784,7 @@ static Obj gapwrap(sleftv &obj, Obj rr)
 {
     if (rr == 0 && obj.RingDependend()) {
         if (currRing == 0)
-            ErrorQuit("Result is ring dependenant but can't figure out what the ring should be",0L,0L);
+            ErrorQuit("Result is ring dependent but can't figure out what the ring should be",0L,0L);
         if (currRing->ext_ref == 0)
             NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,currRing,NULL,NULL);
         rr = (Obj)currRing->ext_ref;
