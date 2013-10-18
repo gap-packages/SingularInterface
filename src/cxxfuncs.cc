@@ -782,14 +782,6 @@ void SingObj::cleanup()
 /// Wrap the content of a Singular interpreter object in a GAP object.
 static Obj gapwrap(sleftv &obj, Obj rr)
 {
-    // check if we should trigger a garbage collection by GASMAN
-    //omInfo_t info = omGetInfo();
-    //if (info.CurrentBytesSystem > gc_omalloc_threshold) {
-//    if ((om_Info.CurrentBytesFromMalloc) > gc_omalloc_threshold) {
-//        CollectBags(0,0);
-//        gc_omalloc_threshold = om_Info.CurrentBytesFromMalloc;
-//    }
-
     if (rr == 0 && obj.RingDependend()) {
         if (currRing == 0)
             ErrorQuit("Result is ring dependenant but can't figure out what the ring should be",0L,0L);
