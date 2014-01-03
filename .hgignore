@@ -23,10 +23,22 @@ doc/chap*.txt
 doc/*.html
 doc/*.css
 doc/*.js
+doc/AutoDocMainFile.xml
+doc/libsing.xml
+doc/title.xml
+doc/doxygen/
+doc/libsing.aux
+doc/libsing.bbl
+doc/libsing.blg
 doc/libsing.idx
+doc/libsing.ilg
+doc/libsing.ind
 doc/libsing.log
 doc/libsing.out
+doc/libsing.pnr
 doc/libsing.tex
+doc/libsing.toc
+doc/manual.lab
 doc/manual.pdf
 doc/manual.six
 
@@ -40,7 +52,7 @@ syntax: regexp
 \.o$
 Makefile$
 ^config\.
-/SINGULARPATH
+/SINGULARPATH$
 ^autom4te\.cache/
 ^singular$
 ^singular-*.tar.gz$
