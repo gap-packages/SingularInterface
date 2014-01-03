@@ -33,7 +33,6 @@ doc/manual.six
 # switch to regexp syntax.
 syntax: regexp
 
-^Singular
 ~$
 \.so$
 \.la$
@@ -41,8 +40,7 @@ syntax: regexp
 \.o$
 Makefile$
 ^config\.
-^SINGARCHNAME$
 /SINGULARPATH
 ^autom4te\.cache/
-^spielwiese/
-^SW/
+^singular$
+^singular-*.tar.gz$

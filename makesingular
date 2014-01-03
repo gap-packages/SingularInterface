@@ -1,6 +1,6 @@
 #!/bin/sh -ev
 
-cd spielwiese/BUILD
+cd singular/build
 
 # MAKE='remake -j -l8'
 make

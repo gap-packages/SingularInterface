@@ -1,0 +1,13 @@
+#!/bin/sh -ex
+
+if [ ! -x singular/src/configure ] ; then
+    cd singular/src
+    ./autogen.sh
+    cd ../..
+fi
+
+PREFIX=$PWD/singular/dst
+mkdir -p $PREFIX
+mkdir -p singular/build
+cd singular/build
+../src/configure --prefix=$PREFIX $@

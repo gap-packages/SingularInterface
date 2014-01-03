@@ -1,0 +1,12 @@
+#!/bin/sh -ex
+
+VERSION=4.0.0
+V2=`echo $VERSION | tr . -`
+
+mkdir -p singular
+
+wget http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/$V2/singular-$VERSION.tar.gz
+tar xvf singular-$VERSION.tar.gz
+
+rm -rf singular/src
+mv singular-$VERSION singular/src

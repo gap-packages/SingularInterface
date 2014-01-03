@@ -1,0 +1,11 @@
+#!/bin/sh -ex
+
+mkdir -p singular
+
+if [ -d singular/src/.git ] ; then
+    cd singular/src
+    git pull
+else
+    rm -rf singular/src
+    git clone -b spielwiese https://github.com/Singular/Sources.git singular/src
+fi
