@@ -920,6 +920,8 @@ void InstallPrePostGCFuncs(void)
     InitCollectFuncBags(oldpreGCfunc, SingularRingCleaner);
 }
 
+//! Free a given T_SINGULAR object. It is registered using InitFreeFuncBag
+//!  and GASMAN invokes it as needed.
 void _SI_FreeFunc(Obj o)
 {
     UInt gtype = TYPE_SINGOBJ(o);
@@ -1701,6 +1703,7 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 // The following functions allow access to the singular interpreter.
 // They are exported to the GAP level.
 
+//! This global is used to store the return value of SPrintEnd
 static char *_SI_LastOutputBuf = NULL;
 
 Obj FuncSI_LastOutput(Obj self)
