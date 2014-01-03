@@ -792,6 +792,11 @@ static Obj gapwrap(sleftv &obj, Obj rr)
             ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
 
+// HACK to work around problems with IDHDL pointing to an entry of a matrix
+// TODO: do we need to worry about attributes in this case??!
+#define OBJ_COPY_OR_REF(obj) \
+    (obj.rtyp != IDHDL ? obj.Data() : obj.CopyD())
+
     Obj res;
     switch (obj.Typ()) {
         case NONE:
@@ -799,55 +804,55 @@ static Obj gapwrap(sleftv &obj, Obj rr)
         case INT_CMD:
             return ObjInt_Int((long) (obj.Data()));
         case NUMBER_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,OBJ_COPY_OR_REF(obj),rr);
             break;
         case POLY_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_POLY,OBJ_COPY_OR_REF(obj),rr);
             break;
         case INTVEC_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTVEC,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_INTVEC,OBJ_COPY_OR_REF(obj));
             break;
         case INTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTMAT,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_INTMAT,OBJ_COPY_OR_REF(obj));
             break;
         case VECTOR_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,OBJ_COPY_OR_REF(obj),rr);
             break;
         case IDEAL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,OBJ_COPY_OR_REF(obj),rr);
             break;
         case BIGINT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,OBJ_COPY_OR_REF(obj));
             break;
         case BIGINTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,OBJ_COPY_OR_REF(obj));
             break;
         case MATRIX_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,OBJ_COPY_OR_REF(obj),rr);
             break;
         case LIST_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_LIST,OBJ_COPY_OR_REF(obj),rr);
             break;
         case LINK_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,OBJ_COPY_OR_REF(obj));
             break;
         case RING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)obj.Data(),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)OBJ_COPY_OR_REF(obj),NULL,NULL);
             break;
         case QRING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)obj.Data(),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)OBJ_COPY_OR_REF(obj),NULL,NULL);
             break;
         case RESOLUTION_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,OBJ_COPY_OR_REF(obj),rr);
             break;
         case STRING_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_STRING,obj.Data());
+            res = NEW_SINGOBJ(SINGTYPE_STRING,OBJ_COPY_OR_REF(obj));
             break;
         case MAP_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,OBJ_COPY_OR_REF(obj),rr);
             break;
         case MODUL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.Data(),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,OBJ_COPY_OR_REF(obj),rr);
             break;
         default:
             obj.CleanUp(rr ? (ring)CXX_SINGOBJ(rr) : 0);
@@ -1881,6 +1886,58 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
     }
 }
 
+
+class SingularIdHdl {
+private:
+    idhdl *root;
+    idhdl h;
+    ring currRing;
+    
+public:
+    SingularIdHdl() : root(0), h(0), currRing(0) {
+    }
+
+    SingularIdHdl(const char *name, SingObj &obj) {
+        set(name, obj);
+    }
+    
+    void set(const char *name, SingObj &obj) {
+        assert(h == 0);
+    
+        currRing = obj.r;
+        root = currRing ? &(currRing->idroot) : &IDROOT;
+
+        h = enterid(omStrDup(name),
+                       0, /*nesting level, 0=global*/
+                obj.obj.Typ() /*Typ*/,
+                root,
+                FALSE /*keine Initialiserung*/,
+                FALSE /*kein zusaetzlicher Test fuer Nameskollision*/);
+
+        IDDATA(h) = (char *)obj.obj.Data();
+    }
+    
+    ~SingularIdHdl() {
+        //IDID(h)=NULL;
+        if (h != 0) {
+            //FIXME: What about IDID????
+            IDTYP(h) = INT_CMD;
+            IDDATA(h) = 0;
+            killhdl2(h, root, currRing);
+        }
+    }
+
+    sleftv destructiveuse() {
+        // Build sleftv
+        sleftv v;
+        v.Init();
+        v.rtyp = IDHDL;
+        v.data = h;
+        return v;
+    }
+};
+
+
 // The following functions allow access to all functions of the
 // Singular C++ library that the Singular interpreter can call.
 // They do not provide a fast path into the library, because they
@@ -1902,7 +1959,9 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
     SPrintStart();
     errorreported = 0;
     sleftv result;
-    BOOLEAN ret = iiExprArith1(&result,sing.destructiveuse(),
+    SingularIdHdl h("__libsing_param1__", sing);
+    sleftv tmp = h.destructiveuse();
+    BOOLEAN ret = iiExprArith1(&result, &tmp,
                                INT_INTOBJ(op));
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
@@ -1932,6 +1991,7 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     SPrintStart();
     errorreported = 0;
     sleftv result;
+// TODO: use SingularIdHdl here, too
     BOOLEAN ret = iiExprArith2(&result,singa.destructiveuse(),
                                INT_INTOBJ(op),singb.destructiveuse());
     _SI_LastOutputBuf = SPrintEnd();
@@ -1967,6 +2027,7 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     SPrintStart();
     errorreported = 0;
     sleftv result;
+// TODO: use SingularIdHdl here, too
     BOOLEAN ret = iiExprArith3(&result,INT_INTOBJ(op),
                                singa.destructiveuse(),
                                singb.destructiveuse(),
@@ -1983,7 +2044,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     Obj rr = NULL;
     ring r = NULL;
-    int i,j;
+    int i, j;
     SingObj *sing;
     const char *error;
 
@@ -2009,33 +2070,46 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     errorreported = 0;
     BOOLEAN ret;
     sleftv result;
+    SingularIdHdl h1, h2, h3;
+    sleftv tmp1, tmp2, tmp3;
     switch (nrargs) {
         case 0:
             ret = iiExprArithM(&result,NULL,INT_INTOBJ(op));
             break;
         case 1:
-            ret = iiExprArith1(&result,sing[0].destructiveuse(),
-                               INT_INTOBJ(op));
+            h1.set("__libsing_param1__", sing[0]);
+            tmp1 = h1.destructiveuse();
+            ret = iiExprArith1(&result, &tmp1, INT_INTOBJ(op));
             break;
         case 2:
             sing[0].obj.next = NULL;
-            ret = iiExprArith2(&result,sing[0].destructiveuse(),
-                               INT_INTOBJ(op),
-                               sing[1].destructiveuse());
+
+            h1.set("__libsing_param1__", sing[0]);
+            h2.set("__libsing_param2__", sing[1]);
+            tmp1 = h1.destructiveuse();
+            tmp2 = h2.destructiveuse();
+
+            ret = iiExprArith2(&result, &tmp1, INT_INTOBJ(op), &tmp2);
             break;
         case 3:
             sing[0].obj.next = NULL;
             sing[1].obj.next = NULL;
-            ret = iiExprArith3(&result,INT_INTOBJ(op),
-                               sing[0].destructiveuse(),
-                               sing[1].destructiveuse(),
-                               sing[2].destructiveuse());
+            
+            h1.set("__libsing_param1__", sing[0]);
+            h2.set("__libsing_param2__", sing[1]);
+            h3.set("__libsing_param3__", sing[2]);
+            tmp1 = h1.destructiveuse();
+            tmp2 = h2.destructiveuse();
+            tmp3 = h3.destructiveuse();
+
+            ret = iiExprArith3(&result, INT_INTOBJ(op), &tmp1, &tmp2, &tmp3);
             break;
         default:
             for (j = 1; j < nrargs; j++) {
                 sing[j].needcleanup = false;
                 // The linked list takes care of all cleanup automatically
             }
+// TODO: use SingularIdHdl here, too
             ret = iiExprArithM(&result,sing[0].destructiveuse(),
                                INT_INTOBJ(op));
             break;
