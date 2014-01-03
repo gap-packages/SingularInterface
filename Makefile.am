@@ -21,19 +21,5 @@ dist2: distdir
 	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
 	$(am__remove_distdir)
 	
-if WANT_SW
-dofetchsingular:
-	./fetchsingular.sw
-
-domakesingular:
-	./makesingular.sw
-else
-dofetchsingular:
-	./fetchsingular
-
-domakesingular:
-	./makesingular
-endif
-
 indent:
 	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc

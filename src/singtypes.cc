@@ -2,17 +2,11 @@
 #include "singobj.h"
 
 
-#ifdef WANT_SW
 #include <coeffs/longrat.h>
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/libsingular.h>
 #include <Singular/lists.h>
-#else
-// To be removed later on:  (FIXME)
-#include <singular/lists.h>
-#include <singular/syz.h>
-#endif
 
 
 

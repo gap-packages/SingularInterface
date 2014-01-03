@@ -9,24 +9,16 @@ This file contains all of the code that deals with C++ libraries.
 #include "singobj.h"
 #include "lowlevel_mappings.h"
 
-#ifdef WANT_SW
 #include <coeffs/longrat.h>
 #include <coeffs/bigintmat.h>
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 // #include <Singular/libsingular.h>
-#else
-// To be removed later on:  (FIXME)
-#include <singular/lists.h>
-#include <singular/bigintmat.h>
-#include <singular/syz.h>
-#endif
 
 #include <assert.h>
 
 
-#ifdef WANT_SW
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif
@@ -36,13 +28,6 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #define MP_COPY(A,B) mp_Copy(A,B)
 #define MP_DELETE(A,B) mp_Delete(A,B)
 #define BIGINTMAT(A,B,C) bigintmat(A,B,C)
-#else
-#define NL_COPY(A,B) nlCopy(A)
-#define MA_COPY(A,B) maCopy(A)
-#define MP_COPY(A,B) mpCopy(A)
-#define MP_DELETE(A,B) mpDelete(A,B)
-#define BIGINTMAT(A,B,C) bigintmat(A,B)
-#endif
 
 
 // The following should be in rational.h but isn't:
