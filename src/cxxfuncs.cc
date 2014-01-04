@@ -23,11 +23,6 @@ This file contains all of the code that deals with C++ libraries.
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif
 
-#define NL_COPY(A,B) nlCopy(A,B)
-#define MA_COPY(A,B) maCopy(A,B)
-#define MP_COPY(A,B) mp_Copy(A,B)
-#define MP_DELETE(A,B) mp_Delete(A,B)
-#define BIGINTMAT(A,B,C) bigintmat(A,B,C)
 
 // The following should be in rational.h but isn't (as of GAP 4.7.2):
 #ifndef NUM_RAT
@@ -587,7 +582,7 @@ void SingObj::copy()
     switch (gtype) {
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM:
-            obj.data = (void *) NL_COPY((number) obj.data, coeffs_BIGINT);
+            obj.data = (void *) nlCopy((number) obj.data, coeffs_BIGINT);
             break;
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM:
@@ -617,11 +612,11 @@ void SingObj::copy()
             break;
         case SINGTYPE_MAP:
         case SINGTYPE_MAP_IMM:
-            obj.data = (void *) MA_COPY( (map) obj.data,r);
+            obj.data = (void *) maCopy( (map) obj.data,r);
             break;
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM:
-            obj.data = (void *) MP_COPY( (matrix) obj.data, r );
+            obj.data = (void *) mp_Copy( (matrix) obj.data, r );
             break;
         case SINGTYPE_MODULE:
         case SINGTYPE_MODULE_IMM:
@@ -728,7 +723,7 @@ void SingObj::cleanup()
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix)data;
-            MP_DELETE(&m, r);
+            mp_Delete(&m, r);
             break;
         }
         case SINGTYPE_MODULE:
@@ -972,7 +967,7 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
             matrix m = (matrix)data;
-            MP_DELETE(&m, r);
+            mp_Delete(&m, r);
             break;
         }
         case SINGTYPE_MODULE:
@@ -1395,7 +1390,7 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
     Int cols = LEN_LIST(ELM_LIST(m,1));
     Int r,c;
     Obj therow;
-    bigintmat *bim = new BIGINTMAT(rows,cols,coeffs_BIGINT);
+    bigintmat *bim = new bigintmat(rows,cols,coeffs_BIGINT);
     for (r = 1; r <= rows; r++) {
         therow = ELM_LIST(m,r);
         if (! (IS_LIST(therow) && LEN_LIST(therow) == cols)) {
