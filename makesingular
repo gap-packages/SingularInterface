@@ -2,7 +2,9 @@
 
 cd singular/build
 
-# MAKE='remake -j -l8'
 make
 make check
 make install
+
+# HACK: See Singular issue #466
+cp ../src/omalloc/omalloc.h ../dst/include/omalloc/
