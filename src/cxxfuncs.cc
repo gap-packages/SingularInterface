@@ -1687,6 +1687,13 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 //! This global is used to store the return value of SPrintEnd
 static char *_SI_LastOutputBuf = NULL;
 
+static void ClearLastOutputBuf() {
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
+    }
+}
+
 Obj FuncSI_LastOutput(Obj self)
 {
     if (_SI_LastOutputBuf) {
@@ -1694,8 +1701,7 @@ Obj FuncSI_LastOutput(Obj self)
         Obj tmp = NEW_STRING(len);
         SET_LEN_STRING(tmp,len);
         memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
+        ClearLastOutputBuf();
         return tmp;
     } else return Fail;
 }
@@ -1731,10 +1737,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
     memcpy(ost+len,"return();",9);
     ost[len+9] = 0;
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     myynest = 1;
     Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
@@ -1936,10 +1939,7 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 
     SingObj sing(input,rr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
     sleftv result;
@@ -1968,10 +1968,7 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         singa.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
     sleftv result;
@@ -2004,10 +2001,7 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         singb.cleanup();
         ErrorQuit(singc.error,0L,0L);
     }
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
     sleftv result;
@@ -2046,10 +2040,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         }
         if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
     BOOLEAN ret;
@@ -2177,10 +2168,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         }
         sing1.destructiveuse();
     }
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
+    ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
     BOOLEAN bool_ret;
