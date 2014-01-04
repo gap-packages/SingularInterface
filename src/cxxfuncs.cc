@@ -1884,7 +1884,7 @@ public:
     SingularIdHdl() : root(0), h(0), currRing(0) {
     }
 
-    SingularIdHdl(const char *name, SingObj &obj) {
+    SingularIdHdl(const char *name, SingObj &obj) : h(0) {
         set(name, obj);
     }
     
