@@ -18,6 +18,7 @@ This file contains all of the code that deals with C++ libraries.
 
 #include <assert.h>
 
+#include <vector>
 
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
@@ -1874,53 +1875,62 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 }
 
 
+static std::vector<idhdl> *param_idhdls = 0;
+
+static idhdl getSingularIdhdl(int i) {
+    assert(i >= 0 && i < 256);
+    
+    if (param_idhdls == 0) {
+        param_idhdls = new std::vector<idhdl>(10, (idhdl)0);
+    }
+
+    if (i >= param_idhdls->size())
+        param_idhdls->resize(i+1);
+    if ((*param_idhdls)[i] == 0) {
+        char buf[20];
+        sprintf(buf, "__libsing_param_%d__", (i+1));
+        idhdl h = enterid(omStrDup(buf), 0, INT_CMD, &IDROOT, FALSE, FALSE);
+        IDDATA(h) = 0;
+        (*param_idhdls)[i] = h;
+    }
+    
+    return (*param_idhdls)[i];
+}
+
+//! Auxiliary class for creating temporary Singular interpreter
+//! handles ("idhdl"), referencing Singular objects that are to
+//! be passed to Singular interpreter or library functions.
 class SingularIdHdl {
 private:
-    idhdl *root;
     idhdl h;
-    ring currRing;
-    
+    sleftv wrap;
+
 public:
-    SingularIdHdl() : root(0), h(0), currRing(0) {
+    SingularIdHdl() : h(0) {
     }
 
-    SingularIdHdl(const char *name, SingObj &obj) : h(0) {
-        set(name, obj);
-    }
-    
-    void set(const char *name, SingObj &obj) {
+    void set(int i, SingObj &obj) {
         assert(h == 0);
     
-        currRing = obj.r;
-        root = currRing ? &(currRing->idroot) : &IDROOT;
-
-        h = enterid(omStrDup(name),
-                       0, /*nesting level, 0=global*/
-                obj.obj.Typ() /*Typ*/,
-                root,
-                FALSE /*keine Initialiserung*/,
-                FALSE /*kein zusaetzlicher Test fuer Nameskollision*/);
-
+        h = getSingularIdhdl(i);
+        IDTYP(h) = obj.obj.Typ();
         IDDATA(h) = (char *)obj.obj.Data();
+
+        wrap.Init();
+        wrap.rtyp = IDHDL;
+        wrap.data = h;
     }
-    
+
     ~SingularIdHdl() {
-        //IDID(h)=NULL;
         if (h != 0) {
-            //FIXME: What about IDID????
+            // Hack to avoid data loss if the idhdl ever gets freed
             IDTYP(h) = INT_CMD;
             IDDATA(h) = 0;
-            killhdl2(h, root, currRing);
         }
     }
 
-    sleftv destructiveuse() {
-        // Build sleftv
-        sleftv v;
-        v.Init();
-        v.rtyp = IDHDL;
-        v.data = h;
-        return v;
+    leftv ptr() {
+        return &wrap;
     }
 };
 
@@ -1943,9 +1953,9 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
     SPrintStart();
     errorreported = 0;
     sleftv result;
-    SingularIdHdl h("__libsing_param1__", sing);
-    sleftv tmp = h.destructiveuse();
-    BOOLEAN ret = iiExprArith1(&result, &tmp,
+    SingularIdHdl h;
+    h.set(0, sing);
+    BOOLEAN ret = iiExprArith1(&result, h.ptr(),
                                INT_INTOBJ(op));
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
@@ -1972,9 +1982,11 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     SPrintStart();
     errorreported = 0;
     sleftv result;
-// TODO: use SingularIdHdl here, too
-    BOOLEAN ret = iiExprArith2(&result,singa.destructiveuse(),
-                               INT_INTOBJ(op),singb.destructiveuse());
+    SingularIdHdl h1, h2;
+    h1.set(0, singa);
+    h2.set(1, singb);
+    BOOLEAN ret = iiExprArith2(&result,h1.ptr(),
+                               INT_INTOBJ(op),h2.ptr());
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         result.CleanUp(r);
@@ -2046,38 +2058,31 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     BOOLEAN ret;
     sleftv result;
     SingularIdHdl h1, h2, h3;
-    sleftv tmp1, tmp2, tmp3;
     switch (nrargs) {
         case 0:
             ret = iiExprArithM(&result,NULL,INT_INTOBJ(op));
             break;
         case 1:
-            h1.set("__libsing_param1__", sing[0]);
-            tmp1 = h1.destructiveuse();
-            ret = iiExprArith1(&result, &tmp1, INT_INTOBJ(op));
+            h1.set(0, sing[0]);
+            ret = iiExprArith1(&result, h1.ptr(), INT_INTOBJ(op));
             break;
         case 2:
             sing[0].obj.next = NULL;
 
-            h1.set("__libsing_param1__", sing[0]);
-            h2.set("__libsing_param2__", sing[1]);
-            tmp1 = h1.destructiveuse();
-            tmp2 = h2.destructiveuse();
+            h1.set(0, sing[0]);
+            h2.set(1, sing[1]);
 
-            ret = iiExprArith2(&result, &tmp1, INT_INTOBJ(op), &tmp2);
+            ret = iiExprArith2(&result, h1.ptr(), INT_INTOBJ(op), h2.ptr());
             break;
         case 3:
             sing[0].obj.next = NULL;
             sing[1].obj.next = NULL;
             
-            h1.set("__libsing_param1__", sing[0]);
-            h2.set("__libsing_param2__", sing[1]);
-            h3.set("__libsing_param3__", sing[2]);
-            tmp1 = h1.destructiveuse();
-            tmp2 = h2.destructiveuse();
-            tmp3 = h3.destructiveuse();
+            h1.set(0, sing[0]);
+            h2.set(1, sing[1]);
+            h3.set(2, sing[2]);
 
-            ret = iiExprArith3(&result, INT_INTOBJ(op), &tmp1, &tmp2, &tmp3);
+            ret = iiExprArith3(&result, INT_INTOBJ(op), h1.ptr(), h2.ptr(), h3.ptr());
             break;
         default:
             for (j = 1; j < nrargs; j++) {
@@ -2138,6 +2143,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     SingObj sing1;
     SingObj sing2;
     leftv cur,neu;
+// TODO: use SingularIdHdl here, too?!
     if (nrargs > 0) {
         sing1.init(ELM_LIST(args,1),rr,r);
         if (sing1.error) {
