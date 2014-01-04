@@ -29,10 +29,11 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #define MP_DELETE(A,B) mp_Delete(A,B)
 #define BIGINTMAT(A,B,C) bigintmat(A,B,C)
 
-
-// The following should be in rational.h but isn't:
+// The following should be in rational.h but isn't (as of GAP 4.7.2):
+#ifndef NUM_RAT
 #define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
 #define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
+#endif
 
 
 
