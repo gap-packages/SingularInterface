@@ -4,6 +4,16 @@
 // Prevent inline code from using tests which are not in libsingular:
 #include <Singular/libsingular.h>
 
+
+number _SI_NUMBER_FROM_GAP(ring r, Obj n);
+number _SI_BIGINT_FROM_GAP(Obj nr);
+int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj);
+Obj _SI_BIGINT_OR_INT_TO_GAP(number n);
+
+void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
+                           const char *(&error));
+
+
 /// This class is a wrapper around a Singular object of any type.
 /// It keeps track whether or not it is its responsibility to free
 /// the Singular object in the end or whether it has just borrowed
