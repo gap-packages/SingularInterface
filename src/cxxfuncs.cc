@@ -1451,12 +1451,15 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
+    SingularIdHdl h1, h2, h3;
+    h1.set(0, singa);
+    h2.set(1, singb);
+    h3.set(2, singc);
     sleftv result;
-// TODO: use SingularIdHdl here, too
     BOOLEAN ret = iiExprArith3(&result,INT_INTOBJ(op),
-                               singa.destructiveuse(),
-                               singb.destructiveuse(),
-                               singc.destructiveuse());
+                               h1.ptr(),
+                               h2.ptr(),
+                               h3.ptr());
     _SI_LastOutputBuf = SPrintEnd();
     if (ret) {
         result.CleanUp(r);
