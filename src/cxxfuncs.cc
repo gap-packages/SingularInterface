@@ -104,7 +104,8 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
     SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
     SET_RING_SINGOBJ(tmp,ring);
-    SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
+    if (ring)
+        SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
     return tmp;
 }
 
