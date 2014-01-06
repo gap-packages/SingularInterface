@@ -7,6 +7,8 @@ InstallMethod(SI_bigintmat,[IsList],_SI_bigintmat);
 
 InstallMethod(SI_number,[IsSingularRing, IsSingularObj],SI_number_singular);
 InstallMethod(SI_number,[IsSingularRing, IsInt],_SI_number);
+InstallMethod(SI_number,[IsSingularRing, IsFFE],_SI_number);
+InstallMethod(SI_number,[IsSingularRing, IsRat],_SI_number);
 
 InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
 InstallMethod(SI_intvec,[IsList],_SI_intvec);

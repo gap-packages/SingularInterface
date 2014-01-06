@@ -48,7 +48,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
     if (IS_INTOBJ(n)) {
         Int i = INT_INTOBJ(n);
 #ifdef SYS_IS_64_BIT
-        if (i >= -0x80000000L && i < 0x80000000L)
+        if (i >= (-1L << 31) && i < (1L << 31))
             return n_Init(i,r);
 #else
         return n_Init(i,r);
@@ -56,13 +56,20 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
     }
 
     if (rField_is_Zp(r)) {
-        // We are in characteristic p, so number is just an integer:
         if (IS_INTOBJ(n)) {
-            return n_Init((int) (INT_INTOBJ(n) % rChar(r)),r);
+            return n_Init(INT_INTOBJ(n) % rChar(r), r);
+        } else if (IS_FFE(n)) {
+            FF ff = FLD_FFE(n);
+            if (CHAR_FF(ff) != rChar(r) || DEGR_FF(ff) != 1)
+                ErrorQuit("Argument is in wrong field.\n",0L,0L);
+            return n_Init(VAL_FFE(n), r);
+        } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG || TNUM_OBJ(n) == T_RAT) {
+            n = MOD( n, INTOBJ_INT( rChar(r) ) );
+            if (n != Fail && IS_INTOBJ(n)) {
+                return n_Init(INT_INTOBJ(n) % rChar(r), r);
+            }
         }
-        // Maybe allow for finite field elements here, but check
-        // characteristic!
-        ErrorQuit("Argument must be an immediate integer.\n",0L,0L);
+        ErrorQuit("Argument must be an integer, rational or finite prime field element.\n",0L,0L);
         return NULL;  // never executed
     } else if (!rField_is_Q(r)) {
         // Other fields not yet supported
@@ -72,13 +79,14 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
     // Here we know that the rationals are the coefficients:
     if (IS_INTOBJ(n)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(n);
-        // Does not fit into a Singular immediate integer, or else it would have
-        // already been handled above.
+        // Does not fit into a Singular immediate integer, or else it
+        // would have already been handled above.
         return nlRInit(i);
     } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG) {
-        // n is a long GAP integer. Both GAP and Singular use GMP,
-        // but GAP uses the low-level mpn API (where data is stored as an mp_limb_t array), whereas
-        // Singular uses the high-level mpz API (using type mpz_t).
+        // n is a long GAP integer. Both GAP and Singular use GMP, but
+        // GAP uses the low-level mpn API (where data is stored as an
+        // mp_limb_t array), whereas Singular uses the high-level mpz
+        // API (using type mpz_t).
         number res = ALLOC_RNUMBER();
         _SI_GMP_FROM_GAP(n, res->z);
         res->s = 3;  // indicates an integer
