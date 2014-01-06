@@ -88,7 +88,7 @@ The following instructions should get you going.
      ./makesingular
 
 4. Prepare libsing for compilation, by running
-     ./configure --with-gaproot=PATH_TO_GAP --with-sw --with-libSingular=$PWD/singular/dst
+     ./configure --with-gaproot=PATH_TO_GAP --with-libSingular=$PWD/singular/dst
    where you should replace PATH_TO_GAP as above
 
 5. Compile libsing:
