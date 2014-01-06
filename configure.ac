@@ -7,7 +7,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([cnf])
 AM_INIT_AUTOMAKE([foreign])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([enable])
 LT_INIT([disable-static dlopen win32-dll])
 
 AC_PREFIX_DEFAULT([${PWD}/src])
