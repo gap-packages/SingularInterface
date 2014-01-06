@@ -1334,7 +1334,9 @@ static idhdl getSingularIdhdl(int i) {
         param_idhdls->resize(i+1);
     if ((*param_idhdls)[i] == 0) {
         char buf[20];
-        sprintf(buf, "__libsing_param_%d__", (i+1));
+        // use spaces in variable name to make sure the variable is
+        // never generated on the interpreter level
+        sprintf(buf, " libsing param %d ", (i+1));
         idhdl h = enterid(omStrDup(buf), 0, INT_CMD, &IDROOT, FALSE, FALSE);
         IDDATA(h) = 0;
         (*param_idhdls)[i] = h;
