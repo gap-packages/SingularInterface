@@ -31,9 +31,12 @@ libsing developers uses Windows, but also because running GAP and
 Singular on Windows is a bit tricky. If you are interested in Windows
 support, please contact us.
 
-Using libsing requires a recent version of GAP (we recommend 4.7.2
-or later), and Singular 4.0.0 or later. In addition, you need the
-following tools to build libsing:
+Using libsing requires a recent version of GAP (we recommend 4.7.2 or
+later), and Singular 4.0.0 or later. For technical reasons
+(specifically, to allow coexistence of their respective memory
+management systems), both should be built as 64 bit versions.
+
+In addition, you need the following tools to build libsing:
 
 * GNU autoconf
 * GNU automake
@@ -60,11 +63,6 @@ Therefore, usually the first step towards compiling libsing is to build
 such a special version of Singular. 
 The following instructions should get you going.
 
-0. If you obtained libsing directly from its git repository, the first thing
-   to do is setup its build system. Run this command:
-
-   ./autogen.sh
-
 1. Fetch the Singular source code. You can either use a released version of
    Singular, such as 4.0.0, or the latest development version. Place the
    resulting source code into the subdirectory
@@ -87,13 +85,22 @@ The following instructions should get you going.
 3. Compile Singular by running
      ./makesingular
 
+4. Now we turn to libsing. As first step, you need to setup its build
+   system. To do this, simply run this command:
+
+   ./autogen.sh
+
 4. Prepare libsing for compilation, by running
-     ./configure --with-gaproot=PATH_TO_GAP --with-libSingular=$PWD/singular/dst
-   where you should replace PATH_TO_GAP as above
+     ./configure \
+         --with-gaproot=PATH_TO_GAP \
+         --with-libSingular=$PWD/singular/dst \
+         CONFIGNAME=default64
+   where you should replace PATH_TO_GAP as above. If you know what
+   you do, you can change your CONFIGNAME (but note that
+   libsing should only be used with 64 bit versions of GAP).
 
 5. Compile libsing:
     make
-
 
 
 Using libsing
