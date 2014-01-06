@@ -220,7 +220,8 @@ Obj Func_SI_Matintmat(Obj self, Obj im);
 Obj Func_SI_ideal_from_els(Obj self, Obj l);
 Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l);
 
-Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input);
+Obj Func_SI_CallFunc0(Obj self, Obj op);
+Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a);
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg);

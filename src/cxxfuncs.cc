@@ -1387,12 +1387,26 @@ public:
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
-Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
+Obj Func_SI_CallFunc0(Obj self, Obj op)
+{
+    StartPrintCapture();
+    sleftv result;
+    BOOLEAN ret = iiExprArithM(&result, NULL,INT_INTOBJ(op));
+    EndPrintCapture();
+    if (ret) {
+        result.CleanUp();
+        return Fail;
+    }
+
+    return gapwrap(result, 0);
+}
+
+Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
 {
     Obj rr = NULL;
     ring r = NULL;
 
-    SingObj sing(input,rr,r);
+    SingObj sing(a,rr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
     SingularIdHdl h;
     h.set(0, sing);
@@ -1480,11 +1494,23 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     Obj rr = NULL;
     ring r = NULL;
     int i, j;
-    SingObj *sing;
     const char *error;
 
     int nrargs = (int) LEN_PLIST(arg);
-    sing = new SingObj[nrargs];
+
+    switch (nrargs) {
+        case 0:
+            return Func_SI_CallFunc0(self, op);
+        case 1:
+            return Func_SI_CallFunc1(self, op, ELM_PLIST(arg,1));
+        case 2:
+            return Func_SI_CallFunc2(self, op, ELM_PLIST(arg,1), ELM_PLIST(arg,2));
+        case 3:
+            return Func_SI_CallFunc3(self, op, ELM_PLIST(arg,1), ELM_PLIST(arg,2), ELM_PLIST(arg,3));
+    }
+
+    // Handle generic case
+    SingObj *sing = new SingObj[nrargs];
     for (i = 0; i < nrargs; i++) {
         sing[i].init(ELM_PLIST(arg,i+1),rr,r);
         if (sing[i].error) {
@@ -1500,43 +1526,14 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     StartPrintCapture();
     BOOLEAN ret;
     sleftv result;
-    SingularIdHdl h1, h2, h3;
-    switch (nrargs) {
-        case 0:
-            ret = iiExprArithM(&result,NULL,INT_INTOBJ(op));
-            break;
-        case 1:
-            h1.set(0, sing[0]);
-            ret = iiExprArith1(&result, h1.ptr(), INT_INTOBJ(op));
-            break;
-        case 2:
-            sing[0].obj.next = NULL;
 
-            h1.set(0, sing[0]);
-            h2.set(1, sing[1]);
-
-            ret = iiExprArith2(&result, h1.ptr(), INT_INTOBJ(op), h2.ptr());
-            break;
-        case 3:
-            sing[0].obj.next = NULL;
-            sing[1].obj.next = NULL;
-            
-            h1.set(0, sing[0]);
-            h2.set(1, sing[1]);
-            h3.set(2, sing[2]);
-
-            ret = iiExprArith3(&result, INT_INTOBJ(op), h1.ptr(), h2.ptr(), h3.ptr());
-            break;
-        default:
-            for (j = 1; j < nrargs; j++) {
-                sing[j].needcleanup = false;
-                // The linked list takes care of all cleanup automatically
-            }
-// TODO: use SingularIdHdl here, too
-            ret = iiExprArithM(&result,sing[0].destructiveuse(),
-                               INT_INTOBJ(op));
-            break;
+    for (j = 1; j < nrargs; j++) {
+       sing[j].needcleanup = false;
+       // The linked list takes care of all cleanup automatically
     }
+// TODO: use SingularIdHdl here, too
+    ret = iiExprArithM(&result,sing[0].destructiveuse(),
+                       INT_INTOBJ(op));
     EndPrintCapture();
     if (ret) {
         result.CleanUp(r);
