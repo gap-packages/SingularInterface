@@ -1130,6 +1130,16 @@ static void ClearLastOutputBuf() {
     }
 }
 
+static void StartPrintCapture() {
+    ClearLastOutputBuf();
+    SPrintStart();
+    errorreported = 0;
+}
+
+static void EndPrintCapture() {
+    _SI_LastOutputBuf = SPrintEnd();
+}
+
 Obj FuncSI_LastOutput(Obj self)
 {
     if (_SI_LastOutputBuf) {
@@ -1179,7 +1189,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
     inerror = 0;
     errorreported = 0;
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
     // Note that iiEStart uses omFree internally to free the string ost
     return ObjInt_Int((Int) err);
 }
@@ -1384,17 +1394,16 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj input)
 
     SingObj sing(input,rr,r);
     if (sing.error) { ErrorQuit(sing.error,0L,0L); }
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
-    sleftv result;
     SingularIdHdl h;
     h.set(0, sing);
+
+    StartPrintCapture();
+    sleftv result;
     BOOLEAN ret = iiExprArith1(&result, h.ptr(),
                                INT_INTOBJ(op));
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
     if (ret) {
-        result.CleanUp(r);  //
+        result.CleanUp(r);
         return Fail;
     }
 
@@ -1413,16 +1422,15 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         singa.cleanup();
         ErrorQuit(singb.error,0L,0L);
     }
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
-    sleftv result;
     SingularIdHdl h1, h2;
     h1.set(0, singa);
     h2.set(1, singb);
+
+    StartPrintCapture();
+    sleftv result;
     BOOLEAN ret = iiExprArith2(&result,h1.ptr(),
                                INT_INTOBJ(op),h2.ptr());
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
     if (ret) {
         result.CleanUp(r);
         return Fail;
@@ -1448,19 +1456,18 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         singb.cleanup();
         ErrorQuit(singc.error,0L,0L);
     }
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
     SingularIdHdl h1, h2, h3;
     h1.set(0, singa);
     h2.set(1, singb);
     h3.set(2, singc);
+
+    StartPrintCapture();
     sleftv result;
     BOOLEAN ret = iiExprArith3(&result,INT_INTOBJ(op),
                                h1.ptr(),
                                h2.ptr(),
                                h3.ptr());
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
     if (ret) {
         result.CleanUp(r);
         return Fail;
@@ -1490,9 +1497,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         }
         if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
+    StartPrintCapture();
     BOOLEAN ret;
     sleftv result;
     SingularIdHdl h1, h2, h3;
@@ -1532,7 +1537,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
                                INT_INTOBJ(op));
             break;
     }
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
     if (ret) {
         result.CleanUp(r);
         return Fail;
@@ -1612,9 +1617,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         }
         sing1.destructiveuse();
     }
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
+    StartPrintCapture();
     BOOLEAN bool_ret;
     if (r) {
         currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
@@ -1631,7 +1634,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     else
         bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
     if (r) killhdl(currRingHdl,currPack);
-    _SI_LastOutputBuf = SPrintEnd();
+    EndPrintCapture();
 
     if (bool_ret == TRUE) return Fail;
     leftv ret = &iiRETURNEXPR;
