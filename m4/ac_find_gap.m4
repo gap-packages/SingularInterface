@@ -152,7 +152,7 @@ AC_DEFUN([AC_FIND_GAP],
     GAP_CPPFLAGS="$GAP_CPPFLAGS -I$ARCHPATH/extern/gmp/include"
     AC_MSG_RESULT([$ARCHPATH/extern/gmp/include/gmp.h])
   else
-    AC_MSG_RESULT([not found, GAP was compiled without GMP])
+    AC_MSG_RESULT([not found, GAP was compiled without its own GMP])
   fi;
  
   AC_SUBST(GAPARCH)
