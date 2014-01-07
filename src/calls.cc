@@ -122,25 +122,24 @@ static idhdl getSingularIdhdl(int i) {
 //! Auxiliary class for creating temporary Singular interpreter
 //! handles ("idhdl"), referencing Singular objects that are to
 //! be passed to Singular interpreter or library functions.
-class SingularIdHdl {
+class SingularIdHdl : public SingObj {
 public:
     idhdl h;
-    SingObj obj;
 
 public:
     SingularIdHdl() : h(0) {
     }
 
-    void set(int i, Obj input, Obj &extrr, ring &extr) {
+    void init(int i, Obj input, Obj &extrr, ring &extr) {
         assert(h == 0);
 
-        obj.init(input, extrr, extr);
-        if (obj.error)
+        SingObj::init(input, extrr, extr);
+        if (error)
             return;
         
         h = getSingularIdhdl(i);
-        IDTYP(h) = obj.obj.Typ();
-        IDDATA(h) = (char *)obj.obj.Data();
+        IDTYP(h) = obj.Typ();
+        IDDATA(h) = (char *)obj.Data();
         // We don't need to worry about incrementing reference counters
         // (for rings, proc, link, packages) here.
     }
@@ -150,7 +149,7 @@ public:
     }
 
     void cleanup() {
-        obj.cleanup();
+        SingObj::cleanup();
         if (h != 0) {
             // Hack to avoid data loss if the idhdl ever gets freed
             IDTYP(h) = INT_CMD;
@@ -165,7 +164,7 @@ public:
     sleftv wrap;
 
     SingularIdHdlWithWrap(int i, Obj input, Obj &extrr, ring &extr) {
-        set(i, input, extrr, extr);
+        init(i, input, extrr, extr);
 
         wrap.Init();
         wrap.rtyp = IDHDL;
@@ -191,7 +190,7 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
     ring r = NULL;
 
     SingularIdHdlWithWrap sing(0, a, rr, r);
-    if (sing.obj.error) { ErrorQuit(sing.obj.error, 0L, 0L); }
+    if (sing.error) { ErrorQuit(sing.error, 0L, 0L); }
 
     StartPrintCapture();
     sleftv result;
@@ -211,11 +210,11 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     ring r = NULL;
 
     SingularIdHdlWithWrap singa(0, a, rr, r);
-    if (singa.obj.error) { ErrorQuit(singa.obj.error, 0L, 0L); }
+    if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
     SingularIdHdlWithWrap singb(1, b, rr, r);
-    if (singb.obj.error) {
+    if (singb.error) {
         singa.cleanup();
-        ErrorQuit(singb.obj.error, 0L, 0L);
+        ErrorQuit(singb.error, 0L, 0L);
     }
 
     StartPrintCapture();
@@ -235,17 +234,17 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
     ring r = NULL;
 
     SingularIdHdlWithWrap singa(0, a, rr, r);
-    if (singa.obj.error) { ErrorQuit(singa.obj.error, 0L, 0L); }
+    if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
     SingularIdHdlWithWrap singb(1, b, rr, r);
-    if (singb.obj.error) {
+    if (singb.error) {
         singa.cleanup();
-        ErrorQuit(singb.obj.error, 0L, 0L);
+        ErrorQuit(singb.error, 0L, 0L);
     }
     SingularIdHdlWithWrap singc(2, c, rr, r);
-    if (singc.obj.error) {
+    if (singc.error) {
         singa.cleanup();
         singb.cleanup();
-        ErrorQuit(singc.obj.error, 0L, 0L);
+        ErrorQuit(singc.error, 0L, 0L);
     }
 
     StartPrintCapture();
@@ -280,9 +279,9 @@ public:
         if (nrargs > 0)
             sing = new SingularIdHdl[nrargs];
         for (i = 0; i < nrargs; i++) {
-            sing[i].set(i, ELM_PLIST(arg, i + 1), rr, r);
-            if (sing[i].obj.error) {
-                error = sing[i].obj.error;
+            sing[i].init(i, ELM_PLIST(arg, i + 1), rr, r);
+            if (sing[i].error) {
+                error = sing[i].error;
                 delete [] sing;
                 sing = 0;
                 return;
