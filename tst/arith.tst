@@ -221,11 +221,11 @@ gap> a + b;
 gap> a - b;
 <singular intvec:[ 5, 4, -1 ]>
 gap> a * 10;
-<singular intvec:[ 10, 20, 30 ]>
+<singular intvec (mutable):[ 10, 20, 30 ]>
 gap> 10 * a;
 <singular intvec:[ 10, 20, 30 ]>
 gap> a * 32003;
-<singular intvec:[ 32003, 64006, 96009 ]>
+<singular intvec (mutable):[ 32003, 64006, 96009 ]>
 gap> 32003 * a;
 <singular intvec:[ 32003, 64006, 96009 ]>
 gap> -a;

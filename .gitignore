@@ -55,6 +55,10 @@ Makefile
 /cnf/install-sh
 /cnf/ltmain.sh
 /cnf/missing
+/cnf/test-driver
+/test-suite.log
+/test.sh.log
+/test.sh.trs
 /configure
 /m4/libtool.m4
 /m4/ltoptions.m4
@@ -68,3 +72,4 @@ Makefile
 /autom4te\.cache/
 /singular/
 /singular-*.tar.gz
+

@@ -23,3 +23,10 @@ dist2: distdir
 	
 indent:
 	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc
+
+
+
+AM_COLOR_TESTS = always
+TESTS_ENVIRONMENT = GAP_EXECUTABLE='$(GAPROOT)/bin/gap.sh'
+TESTS = test.sh
+EXTRA_DIST += $(TESTS) tst/check.g
