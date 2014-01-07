@@ -71,7 +71,7 @@ Obj Func_SI_OmCurrentBytes( Obj self )
 //! Wrap a singular object that is not ring dependent inside GAP object.
 //!
 //! \param[in] type  the type of the singular object
-//! \param[in] cxx   point to the singular object
+//! \param[in] cxx   pointer to the singular object
 //! \return  a GAP object wrapping the singular object
 Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
@@ -86,19 +86,19 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
 //! Wrap a ring-dependent singular object inside GAP object.
 //!
 //! \param[in] type  the type of the singular object
-//! \param[in] cxx   point to the singular object
-//! \param[in] ring  a GAP-wrapped singular ring
+//! \param[in] cxx   pointer to the singular object
+//! \param[in] rr    a GAP-wrapped singular ring
 //! \return  a GAP object wrapping the singular object
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr)
 {
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
     SET_TYPE_SINGOBJ(tmp,type);
     SET_FLAGS_SINGOBJ(tmp,0u);
     SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,ring);
-    if (ring)
-        SET_CXXRING_SINGOBJ(tmp,(void *) CXX_SINGOBJ(ring));
+    SET_RING_SINGOBJ(tmp,rr);
+    if (rr)
+        SET_CXXRING_SINGOBJ(tmp, (ring) CXX_SINGOBJ(rr));
     return tmp;
 }
 
@@ -108,14 +108,12 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring)
 //! which GAP operations like Zero() and One() will return.
 //!
 //! \param[in] type  the type of the singular object
-//! \param[in] cxx   point to the singular object
+//! \param[in] r     pointer to the singular ring
 //! \param[in] zero  a GAP-wrapped element of the (q)ring, may be NULL
 //! \param[in] one   a GAP-wrapped element of the (q)ring, may be NULL
 //! \return  a GAP object wrapping the singular (q)ring
-Obj NEW_SINGOBJ_ZERO_ONE(UInt type, void *cxx, Obj zero, Obj one)
+Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one)
 {
-    ring r = (ring)cxx;
-
     // Check if the ring has already been wrapped.
     if (r->ext_ref != 0) {
         // TODO: In the future, if we detect a wrapper, simply return that:

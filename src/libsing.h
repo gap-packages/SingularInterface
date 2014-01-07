@@ -18,6 +18,7 @@ extern "C" {
   #include <src/compiled.h>
 }
 
+#include "Singular/libsingular.h"
 #include "singtypes.h"
 
 #undef PACKAGE
@@ -27,6 +28,7 @@ extern "C" {
 #undef PACKAGE_TARNAME
 #undef PACKAGE_URL
 #undef PACKAGE_VERSION
+#undef VERSION
 
 #include "pkgconfig.h"             /* our own configure results */
 
@@ -128,8 +130,8 @@ inline Obj RING_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
 inline void SET_RING_SINGOBJ( Obj obj, Obj rr )
 { ADDR_OBJ(obj)[2] = rr; }
 
-inline void *CXXRING_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[3]; }
-inline void SET_CXXRING_SINGOBJ( Obj obj, void *r )
+inline ring CXXRING_SINGOBJ( Obj obj ) { return (ring) ADDR_OBJ(obj)[3]; }
+inline void SET_CXXRING_SINGOBJ( Obj obj, ring r )
 { ADDR_OBJ(obj)[3] = (Obj) r; }
 
 inline Obj ZERO_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
@@ -170,8 +172,8 @@ inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 
 
 Obj NEW_SINGOBJ(UInt type, void *cxx);
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring);
-Obj NEW_SINGOBJ_ZERO_ONE(UInt type, void *cxx, Obj zero, Obj one);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr);
+Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one);
 
 
 #if 0
