@@ -63,26 +63,56 @@ for op in ops do
                       "    return _SI_CallFunc3(",nr,",a,b,c);\n",
                       "  end );\n\n");
         fi;
-    else
-        # generic Case:
-        poss := Filtered([1..Length(poss)], i -> [] <> poss[i]);
+    elif poss[4] <> [] then
+        # variable argument count: we only use _SI_CallFuncM, and relay
+        # on the Singular interpreter (resp. on jjCALL1ARG etc. entries
+        # in table dArithM) to dispatch to the 1/2/3 arg variants as needed.
+        
+        # For now we just assume these that the parameter lists always
+        # specify a ring for these commands.
         if needring then
-            poss := poss + 1;
-            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
-                    "    if not Length(arg) in ", String(poss), " then\n",
-                    "      Error(\"incorrect number of arguments\");\n",
-                    "    fi;\n",
-                    "    SI_SetCurrRing(arg[1]);\n",
-                    "    return _SI_CallFuncM(",nr,",arg{[2..Length(arg)]});\n",
-                    "  end );\n\n");
-        else
-            PrintTo(s,"BindGlobal(\"",name,"\",\n  function(arg)\n",
-                    "    if not Length(arg) in ", String(poss), " then\n",
-                    "      Error(\"incorrect number of arguments\");\n",
-                    "    fi;\n",
-                    "    return _SI_CallFuncM(",nr,",arg);\n",
-                    "  end );\n\n");
+            Error("vararg op ", op, " needs ring\n");
         fi;
+        
+        poss := Set(SI_OPERATIONS[4]{poss[4]}, x -> x[2]);
+        Print(op, " has arg counts ", poss, "\n");
+        
+        PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
+        if -1 in poss or (-2 in poss and 0 in poss) then
+            # takes arbitrary number of arguments
+        elif -2 in poss then
+            PrintTo(s,"    if Length(arg) = 0 then\n",
+                      "      Error(\"incorrect number of arguments\");\n",
+                      "    fi;\n");
+        else
+            PrintTo(s,"    if not Length(arg) in ", poss, " then\n",
+                      "      Error(\"incorrect number of arguments\");\n",
+                      "    fi;\n");
+        fi;
+        PrintTo(s,    "    return _SI_CallFuncM(",nr,",arg);\n",
+                      "  end );\n\n");
+    else
+        # op occurs with at least two different fixed argument counts
+        poss := Filtered([1..3], i -> [] <> poss[i]);
+        
+        PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
+        if 1 in poss then
+            PrintTo(s,"    if Length(arg) = 1 then\n",
+                      "      return _SI_CallFunc1(",nr,",arg[1]);\n",
+                      "    fi;\n");
+        fi;
+        if 2 in poss then
+            PrintTo(s,"    if Length(arg) = 2 then\n",
+                      "      return _SI_CallFunc2(",nr,",arg[1],arg[2]);\n",
+                      "    fi;\n");
+        fi;
+        if 3 in poss then
+            PrintTo(s,"    if Length(arg) = 3 then\n",
+                      "      return _SI_CallFunc3(",nr,",arg[1],arg[2],arg[3]);\n",
+                      "    fi;\n");
+        fi;
+        PrintTo(s,    "    Error(\"incorrect number of arguments\");\n",
+                      "  end );\n\n");
     fi;
   fi;
 od;

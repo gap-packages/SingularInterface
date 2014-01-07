@@ -1390,20 +1390,6 @@ public:
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
-Obj Func_SI_CallFunc0(Obj self, Obj op)
-{
-    StartPrintCapture();
-    sleftv result;
-    BOOLEAN ret = iiExprArithM(&result, NULL,INT_INTOBJ(op));
-    EndPrintCapture();
-    if (ret) {
-        result.CleanUp();
-        return Fail;
-    }
-
-    return gapwrap(result, 0);
-}
-
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
 {
     Obj rr = NULL;
@@ -1496,54 +1482,65 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     Obj rr = NULL;
     ring r = NULL;
-    int i, j;
+    int i;
     const char *error;
 
     int nrargs = (int) LEN_PLIST(arg);
-
-    switch (nrargs) {
-        case 0:
-            return Func_SI_CallFunc0(self, op);
-        case 1:
-            return Func_SI_CallFunc1(self, op, ELM_PLIST(arg,1));
-        case 2:
-            return Func_SI_CallFunc2(self, op, ELM_PLIST(arg,1), ELM_PLIST(arg,2));
-        case 3:
-            return Func_SI_CallFunc3(self, op, ELM_PLIST(arg,1), ELM_PLIST(arg,2), ELM_PLIST(arg,3));
-    }
-
-    // Handle generic case
     SingObj *sing = new SingObj[nrargs];
     for (i = 0; i < nrargs; i++) {
         sing[i].init(ELM_PLIST(arg,i+1),rr,r);
         if (sing[i].error) {
-            for (j = 0; j < i; j++) {
-                sing[j].cleanup();
-            }
             error = sing[i].error;
             delete [] sing;
             ErrorQuit(error,0L,0L);
         }
-        if (i > 0) sing[i-1].obj.next = &(sing[i].obj);
     }
-    StartPrintCapture();
-    BOOLEAN ret;
-    sleftv result;
 
-    for (j = 1; j < nrargs; j++) {
-       sing[j].needcleanup = false;
-       // The linked list takes care of all cleanup automatically
+    // Now build a linked list of idhdl objects referencing  those singobjs
+    sleftv s_arg;
+    leftv cur = &s_arg;
+    idhdl h;
+    s_arg.Init();
+    for (i = 0; i < nrargs; i++) {
+        h = getSingularIdhdl(i);
+        IDTYP(h) = sing[i].obj.Typ();
+        IDDATA(h) = (char *)sing[i].obj.Data();
+
+        cur->rtyp = IDHDL;
+        cur->data = h;
+        if (i < nrargs - 1)
+            cur->next = (leftv)omAlloc0Bin(sleftv_bin);
+        else
+            assert(cur->next == 0);
+
+        cur = cur->next;
     }
-// TODO: use SingularIdHdl here, too
-    ret = iiExprArithM(&result,sing[0].destructiveuse(),
-                       INT_INTOBJ(op));
+
+    StartPrintCapture();
+    sleftv result;
+    BOOLEAN ret = iiExprArithM(&result, &s_arg, INT_INTOBJ(op));
     EndPrintCapture();
+
+    Obj gap_result;
+    
+    // We must run gapwrap *before* resetting the idhdl
+    // objects, as it might reference one of them.
+    if (!ret)
+        gap_result = gapwrap(result, rr);
+
+    for (i = 0; i < nrargs; i++) {
+        h = getSingularIdhdl(i);
+        IDTYP(h) = INT_CMD;
+        IDDATA(h) = 0;
+    }
+
+    delete [] sing;
+
     if (ret) {
         result.CleanUp(r);
         return Fail;
     }
-    delete [] sing;
-    return gapwrap(result, rr);
+    return gap_result;
 }
 
 Obj FuncSI_SetCurrRing(Obj self, Obj rr)
