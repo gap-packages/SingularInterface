@@ -36,12 +36,6 @@ Persons := [
     Institution   := "Justus-Liebig-Universität Gießen"
   ),
   rec(
-    LastName      := "Linton",
-    FirstNames    := "Stephen",
-    IsAuthor      := true,
-    IsMaintainer  := true,
-  ),
-  rec(
     LastName      := "Lübeck",
     FirstNames    := "Frank",
     IsAuthor      := true,
@@ -83,22 +77,6 @@ Persons := [
     FirstNames    := "Hans",
     IsAuthor      := true,
     IsMaintainer  := true,
-  ),
-  rec( 
-    LastName      := "Smith",
-    FirstNames    := "Paul",
-    IsAuthor      := true,
-    IsMaintainer  := true,
-    Email         := "paul.smith@st-andrews.ac.uk",
-    WWWHome       := "http://www.cs.st-andrews.ac.uk/~pas",
-    PostalAddress := Concatenation( [
-                         "Paul Smith\n",
-                         "School of Computer Science\n",
-                         "University of St Andrews\n",
-                         "St Andrews\n",
-                         "UK" ] ),
-    Place         := "St Andrews",
-    Institution   := "University of St Andrews"
   ),
 
 ],
