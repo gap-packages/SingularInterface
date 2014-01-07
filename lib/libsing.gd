@@ -31,10 +31,7 @@ DeclareOperation("SI_bigintmat",[IsList]);
 BindGlobal("SI_number_singular", SI_number);
 MakeReadWriteGVar("SI_number");
 Unbind(SI_number);
-DeclareOperation("SI_number",[IsSingularRing, IsSingularObj]);
-DeclareOperation("SI_number",[IsSingularRing, IsInt]);
-DeclareOperation("SI_number",[IsSingularRing, IsFFE]);
-DeclareOperation("SI_number",[IsSingularRing, IsRat]);
+DeclareOperation("SI_number",[IsSingularRing, IsObject]);
 
 BindGlobal("SI_intvec_singular", SI_intvec);
 MakeReadWriteGVar("SI_intvec");
