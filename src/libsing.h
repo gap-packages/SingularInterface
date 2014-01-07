@@ -175,6 +175,7 @@ Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr);
 Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one);
 
+int ParsePolyList(ring r, const char *&st, int expected, poly *&res);
 
 #if 0
 proxies fuer:
@@ -200,7 +201,6 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
 Obj FuncSI_ring_of_singobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
-Obj Func_SI_matrix_from_String(Obj self,Obj rr,Obj nrrows, Obj nrcols, Obj st);
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj Func_SI_COPY_POLY(Obj self, Obj po);
@@ -213,15 +213,10 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj);
 Obj FuncSI_LastOutput(Obj self);
 Obj Func_SI_bigint(Obj self, Obj nr);
 Obj Func_SI_Intbigint(Obj self, Obj b);
-Obj Func_SI_bigintmat(Obj self, Obj m);
-Obj Func_SI_Matbigintmat(Obj self, Obj im);
 Obj Func_SI_number(Obj self, Obj r, Obj nr);
 Obj Func_SI_intvec(Obj self, Obj l);
 Obj Func_SI_Plistintvec(Obj self, Obj iv);
-Obj Func_SI_intmat(Obj self, Obj m);
-Obj Func_SI_Matintmat(Obj self, Obj im);
 Obj Func_SI_ideal_from_els(Obj self, Obj l);
-Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l);
 
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a);
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
