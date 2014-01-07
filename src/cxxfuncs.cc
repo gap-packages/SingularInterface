@@ -1503,7 +1503,8 @@ public:
     WrapMultiArgs(Obj arg, Obj &rr, ring &r) : sing(0), error(0) {
         int i;
         int nrargs = (int) LEN_PLIST(arg);
-        SingularIdHdl *sing = new SingularIdHdl[nrargs];
+        if (nrargs > 0)
+            sing = new SingularIdHdl[nrargs];
         for (i = 0; i < nrargs; i++) {
             sing[i].set(i, ELM_PLIST(arg, i + 1), rr, r);
             if (sing[i].obj.error) {
@@ -1586,47 +1587,15 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     Obj rr = NULL;
     ring r = NULL;
     int i;
-    const char *error;
 
-    int nrargs = (int) LEN_LIST(args);
-    SingObj sing1;
-    SingObj sing2;
-    leftv cur,neu;
-// TODO: use SingularIdHdl here, too?!
-    if (nrargs > 0) {
-        sing1.init(ELM_LIST(args,1),rr,r);
-        if (sing1.error) {
-            error = sing1.error;
-            sing1.cleanup();
-            ErrorQuit(error,0L,0L);
-            return Fail;
-        }
-        cur = &(sing1.obj);
-        for (i = 2; i <= nrargs; i++) {
-            sing2.init(ELM_LIST(args,i),rr,r);
-            if (sing2.error) {
-                neu = sing1.obj.next;
-                sing1.obj.next = NULL;
-                sing1.cleanup();
-                neu->CleanUp(r);
-                error = sing2.error;
-                sing2.cleanup();
-                ErrorQuit(error,0L,0L);
-            }
-            neu = (leftv) omalloc( sizeof(sleftv) );
-            neu->Init();
-            sing2.destructiveuse();
-            neu->data = sing2.obj.data;
-            neu->rtyp = sing2.obj.rtyp;
-            cur->next = neu;
-            cur = neu;
-        }
-        sing1.destructiveuse();
-    }
+    WrapMultiArgs wrap(args, rr, r);
+    if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
+
     StartPrintCapture();
     BOOLEAN bool_ret;
     if (r) {
-        currRingHdl = enterid("Blabla",0,RING_CMD,&IDROOT,FALSE,FALSE);
+        // FIXME: Perhaps we should be using getSingularIdhdl() here, too?
+        currRingHdl = enterid("Blabla", 0, RING_CMD, &IDROOT, FALSE, FALSE);
         assert(currRingHdl);
         IDRING(currRingHdl) = r;
         r->ref++;
@@ -1635,10 +1604,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         currRing = NULL;
     }
     iiRETURNEXPR.Init();
-    if (nrargs == 0)
-        bool_ret = iiMake_proc(h,NULL,NULL);
-    else
-        bool_ret = iiMake_proc(h,NULL,&(sing1.obj));
+    bool_ret = iiMake_proc(h, NULL, &wrap.s_arg);
     if (r) killhdl(currRingHdl,currPack);
     EndPrintCapture();
 
