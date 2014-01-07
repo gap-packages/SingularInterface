@@ -10,7 +10,16 @@ bin_PROGRAMS = gentableforGAP
 gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS)
 
-libsing_la_SOURCES = libsing.cc libsing.h cxxfuncs.cc lowlevel_mappings.cc singobj.cc singtypes.cc
+libsing_la_SOURCES = \
+    cxxfuncs.cc \
+    libsing.cc \
+    libsing.h \
+    lowlevel_mappings.cc \
+    lowlevel_mappings.h \
+    singobj.cc \
+    singobj.h \
+    singtypes.cc \
+    singtypes.h
 libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
 libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
 libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
