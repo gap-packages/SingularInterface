@@ -11,6 +11,7 @@ gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS)
 
 libsing_la_SOURCES = \
+    calls.cc \
     cxxfuncs.cc \
     libsing.cc \
     libsing.h \

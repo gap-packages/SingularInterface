@@ -171,6 +171,10 @@ inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 
 Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj ring);
+Obj NEW_SINGOBJ_ZERO_ONE(UInt type, void *cxx, Obj zero, Obj one);
+
+void StartPrintCapture();
+void EndPrintCapture();
 
 
 #if 0
