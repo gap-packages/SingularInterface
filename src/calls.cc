@@ -5,6 +5,62 @@
 
 #include <vector>
 
+// HACK: inerror is set by the Singular interpreter if there is
+// a syntax error. We use this in SI_EVALUATE and SI_CallProc
+// to reset the interpreter error state.
+extern int inerror;
+
+// The following functions allow access to the singular interpreter.
+// They are exported to the GAP level.
+
+//! This global is used to store the return value of SPrintEnd
+static char *_SI_LastOutputBuf = NULL;
+
+static void ClearLastOutputBuf() {
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
+    }
+}
+
+static void StartPrintCapture() {
+    ClearLastOutputBuf();
+    SPrintStart();
+    errorreported = 0;
+}
+
+static void EndPrintCapture() {
+    _SI_LastOutputBuf = SPrintEnd();
+}
+
+Obj FuncSI_LastOutput(Obj self)
+{
+    if (_SI_LastOutputBuf) {
+        UInt len = (UInt) strlen(_SI_LastOutputBuf);
+        Obj tmp = NEW_STRING(len);
+        SET_LEN_STRING(tmp,len);
+        memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
+        ClearLastOutputBuf();
+        return tmp;
+    } else return Fail;
+}
+
+Obj Func_SI_EVALUATE(Obj self, Obj st)
+{
+    UInt len = GET_LEN_STRING(st);
+    char *ost = (char *) omalloc((size_t) len + 10);
+    memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
+    memcpy(ost+len,"return();",9);
+    ost[len+9] = 0;
+    StartPrintCapture();
+    myynest = 1;
+    Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
+    inerror = 0;
+    EndPrintCapture();
+    // Note that iiEStart uses omFree internally to free the string ost
+    return ObjInt_Int((Int) err);
+}
+
 /// Wrap the content of a Singular interpreter object in a GAP object.
 static Obj gapwrap(sleftv &obj, Obj rr)
 {
@@ -360,10 +416,10 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     Obj rr = NULL;
     ring r = NULL;
 
+    int nrargs = (int) LEN_PLIST(args);
     WrapMultiArgs wrap(args, rr, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
-    StartPrintCapture();
     BOOLEAN bool_ret;
     if (r) {
         // FIXME: Perhaps we should be using getSingularIdhdl() here, too?
@@ -376,9 +432,13 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         currRing = NULL;
     }
     iiRETURNEXPR.Init();
-    bool_ret = iiMake_proc(h, NULL, &wrap.s_arg);
-    if (r) killhdl(currRingHdl,currPack);
+
+    StartPrintCapture();
+    bool_ret = iiMake_proc(h, NULL, nrargs ? &wrap.s_arg : NULL);
     EndPrintCapture();
+
+    inerror = 0;    // reset interpreter error flag
+    if (r) killhdl(currRingHdl, currPack);
 
     if (bool_ret == TRUE) return Fail;
     leftv ret = &iiRETURNEXPR;

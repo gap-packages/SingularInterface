@@ -29,9 +29,6 @@ int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif
 
 
-
-extern int inerror; // from Singular/grammar.cc
-
 static void _SI_ErrorCallback(const char *st);
 
 
@@ -1026,41 +1023,6 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
-// The following functions allow access to the singular interpreter.
-// They are exported to the GAP level.
-
-//! This global is used to store the return value of SPrintEnd
-static char *_SI_LastOutputBuf = NULL;
-
-static void ClearLastOutputBuf() {
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
-    }
-}
-
-void StartPrintCapture() {
-    ClearLastOutputBuf();
-    SPrintStart();
-    errorreported = 0;
-}
-
-void EndPrintCapture() {
-    _SI_LastOutputBuf = SPrintEnd();
-}
-
-Obj FuncSI_LastOutput(Obj self)
-{
-    if (_SI_LastOutputBuf) {
-        UInt len = (UInt) strlen(_SI_LastOutputBuf);
-        Obj tmp = NEW_STRING(len);
-        SET_LEN_STRING(tmp,len);
-        memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
-        ClearLastOutputBuf();
-        return tmp;
-    } else return Fail;
-}
-
 void _SI_ErrorCallback(const char *st)
 {
     UInt len = (UInt) strlen(st);
@@ -1083,24 +1045,6 @@ Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
     currentVoice=feInitStdin(NULL);
     WerrorS_callback = _SI_ErrorCallback;
     return NULL;
-}
-
-Obj Func_SI_EVALUATE(Obj self, Obj st)
-{
-    UInt len = GET_LEN_STRING(st);
-    char *ost = (char *) omalloc((size_t) len + 10);
-    memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
-    memcpy(ost+len,"return();",9);
-    ost[len+9] = 0;
-    ClearLastOutputBuf();
-    SPrintStart();
-    myynest = 1;
-    Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
-    inerror = 0;
-    errorreported = 0;
-    EndPrintCapture();
-    // Note that iiEStart uses omFree internally to free the string ost
-    return ObjInt_Int((Int) err);
 }
 
 /* if needed, handle more cases */
