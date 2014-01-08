@@ -1,21 +1,26 @@
 After discussion in St Andrews on August 30, 2012, we came up with the following
 naming conventions:
 
-1) Wrappers for interpreter functions use the Singular name, prefixed by SI_.
-For example:
+1) Wrappers for interpreter functions use the prefix "SI_"
+followed by the Singular name. For example:
+  SI_det
   SI_std
   SI_ring
-  SI_bigint
+  SI_+
+
+Note that Singular interpreter function name are either alphanumeric
+and start with a lowercase letter, or consists entirely of symbols
+(such as "+", "<=", "%").
 
 2) Wrappers for library functions are prefixed by SIL_. For example:
   SIL_stdfglm
   SIL_groebner
 
-3) For constructors of Singular objects, we try to use the *same* name,
-too, with a SI_ prefix. So we would have SI_ring and SI_bigint etc..
-Since this clashes with the interpreter "SI_bigint", we need to override
-that with a dispatcher function which calls the right internal code.
-Example:
+3) For constructors of Singular objects, we also try to use the *same*
+name as used in Singular, with a SI_ prefix like interpreter function.
+So we would have SI_ring and SI_bigint etc.. Since this clashes with the
+interpreter "SI_bigint", we need to override that with a dispatcher
+function which calls the right internal code. For example:
 
   _SI_bigint_orig := SI_bigint;
   UnbindGlobal("SI_bigint");
@@ -27,12 +32,28 @@ Example:
       return CallFuncList(_SI_bigint_orig, arg);
     end );
 
-4) For wrappers of low level kernel functions, we use the prefix _SI_.
+4) For our own functions meant for end users, we also use the SI_
+prefix, but followed by an alphanumeric name that starts with an
+uppercase letter (as is the convention for GAP functions). For example:
+  SI_CallProc
+  SI_Indeterminates
+  SI_ValueOfVar
+
+5) There are also functions which are for internal use only, not for end
+users (e.g. because they are C functions providing only limited
+functionality, and are only for use by a more full-featured high level
+SI_... function implemented in GAP code). These are prefixed by _SI_
+followed by an alphanumeric name starting with an uppercase letter.
 For example:
+  _SI_ideal_from_els
+  _SI_MatElm
+
+6) For wrappers of low level kernel functions, we use the prefix _SI_,
+followed by the function name. For example:
   _SI_p_Add_q
   _SI_p_Neg
 
-5) For objects which consume / destroy some of their arguments, we want a destructive
+7) For objects which consume / destroy some of their arguments, we want a destructive
    variant, which is distinguished by a _Destroy suffix:
    _SI_p_Add_q  wold get a _SI_p_Add_q_Destructive  sibling
    SI_std  ->  SI_std_Destructive
