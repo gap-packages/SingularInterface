@@ -302,9 +302,15 @@ Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
                 col <= 0 || col > mat->cols()) {
                 ErrorQuit("bigintmat indices out of range",0L,0L);
             }
-            // TODO: Handle also IsSingBigint as val
+            number n;
+            if (ISSINGOBJ(SINGTYPE_BIGINT, val) || ISSINGOBJ(SINGTYPE_BIGINT_IMM, val)) {
+                n = (number)CXX_SINGOBJ(val);
+                n = nlCopy(n, coeffs_BIGINT);
+            } else {
+                n = _SI_BIGINT_FROM_GAP(val);
+            }
             n_Delete(&BIMATELEM(*mat,row,col), mat->basecoeffs());
-            BIMATELEM(*mat,row,col) = _SI_BIGINT_FROM_GAP(val);
+            BIMATELEM(*mat,row,col) = n;
             }
             break;
 
