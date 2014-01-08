@@ -1,4 +1,6 @@
-gap> SI_Undef:=x->Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));;
+gap> SI_Undef:=function(x)
+>   Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));
+> end;;
 
 # Define a simple Singular interpreter proc and call it
 gap> Singular("proc p0(){return(42);}");
@@ -27,9 +29,6 @@ gap> r2 := SI_CallProc("p3", [r]);
 <singular ring>
 gap> r = r2;
 true
-
-LoadPackage("libsing");r := SI_ring(0,[ "x" ]);Singular("if(defined(p3)){kill p3;};proc p3(a){return(a);}");
-
 
 
 gap> s := SI_ring(37,[ "y" ]);
