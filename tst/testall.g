@@ -17,4 +17,6 @@ Sort(tests);
 tests := List(tests, test -> Filename(d,test));
 
 # Run the tests
-for test in tests do Test(test); od;
+for test in tests do
+    Test(test, rec(compareFunction:="uptowhitespace"));
+od;
