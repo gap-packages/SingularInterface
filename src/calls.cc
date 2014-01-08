@@ -53,11 +53,11 @@ Obj FuncSI_LastOutput(Obj self)
 Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
     // Append an explicit return() to the 
-    const char *return_str = "return();";
+    const char return_str[] = "return();";
     UInt len = GET_LEN_STRING(st);
-    char *ost = (char *) omalloc(len + sizeof(*return_str));
-    memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)),len);
-    memcpy(ost+len, return_str, sizeof(*return_str) );
+    char *ost = (char *) omalloc(len + sizeof(return_str));
+    memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)), len);
+    memcpy(ost+len, return_str, sizeof(return_str) );
 
     StartPrintCapture();
     myynest = 1;
