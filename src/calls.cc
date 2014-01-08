@@ -463,9 +463,17 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     if (bool_ret == TRUE) return Fail;
     leftv ret = &iiRETURNEXPR;
     if (ret->next != NULL) {
-        ret->CleanUp(r);
-        ErrorQuit("Multiple return values not yet implemented.",0L,0L);
-        return Fail;
+        Int len = ret->listLength();
+        Obj list = NEW_PLIST( T_PLIST, len );
+        SET_LEN_PLIST( list, len );
+        for (int i = 0; i < len; ++i) {
+            leftv next = ret->next;
+            ret->next = 0;
+            SET_ELM_PLIST(list, i+1, gapwrap(*ret, rr));
+            if (i > 0) omFreeBin(ret, sleftv_bin);
+            ret = next;
+        }
+        return list;
     }
 
     return gapwrap(*ret, rr);
