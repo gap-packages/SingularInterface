@@ -50,7 +50,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_intvec, 1, "l"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Plistintvec, 1, "iv"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_els, 1, "l"),
-    GVAR_FUNC_TABLE_ENTRY("cxx-funcs.cc", SI_ring_of_singobj, 1, "singobj"),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_RingOfSingobj, 1, "singobj"),
 
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_matrix_from_String, 4, "rr, nrrows, nrcols, st"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_bigintmat, 1, "m"),

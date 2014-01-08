@@ -31,7 +31,7 @@ InstallMethod(SI_ring,[IsInt,IsList],
     return SI_ring(p,l,[["dp",Length(l)]]);
   end);
 
-InstallMethod(SI_ring,["IsSingularObj"], SI_ring_of_singobj);
+InstallMethod(SI_ring,["IsSingularObj"], SI_RingOfSingobj);
 
 InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
 InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);

@@ -198,7 +198,7 @@ void _SI_ObjMarkFunc(Bag o);
 void _SI_FreeFunc(Obj o);
 Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
-Obj FuncSI_ring_of_singobj( Obj self, Obj singobj );
+Obj FuncSI_RingOfSingobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);

@@ -481,7 +481,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 }
 
 /// Installed as SI_ring method
-Obj FuncSI_ring_of_singobj( Obj self, Obj singobj )
+Obj FuncSI_RingOfSingobj( Obj self, Obj singobj )
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR)
         ErrorQuit("argument must be singular object.",0L,0L);
