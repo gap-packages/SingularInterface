@@ -83,6 +83,10 @@ static Obj gapwrap(sleftv &obj, Obj rr)
         if (currRing != (ring) CXX_SINGOBJ(rr))
             ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
+    
+    if (obj.Typ() == RING_CMD && ((ring)obj.Data())->ext_ref != 0) {
+        return (Obj)((ring)obj.Data())->ext_ref;
+    }
 
     // HACK to work around problems with IDHDL pointing to an entry of a matrix
     // TODO: do we need to worry about attributes in this case??!
