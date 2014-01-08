@@ -10,6 +10,7 @@ This file contains all of the code that deals with C++ libraries.
 #include "lowlevel_mappings.h"
 #include "poly.h"
 
+#include <coeffs/bigintmat.h>
 #include <coeffs/longrat.h>
 #include <kernel/syz.h>
 #include <Singular/ipid.h>
