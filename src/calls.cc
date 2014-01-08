@@ -45,19 +45,27 @@ Obj FuncSI_LastOutput(Obj self)
     } else return Fail;
 }
 
+///! Send a string to the Singular interpreter, which is then evaluated as   
+///! the body of a function (so that variables you declare are local, and are
+///! released after evaluation of the string completes).                     
+///! 
+///! To ensure this works correctly, we append "return();" to string.
 Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
+    // Append an explicit return() to the 
+    const char *return_str = "return();";
     UInt len = GET_LEN_STRING(st);
-    char *ost = (char *) omalloc((size_t) len + 10);
-    memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(st)),len);
-    memcpy(ost+len,"return();",9);
-    ost[len+9] = 0;
+    char *ost = (char *) omalloc(len + sizeof(*return_str));
+    memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)),len);
+    memcpy(ost+len, return_str, sizeof(*return_str) );
+
     StartPrintCapture();
     myynest = 1;
     Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
     inerror = 0;
     EndPrintCapture();
     // Note that iiEStart uses omFree internally to free the string ost
+
     return ObjInt_Int((Int) err);
 }
 
