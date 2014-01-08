@@ -19,6 +19,8 @@ libsing_la_SOURCES = \
     lowlevel_mappings.h \
     matrix.cc \
     matrix.h \
+    poly.cc \
+    poly.h \
     singobj.cc \
     singobj.h \
     singtypes.cc \

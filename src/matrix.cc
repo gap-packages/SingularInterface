@@ -1,4 +1,5 @@
 #include "matrix.h"
+#include "poly.h"
 #include "singobj.h"
 
 #include <coeffs/bigintmat.h>

@@ -175,8 +175,6 @@ Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr);
 Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one);
 
-int ParsePolyList(ring r, const char *&st, int expected, poly *&res);
-
 #if 0
 proxies fuer:
   ideal   ->  poly
@@ -200,11 +198,8 @@ Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
 Obj FuncSI_RingOfSingobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
-Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
-Obj Func_SI_COPY_POLY(Obj self, Obj po);
-Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b);
 Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path);
 Obj Func_SI_EVALUATE(Obj self, Obj st);
 Obj FuncSI_ValueOfVar(Obj self, Obj name);

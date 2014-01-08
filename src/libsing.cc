@@ -9,6 +9,7 @@ This file contains all of the pure C code that deals with GAP.
 #include "lowlevel_mappings.h"
 #include "singtypes.h"
 #include "matrix.h"
+#include "poly.h"
 
 /******************** The interface to GAP ***************/
 
@@ -33,11 +34,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_debug, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_poly_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_COPY_POLY, 1, "poly"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MULT_POLY_NUMBER, 2, "a, b"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_INIT_INTERPRETER, 1, "path"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ValueOfVar, 1, "name"),
@@ -51,6 +49,15 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Plistintvec, 1, "iv"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_els, 1, "l"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_RingOfSingobj, 1, "singobj"),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmPrintInfo, 0, ""),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmCurrentBytes, 0, ""),
+
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc1, 2, "op, input"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 3, "op, a, b"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 4, "op, a, b, c"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFuncM, 2, "op, arg"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_SetCurrRing, 1, "r"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_CallProc, 2, "name, args"),
 
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_matrix_from_String, 4, "rr, nrrows, nrcols, st"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_bigintmat, 1, "m"),
@@ -61,15 +68,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_MatElm, 3, "mat, row, col"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_SetMatElm, 4, "mat, row, col, val"),
 
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc1, 2, "op, input"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 3, "op, a, b"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 4, "op, a, b, c"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFuncM, 2, "op, arg"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_SetCurrRing, 1, "r"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_CallProc, 2, "name, args"),
-
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmPrintInfo, 0, ""),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmCurrentBytes, 0, ""),
+    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_poly_from_String, 2, "rr, st"),
+    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_COPY_POLY, 1, "poly"),
+    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_MULT_POLY_NUMBER, 2, "a, b"),
 
 #include "lowlevel_mappings_table.h"
 
