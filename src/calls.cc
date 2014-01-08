@@ -74,10 +74,12 @@ static Obj gapwrap(sleftv &obj, Obj rr)
             ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
     }
 
-// HACK to work around problems with IDHDL pointing to an entry of a matrix
-// TODO: do we need to worry about attributes in this case??!
-#define OBJ_COPY_OR_REF(obj) \
-    (obj.rtyp != IDHDL ? obj.Data() : obj.CopyD())
+    // HACK to work around problems with IDHDL pointing to an entry of a matrix
+    // TODO: do we need to worry about attributes in this case??!
+    #define OBJ_COPY_OR_REF(obj) \
+        (obj.rtyp != IDHDL ? obj.Data() : obj.CopyD())
+
+// Could this leak? What about rings?
 
     Obj res;
     switch (obj.Typ()) {
