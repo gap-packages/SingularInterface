@@ -442,6 +442,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         currRingHdl = enterid("Blabla", 0, RING_CMD, &IDROOT, FALSE, FALSE);
         assert(currRingHdl);
         IDRING(currRingHdl) = r;
+        currRing = r;
         r->ref++;
     } else {
         currRingHdl = NULL;
@@ -454,7 +455,10 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     EndPrintCapture();
 
     inerror = 0;    // reset interpreter error flag
-    if (r) killhdl(currRingHdl, currPack);
+    if (r) {
+        assert(currRingHdl);
+        killhdl(currRingHdl, currPack);
+    }
 
     if (bool_ret == TRUE) return Fail;
     leftv ret = &iiRETURNEXPR;
