@@ -226,3 +226,121 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
     }
     return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
 }
+
+
+///! Read the entry in the given row and column of a singular
+///! matrix, intmat or bigintmat.
+Obj Func_SI_MatElm(Obj self, Obj obj, Obj row_, Obj col_)
+{
+    UInt gtype = TYPE_SINGOBJ(obj);
+    void *data = CXX_SINGOBJ(obj);
+    Obj rr = RING_SINGOBJ(obj);
+    ring r = CXXRING_SINGOBJ(obj);
+
+    int row = INT_INTOBJ(row_);
+    int col = INT_INTOBJ(col_);
+   
+    switch (gtype) {
+        case SINGTYPE_BIGINTMAT:
+        case SINGTYPE_BIGINTMAT_IMM: {
+            bigintmat *mat = (bigintmat *) data;
+            if (row <= 0 || row > mat->rows() ||
+                col <= 0 || col > mat->cols()) {
+                ErrorQuit("bigintmat indices out of range",0L,0L);
+            }
+            number n = BIMATELEM(*mat,row,col);
+            return _SI_BIGINT_OR_INT_TO_GAP(n);
+            }
+
+        case SINGTYPE_INTMAT:
+        case SINGTYPE_INTMAT_IMM: {
+            intvec *mat = (intvec *) data;
+            if (row <= 0 || row > mat->rows() ||
+                col <= 0 || col > mat->cols()) {
+                ErrorQuit("intmat indices out of range",0L,0L);
+            }
+            return ObjInt_Int(IMATELEM(*mat,row,col));
+            }
+
+        case SINGTYPE_MATRIX:
+        case SINGTYPE_MATRIX_IMM: {
+            matrix mat = (matrix)data;
+            if (row <= 0 || row > mat->nrows ||
+                col <= 0 || col > mat->ncols) {
+                ErrorQuit("matrix indices out of range",0L,0L);
+            }
+            poly p = MATELEM(mat, row, col);
+            p = p_Copy(p, r);
+            return NEW_SINGOBJ_RING(SINGTYPE_POLY, p, rr);
+            }
+
+        default:
+            ErrorQuit("<obj> is not a matrix",0L,0L);
+            break;
+    }
+    return Fail;
+}
+
+///! Set the entry in the given row and column of a singular
+///! matrix, intmat or bigintmat.
+Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
+{
+    UInt gtype = TYPE_SINGOBJ(obj);
+    void *data = CXX_SINGOBJ(obj);
+    //Obj rr = RING_SINGOBJ(obj);
+    ring r = CXXRING_SINGOBJ(obj);
+
+    int row = INT_INTOBJ(row_);
+    int col = INT_INTOBJ(col_);
+   
+    switch (gtype) {
+        case SINGTYPE_BIGINTMAT:
+        case SINGTYPE_BIGINTMAT_IMM: {
+            bigintmat *mat = (bigintmat *) data;
+            if (row <= 0 || row > mat->rows() ||
+                col <= 0 || col > mat->cols()) {
+                ErrorQuit("bigintmat indices out of range",0L,0L);
+            }
+            // TODO: Handle also IsSingBigint as val
+            n_Delete(&BIMATELEM(*mat,row,col), mat->basecoeffs());
+            BIMATELEM(*mat,row,col) = _SI_BIGINT_FROM_GAP(val);
+            }
+            break;
+
+        case SINGTYPE_INTMAT:
+        case SINGTYPE_INTMAT_IMM: {
+            intvec *mat = (intvec *) data;
+            if (row <= 0 || row > mat->rows() ||
+                col <= 0 || col > mat->cols()) {
+                ErrorQuit("intmat indices out of range",0L,0L);
+            }
+            if (!IS_INTOBJ(val))
+                ErrorQuit("<val> must be an integer.\n",0L,0L);
+            IMATELEM(*mat,row,col) = INT_INTOBJ(val);
+            }
+            break;
+
+        case SINGTYPE_MATRIX:
+        case SINGTYPE_MATRIX_IMM: {
+            matrix mat = (matrix)data;
+            if (row <= 0 || row > mat->nrows ||
+                col <= 0 || col > mat->ncols) {
+                ErrorQuit("matrix indices out of range",0L,0L);
+            }
+            if (!(ISSINGOBJ(SINGTYPE_POLY, val) || ISSINGOBJ(SINGTYPE_POLY_IMM, val)))
+                ErrorQuit("<val> must be a polynomial.\n",0L,0L);
+            if (r != CXXRING_SINGOBJ(val))
+                ErrorQuit("<obj> and <val> must be defined over same ring.\n",0L,0L);
+
+            pDelete(&MATELEM(mat, row, col));
+            poly p = (poly)CXX_SINGOBJ(val);
+            MATELEM(mat, row, col) = p_Copy(p, r);
+            }
+            break;
+
+        default:
+            ErrorQuit("<obj> is not a matrix",0L,0L);
+            break;
+    }
+    return 0;
+}
