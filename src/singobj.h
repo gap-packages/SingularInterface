@@ -43,24 +43,24 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
 class SingObj {
 public:
     sleftv obj;
-    int gtype;
+    const char *error;  //?< If non-NULL, an error has happened.
+
+private:
     /// if this is true we have to destruct the Singular object when this object dies.
     bool needcleanup;
-    const char *error;  //?< If non-NULL, an error has happened.
-    Obj rr;     ///< GAP wrapper of underlying Singular ring
-    ring r;     ///< Underlying Singular ring.
 
-    SingObj(Obj input, Obj &extrr, ring &extr) {
-        init(input,extrr,extr);
+public:
+    SingObj(Obj input, Obj &rr, ring &r) {
+        init(input, rr, r);
     }
 
     /// Default constructor for empty object
-    SingObj() : gtype(0), needcleanup(false), error(NULL), rr(NULL), r(NULL) {
+    SingObj() : error(NULL), needcleanup(false) {
         obj.Init();
     }
 
     // This does the actual work
-    void init(Obj input, Obj &extrr, ring &extr);
+    void init(Obj input, Obj &rr, ring &r);
 
     ~SingObj() {
         cleanup();
@@ -68,13 +68,9 @@ public:
 
     /// Call this to get a pointer to the internal obj structure of type
     /// sleftv if you intend to use the Singular object destructively.
-    /// If necessary, copy() is called automatically and any scheduled
-    /// cleanup on our side is prevented.
-    leftv destructiveuse()  {
-        if (!needcleanup) copy();
-        needcleanup = false;
-        return &obj;
-    }
+    /// In particular it is the caller's responsibility to cleanup the
+    /// object later on.
+    leftv destructiveuse();
 
     /// Call this to get a pointer to the internal obj structure of type
     /// sleftv if you intend to use the singular object non-destructively.
@@ -83,8 +79,8 @@ public:
     leftv nondestructiveuse() {
         return &obj;
     }
-    void copy();      ///< Makes a copy if it is not already one
-    void cleanup();   ///< Frees object if it was a copy
+
+    void cleanup();   ///< Frees object if necesary
 };
 
 #endif

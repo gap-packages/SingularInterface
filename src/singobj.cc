@@ -323,18 +323,16 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     }
 }
 
-void SingObj::init(Obj input, Obj &extrr, ring &extr)
+void SingObj::init(Obj input, Obj &rr, ring &r)
 {
     error = NULL;
-    r = NULL;
-    rr = NULL;
+    needcleanup = false;
     obj.Init();
+
     if (IS_INTOBJ(input) ||
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
-        if (gtype == SINGTYPE_INT || gtype == SINGTYPE_INT_IMM) {
-            needcleanup = false;
-        } else {
+        int gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
+        if (gtype != SINGTYPE_INT && gtype != SINGTYPE_INT_IMM) {
             needcleanup = true;
         }
     } else if (TNUM_OBJ(input) == T_STRING) {
@@ -344,10 +342,9 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
         ost[len] = 0;
         obj.data = (void *) ost;
         obj.rtyp = STRING_CMD;
-        gtype = SINGTYPE_STRING;
         needcleanup = true;
     } else if (TNUM_OBJ(input) == T_SINGULAR) {
-        gtype = TYPE_SINGOBJ(input);
+        int gtype = TYPE_SINGOBJ(input);
         obj.data = CXX_SINGOBJ(input);
         obj.rtyp = GAPtoSingType[gtype];
         obj.flag = FLAGS_SINGOBJ(input);
@@ -355,246 +352,70 @@ void SingObj::init(Obj input, Obj &extrr, ring &extr)
         if (HasRingTable[gtype]) {
             rr = RING_SINGOBJ(input);
             r = (ring) CXXRING_SINGOBJ(input);
-            extrr = rr;
-            extr = r;
             if (r != currRing) rChangeCurrRing(r);
         } else if (/*  gtype == SINGTYPE_RING ||  */
                     gtype == SINGTYPE_RING_IMM ||
                     /* gtype == SINGTYPE_QRING ||  */
                     gtype == SINGTYPE_QRING_IMM) {
-            extrr = input;
-            extr = (ring) CXX_SINGOBJ(input);
+            rr = input;
+            r = (ring) CXX_SINGOBJ(input);
         }
-        needcleanup = false;
     } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == _SI_ProxiesType) {
         if (IS_INTOBJ(ELM_PLIST(input,2))) {
             // This is a proxy object for a subobject:
             Obj ob = ELM_PLIST(input,1);
             if (TNUM_OBJ(ob) != T_SINGULAR) {
                 obj.Init();
-                needcleanup = false;
-                gtype = 0;
                 error = "proxy object does not refer to Singular object";
                 return;
             }
-            gtype = TYPE_SINGOBJ(ob);
+            int gtype = TYPE_SINGOBJ(ob);
             if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
                 rr = RING_SINGOBJ(ob);
                 r = (ring) CXX_SINGOBJ(rr);
-                extrr = rr;
-                extr = r;
                 if (r != currRing) rChangeCurrRing(r);
             }
             obj.data = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype,error);
             obj.rtyp = GAPtoSingType[gtype];
-            needcleanup = false;
         } else if (IS_STRING_REP(ELM_PLIST(input,2))) {
             // This is a proxy object for an interpreter variable
             obj.Init();
             error = "proxy objects to Singular interpreter variables are not yet implemented";
-            needcleanup = false;
-            gtype = 0;
         } else {
             obj.Init();
             error = "unknown Singular proxy object";
-            needcleanup = false;
-            gtype = 0;
         }
     } else {
         obj.Init();
-        needcleanup = false;
         error = "Argument to Singular call is no valid Singular object";
-        gtype = 0;
     }
 }
 
-/// Copies a singular object using the appropriate function according
-/// to its type, unless it is a link, a qring or a ring, or unless it
-/// is already a copy.
-void SingObj::copy()
+leftv SingObj::destructiveuse()
 {
-    ring ri;
-    if (obj.attribute) obj.attribute = obj.attribute->Copy();
-
-    switch (gtype) {
-        case SINGTYPE_BIGINT:
-        case SINGTYPE_BIGINT_IMM:
-            obj.data = (void *) nlCopy((number) obj.data, coeffs_BIGINT);
-            break;
-        case SINGTYPE_BIGINTMAT:
-        case SINGTYPE_BIGINTMAT_IMM:
-            obj.data = (void *) new bigintmat((bigintmat *) obj.data);
-            break;
-        case SINGTYPE_IDEAL:
-        case SINGTYPE_IDEAL_IMM:
-            obj.data = (void *) id_Copy((ideal) obj.data,r);
-            break;
-        case SINGTYPE_INT:
-        case SINGTYPE_INT_IMM:
-            // do nothing and return immediately; do not set needcleanup to true
-            return;
-        case SINGTYPE_INTMAT:
-        case SINGTYPE_INTMAT_IMM:
-        case SINGTYPE_INTVEC:
-        case SINGTYPE_INTVEC_IMM:
-            obj.data = (void *) new intvec((intvec *) obj.data);
-            break;
-        case SINGTYPE_LINK:  // Do not copy here since it does not make sense
-        case SINGTYPE_LINK_IMM:
-            // do nothing and return immediately; do not set needcleanup to true
-            return;
-        case SINGTYPE_LIST:
-        case SINGTYPE_LIST_IMM:
-            obj.data = (void *) lCopy( (lists) obj.data );
-            break;
-        case SINGTYPE_MAP:
-        case SINGTYPE_MAP_IMM:
-            obj.data = (void *) maCopy( (map) obj.data,r);
-            break;
-        case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM:
-            obj.data = (void *) mp_Copy( (matrix) obj.data, r );
-            break;
-        case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM:
-            obj.data = (void *) id_Copy((ideal) obj.data,r);
-            break;
-        case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM:
-            obj.data = (void *) n_Copy((number) obj.data,r);
-            break;
-        case SINGTYPE_POLY:
-        case SINGTYPE_POLY_IMM:
-            obj.data = (void *) p_Copy((poly) obj.data,r);
-            break;
-        case SINGTYPE_QRING:
-        case SINGTYPE_QRING_IMM:
-            ri = (ring) obj.data;
-            ri->ref++;   // We fake a copy since this will be decreased later on
-            return;
-        case SINGTYPE_RESOLUTION:
-        case SINGTYPE_RESOLUTION_IMM:
-            obj.data = (void *) syCopy((syStrategy) obj.data);
-            break;
-        case SINGTYPE_RING:
-        case SINGTYPE_RING_IMM:
-            ri = (ring) obj.data;
-            ri->ref++;   // We fake a copy since this will be decreased later on
-            return; // TOOD: We could use rCopy... But maybe we never need / want to copy rings ??
-            // indeed, we never want to do this, therefore we increase
-            // the reference count
-        case SINGTYPE_STRING:
-        case SINGTYPE_STRING_IMM:
-            obj.data = (void *) omStrDup( (char *) obj.data);
-            break;
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM:
-            obj.data = (void *) p_Copy((poly) obj.data,r);
-            break;
-        default:
-            ErrorQuit("SingObj::copy: unsupported gtype",0L,0L);
-            break;
+    if (needcleanup) {
+        // already was a copy, do nothing except making sure cleanup()
+        // won't free it later on.
+        needcleanup = false;
+        return &obj;
     }
-    needcleanup = true;
+    needcleanup = false;
+
+    sleftv tmp = obj;
+    obj.Copy(&tmp);
+    return &obj;
 }
 
 void SingObj::cleanup()
 {
-    if (!needcleanup) return;
+    if (!needcleanup)
+        return;
     needcleanup = false;
 
-    void *data = obj.data;
-    attr a = obj.attribute;
-
-    if (a) {
-        a->killAll(r);
-    }
-
-    switch (gtype) {
-        case SINGTYPE_QRING:
-        case SINGTYPE_QRING_IMM:
-        case SINGTYPE_RING:
-        case SINGTYPE_RING_IMM:
-            break;
-        case SINGTYPE_BIGINT:
-        case SINGTYPE_BIGINT_IMM: {
-            number n = (number)data;
-            nlDelete(&n,NULL); // FIXME: s_internalDelete uses coeffs_BIGINT instead of NULL
-            break;
-        }
-        case SINGTYPE_BIGINTMAT:
-        case SINGTYPE_BIGINTMAT_IMM:
-            delete (bigintmat *)data;
-            break;
-        case SINGTYPE_IDEAL:
-        case SINGTYPE_IDEAL_IMM: {
-            ideal id = (ideal)data;
-            id_Delete(&id, r);
-            break;
-        }
-        case SINGTYPE_INT:
-        case SINGTYPE_INT_IMM:
-            // do nothing
-            break;
-        case SINGTYPE_INTMAT:
-        case SINGTYPE_INTMAT_IMM:
-        case SINGTYPE_INTVEC:
-        case SINGTYPE_INTVEC_IMM:
-            delete (intvec *)data;
-            break;
-        case SINGTYPE_LINK:  // Was never copied, so leave untouched
-        case SINGTYPE_LINK_IMM:
-            return;
-        case SINGTYPE_LIST:
-        case SINGTYPE_LIST_IMM:
-            ((lists)data)->Clean(r);
-            break;
-        case SINGTYPE_MAP:
-        case SINGTYPE_MAP_IMM: {
-            map m = (map)data;
-            omfree(m->preimage);
-            m->preimage = NULL;
-            id_Delete((ideal *) &m,r);
-            break;
-        }
-        case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM: {
-            matrix m = (matrix)data;
-            mp_Delete(&m, r);
-            break;
-        }
-        case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM: {
-            ideal i = (ideal)data;
-            id_Delete(&i, r);
-            break;
-        }
-        case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM: {
-            number n = (number)data;
-            n_Delete(&n, r);
-            break;
-        }
-        case SINGTYPE_POLY:
-        case SINGTYPE_POLY_IMM:
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM: {
-            poly p = (poly)data;
-            p_Delete( &p, r );
-            break;
-        }
-        case SINGTYPE_RESOLUTION:
-        case SINGTYPE_RESOLUTION_IMM:
-            syKillComputation((syStrategy)data, r);
-            break;
-        case SINGTYPE_STRING:
-        case SINGTYPE_STRING_IMM:
-            omfree( (char *)data );
-            break;
-        default:
-            ErrorQuit("SingObj::cleanup: unsupported gtype",0L,0L);
-            break;
-    }
+    // No need to worry about e.g. rings here; in fact, due to the way
+    // init() works, at this point obj should be of type INT_CMD,
+    // BIGINT_CMD or STRING_CMD.
+    obj.CleanUp();
 }
 
 //! @}  end group CxxHelper
