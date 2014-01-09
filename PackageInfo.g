@@ -8,8 +8,17 @@ PackageName := "libsing",
 ##  one line.
 Subtitle := "Linking Singular as a library into a GAP process",
 
-Version := "0.5.1dev",
-Date := "03/01/2014", # DD/MM/YYYY
+Version := Maximum( [
+                   "2014.01.06", ## Franks's version
+                   ## this line prevents merge conflicts
+                   "2014.01.06", ## Max's version
+                   ## this line prevents merge conflicts
+                   "2014.01.06", ## Mohamed's version
+                   ] ),
+
+# this avoids git-merge conflicts
+Date := ~.Version{[ 1 .. 10 ]},
+Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
 
 Persons := [
   rec(
