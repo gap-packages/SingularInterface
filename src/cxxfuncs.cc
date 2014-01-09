@@ -736,8 +736,12 @@ static Obj CopySingObj(Obj s, bool immutable)
 ///! copied into a mutable object), and 0 otherwise.                         
 Int IsCopyableObjSingular(Obj s)
 {
-    Int gtype = TYPE_SINGOBJ(s);
-    
+    return IsCopyableSingularType(TYPE_SINGOBJ(s));
+}
+
+
+bool IsCopyableSingularType(Int gtype)
+{
     switch (gtype) {
         // Objects of the following types can't be modified on the Singular
         // interpreter level. Thus we should not allow them to be modified

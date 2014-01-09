@@ -222,6 +222,9 @@ inline int ISSINGOBJ(int typ, Obj obj)
     return TNUM_OBJ(obj) == T_SINGULAR && TYPE_SINGOBJ(obj) == typ;
 }
 
+bool IsCopyableSingularType(Int gtype);
+
+
 //////////////// C++ functions to be called from C ////////////////////
 
 
