@@ -91,7 +91,7 @@ static Obj gapwrap(sleftv &obj, Obj rr)
         }
     }
     
-    if (obj.Typ() == RING_CMD && ((ring)obj.Data())->ext_ref != 0) {
+    if ((obj.Typ() == RING_CMD || obj.Typ() == QRING_CMD) && ((ring)obj.Data())->ext_ref != 0) {
         rr = (Obj)((ring)obj.Data())->ext_ref;
         obj.CleanUp();
         return rr;
