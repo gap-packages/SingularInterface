@@ -91,13 +91,6 @@ static Obj gapwrap(sleftv &obj, Obj rr)
         return (Obj)((ring)obj.Data())->ext_ref;
     }
 
-    // HACK to work around problems with IDHDL pointing to an entry of a matrix
-    // TODO: do we need to worry about attributes in this case??!
-    #define OBJ_COPY_OR_REF(obj) \
-        (obj.rtyp != IDHDL ? obj.Data() : obj.CopyD())
-
-// Could this leak? What about rings?
-
     Obj res;
     switch (obj.Typ()) {
         case NONE:
@@ -105,55 +98,55 @@ static Obj gapwrap(sleftv &obj, Obj rr)
         case INT_CMD:
             return ObjInt_Int((long) (obj.Data()));
         case NUMBER_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.CopyD(),rr);
             break;
         case POLY_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_POLY,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.CopyD(),rr);
             break;
         case INTVEC_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTVEC,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_INTVEC,obj.CopyD());
             break;
         case INTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTMAT,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_INTMAT,obj.CopyD());
             break;
         case VECTOR_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.CopyD(),rr);
             break;
         case IDEAL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.CopyD(),rr);
             break;
         case BIGINT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.CopyD());
             break;
         case BIGINTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,obj.CopyD());
             break;
         case MATRIX_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.CopyD(),rr);
             break;
         case LIST_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_LIST,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.CopyD(),rr);
             break;
         case LINK_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.CopyD());
             break;
         case RING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)OBJ_COPY_OR_REF(obj),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)obj.CopyD(),NULL,NULL);
             break;
         case QRING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)OBJ_COPY_OR_REF(obj),NULL,NULL);
+            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)obj.CopyD(),NULL,NULL);
             break;
         case RESOLUTION_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.CopyD(),rr);
             break;
         case STRING_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_STRING,OBJ_COPY_OR_REF(obj));
+            res = NEW_SINGOBJ(SINGTYPE_STRING,obj.CopyD());
             break;
         case MAP_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.CopyD(),rr);
             break;
         case MODUL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,OBJ_COPY_OR_REF(obj),rr);
+            res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.CopyD(),rr);
             break;
         default:
             obj.CleanUp(rr ? (ring)CXX_SINGOBJ(rr) : 0);
