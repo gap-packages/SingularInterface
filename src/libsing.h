@@ -63,27 +63,38 @@ void InstallPrePostGCFuncs(void);
 // for the extended attributes.
 
 #ifdef SYS_IS_64_BIT
-typedef struct {
+
+struct SingObj_FirstWord {
     unsigned int flags;
     int type;
-  } SingObj_FirstWord;
+};
 
-inline Int TYPE_SINGOBJ( Obj obj )
+#else
+
+struct SingObj_FirstWord {
+    unsigned short int flags;
+    short int type;
+};
+
+#endif
+
+
+inline SingType TYPE_SINGOBJ( Obj obj )
 {
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    return (SingType) (p->type);
+    return (SingType)(p->type);
 }
 
 inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
 {
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    p->type = (int) val;
+    p->type = val;
 }
 
 inline unsigned int FLAGS_SINGOBJ( Obj obj )
 {
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    return (unsigned int) p->flags;
+    return p->flags;
 }
 
 inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
@@ -91,57 +102,76 @@ inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
     SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
     p->flags = val;
 }
-#else
-typedef struct {
-    unsigned short int flags;
-    short int type;
-  } SingObj_FirstWord;
 
-inline Int TYPE_SINGOBJ( Obj obj )
+
+///! Get pointer to the underlying Singular C data structure
+///! of an arbitrary wrapper object.
+inline void *CXX_SINGOBJ( Obj obj )
 {
-    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    return (Int) (p->type);
+    return (void *) ADDR_OBJ(obj)[1];
 }
 
-inline void SET_TYPE_SINGOBJ( Obj obj, Int val )
-{
-    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    p->type = (short int) val;
-}
-
-inline unsigned int FLAGS_SINGOBJ( Obj obj )
-{
-    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    return (unsigned int) p->flags;
-}
-
-inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
-{
-    SingObj_FirstWord *p = (SingObj_FirstWord *)(ADDR_OBJ(obj));
-    p->flags = (unsigned short int) val;
-}
-#endif
-
-inline void *CXX_SINGOBJ( Obj obj ) { return (void *) ADDR_OBJ(obj)[1]; }
+///! Set pointer to the underlying Singular C data structure
+///! of an arbitrary wrapper object.
 inline void SET_CXX_SINGOBJ( Obj obj, void *val )
-{ ADDR_OBJ(obj)[1] = (Obj) val; }
+{
+    ADDR_OBJ(obj)[1] = (Obj) val;
+}
 
-inline Obj RING_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
+//
+// The following accessor functions are for wrappers for ring dependant
+// objects. These contain a reference to the wrapper object for their
+// basering, as well as a direct pointer to the base ring (the latter
+// allows us to avoid another level of indirection).
+//
+
+inline Obj RING_SINGOBJ( Obj obj )
+{
+    return ADDR_OBJ(obj)[2];
+}
+
 inline void SET_RING_SINGOBJ( Obj obj, Obj rr )
-{ ADDR_OBJ(obj)[2] = rr; }
+{
+    ADDR_OBJ(obj)[2] = rr;
+}
 
-inline ring CXXRING_SINGOBJ( Obj obj ) { return (ring) ADDR_OBJ(obj)[3]; }
+inline ring CXXRING_SINGOBJ( Obj obj )
+{
+    return (ring) ADDR_OBJ(obj)[3];
+}
+
 inline void SET_CXXRING_SINGOBJ( Obj obj, ring r )
-{ ADDR_OBJ(obj)[3] = (Obj) r; }
+{
+    ADDR_OBJ(obj)[3] = (Obj) r;
+}
 
-inline Obj ZERO_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[2]; }
+//
+// Ring wrappers also contain references to a zero object, a one object,
+// and a high level wrapper object
+//
+
+inline Obj ZERO_SINGOBJ( Obj obj )
+{
+    return ADDR_OBJ(obj)[2];
+}
+
 inline void SET_ZERO_SINGOBJ( Obj obj, Obj zero )
-{ ADDR_OBJ(obj)[2] = zero; }
+{
+    ADDR_OBJ(obj)[2] = zero;
+}
 
-inline Obj ONE_SINGOBJ( Obj obj ) { return ADDR_OBJ(obj)[3]; }
+inline Obj ONE_SINGOBJ( Obj obj )
+{
+    return ADDR_OBJ(obj)[3];
+}
+
 inline void SET_ONE_SINGOBJ( Obj obj, Obj one )
-{ ADDR_OBJ(obj)[3] = one; }
+{
+    ADDR_OBJ(obj)[3] = one;
+}
 
+
+///! Get Singular attributes from a Singular wrapper object, if any.
 inline void *ATTRIB_SINGOBJ( Obj obj )
 {
     Int t = TYPE_SINGOBJ(obj);
@@ -156,6 +186,7 @@ inline void *ATTRIB_SINGOBJ( Obj obj )
     }
 }
 
+///! Store Singular attributes inside a Singular wrapper object.
 inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 {
     Int t = TYPE_SINGOBJ(obj);
