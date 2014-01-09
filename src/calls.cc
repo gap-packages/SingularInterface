@@ -383,12 +383,13 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
     Obj rr = NULL;
     ring r = NULL;
 
+    int nrargs = (int) LEN_PLIST(arg);
     WrapMultiArgs wrap(arg, rr, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
     StartPrintCapture();
     sleftv result;
-    BOOLEAN ret = iiExprArithM(&result, &wrap.s_arg, INT_INTOBJ(op));
+    BOOLEAN ret = iiExprArithM(&result, nrargs ? &wrap.s_arg : NULL, INT_INTOBJ(op));
     EndPrintCapture();
 
     if (ret) {
