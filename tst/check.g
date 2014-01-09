@@ -2,6 +2,9 @@
 ### it is supposed to return exit code 1 in case of any error
 
 if LoadPackage("io") = fail then Error("Could not load package: 'IO'!"); fi;
+
+SetPackagePath("libsing", ".");
+
 if LoadPackage("libsing") = fail then Error("Could not load package: 'libsing'!"); fi;
 
 d := DirectoriesPackageLibrary("libsing","tst");
