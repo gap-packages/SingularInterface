@@ -149,7 +149,7 @@ static Obj gapwrap(sleftv &obj, Obj rr)
             res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.CopyD(),rr);
             break;
         case STRING_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_STRING,obj.CopyD());
+            res = NEW_SINGOBJ(SINGTYPE_STRING_IMM,obj.CopyD());
             break;
         case MAP_CMD:
             res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.CopyD(),rr);

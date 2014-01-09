@@ -17,7 +17,7 @@ gap> SI_Undef("p2");Singular("proc p2(a,b){return(a,b);}");
 gap> SI_CallProc("p2", [1,2]);
 [ 1, 2 ]
 gap> SI_CallProc("p2", [-11,"abc"]);
-[ -11, <singular string (mutable):
+[ -11, <singular string:
     abc> ]
 gap> r := SI_ring(0,[ "x" ]);
 <singular ring>
