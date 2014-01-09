@@ -89,11 +89,17 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         // API (using type mpz_t).
         number res = ALLOC_RNUMBER();
         _SI_GMP_FROM_GAP(n, res->z);
+        #if defined(LDEBUG)
+        res->debug = 123456;
+        #endif
         res->s = 3;  // indicates an integer
         return res;
     } else if (TNUM_OBJ(n) == T_RAT) {
         // n is a long GAP rational:
         number res = ALLOC_RNUMBER();
+        #if defined(LDEBUG)
+        res->debug = 123456;
+        #endif
         res->s = 0;
         Obj nn = NUM_RAT(n);
         if (IS_INTOBJ(nn)) { // a GAP immediate integer
@@ -129,6 +135,9 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
         // A long GAP integer
         n = ALLOC_RNUMBER();
         _SI_GMP_FROM_GAP(nr, n->z);
+        #if defined(LDEBUG)
+        n->debug = 123456;
+        #endif
         n->s = 3;  // indicates an integer
     } else {
         ErrorQuit("Argument must be an integer.\n",0L,0L);
@@ -156,6 +165,9 @@ int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     } else {   // a long GAP integer
         n = ALLOC_RNUMBER();
         _SI_GMP_FROM_GAP(nr, n->z);
+        #if defined(LDEBUG)
+        n->debug = 123456;
+        #endif
         n->s = 3;  // indicates an integer
     }
     obj.data = n;
