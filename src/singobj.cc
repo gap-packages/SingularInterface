@@ -315,7 +315,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                 return NULL;
             }
             currgtype = SINGTYPE_BIGINT_IMM;
-            return (void *) (long) BIMATELEM(*mat,row,col);
+            return (void *) BIMATELEM(*mat,row,col);
         }
         default:
             error = "Singular object has no subobjects";

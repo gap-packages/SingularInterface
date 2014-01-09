@@ -75,7 +75,6 @@ for op in ops do
         fi;
         
         poss := Set(SI_OPERATIONS[4]{poss[4]}, x -> x[2]);
-        Print(op, " has arg counts ", poss, "\n");
         
         PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
         if -1 in poss or (-2 in poss and 0 in poss) then
