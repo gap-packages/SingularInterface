@@ -4,7 +4,7 @@
 # to idhdl for passing parameters to interpreter funcs).
 LoadPackage("HomalgToCAS");;
 LoadPackage("libsing");;
-SI_LIB("matrix.lib");;
+if not IsBound(SIL_submat) then SI_LIB("matrix.lib"); fi;
 LoadPackage("SingularForHomalg");;
 Print("homalg_variable_1\n"); homalg_variable_1 := SI_ring(0,["dummy_variable"]);;
 Print("homalg_variable_2\n"); homalg_variable_2 := Zero(homalg_variable_1);;

@@ -3,7 +3,7 @@ gap> SI_Undef:=function(x)
 > end;;
 
 # Define a simple Singular interpreter proc and call it
-gap> Singular("proc p0(){return(42);}");
+gap> SI_Undef("p0");Singular("proc p0(){return(42);}");
 0
 gap> SI_CallProc("p0", []);
 42

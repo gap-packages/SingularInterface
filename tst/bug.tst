@@ -71,7 +71,7 @@ gap>
 gap> #
 gap> # The following used to segfault
 gap> #
-gap> SI_LIB("ring.lib");
+gap> if not IsBound(SIL_defring) then SI_LIB("ring.lib"); fi;
 gap> SIL_defring("0",5,"u","ls");
 <singular ring>
 gap> SIL_groebner("bla");
