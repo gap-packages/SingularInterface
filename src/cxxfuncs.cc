@@ -188,14 +188,14 @@ void InstallPrePostGCFuncs(void)
 //!  and GASMAN invokes it as needed.
 void _SI_FreeFunc(Obj o)
 {
-    UInt gtype = TYPE_SINGOBJ(o);
-    void *data = CXX_SINGOBJ(o);
-    attr a = (attr)ATTRIB_SINGOBJ(o);
+    sleftv obj;
+    obj.Init();
+    int gtype = TYPE_SINGOBJ(o);
+    obj.data = CXX_SINGOBJ(o);
+    obj.rtyp = GAPtoSingType[gtype];
+    obj.flag = FLAGS_SINGOBJ(o);
+    obj.attribute = (attr) ATTRIB_SINGOBJ(o);
     ring r = HasRingTable[gtype] ? CXXRING_SINGOBJ(o) : 0;
-
-    if (a) {
-        a->killAll(r);
-    }
 
     switch (gtype) {
         case SINGTYPE_QRING:
@@ -203,87 +203,10 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_RING:
         case SINGTYPE_RING_IMM:
             // Pr("scheduled a ring for killing\n",0L,0L);
-            AddSingularRingToCleanup((ring) data);
-            break;
-        case SINGTYPE_BIGINT:
-        case SINGTYPE_BIGINT_IMM: {
-            number n = (number)data;
-            nlDelete(&n,NULL);
-            break;
-        }
-        case SINGTYPE_BIGINTMAT:
-        case SINGTYPE_BIGINTMAT_IMM:
-            delete (bigintmat *)data;
-            break;
-        case SINGTYPE_IDEAL:
-        case SINGTYPE_IDEAL_IMM: {
-            ideal id = (ideal)data;
-            id_Delete(&id, r);
-            break;
-        }
-        case SINGTYPE_INT:
-        case SINGTYPE_INT_IMM:
-            // do nothing
-            break;
-        case SINGTYPE_INTMAT:
-        case SINGTYPE_INTMAT_IMM:
-        case SINGTYPE_INTVEC:
-        case SINGTYPE_INTVEC_IMM:
-            delete (intvec *)data;
-            break;
-        case SINGTYPE_LINK:
-        case SINGTYPE_LINK_IMM:
-            // FIXME: later: slKill( (si_link)data);
-            break;
-        case SINGTYPE_LIST:
-        case SINGTYPE_LIST_IMM:
-            ((lists)data)->Clean(r);
-            break;
-        case SINGTYPE_MAP:
-        case SINGTYPE_MAP_IMM: {
-            map m = (map)data;
-            omfree(m->preimage);
-            m->preimage = NULL;
-            id_Delete((ideal *) &m,r);
-            break;
-        }
-        case SINGTYPE_MATRIX:
-        case SINGTYPE_MATRIX_IMM: {
-            matrix m = (matrix)data;
-            mp_Delete(&m, r);
-            break;
-        }
-        case SINGTYPE_MODULE:
-        case SINGTYPE_MODULE_IMM: {
-            ideal i = (ideal)data;
-            id_Delete(&i, r);
-            break;
-        }
-        case SINGTYPE_NUMBER:
-        case SINGTYPE_NUMBER_IMM: {
-            number n = (number)data;
-            n_Delete(&n, r);
-            break;
-        }
-        case SINGTYPE_POLY:
-        case SINGTYPE_POLY_IMM:
-        case SINGTYPE_VECTOR:
-        case SINGTYPE_VECTOR_IMM: {
-            poly p = (poly)data;
-            p_Delete( &p, r );
-            break;
-        }
-        case SINGTYPE_RESOLUTION:
-        case SINGTYPE_RESOLUTION_IMM:
-            syKillComputation((syStrategy)data, r);
-            break;
-        case SINGTYPE_STRING:
-        case SINGTYPE_STRING_IMM:
-            omfree( (char *)data );
+            AddSingularRingToCleanup((ring) obj.data);
             break;
         default:
-            ErrorQuit("_SI_FreeFunc: unsupported gtype",0L,0L);
-            break;
+            obj.CleanUp(r);
     }
 }
 
