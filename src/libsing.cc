@@ -125,10 +125,6 @@ static Int InitKernel(StructInitInfo* module)
     InfoBags[T_SINGULAR].name = "singular wrapper object";
 
     /* TODO:
-     * IsCopyableObjFuncs fuer T_SINGULAR
-     * ShallowCopyObjFuncs fuer T_SINGULAR
-     * CopyObjFuncs fuer T_SINGULAR
-     * CleanObjFuncs fuer T_SINGULAR
      * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
      * PrintPathFuncs fuer T_SINGULAR
      * AInvFuncs fuer T_SINGULAR ist AInvObject, OK?
@@ -149,8 +145,14 @@ static Int InitKernel(StructInitInfo* module)
      * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK?
      * IsListFuncs fuer T_SINGULAR ist
      * IsSmallListFuncs fuer T_SINGULAR ist */
+
+    IsCopyableObjFuncs[T_SINGULAR] = IsCopyableObjSingular;
+    ShallowCopyObjFuncs[T_SINGULAR] = ShallowCopyObjSingular;
+    CopyObjFuncs[T_SINGULAR] = CopyObjSingular;
+    CleanObjFuncs[T_SINGULAR] = CleanObjConstant;
     IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
     MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
+
     // The following are OK, see dev/ZEROONECHAOS for details!
     InFuncs[T_SINGULAR][T_SINGULAR] = InObject;
     ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;

@@ -70,7 +70,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
 }
 
 /// Wrap the content of a Singular interpreter object in a GAP object.
-static Obj gapwrap(sleftv &obj, Obj rr)
+Obj gapwrap(sleftv &obj, Obj rr)
 {
     if (rr == 0 && obj.RingDependend()) {
         if (currRing == 0) {

@@ -175,6 +175,8 @@ Obj NEW_SINGOBJ(UInt type, void *cxx);
 Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr);
 Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one);
 
+Obj gapwrap(sleftv &obj, Obj rr);
+
 #if 0
 proxies fuer:
   ideal   ->  poly
@@ -226,6 +228,11 @@ Obj Func_SI_OmPrintInfo(Obj self);
 Obj Func_SI_OmCurrentBytes(Obj self);
 
 //////////////// C++ functions for the jump tables ////////////////////
+
+Int IsCopyableObjSingular(Obj s);
+Obj ShallowCopyObjSingular(Obj s);
+Obj CopyObjSingular(Obj s, Int mut);
+void CleanObjConstant(Obj s);
 
 Int IsMutableSingObj(Obj s);
 void MakeImmutableSingObj(Obj s);

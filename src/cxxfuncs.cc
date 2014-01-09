@@ -763,21 +763,147 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 
 //////////////// C++ functions for the jump tables ////////////////////
 
-extern "C" Obj ZeroObject(Obj s);
-extern "C" Obj OneObject(Obj s);
-extern "C" Obj ZeroMutObject(Obj s);
-extern "C" Obj OneMutObject(Obj s);
+///! Create a structure copy of a Singular object.
+///! This is used as method for ShallowCopy and StructuralCopy
+///! for Singular wrapper objects in GAP.
+static Obj CopySingObj(Obj s, bool immutable)
+{
+    if (TNUM_OBJ(s) != T_SINGULAR) {
+        ErrorQuit("argument must be a singular object",0L,0L);
+        return Fail;
+    }
+
+    if (!IsCopyableObjSingular(s))
+        return s;
+
+    sleftv obj;
+    obj.Init();
+
+    int gtype = TYPE_SINGOBJ(s);
+    obj.data = CXX_SINGOBJ(s);
+    obj.rtyp = GAPtoSingType[gtype];
+    obj.flag = FLAGS_SINGOBJ(s);
+    obj.attribute = (attr) ATTRIB_SINGOBJ(s);
+    ring r = HasRingTable[gtype] ? CXXRING_SINGOBJ(s) : 0;
+
+    sleftv copy;
+    if (r && r != currRing) rChangeCurrRing(r);
+    copy.Copy(&obj);
+    
+    if (immutable)
+        gtype = gtype | 1;
+    else
+        gtype = gtype & ~1;
+    
+    // Wrap it again
+    Obj res;
+    if (r)
+        res = NEW_SINGOBJ_RING(gtype, copy.data, RING_SINGOBJ(s));
+    else
+        res = NEW_SINGOBJ(gtype, copy.data);
+
+    if (copy.flag)
+        SET_FLAGS_SINGOBJ(res, copy.flag);
+    if (copy.attribute != NULL || copy.e != NULL)
+        SET_ATTRIB_SINGOBJ(res, (void *)copy.CopyA());
+    return res;
+}
+
+///! This function returns 1 if the object <s> is copyable (i.e., can be     
+///! copied into a mutable object), and 0 otherwise.                         
+Int IsCopyableObjSingular(Obj s)
+{
+    Int gtype = TYPE_SINGOBJ(s);
+    
+    switch (gtype) {
+        // Objects of the following types can't be modified on the Singular
+        // interpreter level. Thus we should not allow them to be modified
+        // either.
+		case SINGTYPE_BIGINT_IMM:
+		case SINGTYPE_INT_IMM:
+		case SINGTYPE_MAP_IMM:
+		case SINGTYPE_NUMBER_IMM:
+		case SINGTYPE_RESOLUTION_IMM:
+		case SINGTYPE_STRING_IMM:
+		    return 0;
+
+        // The following types represent singletons and as such
+        // cannot be copied (they all use ref counters, in fact).
+        // 
+        // TODO/FIXME: Should we insist that they always are marked as
+        // immutable? Although note that they infact still can change,
+        // e.g. package is in the end a namespace, and new things can be
+        // added to it. Similar for rings.
+		case SINGTYPE_LINK:
+		case SINGTYPE_LINK_IMM:
+		case SINGTYPE_PACKAGE:
+		case SINGTYPE_PACKAGE_IMM:
+		case SINGTYPE_PROC:
+		case SINGTYPE_PROC_IMM:
+		case SINGTYPE_QRING:
+		case SINGTYPE_QRING_IMM:
+		case SINGTYPE_RING:
+		case SINGTYPE_RING_IMM:
+		    return 0;
+
+		case SINGTYPE_BIGINTMAT:
+		case SINGTYPE_BIGINTMAT_IMM:
+		case SINGTYPE_IDEAL:
+		case SINGTYPE_IDEAL_IMM:
+		case SINGTYPE_INTMAT:
+		case SINGTYPE_INTMAT_IMM:
+		case SINGTYPE_INTVEC:
+		case SINGTYPE_INTVEC_IMM:
+		case SINGTYPE_LIST:
+		case SINGTYPE_LIST_IMM:
+		case SINGTYPE_MATRIX:
+		case SINGTYPE_MATRIX_IMM:
+		case SINGTYPE_MODULE:
+		case SINGTYPE_MODULE_IMM:
+		case SINGTYPE_POLY:
+		case SINGTYPE_POLY_IMM:
+		case SINGTYPE_VECTOR:
+		case SINGTYPE_VECTOR_IMM:
+		    return 1;
+    }
+
+    ErrorQuit("IsCopyableObjSingular: unsupported singtype", 0, 0);
+    return 0;
+}
+
+Obj ShallowCopyObjSingular(Obj s)
+{
+    return CopySingObj(s, false);
+}
+
+Obj CopyObjSingular(Obj s, Int mut)
+{
+    if (!IS_MUTABLE_OBJ(s))
+        return s;
+    return CopySingObj(s, !mut);
+}
+
+void CleanObjConstant(Obj s)
+{
+    // we don't mark, so we don't need to clean
+}
 
 Int IsMutableSingObj(Obj s)
 {
-    return ((TYPE_SINGOBJ(s)+1) & 1) == 1;
+    return ((TYPE_SINGOBJ(s)) & 1) == 0;
 }
 
 
 void MakeImmutableSingObj(Obj s)
 {
-    SET_TYPE_SINGOBJ(s,TYPE_SINGOBJ(s) | 1);
+    SET_TYPE_SINGOBJ(s, TYPE_SINGOBJ(s) | 1);
 }
+
+
+extern "C" Obj ZeroObject(Obj s);
+extern "C" Obj OneObject(Obj s);
+extern "C" Obj ZeroMutObject(Obj s);
+extern "C" Obj OneMutObject(Obj s);
 
 Obj ZeroSMSingObj(Obj s)
 {
