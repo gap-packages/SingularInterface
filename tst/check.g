@@ -28,7 +28,10 @@ success := true;
 
 # Run the tests
 ### for test in tests do Test(test); od;
-for test in tests do success := success and Test(test); od;
+for test in tests do
+    success := success and
+               Test(test, rec(compareFunction:="uptowhitespace"));
+od;
 
 if success then
   IO_exit(0); # make check: PASSED
