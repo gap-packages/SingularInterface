@@ -73,8 +73,10 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
 static Obj gapwrap(sleftv &obj, Obj rr)
 {
     if (rr == 0 && obj.RingDependend()) {
-        if (currRing == 0)
+        if (currRing == 0) {
+            obj.CleanUp();
             ErrorQuit("Result is ring dependent but can't figure out what the ring should be",0L,0L);
+        }
         if (currRing->ext_ref == 0) {
             currRing->ref++;
             if (currRing->qideal)
@@ -83,20 +85,27 @@ static Obj gapwrap(sleftv &obj, Obj rr)
                 NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM, currRing, NULL, NULL);
         }
         rr = (Obj)currRing->ext_ref;
-        if (currRing != (ring) CXX_SINGOBJ(rr))
+        if (currRing != (ring)CXX_SINGOBJ(rr)) {
+            obj.CleanUp();
             ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
+        }
     }
     
     if (obj.Typ() == RING_CMD && ((ring)obj.Data())->ext_ref != 0) {
-        return (Obj)((ring)obj.Data())->ext_ref;
+        rr = (Obj)((ring)obj.Data())->ext_ref;
+        obj.CleanUp();
+        return rr;
     }
 
     Obj res;
     switch (obj.Typ()) {
         case NONE:
+            obj.CleanUp();
             return True;
         case INT_CMD:
-            return ObjInt_Int((long) (obj.Data()));
+            res = ObjInt_Int((long) (obj.Data()));
+            obj.CleanUp();
+            return res;
         case NUMBER_CMD:
             res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.CopyD(),rr);
             break;
@@ -150,15 +159,13 @@ static Obj gapwrap(sleftv &obj, Obj rr)
             break;
         default:
             obj.CleanUp(rr ? (ring)CXX_SINGOBJ(rr) : 0);
-            return False;
+            ErrorQuit("gapwrap encountered unsupported type %d",obj.Typ(),0L);
+            return Fail;
     }
     if (obj.flag)
-        SET_FLAGS_SINGOBJ(res,obj.flag);
-    if (obj.attribute) {
-        SET_ATTRIB_SINGOBJ(res,(void *) obj.attribute);
-        obj.attribute = NULL;
-    }
-    obj.data = NULL;
+        SET_FLAGS_SINGOBJ(res, obj.flag);
+    if (obj.attribute != NULL || obj.e != NULL)
+        SET_ATTRIB_SINGOBJ(res, (void *)obj.CopyA());
     return res;
 }
 
