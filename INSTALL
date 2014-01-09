@@ -1,0 +1,49 @@
+Compiling libsing
+=================
+For libsing to work, it is necessary that you use Singular 4.0.0
+or later, and that Singular and GAP are compiled against the
+exact same version of the GMP library.
+
+The easiest way to achieve that is to compile Singular yourself,
+telling it to link against GAP's version of GMP.
+
+Therefore, usually the first step towards compiling libsing is to build
+such a special version of Singular. 
+The following instructions should get you going.
+
+1. Fetch the Singular source code. You can either use a released version of
+   Singular, such as 4.0.0, or the latest development version. Place the
+   resulting source code into the subdirectory
+     singular/src/
+   For your convenience, we provide two shell scripts which
+   do this for you. If you want to use Singular 4.0.0, run
+     ./fetchsingular
+   If you want the development version run
+     ./fetchsingular.dev
+
+2. Prepare Singular for compilation. At this point, you need to know
+   against which version of GMP your GAP library was linked:
+   If it is a GMP version installed globally on your system, simply run:   
+     ./configuresingular
+   If it is the version of GMP shipped with GAP, run this instead:
+     ./configuresingular --with-gmp=GAP_DIR/bin/GAPARCH/extern/gmp
+   where GAP_DIR should be replaced with the path to your GAP installation,
+   and GAPARCH by the value of the GAParch variable in GAP_DIR/sysinfo.gap
+
+3. Compile Singular by running
+     ./makesingular
+
+4. Now we turn to libsing. As first step, you need to setup its build
+   system. To do this, simply run this command:
+
+   ./autogen.sh
+
+4. Prepare libsing for compilation, by running
+   ./configure --with-gaproot=GAP_DIR  --with-libSingular=$PWD/singular/dst \
+               CONFIGNAME=default64
+   where you should replace GAP_DIR as above. If you know what
+   you do, you can change your CONFIGNAME (but note that
+   libsing should only be used with 64 bit versions of GAP).
+
+5. Compile libsing:
+    make
