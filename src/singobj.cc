@@ -391,7 +391,7 @@ void SingObj::init(Obj input, Obj &rr, ring &r)
     }
 }
 
-leftv SingObj::destructiveuse()
+leftv SingObj::destructiveuse(ring r)
 {
     if (needcleanup) {
         // already was a copy, do nothing except making sure cleanup()
@@ -402,6 +402,7 @@ leftv SingObj::destructiveuse()
     needcleanup = false;
 
     sleftv tmp = obj;
+    if (r != currRing) rChangeCurrRing(r);
     obj.Copy(&tmp);
     return &obj;
 }

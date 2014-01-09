@@ -70,7 +70,7 @@ public:
     /// sleftv if you intend to use the Singular object destructively.
     /// In particular it is the caller's responsibility to cleanup the
     /// object later on.
-    leftv destructiveuse();
+    leftv destructiveuse(ring r);
 
     /// Call this to get a pointer to the internal obj structure of type
     /// sleftv if you intend to use the singular object non-destructively.

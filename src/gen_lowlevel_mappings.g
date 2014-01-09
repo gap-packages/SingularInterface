@@ -368,7 +368,7 @@ GenerateSingularWrapper := function (desc)
 		if not IsString(desc.params[i]) and desc.params[i][2] then
 			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 								"(", type.cxxtype, ") ", # cast
-								CXXObjName(i),".destructiveuse()->data;");
+								CXXObjName(i),".destructiveuse(r)->data;");
 		else
 			PrintCXXLine(type.cxxtype, " ", CXXVarName(i), " = ",
 								"(", type.cxxtype, ") ", # cast
