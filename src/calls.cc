@@ -98,70 +98,32 @@ Obj gapwrap(sleftv &obj, Obj rr)
     }
 
     Obj res;
+    int gtype = SingtoGAPType[obj.Typ()];
+    // Adjust gtype for mutable / immutable: objects which are not copyable
+    // are created as immutable, all others as mutable.
+    if (obj.Typ() != NONE && !IsCopyableSingularType(gtype|1))
+        gtype |= 1;
+
     switch (obj.Typ()) {
         case NONE:
             obj.CleanUp();
             return True;
         case INT_CMD:
-            res = ObjInt_Int((long) (obj.Data()));
+            res = ObjInt_Int((long)obj.Data());
             obj.CleanUp();
             return res;
-        case NUMBER_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,obj.CopyD(),rr);
-            break;
-        case POLY_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_POLY,obj.CopyD(),rr);
-            break;
-        case INTVEC_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTVEC,obj.CopyD());
-            break;
-        case INTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_INTMAT,obj.CopyD());
-            break;
-        case VECTOR_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_VECTOR,obj.CopyD(),rr);
-            break;
-        case IDEAL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_IDEAL,obj.CopyD(),rr);
-            break;
-        case BIGINT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,obj.CopyD());
-            break;
-        case BIGINTMAT_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_BIGINTMAT,obj.CopyD());
-            break;
-        case MATRIX_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MATRIX,obj.CopyD(),rr);
-            break;
-        case LIST_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_LIST,obj.CopyD(),rr);
-            break;
-        case LINK_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_LINK_IMM,obj.CopyD());
-            break;
         case RING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,(ring)obj.CopyD(),NULL,NULL);
-            break;
         case QRING_CMD:
-            res = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM,(ring)obj.CopyD(),NULL,NULL);
-            break;
-        case RESOLUTION_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_RESOLUTION_IMM,obj.CopyD(),rr);
-            break;
-        case STRING_CMD:
-            res = NEW_SINGOBJ(SINGTYPE_STRING_IMM,obj.CopyD());
-            break;
-        case MAP_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MAP_IMM,obj.CopyD(),rr);
-            break;
-        case MODUL_CMD:
-            res = NEW_SINGOBJ_RING(SINGTYPE_MODULE,obj.CopyD(),rr);
+            res = NEW_SINGOBJ_ZERO_ONE(gtype, (ring)obj.CopyD(), NULL, NULL);
             break;
         default:
-            obj.CleanUp(rr ? (ring)CXX_SINGOBJ(rr) : 0);
-            ErrorQuit("gapwrap encountered unsupported type %d",obj.Typ(),0L);
-            return Fail;
+            if (HasRingTable[gtype])
+                res = NEW_SINGOBJ_RING(gtype, obj.CopyD(), rr);
+            else
+                res = NEW_SINGOBJ(gtype, obj.CopyD());
+            break;
     }
+        
     if (obj.flag)
         SET_FLAGS_SINGOBJ(res, obj.flag);
     if (obj.attribute != NULL || obj.e != NULL)
