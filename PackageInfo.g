@@ -17,6 +17,15 @@ Persons := [
     FirstNames    := "Mohamed",
     IsAuthor      := true,
     IsMaintainer  := true,
+    Email         := "barakat@mathematik.uni-kl.de",
+    WWWHome       := "http://www.mathematik.uni-kl.de/~barakat/",
+    PostalAddress := Concatenation( [
+                       "Lehrstuhl B fuer Mathematik, RWTH Aachen\n",
+                       "Templergraben 64\n",
+                       "52062 Aachen\n",
+                       "Germany" ] ),
+    Place         := "Aachen",
+    Institution   := "RWTH Aachen University"
   ),
   rec(
     LastName      := "Horn",
@@ -40,12 +49,22 @@ Persons := [
     FirstNames    := "Frank",
     IsAuthor      := true,
     IsMaintainer  := true,
+    Email         := "frank.luebeck@@math.rwth-aachen.de",
+    WWWHome       := "http://www.math.rwth-aachen.de/~Frank.Luebeck/",
+    PostalAddress := Concatenation( [
+                       "Frank Lübeck\n",
+                       "Lehrstuhl D fuer Mathematik, RWTH Aachen\n",
+                       "Templergraben 64\n",
+                       "52062 Aachen\n",
+                       "Germany" ] ),
+    Place         := "Aachen",
+    Institution   := "RWTH Aachen University"
   ),
   rec(
     LastName      := "Motsak",
     FirstNames    := "Oleksandr",
     IsAuthor      := true,
-    IsMaintainer  := false,
+    IsMaintainer  := true,
     Email         := "http://goo.gl/mcpzY",
     WWWHome       := "http://www.mathematik.uni-kl.de/~motsak/",
     PostalAddress := Concatenation( [
@@ -60,7 +79,7 @@ Persons := [
     LastName      := "Neunhoeffer",
     FirstNames    := "Max",
     IsAuthor      := true,
-    IsMaintainer  := true,
+    IsMaintainer  := false,
     Email         := "neunhoef@mcs.st-andrews.ac.uk",
     WWWHome       := "http://www-groups.msc.st-andrews.ac.uk/~neunhoef",
     PostalAddress := Concatenation( [
@@ -77,6 +96,15 @@ Persons := [
     FirstNames    := "Hans",
     IsAuthor      := true,
     IsMaintainer  := true,
+    Email         := "hannes@mathematik.uni-kl.de",
+    WWWHome       := "http://www.mathematik.uni-kl.de/~hannes/",
+    PostalAddress := Concatenation( [
+                       "Department of Mathematics\n",
+                       "University of Kaiserslautern\n",
+                       "67653 Kaiserslautern\n",
+                       "Germany" ] ),
+    Place         := "Kaiserslautern",
+    Institution   := "University of Kaiserslautern"
   ),
 
 ],
