@@ -6,7 +6,7 @@ PackageName := "libsing",
 
 ##  This may be used by a default banner or on a Web page, should fit on
 ##  one line.
-Subtitle := "Linking singular as a library into a GAP process",
+Subtitle := "Linking Singular as a library into a GAP process",
 
 Version := "0.5.1dev",
 Date := "03/01/2014", # DD/MM/YYYY
