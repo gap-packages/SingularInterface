@@ -79,6 +79,8 @@ static StructGVarFunc GVarFuncs[] = {
 
 Obj SI_Errors;
 Obj _SI_ProxiesType;
+UInt _SI_internalRingRNam;
+
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
@@ -197,6 +199,8 @@ static Int InitLibrary(StructInitInfo* module)
 {
     /* init filters and functions                                          */
     InitGVarFuncsFromTable( GVarFuncs );
+
+    _SI_internalRingRNam = RNamName( "internalRing" );
 
     /* return success                                                      */
     return 0;

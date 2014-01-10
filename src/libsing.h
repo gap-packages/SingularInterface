@@ -170,35 +170,45 @@ inline void SET_ONE_SINGOBJ( Obj obj, Obj one )
     ADDR_OBJ(obj)[3] = one;
 }
 
+inline Obj HIWRAP_SINGOBJ( Obj obj )
+{
+    return ADDR_OBJ(obj)[4];
+}
+
+inline void SET_HIWRAP_SINGOBJ( Obj obj, Obj hi )
+{
+    ADDR_OBJ(obj)[4] = hi;
+}
+
 
 ///! Get Singular attributes from a Singular wrapper object, if any.
 inline void *ATTRIB_SINGOBJ( Obj obj )
 {
     Int t = TYPE_SINGOBJ(obj);
-    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
-        if (SIZE_BAG(obj) <= 4*sizeof(Obj))
-            return NULL;
-        return (void *) (ADDR_OBJ(obj)[4]);
-    } else {
-        if (SIZE_BAG(obj) <= 2*sizeof(Obj))
-            return NULL;
-        return (void *) (ADDR_OBJ(obj)[2]);
-    }
+    Int basesize = 2;
+    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM)
+        basesize = 5;
+    else if (HasRingTable[t])
+        basesize = 4;
+
+    if (SIZE_BAG(obj) <= basesize * sizeof(Obj))
+        return NULL;
+    return (void *)(ADDR_OBJ(obj)[basesize]);
 }
 
 ///! Store Singular attributes inside a Singular wrapper object.
 inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 {
     Int t = TYPE_SINGOBJ(obj);
-    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM || HasRingTable[t]) {
-        if (SIZE_BAG(obj) <= 4*sizeof(Obj))
-            ResizeBag(obj, 5*sizeof(Obj));
-        ADDR_OBJ(obj)[4] = (Obj) a;
-    } else {
-        if (SIZE_BAG(obj) <= 2*sizeof(Obj))
-            ResizeBag(obj, 3*sizeof(Obj));
-        ADDR_OBJ(obj)[2] = (Obj) a;
-    }
+    Int basesize = 2;
+    if (t == SINGTYPE_RING_IMM || t == SINGTYPE_QRING_IMM)
+        basesize = 5;
+    else if (HasRingTable[t])
+        basesize = 4;
+
+    if (SIZE_BAG(obj) <= basesize * sizeof(Obj))
+        ResizeBag(obj, (basesize + 1) * sizeof(Obj));
+    ADDR_OBJ(obj)[basesize] = (Obj)a;
 }
 
 
@@ -223,6 +233,10 @@ inline int ISSINGOBJ(int typ, Obj obj)
 }
 
 bool IsCopyableSingularType(Int gtype);
+
+extern UInt _SI_internalRingRNam;
+
+Obj UnwrapHighlevelWrapper(Obj obj);
 
 
 //////////////// C++ functions to be called from C ////////////////////

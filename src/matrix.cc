@@ -16,6 +16,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
     }
     Int c_nrrows = INT_INTOBJ(nrrows);
     Int c_nrcols = INT_INTOBJ(nrcols);
+    rr = UnwrapHighlevelWrapper(rr);
     if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;

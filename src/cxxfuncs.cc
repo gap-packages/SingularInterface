@@ -103,6 +103,27 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr)
     return tmp;
 }
 
+//! Create a high level wrapper for a (lowleverl) wrapper object
+//! for a singular ring.
+static Obj makeHighlevelWrapper(Obj rr)
+{
+    // TODO: Create high level wrapper for ring. For now
+    // as a temporary hack, we set the (low leverl) wrapper
+    // itself.
+    return rr;
+}
+
+Obj UnwrapHighlevelWrapper(Obj obj)
+{
+    // First we check if this is perhaps a highlevel ring wrapper. We
+    // verify that by checking if it has the right member. We could do a
+    // more sophisticated check, but for now, this should suffice.
+    if (TNUM_OBJ(obj) == T_COMOBJ && IsbPRec(obj, _SI_internalRingRNam)) {
+        return ElmPRec(obj, _SI_internalRingRNam);
+    }
+    return obj;
+}
+
 //! Wrap a ring or qring inside GAP object.
 //!
 //! Optionally allows setting zero and one elements for that ring,
@@ -115,24 +136,24 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr)
 //! \return  a GAP object wrapping the singular (q)ring
 Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one)
 {
-    // Check if the ring has already been wrapped.
+    // Check if the ring has already been wrapped. In principle, we could
+    // then just return ext_ref, 
     if (r->ext_ref != 0) {
-        // TODO: In the future, if we detect a wrapper, simply return that:
-        //   return (Obj)r->ext_ref;
-        // But right now, this should never happen, so instead use this for
-        // another paranoid check:
-        ErrorQuit("NEW_SINGOBJ_ZERO_ONE: Singular ring already has a GAP wrapper",0L,0L);
+        ErrorQuit("Oops, Singular ring already wrapped again, please report this to libsing team",0L,0L);
     }
     possiblytriggerGC();
-    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_FLAGS_SINGOBJ(tmp,0u);
-    SET_CXX_SINGOBJ(tmp,r);
-    SET_ZERO_SINGOBJ(tmp,zero);
-    SET_ONE_SINGOBJ(tmp,one);
+    Obj rr = NewBag(T_SINGULAR, 5 * sizeof(Obj));
+    SET_TYPE_SINGOBJ(rr, type);
+    SET_FLAGS_SINGOBJ(rr, 0);
+    SET_CXX_SINGOBJ(rr, r);
+    SET_ZERO_SINGOBJ(rr, zero);
+    SET_ONE_SINGOBJ(rr, one);
+    Obj high = makeHighlevelWrapper(rr);
+    SET_HIWRAP_SINGOBJ(rr, high);
+
     // store ref to GAP wrapper in Singular ring
-    r->ext_ref = tmp;
-    return tmp;
+    r->ext_ref = rr;
+    return high;
 }
 
 // The following function is called from the garbage collector, it
@@ -358,6 +379,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 /// Installed as SI_ring method
 Obj FuncSI_RingOfSingobj( Obj self, Obj singobj )
 {
+    singobj = UnwrapHighlevelWrapper(singobj);
     if (TNUM_OBJ(singobj) != T_SINGULAR)
         ErrorQuit("argument must be singular object.",0L,0L);
     Int gtype = TYPE_SINGOBJ(singobj);
@@ -379,6 +401,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
 {
     Obj res;
     /* check arg */
+    rr = UnwrapHighlevelWrapper(rr);
     if (! ISSINGOBJ(SINGTYPE_RING_IMM, rr))
         ErrorQuit("argument must be Singular ring.",0L,0L);
 
@@ -407,7 +430,8 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
 /// Installed as SI_ideal method
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
 {
-    if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
+    rr = UnwrapHighlevelWrapper(rr);
+    if (!ISSINGOBJ(SINGTYPE_RING_IMM, rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -444,6 +468,7 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 /// Installed as SI_number method
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
+    rr = UnwrapHighlevelWrapper(rr);
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
                             _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
 }

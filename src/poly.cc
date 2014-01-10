@@ -95,7 +95,8 @@ static poly ParsePoly(ring r, const char *&st)
 Obj Func_SI_poly_from_String(Obj self, Obj rr, Obj st)
 // st a string or a list of lists or so...
 {
-    if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
+    rr = UnwrapHighlevelWrapper(rr);
+    if (!ISSINGOBJ(SINGTYPE_RING_IMM, rr)) {
         ErrorQuit("Argument rr must be a singular ring",0L,0L);
         return Fail;
     }
@@ -137,6 +138,12 @@ int ParsePolyList(ring r, const char *&st, int expected, poly *&res)
 // TODO: _SI_MONOMIAL is only used by examples, do we still need it? For what?
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 {
+    rr = UnwrapHighlevelWrapper(rr);
+    if (!ISSINGOBJ(SINGTYPE_RING_IMM, rr)) {
+        ErrorQuit("Argument rr must be a singular ring",0L,0L);
+        return Fail;
+    }
+
     ring r = (ring) CXX_SINGOBJ(rr);
     UInt nrvars = rVar(r);
     UInt i;
@@ -158,8 +165,8 @@ Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps)
 Obj Func_SI_COPY_POLY(Obj self, Obj po)
 {
     Obj rr = 0;
-    poly p = _SI_GET_poly(po,rr);
-    ring r = (ring) CXX_SINGOBJ(rr);
+    poly p = _SI_GET_poly(po, rr);
+    ring r = (ring)CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);  // necessary?
     p = p_Copy(p,r);
     Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
@@ -174,12 +181,14 @@ Obj Func_SI_COPY_POLY(Obj self, Obj po)
 // But pp_Mult_nn needs a Singular 'number'...
 Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
 {
+    Obj rr = 0;
+    poly p = _SI_GET_poly(a, rr);
     ring r = CXXRING_SINGOBJ(a);
     if (r != currRing) rChangeCurrRing(r);   // necessary?
-    number bb = _SI_NUMBER_FROM_GAP(r,b);
-    poly aa = pp_Mult_nn((poly) CXX_SINGOBJ(a),bb,r);
-    n_Delete(&bb,r);
-    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,RING_SINGOBJ(a));
+    number bb = _SI_NUMBER_FROM_GAP(r, b);
+    poly aa = pp_Mult_nn(p, bb, r);
+    n_Delete(&bb, r);
+    Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,aa,rr);
     return tmp;
 }
 

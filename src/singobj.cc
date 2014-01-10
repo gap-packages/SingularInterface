@@ -329,6 +329,8 @@ void SingObj::init(Obj input, Obj &rr, ring &r)
     needcleanup = false;
     obj.Init();
 
+    input = UnwrapHighlevelWrapper(input);
+
     if (IS_INTOBJ(input) ||
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
         int gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
