@@ -1,6 +1,0 @@
-Pushing to the central repository in St Andrews causes email notifications.
-The recipients list can be adjusted by the "gap" pseudo-user on
-ftp.gap-system.org (yin). Just look for the line containing "libsing" in
-the file /gap/notifyMails.
-
-
