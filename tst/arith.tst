@@ -1,7 +1,7 @@
 gap> ############################################
 gap> # Test arithmetic functionality
 gap> #
-gap> #  The following tests are perform for additive domains:
+gap> #  The following tests are performed for additive domains:
 gap> #
 gap> #    a + b;
 gap> #    a - b;
@@ -18,7 +18,7 @@ gap> #    0 * a;
 gap> #    a - a;
 gap> #    Zero(a);
 gap> #
-gap> #  The following tests are perform for multiplicative domains:
+gap> #  The following tests are performed for multiplicative domains:
 gap> #
 gap> #    a * b;
 gap> #    a * b = b * a;
