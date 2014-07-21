@@ -3,7 +3,7 @@
 
 #include <coeffs/longrat.h>
 #include <coeffs/bigintmat.h>
-#include <kernel/syz.h>
+//#include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 

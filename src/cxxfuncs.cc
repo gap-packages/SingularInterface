@@ -12,7 +12,7 @@ This file contains all of the code that deals with C++ libraries.
 
 #include <coeffs/bigintmat.h>
 #include <coeffs/longrat.h>
-#include <kernel/syz.h>
+//#include <kernel/syz.h>
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 
