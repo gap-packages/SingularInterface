@@ -296,7 +296,7 @@ Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
     int col = INT_INTOBJ(col_);
 
     if (!IS_MUTABLE_OBJ(obj)) {
-        ErrorQuit("Cannot assign to mutable matrix.",0L,0L);
+        ErrorQuit("Cannot assign to immutable matrix.",0L,0L);
     }
     switch (gtype) {
         case SINGTYPE_BIGINTMAT:
