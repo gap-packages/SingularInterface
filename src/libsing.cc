@@ -198,9 +198,14 @@ The second function to be called when the library is loaded by the kernel.
 static Int InitLibrary(StructInitInfo* module)
 {
     /* init filters and functions                                          */
-    InitGVarFuncsFromTable( GVarFuncs );
+    InitGVarFuncsFromTable(GVarFuncs);
 
-    _SI_internalRingRNam = RNamName( "internalRing" );
+    /* Set '_SI_LIBSING_LOADED' as a canary variable, so we can detect (and prevent)
+      attempts to load the C code more than once. */
+    AssGVar(GVarName("_SI_LIBSING_LOADED"), NEW_PREC(0));
+    MakeReadOnlyGVar(GVarName("_SI_LIBSING_LOADED"));
+
+    _SI_internalRingRNam = RNamName("internalRing");
 
     /* return success                                                      */
     return 0;

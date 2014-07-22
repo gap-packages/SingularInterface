@@ -1,13 +1,12 @@
 # load kernel functions if possible
 # try the static module first
-
-if not IsBound(LIBSINGULAR) then
+if not IsBound(_SI_LIBSING_LOADED) then
   if "libsing" in SHOW_STAT() then
     LoadStaticModule("libsing");
   fi;
 fi;
 # now try the dynamic module
-if not IsBound(LIBSINGULAR) then
+if not IsBound(_SI_LIBSING_LOADED) then
   if Filename(DirectoriesPackagePrograms("libsing"), 
               "libsing.so") <> fail then
     LoadDynamicModule(Filename(DirectoriesPackagePrograms("libsing"), 
