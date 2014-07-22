@@ -1,12 +1,33 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
-VERSION=4.0.0
-V2=`echo $VERSION | tr . -`
+VERSION=4.0.0.p3
+TARFILE=singular-$VERSION.tar.gz
+URL=http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-0-0/$TARFILE
+MD5=c6a7bb9c082fa8ad8a61a9ba674182b4
 
 mkdir -p singular
 
-wget http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/$V2/singular-$VERSION.tar.gz
-tar xvf singular-$VERSION.tar.gz
+if [ -e $TARFILE ] ; then
+    echo "Checking for $TARFILE... found existing file, using that"
+    # TODO: add a checksum check?
+elif command -v XXwget >/dev/null 2>&1 ; then
+    echo "Checking for $TARFILE... downloading with wget"
+    wget $URL ||
+elif command -v curl >/dev/null 2>&1 ; then
+    echo "Checking for $TARFILE... downloading with curl"
+    curl -O $URL
+else
+    echo "Checking for $TARFILE... not found and unable to download"
+    echo
+    echo "Please manually download the following file:"
+    echo "  $URL"
+    echo "Put it into the libsing directory and re-run this script."
+    exit 1
+fi
 
+# Extract...
+tar xvf $TARFILE
+
+# ... and move the output
 rm -rf singular/src
 mv singular-$VERSION singular/src
