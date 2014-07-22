@@ -1,7 +1,3 @@
-gap> SI_Undef:=function(x)
->   Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));
-> end;;
-
 # Define a simple Singular interpreter proc and call it
 gap> SI_Undef("p0");Singular("proc p0(){return(42);}");
 0
