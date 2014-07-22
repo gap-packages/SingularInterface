@@ -1,8 +1,11 @@
 Compiling libsing
 =================
+The following instructions require that GNU autoconf, automake
+and libtool are installed on your system.
+
 For libsing to work, it is necessary that you use Singular 4.0.0
 or later, and that Singular and GAP are compiled against the
-exact same version of the GMP library.
+exact same version of the GMP library. 
 
 The easiest way to achieve that is to compile Singular yourself,
 telling it to link against GAP's version of GMP.
@@ -10,6 +13,7 @@ telling it to link against GAP's version of GMP.
 Therefore, usually the first step towards compiling libsing is to build
 such a special version of Singular. 
 The following instructions should get you going.
+
 
 1. Fetch the Singular source code. You can either use a released version of
    Singular, such as 4.0.0, or the latest development version. Place the
@@ -38,12 +42,12 @@ The following instructions should get you going.
 
    ./autogen.sh
 
-4. Prepare libsing for compilation, by running
+5. Prepare libsing for compilation, by running
    ./configure --with-gaproot=GAP_DIR  --with-libSingular=$PWD/singular/dst \
                CONFIGNAME=default64
    where you should replace GAP_DIR as above. If you know what
    you do, you can change your CONFIGNAME (but note that
    libsing should only be used with 64 bit versions of GAP).
 
-5. Compile libsing:
+6. Compile libsing:
     make
