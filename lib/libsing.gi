@@ -10,6 +10,31 @@ InstallMethod(SI_number,[IsSingularRing, IsInt],_SI_number);
 InstallMethod(SI_number,[IsSingularRing, IsFFE],_SI_number);
 InstallMethod(SI_number,[IsSingularRing, IsRat],_SI_number);
 
+InstallMethod(SI_number,[IsSingularRing, IsZmodnZObj],
+function( r, o )
+    local c, s, m;
+    c := SI_char(r);
+    s := SI_size(r);
+    m := ModulusOfZmodnZObj(o);
+    # SI_size(r) # -1 for non-fields for now.
+    if c <> Characteristic(o) then
+        Error("Characteristic does not match");
+    fi;
+    if s = -1 then
+        # Z/mZ
+    elif s = 0 then
+        # infinite
+        Error("TODO");
+    elif IsPrimeInt(c) then
+        # As long as Singular does not implement rings like Z/pZ + Z/pZ,
+        # we may assume the ring r is a field
+    fi;
+    Error("TODO");
+end);
+
+# DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
+
+
 InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
 InstallMethod(SI_intvec,[IsList],_SI_intvec);
 
