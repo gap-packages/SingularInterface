@@ -18,5 +18,6 @@ tests := List(tests, test -> Filename(d,test));
 
 # Run the tests
 for test in tests do
+    Print("Running test '",test,"'\n");
     Test(test, rec(compareFunction:="uptowhitespace"));
 od;
