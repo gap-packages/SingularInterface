@@ -287,6 +287,9 @@ void MakeImmutableSingObj(Obj s);
 Obj ZeroSMSingObj(Obj s);
 Obj OneSMSingObj(Obj s);
 
+Obj Func_SI_attrib( Obj self, Obj singobj );
+Obj Func_SI_flags( Obj self, Obj singobj );
+Obj Func_SI_type( Obj self, Obj singobj );
 
 #endif //#define LIBSING_H
 

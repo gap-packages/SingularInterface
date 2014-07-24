@@ -52,6 +52,10 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmPrintInfo, 0, ""),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_OmCurrentBytes, 0, ""),
 
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_attrib, 1, "singobj"),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_flags, 1, "singobj"),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_type, 1, "singobj"),
+
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc1, 2, "op, input"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 3, "op, a, b"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 4, "op, a, b, c"),

@@ -925,3 +925,37 @@ Obj SumSingObjs(Obj a, Obj b)
     }
 }
 */
+
+Obj Func_SI_attrib( Obj self, Obj singobj )
+{
+    singobj = UnwrapHighlevelWrapper(singobj);
+    if (TNUM_OBJ(singobj) != T_SINGULAR)
+        ErrorQuit("argument must be singular object.",0L,0L);
+    // TODO: for now we just return whether the
+    // object has any attributes; but in the future we could
+    // return a list with the actual attributes...
+    attr a = (attr)ATTRIB_SINGOBJ(singobj);
+    if (!a)
+        return Fail;
+    // HACK
+    a->Print();
+    return True;
+}
+
+Obj Func_SI_flags( Obj self, Obj singobj )
+{
+    singobj = UnwrapHighlevelWrapper(singobj);
+    if (TNUM_OBJ(singobj) != T_SINGULAR)
+        ErrorQuit("argument must be singular object.",0L,0L);
+    unsigned int flags = FLAGS_SINGOBJ(singobj);
+    return INTOBJ_INT(flags);
+}
+
+Obj Func_SI_type( Obj self, Obj singobj )
+{
+    singobj = UnwrapHighlevelWrapper(singobj);
+    if (TNUM_OBJ(singobj) != T_SINGULAR)
+        ErrorQuit("argument must be singular object.",0L,0L);
+    Int gtype = TYPE_SINGOBJ(singobj);
+    return INTOBJ_INT(gtype);
+}
