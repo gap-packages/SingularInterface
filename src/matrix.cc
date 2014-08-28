@@ -76,7 +76,7 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
             BIMATELEM(*bim,r,c) = _SI_BIGINT_FROM_GAP(t);
         }
     }
-    return NEW_SINGOBJ(SINGTYPE_BIGINTMAT_IMM,bim);
+    return NEW_SINGOBJ(SINGTYPE_BIGINTMAT,bim);
 }
 
 /// Used for bigintmat ViewString method.
@@ -143,7 +143,7 @@ Obj Func_SI_intmat(Obj self, Obj m)
             IMATELEM(*iv,r,c) = (int) (INT_INTOBJ(t));
         }
     }
-    return NEW_SINGOBJ(SINGTYPE_INTMAT_IMM,iv);
+    return NEW_SINGOBJ(SINGTYPE_INTMAT,iv);
 }
 
 /// Used for intmat ViewString method.
