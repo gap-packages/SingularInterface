@@ -397,22 +397,25 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
 
     Obj rr = NULL;
     ring r = NULL;
+    idhdl tmpHdl = 0;
 
     int nrargs = (int) LEN_PLIST(args);
     WrapMultiArgs wrap(args, rr, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
+    assert(currRingHdl == 0);
+    if (r)
+        rChangeCurrRing(r);
+
     BOOLEAN bool_ret;
-    if (r) {
+    if (currRing) {
         // FIXME: Perhaps we should be using getSingularIdhdl() here, too?
-        currRingHdl = enterid("Blabla", 0, RING_CMD, &IDROOT, FALSE, FALSE);
-        assert(currRingHdl);
-        IDRING(currRingHdl) = r;
-        currRing = r;
-        r->ref++;
-    } else {
-        currRingHdl = NULL;
-        currRing = NULL;
+        tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
+        assert(tmpHdl);
+        IDRING(tmpHdl) = currRing;
+        currRing->ref++;
+
+        currRingHdl = tmpHdl;
     }
     iiRETURNEXPR.Init();
 
@@ -421,12 +424,17 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     EndPrintCapture();
 
     inerror = 0;    // reset interpreter error flag
-    if (r) {
-        assert(currRingHdl);
-        killhdl(currRingHdl, currPack);
+    if (tmpHdl) {
+        killhdl(tmpHdl, currPack);
     }
+    currRingHdl = NULL;
+    
+    // If the return value is ring dependant, then (according to Hans)
+    // the current ring after iiMake_proc must be the same as
+    // before iiMake_proc.
 
-    if (bool_ret == TRUE) return Fail;
+    if (bool_ret == TRUE)
+        return Fail;
     leftv ret = &iiRETURNEXPR;
     if (ret->next != NULL) {
         Int len = ret->listLength();
