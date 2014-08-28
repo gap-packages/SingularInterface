@@ -11,7 +11,7 @@ Subtitle := "Linking Singular as a library into a GAP process",
 Version := Maximum( [
                    "2014.01.06", ## Franks's version
                    ## this line prevents merge conflicts
-                   "2014.01.06", ## Max's version
+                   "2014.08.28", ## Max's version
                    ## this line prevents merge conflicts
                    "2014.01.06", ## Mohamed's version
                    ] ),
