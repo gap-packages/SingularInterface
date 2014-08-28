@@ -83,8 +83,8 @@ Obj Func_SI_bigintmat(Obj self, Obj m)
 // TODO: get rid of _SI_Matbigintmat and use SI_ToGAP instead ?
 Obj Func_SI_Matbigintmat(Obj self, Obj im)
 {
-    // TODO: This function is untested! add test cases!!!
-    if (!ISSINGOBJ(SINGTYPE_BIGINTMAT_IMM,im)) {
+    if (!(ISSINGOBJ(SINGTYPE_BIGINTMAT_IMM,im) ||
+          ISSINGOBJ(SINGTYPE_BIGINTMAT,im))) {
         ErrorQuit("im must be a singular bigintmat", 0L, 0L);
         return Fail;
     }
