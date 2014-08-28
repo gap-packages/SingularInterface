@@ -45,12 +45,12 @@ gap> SI_Undef("p5");Singular("proc p5(){return(x);}");
 gap> SI_CallProc("p5", []);
 <singular poly (mutable):x>
 
-gap> SI_Undef("p6");Singular("proc p6(){ring r=0,(x,y,z),dp; export r;  return(1);}");
+gap> SI_Undef("p6");Singular("proc p6(){ring r_p6=0,(x,y,z),dp; export r_p6;  return(1);}");
 0
 gap> SI_CallProc("p6", []);
 1
 
-gap> SI_Undef("p7");Singular("proc p7(){ring r=0,(x,y,z),dp; export r;  return(x);}");
+gap> SI_Undef("p7");Singular("proc p7(){ring r_p7=0,(x,y,z),dp; export r_p7;  return(x);}");
 0
 gap> SI_CallProc("p7", []);
 fail

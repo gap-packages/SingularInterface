@@ -2,7 +2,7 @@ gap> SI_intmat([[1,2,3],[4,5,6]] * 7^15);
 Error, m must contain small integers
 gap> 
 gap> m1 := SI_intmat([[1,2,3],[4,5,6]]);
-<singular intmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+<singular intmat (mutable):[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
 gap> _SI_MatElm(m1, 1, 3);
 3
 gap> _SI_MatElm(m1, 2, 3);
@@ -13,12 +13,12 @@ gap> _SI_SetMatElm(m1, 1, 3, 42);
 gap> _SI_MatElm(m1, 1, 3);
 42
 gap> m1;
-<singular intmat:[ [ 1, 2, 42 ], [ 4, 5, 6 ] ]>
+<singular intmat (mutable):[ [ 1, 2, 42 ], [ 4, 5, 6 ] ]>
 gap> 
 gap> 
 gap> 
 gap> m2 := SI_bigintmat([[1,2,3],[4,5,6]] * 7^15);
-<singular bigintmat:[ [ 4747561509943, 9495123019886, 14242684529829 ], [ 1899024\
+<singular intmat:[ [ 4747561509943, 9495123019886, 14242684529829 ], [ 1899024\
 6039772, 23737807549715, 28485369059658 ] ]>
 gap> _SI_MatElm(m2, 1, 3);
 14242684529829
