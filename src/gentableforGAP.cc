@@ -18,10 +18,6 @@
 #include <Singular/tok.h>
 #include <Singular/grammar.h>
 
-#ifdef HAVE_FACTORY
-int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
-#endif
-
 // to produce convert_table.texi for doc:
 //#define CONVERT_TABLE 1
 

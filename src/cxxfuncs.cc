@@ -16,11 +16,6 @@ This file contains all of the code that deals with C++ libraries.
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 
-#ifdef HAVE_FACTORY
-int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
-#endif
-
-
 // The following should be in rational.h but isn't (as of GAP 4.7.2):
 #ifndef NUM_RAT
 #define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
