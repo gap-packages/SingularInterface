@@ -7,12 +7,13 @@ MD5=c6a7bb9c082fa8ad8a61a9ba674182b4
 
 mkdir -p singular
 
+# Download
 if [ -e $TARFILE ] ; then
     echo "Checking for $TARFILE... found existing file, using that"
     # TODO: add a checksum check?
-elif command -v XXwget >/dev/null 2>&1 ; then
+elif command -v wget >/dev/null 2>&1 ; then
     echo "Checking for $TARFILE... downloading with wget"
-    wget $URL ||
+    wget $URL
 elif command -v curl >/dev/null 2>&1 ; then
     echo "Checking for $TARFILE... downloading with curl"
     curl -O $URL
