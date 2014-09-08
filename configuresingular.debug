@@ -7,6 +7,6 @@ fi
 PREFIX=$PWD/singular/dst
 
 mkdir -p $PREFIX
-mkdir -p singular/build
-cd singular/build
-../src/configure --prefix=$PREFIX $@
+mkdir -p singular/build-debug
+cd singular/build-debug
+../src/configure --prefix=$PREFIX --enable-debug --disable-optimizationflags $@

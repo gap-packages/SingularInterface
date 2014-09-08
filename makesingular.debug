@@ -1,6 +1,6 @@
 #!/bin/sh -ev
 
-cd singular/build
+cd singular/build-debug
 
 make
 make check
