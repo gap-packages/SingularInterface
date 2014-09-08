@@ -1,9 +1,10 @@
 #!/bin/sh -e
 
-VERSION=4.0.0.p3
-TARFILE=singular-$VERSION.tar.gz
+VERSION=4.0.0
+PATCHLEVEL=.p4
+TARFILE=singular-$VERSION$PATCHLEVEL.tar.gz
 URL=http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-0-0/$TARFILE
-MD5=c6a7bb9c082fa8ad8a61a9ba674182b4
+MD5=1e0cc7711479e558d473226b24dea4e5
 
 mkdir -p singular
 
