@@ -16,8 +16,6 @@ This file contains all of the code that deals with C++ libraries.
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 
-#include <assert.h>
-
 #ifdef HAVE_FACTORY
 int mmInit(void) {return 1; } // ? due to SINGULAR!!!...???
 #endif

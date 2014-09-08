@@ -18,6 +18,8 @@ extern "C" {
   #include <src/compiled.h>
 }
 
+#include <assert.h>
+
 #include "Singular/libsingular.h"
 #include "singtypes.h"
 
