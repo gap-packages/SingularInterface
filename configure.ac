@@ -22,25 +22,20 @@ AC_FIND_GAP
 
 AC_CHECK_SIZEOF([void **])
 
-AC_CYGWIN
-AM_CONDITIONAL([SYS_IS_CYGWIN], [test "$CYGWIN" = "yes"])
-if test "$CYGWIN" = "yes"; then
-  AC_DEFINE(SYS_IS_CYGWIN32, 1, are we on CYGWIN?)
-else
-  AC_DEFINE(SYS_IS_CYGWIN32, 0, are we on CYGWIN?)
-fi
-
-
-
 case "$host" in
-        *-darwin* )
-        AC_DEFINE(SYS_IS_DARWIN, 1, are we on DARWIN?)
-        ;;
-        * )
-        AC_DEFINE(SYS_IS_DARWIN, 0, are we on DARWIN?)
-        ;;
+    *cygwin* )
+    AC_DEFINE(SYS_IS_CYGWIN32, 1, are we on CYGWIN?)
+    CYGWIN=yes
+    ;;
+    * )
+    AC_DEFINE([SYS_IS_CYGWIN32], [0], [are we on CYGWIN?])
+    CYGWIN=no
+    ;;
 esac
-     
+AM_CONDITIONAL([SYS_IS_CYGWIN], [test "$CYGWIN" = "yes"])
+
+
+
 ## 
 if test "$ac_test_CXXFLAGS" != "set"; then
   AC_LANG_PUSH([C++])

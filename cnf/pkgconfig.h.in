@@ -70,8 +70,5 @@
 /* are we on CYGWIN? */
 #undef SYS_IS_CYGWIN32
 
-/* are we on DARWIN? */
-#undef SYS_IS_DARWIN
-
 /* Version number of package */
 #undef VERSION
