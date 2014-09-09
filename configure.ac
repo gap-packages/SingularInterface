@@ -61,12 +61,5 @@ LB_CHECK_LIBSINGULAR([4.0.0],
  [],
  [AC_MSG_ERROR([required library libSingular not found])])
 
-SINGULAR_PATH="$LIBSINGULAR_HOME/bin/Singular"
-
-AC_MSG_CHECKING([for path to Singular executable])
-AC_MSG_RESULT($SINGULAR_PATH)
-
-AC_SUBST(SINGULAR_PATH)
-
-AC_CONFIG_FILES([Makefile src/Makefile SINGULARPATH])
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

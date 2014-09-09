@@ -36,7 +36,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_INIT_INTERPRETER, 1, "path"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ValueOfVar, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_SingularProcs, 0, ""),
@@ -210,6 +209,13 @@ static Int InitLibrary(StructInitInfo* module)
     MakeReadOnlyGVar(GVarName("_SI_LIBSING_LOADED"));
 
     _SI_internalRingRNam = RNamName("internalRing");
+
+    // Init Singular. Note that siInit() expects the path to
+    // "the" Singular binary.
+    char path[] = LIBSINGULAR_HOME "/bin/Singular";
+    siInit(path);
+    currentVoice = feInitStdin(NULL);
+    WerrorS_callback = _SI_ErrorCallback;
 
     /* return success                                                      */
     return 0;

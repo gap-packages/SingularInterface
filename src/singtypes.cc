@@ -68,8 +68,6 @@ const int GAPtoSingType[] = {
 };
 
 int SingtoGAPType[MAX_TOK];
-/* Also adjust Func_SI_INIT_INTERPRETER where this is initialised,
-   when the set of types changes. */
 
 const int HasRingTable[] = {
     0, // NOTUSED

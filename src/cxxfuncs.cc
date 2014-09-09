@@ -567,15 +567,6 @@ void _SI_ErrorCallback(const char *st)
     }
 }
 
-Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path)
-{
-    // init path names etc.
-    siInit(reinterpret_cast<char*>(CHARS_STRING(path)));
-    currentVoice=feInitStdin(NULL);
-    WerrorS_callback = _SI_ErrorCallback;
-    return NULL;
-}
-
 /* if needed, handle more cases */
 Obj FuncSI_ValueOfVar(Obj self, Obj name)
 {

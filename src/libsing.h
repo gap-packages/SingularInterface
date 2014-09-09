@@ -45,6 +45,9 @@ extern Obj _SI_ProxiesType;   //!< A kernel copy of the type of proxy elements
 
 void InstallPrePostGCFuncs(void);
 
+extern void _SI_ErrorCallback(const char *st);
+
+
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // There are 3 possibilites:
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
@@ -252,7 +255,6 @@ Obj FuncSI_RingOfSingobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
-Obj Func_SI_INIT_INTERPRETER(Obj self, Obj path);
 Obj Func_SI_EVALUATE(Obj self, Obj st);
 Obj FuncSI_ValueOfVar(Obj self, Obj name);
 Obj Func_SI_SingularProcs(Obj self);

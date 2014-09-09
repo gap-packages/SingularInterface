@@ -68,8 +68,6 @@ Makefile
 /m4/lt~obsolete.m4
 /src/Makefile.in
 
-/SINGULARPATH
-
 /autom4te\.cache/
 /singular/
 /singular-*.tar.gz

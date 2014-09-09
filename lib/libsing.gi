@@ -145,16 +145,6 @@ InstallMethod( ViewString, "for a singular ideal",
   end );
 
 
-InstallGlobalFunction( _SI_InitInterpreter,
-  function( )
-    local path, version;
-    path := Filename(DirectoriesPackageLibrary("libsing","")[1],
-                     "SINGULARPATH");
-    path := NormalizedWhitespace(StringFile(path));
-    _SI_INIT_INTERPRETER(path);
-  end );
-_SI_InitInterpreter();
-
 InstallMethod( Singular, "for a string in stringrep",
   [ IsStringRep ],
   function( st )
