@@ -21,23 +21,28 @@ TODO: document Singular()
 @Section Constructors
 
 <ManSection>
-<Oper Name="SI_ring" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_ring" Arg="char,indets,ord" Label="for an integer and two lists"/>
 <Description>
-TODO
+
+Construct a &Singular; ring over the prime field of characteristic
+<A>char</A> with the indeterminates given by <A>indets</A> and
+ordering given by the list <A>ord</A>. The list <A>indets</A> is
+allowed to be empty.
+
 </Description>
 </ManSection>
 
 <ManSection>
-<Oper Name="SI_poly" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_poly" Arg="r,str" Label="for a Singular ring and a string"/>
 <Description>
-TODO
+  Construct a polynomial in the &Singular; ring <A>r</A> using the string <A>str</A>.
 </Description>
 </ManSection>
 
 <ManSection>
-<Oper Name="SI_number" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_number" Arg="r,a" Label="for a Singular ring and a rational number"/>
 <Description>
-TODO
+  Construct a number in the &Singular; ring <A>r</A> using the rational number <A>a</A>.
 </Description>
 </ManSection>
 
@@ -47,25 +52,26 @@ TODO
 <ManSection>
 <Func Name="SI_imap" Arg="TODO" Label="for a TODO"/>
 <Description>
-TODO
+  TODO
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="SI_deg" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_deg" Arg="r" Label="for a Singular polynomial"/>
 <Description>
-TODO
+  Compute the degree of the polynomial <A>a</A>.
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="SI_gcd" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_gcd" Arg="a,b" Label="for two Singular polynomials"/>
 <Description>
-TODO
+	
+  Compute the greatest common divisor of the two polynomial <A>a</A>
+  and <A>b</A>.
+  
 </Description>
 </ManSection>
-
-
 
 
 
@@ -73,38 +79,59 @@ TODO
 
 @Section Constructors
 
-TODO: explain why we chose to document modules, ideals and vectors here:
-that is, because they essentially *are* matrices (resp. rows or columns
-of matrices) but internally use different data structures.
-Do not be confused by their names...
-
+In this section we discuss constructors for &Singular; matrices. We
+also treat the three datatypes <C>ideal</C>, <C>module</C>, and
+<C>vector</C> in this section as they are basically sparse
+representations of &Singular; matrices.
 
 <ManSection>
-<Oper Name="SI_matrix" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_matrix" Arg="r,c,str" Label="for two integers and a string"/>
 <Description>
-TODO
+
+  Construct a matrix over the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+
 </Description>
 </ManSection>
 
 
 <ManSection>
-<Oper Name="SI_ideal" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_ideal" Arg="r,str" Label="for a Singular ring and a string"/>
 <Description>
-TODO
+
+  Construct an <Q>ideal</Q> in the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+  
+  The datatype <C>ideal</C> in &Singular; is basically as a
+  specialized data structure for matrices consisting of a single row.
+
 </Description>
 </ManSection>
 
 <ManSection>
-<Oper Name="SI_module" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_module" Arg="mat" Label="for a Singular matrix"/>
 <Description>
-TODO
+  
+  Convert the &Singular; matrix <A>mat</A> into a &Singular;
+  <Q>module</Q>.
+
+  The datatype <C>module</C> in &Singular; is basically a specialized
+  sparse data structure for column oriented matrices with compressed
+  columns. Each column has the &Singular; datatype <C>vector</C>.
+  
 </Description>
 </ManSection>
 
 <ManSection>
-<Oper Name="SI_vector" Arg="TODO" Label="for a TODO"/>
+<Oper Name="SI_vector" Arg="r,str" Label="for a Singular ring and a string"/>
 <Description>
-TODO
+
+  Construct a <Q>vector</Q> over the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+
+  The datatype <C>vector</C> in &Singular; is basically a specialized
+  sparse data structure for matrices consisting of a single column.
+  
 </Description>
 </ManSection>
 
