@@ -29,12 +29,12 @@ Persons := [
     Email         := "barakat@mathematik.uni-kl.de",
     WWWHome       := "http://www.mathematik.uni-kl.de/~barakat/",
     PostalAddress := Concatenation( [
-                       "Lehrstuhl B fuer Mathematik, RWTH Aachen\n",
-                       "Templergraben 64\n",
-                       "52062 Aachen\n",
+                       "Department of Mathematics\n",
+                       "University of Kaiserslautern\n",
+                       "67653 Kaiserslautern\n",
                        "Germany" ] ),
-    Place         := "Aachen",
-    Institution   := "RWTH Aachen University"
+    Place         := "Kaiserslautern",
+    Institution   := "University of Kaiserslautern"
   ),
   rec(
     LastName      := "Horn",
