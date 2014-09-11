@@ -17,18 +17,90 @@ InstallMethod(SI_intmat,[IsSingularObj],SI_intmat_singular);
 InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],SI_intmat_singular);
 InstallMethod(SI_intmat,[IsList],_SI_intmat);
 
+
+# TODO: document the format accepted by _ParseIndeterminatesDescription
+# TODO: add support for Singular format  "x(2..4)" ->  x(2), x(3), x(4)
+BindGlobal("_ParseIndeterminatesDescription", function(str)
+    local parts, result, v, n, i, name, tmp, range;
+    if not IsString(str) or IsEmpty(str) then
+        Error("Argument must be a non-empty string");
+    fi;
+
+    parts := SplitString(str, ",");
+    parts := List(parts, g -> StripBeginEnd(g, " "));
+
+    result := [];
+    for v in parts do
+        if v[Length(v)] = '.' then
+            Error("Invalid input '",v," ends with with '.'");
+        elif PositionSublist( v, ".." ) <> fail then
+            v := SplitString(v, ".");
+            if Length(v) <> 3 then
+                Error("Too many '.' in input");
+            fi;
+            if ForAll(v[1], IsDigitChar) then
+                Error("Text left of '..' must contain at least one non-digit");
+            fi;
+            if not ForAll(v[3], IsDigitChar) then
+                Error("Text right of '..' must not contain any non-digits");
+            fi;
+
+            # Find longest suffice of v[1] consisting of only digits
+            n := Length(v[1]);
+            if not IsDigitChar(v[1][n]) then
+                Error("Text left of '..' must end with at least one digit");
+            fi;
+            while IsDigitChar(v[1][n]) do
+                n := n - 1;
+            od;
+
+            # Split into "name" part and "range" part
+            name := v[1]{[1..n]};
+            if not IsValidIdentifier(name) then
+                Error("'", name, "' is not a valid identifier");
+            fi;
+
+            tmp := v[1]{[n+1..Length(v[1])]};
+            range := [ Int(tmp) .. Int(v[3]) ];
+
+            for i in range do
+                Add(result,  Concatenation(name, String(i)));
+            od;
+        elif not IsValidIdentifier(v) then
+            Error("'", v, "' is not a valid identifier");
+        else
+            Add(result, v);
+        fi;
+    od;
+
+    return result;
+end );
+
 InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
 InstallMethod(SI_ring,[IsInt,IsList,IsList],
-  function( p, l, o )
-    if ForAll(o,x->x[1] <> "c" and x[1] <> "C") then
-        o := ShallowCopy(o);
-        Add(o,["c",0]);
+  function( charact, names, orderings )
+    if IsString(names) then
+        names := _ParseIndeterminatesDescription(names);
     fi;
-    return _SI_ring(p,l,o);
+# TODO: If SI_ring is asked to use var names which are not valid
+#   GAP identifiers, issue a warning about this (and that it
+#   precludes the use of AssignGeneratorVariables)
+
+    if ForAll(orderings, x->x[1] <> "c" and x[1] <> "C") then
+        # FIXME: Why do we do this?
+        # It seems "c" stands for module orderings...
+        orderings := ShallowCopy(orderings);
+        Add(orderings, ["c",0]);
+    fi;
+    return _SI_ring(charact, names, orderings);
   end);
+
 InstallMethod(SI_ring,[IsInt,IsList],
-  function( p, l )
-    return SI_ring(p,l,[["dp",Length(l)]]);
+  function( charact, names )
+    if IsString(names) then
+        names := _ParseIndeterminatesDescription(names);
+    fi;
+    return SI_ring(charact, names, [["dp",Length(names)]]);
   end);
 
 InstallMethod(SI_ring,["IsSingularObj"], SI_RingOfSingobj);
