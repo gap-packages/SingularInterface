@@ -260,3 +260,17 @@ InstallMethod(String, "for a generic singular object",
 InstallMethod(PrintObj, "default method delegating to PrintString",
   [IsObject], 1, function(o) Print(PrintString(o)); end );
 
+
+InstallOtherMethod(TransposedMat, [IsSingularIntMat], SI_transpose);
+InstallOtherMethod(TransposedMat, [IsSingularBigIntMat], SI_transpose);
+InstallOtherMethod(TransposedMat, [IsSingularMatrix], SI_transpose);
+InstallOtherMethod(TransposedMat, [IsSingularModule], SI_transpose);
+
+InstallOtherMethod(Determinant, [IsSingularIntMat], SI_det);
+InstallOtherMethod(Determinant, [IsSingularBigIntMat], SI_det);
+InstallOtherMethod(Determinant, [IsSingularMatrix], SI_det);
+
+InstallOtherMethod(DeterminantMat, [IsSingularIntMat], SI_det);
+InstallOtherMethod(DeterminantMat, [IsSingularBigIntMat], SI_det);
+InstallOtherMethod(DeterminantMat, [IsSingularMatrix], SI_det);
+
