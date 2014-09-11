@@ -23,7 +23,8 @@ InstallMethod(SI_intmat,[IsList],_SI_intmat);
 BindGlobal("_ParseIndeterminatesDescription", function(str)
     local parts, result, p, v, n, i, name, tmp, range;
     if IsEmpty(str) then
-        return str;
+        # Must have at least one variable
+        return [ "dummy_variable" ];
     fi;
     if not IsString(str) then
         Error("Argument must be a string");
