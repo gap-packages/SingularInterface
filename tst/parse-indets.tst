@@ -33,16 +33,18 @@ gap> # Some bogus inputs
 gap> _ParseIndeterminatesDescription("x/");
 Error, 'x/' is not a valid identifier
 gap> _ParseIndeterminatesDescription("x..4");
-Error, Text left of '..' must end with at least one digit
+Error, Text left of '..' must end with at least one digit (in 'x..4')
 gap> _ParseIndeterminatesDescription("1..4");
-Error, Text left of '..' must contain at least one non-digit
+Error, Text left of '..' must contain at least one non-digit (in '1..4')
 gap> _ParseIndeterminatesDescription("x1..");
 Error, Invalid input 'x1.. ends with with '.'
 gap> _ParseIndeterminatesDescription("1..");
 Error, Invalid input '1.. ends with with '.'
 gap> _ParseIndeterminatesDescription("x1..4x");
-Error, Text right of '..' must not contain any non-digits
+Error, Text right of '..' must not contain any non-digits (in 'x1..4x')
 gap> _ParseIndeterminatesDescription("x1...5");
-Error, Too many '.' in input
+Error, Too many '.' in 'x1...5'
 gap> _ParseIndeterminatesDescription("x1..5.");
 Error, Invalid input 'x1..5. ends with with '.'
+gap> _ParseIndeterminatesDescription("x5..1");
+Error, Invalid range in 'x5..1'

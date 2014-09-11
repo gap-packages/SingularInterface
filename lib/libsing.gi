@@ -33,25 +33,25 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
     parts := List(parts, g -> StripBeginEnd(g, " "));
 
     result := [];
-    for v in parts do
-        if v[Length(v)] = '.' then
-            Error("Invalid input '",v," ends with with '.'");
-        elif PositionSublist( v, ".." ) <> fail then
-            v := SplitString(v, ".");
+    for p in parts do
+        if p[Length(p)] = '.' then
+            Error("Invalid input '",p," ends with with '.'");
+        elif PositionSublist( p, ".." ) <> fail then
+            v := SplitString(p, ".");
             if Length(v) <> 3 then
-                Error("Too many '.' in input");
+                Error("Too many '.' in '",p,"'");
             fi;
             if ForAll(v[1], IsDigitChar) then
-                Error("Text left of '..' must contain at least one non-digit");
+                Error("Text left of '..' must contain at least one non-digit (in '",p,"')");
             fi;
             if not ForAll(v[3], IsDigitChar) then
-                Error("Text right of '..' must not contain any non-digits");
+                Error("Text right of '..' must not contain any non-digits (in '",p,"')");
             fi;
 
             # Find longest suffice of v[1] consisting of only digits
             n := Length(v[1]);
             if not IsDigitChar(v[1][n]) then
-                Error("Text left of '..' must end with at least one digit");
+                Error("Text left of '..' must end with at least one digit (in '",p,"')");
             fi;
             while IsDigitChar(v[1][n]) do
                 n := n - 1;
@@ -60,19 +60,22 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
             # Split into "name" part and "range" part
             name := v[1]{[1..n]};
             if not IsValidIdentifier(name) then
-                Error("'", name, "' is not a valid identifier");
+                Error("'", name, "' is not a valid identifier in '",p,"'");
             fi;
 
             tmp := v[1]{[n+1..Length(v[1])]};
             range := [ Int(tmp) .. Int(v[3]) ];
+            if IsEmpty(range) then
+                Error("Invalid range in '",p,"'");
+            fi;
 
             for i in range do
                 Add(result,  Concatenation(name, String(i)));
             od;
-        elif not IsValidIdentifier(v) then
-            Error("'", v, "' is not a valid identifier");
+        elif not IsValidIdentifier(p) then
+            Error("'", p, "' is not a valid identifier");
         else
-            Add(result, v);
+            Add(result, p);
         fi;
     od;
 
