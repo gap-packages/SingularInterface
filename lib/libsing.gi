@@ -21,9 +21,12 @@ InstallMethod(SI_intmat,[IsList],_SI_intmat);
 # TODO: document the format accepted by _ParseIndeterminatesDescription
 # TODO: add support for Singular format  "x(2..4)" ->  x(2), x(3), x(4)
 BindGlobal("_ParseIndeterminatesDescription", function(str)
-    local parts, result, v, n, i, name, tmp, range;
-    if not IsString(str) or IsEmpty(str) then
-        Error("Argument must be a non-empty string");
+    local parts, result, p, v, n, i, name, tmp, range;
+    if IsEmpty(str) then
+        return str;
+    fi;
+    if not IsString(str) then
+        Error("Argument must be a string");
     fi;
 
     parts := SplitString(str, ",");
