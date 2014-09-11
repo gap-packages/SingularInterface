@@ -71,6 +71,7 @@ MakeReadWriteGVar("SI_vector");
 Unbind(SI_vector);
 DeclareOperation("SI_vector",[IsSingularObj]);
 DeclareOperation("SI_vector",[IsSingularRing, IsPosInt, IsStringRep]);
+
 DeclareOperation("SI_ZeroMat",[IsSingularRing, IsPosInt, IsPosInt]);
 DeclareOperation("SI_IdentityMat",[IsSingularRing, IsPosInt]);
 
