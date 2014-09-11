@@ -73,3 +73,6 @@ Makefile
 /singular/
 /singular-*.tar.gz
 
+/tmp/
+/gh-pages/
+/misc/
