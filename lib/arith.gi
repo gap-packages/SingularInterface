@@ -67,8 +67,10 @@ InstallGlobalFunction( _SI_Comparer,
     if r = fail then Error("cannot compare ",a," and ",b); fi;
     return r = 1;
   end);
-InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], _SI_Comparer);
-InstallOtherMethod(\=, ["IsSingularIntVec", "IsSingularIntVec"], _SI_Comparer);
+# Note: we must use a rank higher than 4, as otherwise a generic
+# method of the IO package for comparing lists may be triggered
+# (which then fails to actually perform the comparison).
+InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 10, _SI_Comparer);
 
 # Zero and One for rings and polys:
 InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], ZeroSM);
