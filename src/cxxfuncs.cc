@@ -282,6 +282,10 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         return Fail;
     }
     nrvars = LEN_LIST(names);
+    if (nrvars == 0) {
+        ErrorQuit("Need at least one variable name",0L,0L);
+        return Fail;
+    }
     for (i = 1; i <= nrvars; i++) {
         if (!IS_STRING_REP(ELM_LIST(names,i))) {
             ErrorQuit("Variable names must be strings",0L,0L);
