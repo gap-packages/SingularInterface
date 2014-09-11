@@ -54,6 +54,22 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         return n_Init(i,r);
 #endif
     }
+    
+    // TODO: possibly use n_InitMPZ for bigints?
+
+// GF(p^n) with primitive root is stored as follows:
+//  label the elements a^0, a^1, ..., a^{q-2}, 0 
+//    as    0, 1, ..., q-2, q-2.
+// Then to get the i-th element, just use (number)i
+
+// If, however, we constructed it using a minimal polynomial,
+// then we must enter this as a polynomial over the ground field,
+//   and can use n_Normalize to normalize it.
+
+// for transcendental extensions, we describe elements
+// as a pair of polynomials; by convention, if denominator
+// is 1, then we use the NULL pointer for that.
+
 
     if (rField_is_Zp(r)) {
         if (IS_INTOBJ(n)) {
@@ -76,6 +92,179 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         ErrorQuit("GAP numbers over this field not yet implemented.\n",0L,0L);
         return NULL;  // never executed
     }
+
+
+#if 0
+
+// constructing algebraic or transcendental extensions of Z/pZ or Q or ..
+
+
+TransExtInfo extParam
+extParam.r = rDefault(characteristic, num_of_transcend_vars, names);
+... free names etc. 
+
+cf = nInitChar(n_transExt, &extParam);
+// now construct polynomial ring
+rDefault(cf, num_poly_vars, names);  // and other variants....
+
+// or algebraic:
+
+  AlgExtInfo extParam;
+  extParam.r = extRing;
+  R->cf = nInitChar(n_algExt, (void*)&extParam);
+  //  see also naInitChar
+
+
+  for other types of rings, see e.g. coeffs.h
+#endif
+
+
+/*
+> ring r = (5,a);
+   ? error occurred in or before STDIN line 4: `ring r = (5,a);`
+   ? expected ring-expression. type 'help ring;'
+   ? last reserved name was `ring`
+ error at token `;`
+> ring r = (5,a),x,dp;
+> r;
+//   characteristic : 5
+//   1 parameter    : a
+//   minpoly        : 0
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+> minpoly=a2-a+1;
+> r;
+//   characteristic : 5
+//   1 parameter    : a
+//   minpoly        : (a2-a+1)
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+> a3;
+-1
+>
+.
+.
+. ;
+> ring r2 = (integer,25),x,dp;
+> r2;
+//   coeff. ring is : Z/25
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+> 25x;
+0
+> 24x;
+24x
+> 26x;
+x
+>
+.
+. ;
+> ring r3 = (25,a),x,dp;
+> r3;
+//   # ground field : 25
+//   primitive element : a
+//   minpoly        : 1*a^2+4*a^1+2*a^0
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+> ring r4 = 25,x,dp;
+// ** 25 is invalid as characteristic of the ground field. 32003 is used.
+> ring r4 = (integer,5,2),x,dp;
+// ** redefining r4 **
+> r4;
+//   coeff. ring is : Z/5^2
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+>
+. ;
+> char(r3);
+5
+> char(r2);
+25
+> char(r1);
+   ? `r1` is not defined
+   ? error occurred in or before STDIN line 31: `char(r1);`
+> char(r4);
+25
+> char(r);
+5
+> size(r);
+25
+> size(r2);
+-1
+> size(r3);
+5
+> size(r4);
+-1
+> char(r4);
+> ring r5 = (integer,5,1),x,dp;
+> r5;
+//   coeff. ring is : Z/5
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+> size(r5);
+-1
+>
+> ring r6 = (0,a),x,dp;
+> r6;
+//   characteristic : 0
+//   1 parameter    : a
+//   minpoly        : 0
+//   number of vars : 1
+//        block   1 : ordering dp
+//                  : names    x
+//        block   2 : ordering C
+
+*/
+
+
+
+
+/*
+
+#ifdef HAVE_RINGS
+...
+#else
+#define rField_is_Ring(A) (0)
+#define rField_is_Ring_2toM(A) (0)
+#define rField_is_Ring_ModN(A) (0)
+#define rField_is_Ring_PtoM(A) (0)
+#define rField_is_Ring_Z(A) (0)
+#define rField_is_Domain(A) (1)
+#define rField_has_Units(A) (1)
+#endif
+
+static inline BOOLEAN rField_is_Zp(const ring r)
+static inline BOOLEAN rField_is_Zp(const ring r, int p)
+static inline BOOLEAN rField_is_Q(const ring r)
+static inline BOOLEAN rField_is_numeric(const ring r) // R, long R, long C
+static inline BOOLEAN rField_is_R(const ring r)
+static inline BOOLEAN rField_is_GF(const ring r)
+static inline BOOLEAN rField_is_GF(const ring r, int q)
+static inline BOOLEAN rField_is_long_R(const ring r)
+static inline BOOLEAN rField_is_long_C(const ring r)
+
+
+static inline BOOLEAN rField_has_simple_inverse(const ring r)
+
+/// Z/p, GF(p,n), R: nCopy, nNew, nDelete are dummies
+static inline BOOLEAN rField_has_simple_Alloc(const ring r)
+
+/
+*/
+
+
     // Here we know that the rationals are the coefficients:
     if (IS_INTOBJ(n)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(n);
@@ -127,6 +316,7 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
     number n = NULL;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
+// TODO: use NR_SMALL_INT_BITS instead of 28?
         if (i >= (-1L << 28) && i < (1L << 28))
             n = nlInit((int) i,NULL);
         else

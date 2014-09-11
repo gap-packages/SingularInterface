@@ -192,3 +192,29 @@ Obj Func_SI_MULT_POLY_NUMBER(Obj self, Obj a, Obj b)
     return tmp;
 }
 
+
+
+#if 0
+            if (IS_INTOBJ(val)) {
+                TODO
+            } else if (GAP bigint) {
+                TODO
+            } else if (gtype == SINGTYPE_BIGINT || gtype == SINGTYPE_BIGINT_IMM) {
+                TODO
+            } else if (gtype == SINGTYPE_NUMBER || gtype == SINGTYPE_NUMBER_IMM) {
+                TODO
+                p = p_NSet(_SI_NUMBER_FROM_GAP(r, coeff),r);
+
+            } else if (gtype == SINGTYPE_POLY || gtype == SINGTYPE_POLY_IMM) {
+                if (r != CXXRING_SINGOBJ(val))
+                    ErrorQuit("<obj> and <val> must be defined over same ring.\n",0L,0L);
+                TODO
+            } else {
+                // Other GAP types must be explicitly cast via SI_number
+                // or SI_poly
+                ErrorQuit("<val> must be a polynomial.\n",0L,0L);
+            }
+
+// TODO: Implement SI_poly(ring, gap object) as generically as possible
+
+#endif
