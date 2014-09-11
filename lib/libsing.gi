@@ -155,6 +155,10 @@ InstallMethod(SI_ring,[IsInt,IsList,IsList],
         Print("# WARNING: '",bad,"' is not a valid GAP identifier.\n",
               "# You will not be able to use AssignGeneratorVariables on this ring.\n");
     fi;
+    
+    if not IsDuplicateFreeList(names) then
+        Error("At least one variable name occurs multiple times!\n");
+    fi;
 
     if ForAll(orderings, x->x[1] <> "c" and x[1] <> "C") then
         # FIXME: Why do we do this?
