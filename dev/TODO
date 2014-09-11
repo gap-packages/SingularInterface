@@ -19,7 +19,7 @@
  - make place of libsingular.so and headers configurable at compile time
    --> more robust build system
  - more ToGAP functionality, especially polynomials, matrices of polys, etc.
- - disallow SaveWorkspace if libsing is loaded!
+ - disallow SaveWorkspace if SingularInterface is loaded!
  - methods for polynomials (Value, coefficients, extrep)
  - sort out copying (Shallow/Structural) for GAP
  - highlevel interface: return value ring dependent, args not, make sure

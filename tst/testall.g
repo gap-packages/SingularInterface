@@ -1,5 +1,5 @@
-LoadPackage("libsing");
-d := DirectoriesPackageLibrary("libsing","tst");
+LoadPackage("SingularInterface");
+d := DirectoriesPackageLibrary("SingularInterface","tst");
 
 HasSuffix := function(list, suffix)
   local len;

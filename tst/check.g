@@ -3,11 +3,11 @@
 
 if LoadPackage("io") = fail then Error("Could not load package: 'IO'!"); fi;
 
-SetPackagePath("libsing", ".");
+SetPackagePath("SingularInterface", ".");
 
-if LoadPackage("libsing") = fail then Error("Could not load package: 'libsing'!"); fi;
+if LoadPackage("SingularInterface") = fail then Error("Could not load package: 'SingularInterface'!"); fi;
 
-d := DirectoriesPackageLibrary("libsing","tst");
+d := DirectoriesPackageLibrary("SingularInterface","tst");
 
 HasSuffix := function(list, suffix)
   local len;

@@ -1,9 +1,9 @@
-# Example by Mohamed, acts as a "stress test" for libsing. Used to
+# Example by Mohamed, acts as a "stress test" for SingularInterface. Used to
 # result in gigabytes of memory being taken up by the GAP process,
-# which should be fixed in recent libsing versions (thanks to the switch
+# which should be fixed in recent SingularInterface versions (thanks to the switch
 # to idhdl for passing parameters to interpreter funcs).
 LoadPackage("HomalgToCAS");;
-LoadPackage("libsing");;
+LoadPackage("SingularInterface");;
 if not IsBound(SIL_submat) then SI_LIB("matrix.lib"); fi;
 LoadPackage("SingularForHomalg");;
 Print("homalg_variable_1\n"); homalg_variable_1 := SI_ring(0,["dummy_variable"]);;

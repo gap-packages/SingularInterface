@@ -1,6 +1,6 @@
 LoadPackage("AutoDoc");
 
-AutoDoc( "libsing" :
+AutoDoc( "SingularInterface" :
         
         scaffold :=
         rec(
@@ -18,6 +18,6 @@ AutoDoc( "libsing" :
          );
 
 # Create VERSION file for "make towww"
-PrintTo( "VERSION", PackageInfo( "libsing" )[1].Version );
+PrintTo( "VERSION", PackageInfo( "SingularInterface" )[1].Version );
 
 QUIT;

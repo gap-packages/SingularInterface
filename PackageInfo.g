@@ -2,7 +2,7 @@ SetPackageInfo( rec(
 
 ##  This is case sensitive, use your preferred spelling.
 ##
-PackageName := "libsing",
+PackageName := "SingularInterface",
 
 ##  This may be used by a default banner or on a Web page, should fit on
 ##  one line.
@@ -13,7 +13,7 @@ Version := Maximum( [
                    ## this line prevents merge conflicts
                    "2014.08.28", ## Max's version
                    ## this line prevents merge conflicts
-                   "2014.01.06", ## Mohamed's version
+                   "2014.09.10", ## Mohamed's version
                    ] ),
 
 # this avoids git-merge conflicts
@@ -137,7 +137,7 @@ Status := "dev",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-PackageWWWHome := "http://gap-system.github.io/libsing",
+PackageWWWHome := "http://gap-system.github.io/SingularInterface",
 
 README_URL     := Concatenation( ~.PackageWWWHome, "/README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
@@ -153,12 +153,12 @@ ArchiveFormats := ".tar.gz .tar.bz2",
 ##  '<span class="pkgname">MyPKG</span>' for specifing package names.
 ##  
 AbstractHTML := 
-  "The <span class=\"pkgname\">libsing</span> package links Singular\
+  "The <span class=\"pkgname\">SingularInterface</span> package links Singular\
   as a library into a GAP process.",
 
 PackageDoc := rec(
   # use same as in GAP
-  BookName  := "libsing",
+  BookName  := "SingularInterface",
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
@@ -208,10 +208,10 @@ Dependencies := rec(
 AvailabilityTest := function()
   local path;
     # test for existence of the compiled binary
-    path := DirectoriesPackagePrograms("libsing");
-    if not "libsing" in SHOW_STAT() and 
-       Filename(path, "libsing.so") = fail then
-      #Info(InfoWarning, 1, "libsing: compiled kernel module not present.");
+    path := DirectoriesPackagePrograms("SingularInterface");
+    if not "SingularInterface" in SHOW_STAT() and 
+       Filename(path, "SingularInterface.so") = fail then
+      #Info(InfoWarning, 1, "SingularInterface: compiled kernel module not present.");
       return fail;
     fi;
     return true;
@@ -240,8 +240,8 @@ Keywords := ["Singular", "polynomials", "groebner"],
 AutoDoc := rec(
     TitlePage := rec(
         Copyright := Concatenation(
-                    "&copyright; 2011-2014 by the libsing authors<P/>\n\n",
-                    "The &libsing; package is free software;\n",
+                    "&copyright; 2011-2014 by the &SingularInterface; authors<P/>\n\n",
+                    "The &SingularInterface; package is free software;\n",
                     "you can redistribute it and/or modify it under the terms of the\n",
                     "<URL Text=\"GNU General Public License\">http://www.fsf.org/licenses/gpl.html</URL>\n",
                     "as published by the Free Software Foundation; either version 2 of the License,\n",

@@ -1,16 +1,16 @@
 AM_LIBTOOLFLAGS=--silent
 BINARCHDIR = bin/$(GAPARCH)
-GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/libsing.so
+GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/SingularInterface.so
 AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
 LDADD = $(LIBSINGULAR_LIBS) -lpthread
 
-lib_LTLIBRARIES = libsing.la
+lib_LTLIBRARIES = SingularInterface.la
 bin_PROGRAMS = gentableforGAP
 
 gentableforGAP_SOURCES = gentableforGAP.cc
 gentableforGAP_CPPFLAGS = $(AM_CPPFLAGS)
 
-libsing_la_SOURCES = \
+SingularInterface_la_SOURCES = \
     calls.cc \
     cxxfuncs.cc \
     libsing.cc \
@@ -25,18 +25,18 @@ libsing_la_SOURCES = \
     singobj.h \
     singtypes.cc \
     singtypes.h
-libsing_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
-libsing_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
-libsing_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
-libsing_la_CXXFLAGS = -Wall -Wmissing-prototypes
-libsing_la_CFLAGS = -Wall -Wmissing-prototypes
+SingularInterface_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
+SingularInterface_la_LIBADD = $(LIBSINGULAR_LIBS) -lpthread
+SingularInterface_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
+SingularInterface_la_CXXFLAGS = -Wall -Wmissing-prototypes
+SingularInterface_la_CFLAGS = -Wall -Wmissing-prototypes
 
 # Change it so that make all also does a make install (to build the .so)
 # and then copies it to the correct bin directory
 all-local: highlevel_mappings.g highlevel_mappings_table.g
 	@$(MAKE) $(AM_MAKEFLAGS) install-libLTLIBRARIES
 	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
-	cp $(libdir)/libsing.so $(GAPINSTALLLIB)
+	cp $(libdir)/SingularInterface.so $(GAPINSTALLLIB)
 	cp highlevel_mappings.g ../lib
 	cp highlevel_mappings_table.g ../lib
 	@echo "***********************************************************************"
@@ -44,13 +44,12 @@ all-local: highlevel_mappings.g highlevel_mappings_table.g
 	@echo "  SUCCESS!"
 	@echo ""
 	@echo "***********************************************************************"
-	
 
 # Change it so that make clean also does a make uninstall (to remove the .so)
 # and removes it from the bin directory
 clean-local: 
 	@$(MAKE) $(AM_MAKEFLAGS) uninstall-libLTLIBRARIES
-	rm -f $(top_srcdir)/$(BINARCHDIR)/libsing.so
+	rm -f $(top_srcdir)/$(BINARCHDIR)/SingularInterface.so
 
 # Apply C++ preprocessor to lowlevel_mappings_src.h to strip out
 # comments and unwanted macros.

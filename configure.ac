@@ -1,6 +1,6 @@
 AC_PREREQ(2.68)
 LT_PREREQ([2.4.2])
-AC_INIT([libsing], m4_esyscmd([tr -d '\n' < VERSION]), [gapsing@mathematik.uni-kl.de])
+AC_INIT([SingularInterface], m4_esyscmd([tr -d '\n' < VERSION]), [gapsing@mathematik.uni-kl.de])
 AC_CONFIG_SRCDIR([src/libsing.h])
 AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])

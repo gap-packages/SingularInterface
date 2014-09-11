@@ -1,20 +1,20 @@
 # load kernel functions if possible
 # try the static module first
-if not IsBound(_SI_LIBSING_LOADED) then
-  if "libsing" in SHOW_STAT() then
-    LoadStaticModule("libsing");
+if not IsBound(_SI_SINGULARINTERFACE_LOADED) then
+  if "SingularInterface" in SHOW_STAT() then
+    LoadStaticModule("SingularInterface");
   fi;
 fi;
 # now try the dynamic module
-if not IsBound(_SI_LIBSING_LOADED) then
-  if Filename(DirectoriesPackagePrograms("libsing"), 
-              "libsing.so") <> fail then
-    LoadDynamicModule(Filename(DirectoriesPackagePrograms("libsing"), 
-                               "libsing.so"));
+if not IsBound(_SI_SINGULARINTERFACE_LOADED) then
+  if Filename(DirectoriesPackagePrograms("SingularInterface"), 
+              "SingularInterface.so") <> fail then
+    LoadDynamicModule(Filename(DirectoriesPackagePrograms("SingularInterface"), 
+                               "SingularInterface.so"));
   fi;
 fi;
 
-#ReadPackage("libsing", "lib/highlevel_mappings_table.g");
-ReadPackage("libsing", "lib/highlevel_mappings.g");
-ReadPackage("libsing", "lib/singtypes.gd");
-ReadPackage("libsing", "lib/libsing.gd");
+#ReadPackage("SingularInterface", "lib/highlevel_mappings_table.g");
+ReadPackage("SingularInterface", "lib/highlevel_mappings.g");
+ReadPackage("SingularInterface", "lib/singtypes.gd");
+ReadPackage("SingularInterface", "lib/libsing.gd");

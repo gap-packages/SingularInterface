@@ -130,7 +130,7 @@ Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one)
     // Check if the ring has already been wrapped. In principle, we could
     // then just return ext_ref, 
     if (r->ext_ref != 0) {
-        ErrorQuit("Oops, Singular ring already wrapped again, please report this to libsing team",0L,0L);
+        ErrorQuit("Oops, Singular ring already wrapped again, please report this to SingularInterface team",0L,0L);
     }
     possiblytriggerGC();
     Obj rr = NewBag(T_SINGULAR, 5 * sizeof(Obj));

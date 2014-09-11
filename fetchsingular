@@ -23,7 +23,7 @@ else
     echo
     echo "Please manually download the following file:"
     echo "  $URL"
-    echo "Put it into the libsing directory and re-run this script."
+    echo "Put it into the SingularInterface directory and re-run this script."
     exit 1
 fi
 
