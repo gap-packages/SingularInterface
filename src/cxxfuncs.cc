@@ -23,8 +23,6 @@ This file contains all of the code that deals with C++ libraries.
 #endif
 
 
-static void _SI_ErrorCallback(const char *st);
-
 
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
