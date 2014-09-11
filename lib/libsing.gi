@@ -85,12 +85,16 @@ end );
 InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
 InstallMethod(SI_ring,[IsInt,IsList,IsList],
   function( charact, names, orderings )
+    local bad;
     if IsString(names) then
         names := _ParseIndeterminatesDescription(names);
     fi;
-# TODO: If SI_ring is asked to use var names which are not valid
-#   GAP identifiers, issue a warning about this (and that it
-#   precludes the use of AssignGeneratorVariables)
+    bad := First(names, x -> not IsValidIdentifier(x));
+    if bad <> fail then
+        # TODO: Use Info() instead?
+        Print("# WARNING: '",bad,"' is not a valid GAP identifier.\n",
+              "# You will not be able to use AssignGeneratorVariables on this ring.\n");
+    fi;
 
     if ForAll(orderings, x->x[1] <> "c" and x[1] <> "C") then
         # FIXME: Why do we do this?
