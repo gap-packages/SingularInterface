@@ -21,7 +21,7 @@ InstallMethod(SI_intmat,[IsList],_SI_intmat);
 # TODO: document the format accepted by _ParseIndeterminatesDescription
 # TODO: add support for Singular format  "x(2..4)" ->  x(2), x(3), x(4)
 BindGlobal("_ParseIndeterminatesDescription", function(str)
-    local parts, result, p, v, n, i, name, tmp, range;
+    local parts, result, p, v, n, i, name, tmp, range, open, close, pos, ranges;
     if IsEmpty(str) then
         # Must have at least one variable
         return [ "dummy_variable" ];
@@ -30,13 +30,70 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
         Error("Argument must be a string");
     fi;
 
+    # Remove all spaces ...
+    str := Filtered(str, x -> x <> ' ');
+
+    # ... and split comma separated values
     parts := SplitString(str, ",");
-    parts := List(parts, g -> StripBeginEnd(g, " "));
 
     result := [];
     for p in parts do
         if p[Length(p)] = '.' then
             Error("Invalid input '",p," ends with with '.'");
+        elif p[1] = '(' then
+            Error("Invalid input '",p," starts with with '('");
+        elif '(' in p then
+            # Singular style!
+            #  x(2..4) ->  x(2), x(3), x(4)
+            #  x(4..2) ->  x(4), x(3), x(2)
+            #  x(1) -> x(1)
+            #  x(1..0)(-1..0)  -> x(1)(-1) x(1)(0) x(0)(-1) x(0)(0)
+            open := Positions(p,'(');
+            close := Positions(p,')');
+            if Length(open) <> Length(close) then
+                Error("Invalid format in '",p,"'");
+            fi;
+
+            n := Length(open);
+            if close[n] <> Length(p) or open{[2..n]} <> close{[1..n-1]} + 1 then
+                Error("Invalid format in '",p,"'");
+            fi;
+            name := p{[1..open[1]-1]};
+            if not IsValidIdentifier(name) then
+                Error("'", name, "' is not a valid identifier in '",p,"'");
+            fi;
+            
+            ranges := [];
+            for i in [1..n] do
+                tmp := p{[open[i]+1..close[i]-1]};
+                pos := PositionSublist(tmp, "..");
+                if pos <> fail then
+                    tmp := [ tmp{[1..pos-1]}, tmp{[pos+2..Length(tmp)]} ];
+                    if "" in tmp then
+                        Error("Invalid format in '",p,"'");
+                    fi;
+                    tmp := [ Int(tmp[1]), Int(tmp[2]) ];
+                    if fail in tmp then
+                        Error("Invalid format in '",p,"'");
+                    fi;
+                    if tmp[1] <= tmp[2] then
+                        ranges[i] := [tmp[1]..tmp[2]];
+                    else
+                        ranges[i] := [tmp[1],tmp[1]-1..tmp[2]];
+                    fi;
+                else
+                    if tmp = "" or Int(tmp) = fail then
+                        Error("Invalid format in '",p,"'");
+                    fi;
+                    ranges[i] := [Int(tmp)];
+                fi;
+            od;
+            for tmp in Cartesian(ranges) do
+                tmp := List(tmp, i -> Concatenation("(",String(i),")"));
+                tmp := Concatenation(tmp);
+                Add(result, Concatenation(name, tmp));
+            od;
+            
         elif PositionSublist( p, ".." ) <> fail then
             v := SplitString(p, ".");
             if Length(v) <> 3 then
@@ -49,7 +106,7 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
                 Error("Text right of '..' must not contain any non-digits (in '",p,"')");
             fi;
 
-            # Find longest suffice of v[1] consisting of only digits
+            # Find longest suffix of v[1] consisting of only digits
             n := Length(v[1]);
             if not IsDigitChar(v[1][n]) then
                 Error("Text left of '..' must end with at least one digit (in '",p,"')");
@@ -64,12 +121,14 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
                 Error("'", name, "' is not a valid identifier in '",p,"'");
             fi;
 
+            # Extract the numerical range
             tmp := v[1]{[n+1..Length(v[1])]};
             range := [ Int(tmp) .. Int(v[3]) ];
             if IsEmpty(range) then
                 Error("Invalid range in '",p,"'");
             fi;
 
+            # Generate the variable names
             for i in range do
                 Add(result,  Concatenation(name, String(i)));
             od;
