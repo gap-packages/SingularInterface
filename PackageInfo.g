@@ -141,7 +141,9 @@ PackageWWWHome := "http://gap-system.github.io/SingularInterface",
 
 README_URL     := Concatenation( ~.PackageWWWHome, "/README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
-ArchiveURL     := Concatenation( ~.PackageWWWHome, "-", ~.Version ),
+ArchiveURL     := Concatenation("https://github.com/gap-system/SingularInterface/",
+                                "releases/download/v", ~.Version,
+                                "/SingularInterface-", ~.Version),
 ArchiveFormats := ".tar.gz .tar.bz2",
 
 
