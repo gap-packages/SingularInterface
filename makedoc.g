@@ -8,14 +8,17 @@ AutoDoc( "SingularInterface" :
         rec(
             entities := [
                     "Singular",
-                    ]
+                    ],
+            appendix := [
+                     "appendix-implementation.xml",
+                     ]
             ),
          
          autodoc :=
          rec(
              files := [
                      "doc/intro.autodoc",
-                     ]
+                     ],
              )
          );
 
