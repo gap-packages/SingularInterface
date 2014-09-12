@@ -152,17 +152,3 @@ end);
 InstallOtherMethod(QUO, ["IsSingularObj", "IsSingularObj"], function(a, b)
   return SI_\/(a, b);
 end);
-
-# this causes that DefaultRing of a Singular object with ring returns that ring
-InstallOtherMethod(DefaultRingByGenerators, fam->
-    fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_ring(l[1]));
-InstallMethod(\in, ["IsSingularPoly", "IsRing"], function(pol, r)
-  return SI_ring(pol) = r;
-end);
-
-# HACK for demo in Konstanz
-InstallMethod(AssignGeneratorVariables, ["IsSingularRing"], function(r)
-  local gens;
-  gens := SI_Indeterminates(r);
-  DoAssignGenVars(gens);
-end);
