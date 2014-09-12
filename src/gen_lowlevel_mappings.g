@@ -76,22 +76,12 @@ end;;
 
 # Generate code for returning a ring-dependent Singular object
 SINGULAR_default_ringdep_return := function (type, name)
-	PrintCXXLine("{");
-	indent := indent + 1;
-		PrintCXXLine("Obj tmp = NEW_SINGOBJ_RING(SINGTYPE_",type ,",", name, ",rr);");
-		PrintCXXLine("return tmp;");
-	indent := indent - 1;
-	PrintCXXLine("}");
+    PrintCXXLine("return NEW_SINGOBJ_RING(SINGTYPE_",type ,", ", name, ", r);");
 end;;
 
 # Generate code for returning a Singular object that does not depend on a ring
 SINGULAR_default_return := function (type, name)
-	PrintCXXLine("{");
-	indent := indent + 1;
-		PrintCXXLine("Obj tmp = NEW_SINGOBJ(SINGTYPE_",type ,",", name, ");");
-		PrintCXXLine("return tmp;");
-	indent := indent - 1;
-	PrintCXXLine("}");
+    PrintCXXLine("return NEW_SINGOBJ(SINGTYPE_",type ,", ", name, ");");
 end;;
 
 # A record containing information about the various Singular types.
@@ -318,7 +308,6 @@ GenerateSingularWrapper := function (desc)
 	indent := 1;
 
 	# Declare some variables used throughout the wrapper function body.
-	PrintCXXLine("Obj rr;");
 	PrintCXXLine("ring r = currRing;");
 	PrintCXXLine("");
 
@@ -346,7 +335,7 @@ GenerateSingularWrapper := function (desc)
 	for i in [1 .. Length(desc.params) ] do
 		type := SINGULAR_types.(GetParamTypeName(i));
 		# Extract the underlying Singular data from the GAP input object
-		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", rr, r);");
+		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", r);");
 		PrintCXXLine("if (",CXXObjName(i),".error) {");
 		indent := indent + 1;
 		    for j in [1..i] do

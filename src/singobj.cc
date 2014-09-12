@@ -130,7 +130,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     }
 }
 
-void SingObj::init(Obj input, Obj &rr, ring &r)
+void SingObj::init(Obj input, ring &r)
 {
     error = NULL;
     needcleanup = false;
@@ -159,14 +159,12 @@ void SingObj::init(Obj input, Obj &rr, ring &r)
         obj.flag = FLAGS_SINGOBJ(input);
         obj.attribute = (attr) ATTRIB_SINGOBJ(input);
         if (HasRingTable[gtype]) {
-            rr = RING_SINGOBJ(input);
             r = (ring) CXXRING_SINGOBJ(input);
             if (r != currRing) rChangeCurrRing(r);
         } else if (/*  gtype == SINGTYPE_RING ||  */
                     gtype == SINGTYPE_RING_IMM ||
                     /* gtype == SINGTYPE_QRING ||  */
                     gtype == SINGTYPE_QRING_IMM) {
-            rr = input;
             r = (ring) CXX_SINGOBJ(input);
         }
     } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == _SI_ProxiesType) {
@@ -179,9 +177,8 @@ void SingObj::init(Obj input, Obj &rr, ring &r)
                 return;
             }
             int gtype = TYPE_SINGOBJ(ob);
-            if (HasRingTable[gtype] && RING_SINGOBJ(ob) != 0) {
-                rr = RING_SINGOBJ(ob);
-                r = (ring) CXX_SINGOBJ(rr);
+            if (HasRingTable[gtype] && CXXRING_SINGOBJ(ob) != 0) {
+                r = (ring) CXXRING_SINGOBJ(ob);
                 if (r != currRing) rChangeCurrRing(r);
             }
             obj.data = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype,error);

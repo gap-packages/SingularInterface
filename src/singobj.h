@@ -45,8 +45,8 @@ private:
     bool needcleanup;
 
 public:
-    SingObj(Obj input, Obj &rr, ring &r) {
-        init(input, rr, r);
+    SingObj(Obj input, ring &r) {
+        init(input, r);
     }
 
     /// Default constructor for empty object
@@ -55,7 +55,7 @@ public:
     }
 
     // This does the actual work
-    void init(Obj input, Obj &rr, ring &r);
+    void init(Obj input, ring &r);
 
     ~SingObj() {
         cleanup();

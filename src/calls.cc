@@ -70,9 +70,9 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
 }
 
 /// Wrap the content of a Singular interpreter object in a GAP object.
-Obj gapwrap(sleftv &obj, Obj rr)
+static Obj gapwrap(sleftv &obj, ring r)
 {
-    if (rr == 0 && obj.RingDependend()) {
+    if (r == 0 && obj.RingDependend()) {
         if (currRing == 0) {
             obj.CleanUp();
             ErrorQuit("Result is ring dependent but can't figure out what the ring should be",0L,0L);
@@ -84,15 +84,11 @@ Obj gapwrap(sleftv &obj, Obj rr)
             else
                 NEW_SINGOBJ_ZERO_ONE(SINGTYPE_QRING_IMM, currRing, NULL, NULL);
         }
-        rr = (Obj)currRing->ext_ref;
-        if (currRing != (ring)CXX_SINGOBJ(rr)) {
-            obj.CleanUp();
-            ErrorQuit("Singular ring with invalid GAP wrapper pointer encountered",0L,0L);
-        }
+        r = currRing;
     }
     
     if ((obj.Typ() == RING_CMD || obj.Typ() == QRING_CMD) && ((ring)obj.Data())->ext_ref != 0) {
-        rr = (Obj)((ring)obj.Data())->ext_ref;
+        Obj rr = (Obj)((ring)obj.Data())->ext_ref;
         obj.CleanUp();
         return HIWRAP_SINGOBJ(rr);
     }
@@ -118,7 +114,7 @@ Obj gapwrap(sleftv &obj, Obj rr)
             break;
         default:
             if (HasRingTable[gtype])
-                res = NEW_SINGOBJ_RING(gtype, obj.CopyD(), rr);
+                res = NEW_SINGOBJ_RING(gtype, obj.CopyD(), r);
             else
                 res = NEW_SINGOBJ(gtype, obj.CopyD());
             break;
@@ -167,10 +163,10 @@ public:
     SingularIdHdl() : h(0) {
     }
 
-    void init(int i, Obj input, Obj &extrr, ring &extr) {
+    void init(int i, Obj input, ring &extr) {
         assert(h == 0);
 
-        SingObj::init(input, extrr, extr);
+        SingObj::init(input, extr);
         if (error)
             return;
         
@@ -200,8 +196,8 @@ class SingularIdHdlWithWrap : public SingularIdHdl {
 public:
     sleftv wrap;
 
-    SingularIdHdlWithWrap(int i, Obj input, Obj &extrr, ring &extr) {
-        init(i, input, extrr, extr);
+    SingularIdHdlWithWrap(int i, Obj input, ring &extr) {
+        init(i, input, extr);
 
         wrap.Init();
         wrap.rtyp = IDHDL;
@@ -223,10 +219,9 @@ public:
 
 Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
 {
-    Obj rr = NULL;
     ring r = NULL;
 
-    SingularIdHdlWithWrap sing(0, a, rr, r);
+    SingularIdHdlWithWrap sing(0, a, r);
     if (sing.error) { ErrorQuit(sing.error, 0L, 0L); }
 
     StartPrintCapture();
@@ -238,17 +233,16 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
         return Fail;
     }
 
-    return gapwrap(result, rr);
+    return gapwrap(result, r);
 }
 
 Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
 {
-    Obj rr = NULL;
     ring r = NULL;
 
-    SingularIdHdlWithWrap singa(0, a, rr, r);
+    SingularIdHdlWithWrap singa(0, a, r);
     if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
-    SingularIdHdlWithWrap singb(1, b, rr, r);
+    SingularIdHdlWithWrap singb(1, b, r);
     if (singb.error) {
         singa.cleanup();
         ErrorQuit(singb.error, 0L, 0L);
@@ -262,22 +256,21 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
         result.CleanUp(r);
         return Fail;
     }
-    return gapwrap(result, rr);
+    return gapwrap(result, r);
 }
 
 Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 {
-    Obj rr = NULL;
     ring r = NULL;
 
-    SingularIdHdlWithWrap singa(0, a, rr, r);
+    SingularIdHdlWithWrap singa(0, a, r);
     if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
-    SingularIdHdlWithWrap singb(1, b, rr, r);
+    SingularIdHdlWithWrap singb(1, b, r);
     if (singb.error) {
         singa.cleanup();
         ErrorQuit(singb.error, 0L, 0L);
     }
-    SingularIdHdlWithWrap singc(2, c, rr, r);
+    SingularIdHdlWithWrap singc(2, c, r);
     if (singc.error) {
         singa.cleanup();
         singb.cleanup();
@@ -295,7 +288,7 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
         result.CleanUp(r);
         return Fail;
     }
-    return gapwrap(result, rr);
+    return gapwrap(result, r);
 }
 
 // This class take a GAP list of objects, put each entry into an idhdl,
@@ -310,13 +303,13 @@ public:
     sleftv s_arg;
     const char *error;
     
-    WrapMultiArgs(Obj arg, Obj &rr, ring &r) : sing(0), error(0) {
+    WrapMultiArgs(Obj arg, ring &r) : sing(0), error(0) {
         int i;
         int nrargs = (int) LEN_PLIST(arg);
         if (nrargs > 0)
             sing = new SingularIdHdl[nrargs];
         for (i = 0; i < nrargs; i++) {
-            sing[i].init(i, ELM_PLIST(arg, i + 1), rr, r);
+            sing[i].init(i, ELM_PLIST(arg, i + 1), r);
             if (sing[i].error) {
                 error = sing[i].error;
                 delete [] sing;
@@ -345,11 +338,10 @@ public:
 
 Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
-    Obj rr = NULL;
     ring r = NULL;
 
     int nrargs = (int) LEN_PLIST(arg);
-    WrapMultiArgs wrap(arg, rr, r);
+    WrapMultiArgs wrap(arg, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
     StartPrintCapture();
@@ -361,7 +353,7 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
         result.CleanUp(r);
         return Fail;
     }
-    return gapwrap(result, rr);
+    return gapwrap(result, r);
 }
 
 Obj FuncSI_SetCurrRing(Obj self, Obj rr)
@@ -395,12 +387,11 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         return Fail;
     }
 
-    Obj rr = NULL;
     ring r = NULL;
     idhdl tmpHdl = 0;
 
     int nrargs = (int) LEN_PLIST(args);
-    WrapMultiArgs wrap(args, rr, r);
+    WrapMultiArgs wrap(args, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
     assert(currRingHdl == 0);
@@ -443,12 +434,12 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         for (int i = 0; i < len; ++i) {
             leftv next = ret->next;
             ret->next = 0;
-            SET_ELM_PLIST(list, i+1, gapwrap(*ret, rr));
+            SET_ELM_PLIST(list, i+1, gapwrap(*ret, r));
             if (i > 0) omFreeBin(ret, sleftv_bin);
             ret = next;
         }
         return list;
     }
 
-    return gapwrap(*ret, rr);
+    return gapwrap(*ret, r);
 }

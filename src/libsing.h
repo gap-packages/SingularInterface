@@ -51,16 +51,14 @@ extern void _SI_ErrorCallback(const char *st);
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // There are 3 possibilites:
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
-// Objects in case (1) consists of 2 words:
+// Objects in case (1) consists of two words:
 // First is the GAP type as a small integer pointing into a plain list
 // together with some bits for the special attributes.
 // Second is a pointer to a C++ singular object.
 // These are the same for all objects.
-// For type (2) there are 4 words, the first 2 are as above:
-// Third is a reference to the GAP wrapper object of the corresponding
-// ring, this is to keep the ring alive as long as its elements are.
-// Fourth is a pointer to the C++ ring object.
-// For type (3) there are 4 words, the first 2 are as above:
+// For type (2) there are three words, the first two are as above:
+// Third is a pointer to the C++ Singular ring object.
+// For type (3) there are four words, the first two are as above:
 // Third is a reference to the canonical GAP wrapper of the ring's zero.
 // Fourth is a reference to the canonical GAP wrapper of the ring's one.
 //
@@ -125,29 +123,21 @@ inline void SET_CXX_SINGOBJ( Obj obj, void *val )
 
 //
 // The following accessor functions are for wrappers for ring dependant
-// objects. These contain a reference to the wrapper object for their
-// basering, as well as a direct pointer to the base ring (the latter
-// allows us to avoid another level of indirection).
+// objects. These contain a direct pointer to the base ring.
 //
 
-inline Obj RING_SINGOBJ( Obj obj )
-{
-    return ADDR_OBJ(obj)[2];
-}
-
-inline void SET_RING_SINGOBJ( Obj obj, Obj rr )
-{
-    ADDR_OBJ(obj)[2] = rr;
-}
-
+///! Get pointer to the Singular base ring of the ring dependant
+///! wrapper object obj.
 inline ring CXXRING_SINGOBJ( Obj obj )
 {
-    return (ring) ADDR_OBJ(obj)[3];
+    return (ring) ADDR_OBJ(obj)[2];
 }
 
+///! Set pointer to the Singular base ring of the ring dependant
+///! wrapper object obj.
 inline void SET_CXXRING_SINGOBJ( Obj obj, ring r )
 {
-    ADDR_OBJ(obj)[3] = (Obj) r;
+    ADDR_OBJ(obj)[2] = (Obj) r;
 }
 
 //
@@ -218,10 +208,8 @@ inline void SET_ATTRIB_SINGOBJ( Obj obj, void *a )
 
 
 Obj NEW_SINGOBJ(UInt type, void *cxx);
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr);
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, ring r);
 Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one);
-
-Obj gapwrap(sleftv &obj, Obj rr);
 
 #if 0
 proxies fuer:

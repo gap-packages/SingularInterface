@@ -81,18 +81,16 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
 //!
 //! \param[in] type  the type of the singular object
 //! \param[in] cxx   pointer to the singular object
-//! \param[in] rr    a GAP-wrapped singular ring
+//! \param[in] r     a singular ring
 //! \return  a GAP object wrapping the singular object
-Obj NEW_SINGOBJ_RING(UInt type, void *cxx, Obj rr)
+Obj NEW_SINGOBJ_RING(UInt type, void *cxx, ring r)
 {
     possiblytriggerGC();
-    Obj tmp = NewBag(T_SINGULAR, 4*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_FLAGS_SINGOBJ(tmp,0u);
-    SET_CXX_SINGOBJ(tmp,cxx);
-    SET_RING_SINGOBJ(tmp,rr);
-    if (rr)
-        SET_CXXRING_SINGOBJ(tmp, (ring) CXX_SINGOBJ(rr));
+    Obj tmp = NewBag(T_SINGULAR, 3 * sizeof(Obj));
+    SET_TYPE_SINGOBJ(tmp, type);
+    SET_FLAGS_SINGOBJ(tmp, 0u);
+    SET_CXX_SINGOBJ(tmp, cxx);
+    SET_CXXRING_SINGOBJ(tmp, r);
     return tmp;
 }
 
@@ -229,33 +227,18 @@ void _SI_FreeFunc(Obj o)
 /// this function is not actually needed.
 void _SI_ObjMarkFunc(Bag o)
 {
-    Bag *ptr;
-    Int gtype = TYPE_SINGOBJ((Obj) o);
+    Int gtype = TYPE_SINGOBJ(o);
     if (HasRingTable[gtype]) {
-        ptr = PTR_BAG(o);
-        MARK_BAG(ptr[2]);
+        ring r = CXXRING_SINGOBJ(o);
+        Obj rr = r ? (Obj)r->ext_ref : 0;
+        MARK_BAG(rr);
     } else if (/*  gtype == SINGTYPE_RING ||  */
         gtype == SINGTYPE_RING_IMM ||
         /* gtype == SINGTYPE_QRING ||  */
         gtype == SINGTYPE_QRING_IMM) {
-        ptr = PTR_BAG(o);
-        MARK_BAG(ptr[2]);   // Mark zero
-        MARK_BAG(ptr[3]);   // Mark one
+        MARK_BAG(ZERO_SINGOBJ(o));   // Mark zero
+        MARK_BAG(ONE_SINGOBJ(o));   // Mark one
     }
-#if 0
-    // this is now old and outdated.
-    // Not necessary, since singular objects do not have GAP subobjects!
-    Bag *ptr;
-    Bag sub;
-    UInt i;
-    if (SIZE_BAG(o) > 2*sizeof(Bag)) {
-        ptr = PTR_BAG(o);
-        for (i = 2; i < SIZE_BAG(o)/sizeof(Bag); i++) {
-            sub = ptr[i];
-            MARK_BAG( sub );
-        }
-    }
-#endif
 }
 
 // The following functions are implementations of functions which
@@ -383,7 +366,10 @@ Obj FuncSI_RingOfSingobj( Obj self, Obj singobj )
         ErrorQuit("argument must be singular object.",0L,0L);
     Int gtype = TYPE_SINGOBJ(singobj);
     if (HasRingTable[gtype]) {
-        return RING_SINGOBJ(singobj);
+        ring r = CXXRING_SINGOBJ(singobj);
+        if (r == 0 || r->ext_ref == 0)
+            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+        return (Obj)r->ext_ref;
     } else if (/* gtype == SINGTYPE_RING || */
         gtype == SINGTYPE_RING_IMM ||
         /* gtype == SINGTYPE_QRING || */
@@ -404,23 +390,23 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     if (! ISSINGOBJ(SINGTYPE_RING_IMM, rr))
         ErrorQuit("argument must be Singular ring.",0L,0L);
 
-    ring r = (ring) CXX_SINGOBJ(rr);
+    ring r = (ring)CXX_SINGOBJ(rr);
     UInt nrvars = rVar(r);
     UInt i;
     Obj tmp;
 
     if (r != currRing) rChangeCurrRing(r);
 
-    res = NEW_PLIST(T_PLIST_DENSE,nrvars);
+    res = NEW_PLIST(T_PLIST_DENSE, nrvars);
     for (i = 1; i <= nrvars; i++) {
-        poly p = p_ISet(1,r);
-        pSetExp(p,i,1);
+        poly p = p_ISet(1, r);
+        pSetExp(p, i, 1);
         pSetm(p);
-        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY,p,rr);
-        SET_ELM_PLIST(res,i,tmp);
+        tmp = NEW_SINGOBJ_RING(SINGTYPE_POLY, p, r);
+        SET_ELM_PLIST(res, i, tmp);
         CHANGED_BAG(res);
     }
-    SET_LEN_PLIST(res,nrvars);
+    SET_LEN_PLIST(res, nrvars);
 
     return res;
 }
@@ -445,9 +431,10 @@ Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
     Int len = ParsePolyList(r, p, 100, polylist);
     ideal id = idInit(len,1);
     Int i;
-    for (i = 0; i < len; i++) id->m[i] = polylist[i];
+    for (i = 0; i < len; i++)
+        id->m[i] = polylist[i];
     omFree(polylist);
-    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,rr);
+    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL, id, r);
 }
 
 /// Installed as SI_bigint method
@@ -468,8 +455,9 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     rr = UnwrapHighlevelWrapper(rr);
-    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM,
-                            _SI_NUMBER_FROM_GAP((ring) CXX_SINGOBJ(rr), nr),rr);
+    ring r = (ring) CXX_SINGOBJ(rr);
+    number num = _SI_NUMBER_FROM_GAP(r, nr);
+    return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM, num, r);
 }
 
 /// Installed as SI_intvec method
@@ -554,7 +542,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
         poly p = p_Copy((poly) CXX_SINGOBJ(t),r);
         id->m[i-1] = p;
     }
-    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL,id,RING_SINGOBJ(t));
+    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL, id, r);
 }
 
 
@@ -746,10 +734,11 @@ static Obj CopySingObj(Obj s, bool immutable)
     
     // Wrap it again
     Obj res;
-    if (r)
-        res = NEW_SINGOBJ_RING(gtype, copy.data, RING_SINGOBJ(s));
-    else
+    if (r) {
+        res = NEW_SINGOBJ_RING(gtype, copy.data, r);
+    } else {
         res = NEW_SINGOBJ(gtype, copy.data);
+    }
 
     if (copy.flag)
         SET_FLAGS_SINGOBJ(res, copy.flag);
@@ -875,9 +864,13 @@ Obj ZeroSMSingObj(Obj s)
     if (((gtype + 1) & 1) == 1)    // we are mutable
         return ZeroMutObject(s);
     // Here we are immutable:
-    if (HasRingTable[gtype])
+    if (HasRingTable[gtype]) {
         // Rings are always immutable!
-        return ZeroSMSingObj(RING_SINGOBJ(s));
+        ring r = CXXRING_SINGOBJ(s);
+        if (r == 0 || r->ext_ref == 0)
+            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+        return ZeroSMSingObj((Obj)r->ext_ref);
+    }
     return ZeroObject(s);
 }
 
@@ -898,9 +891,13 @@ Obj OneSMSingObj(Obj s)
     if (((gtype + 1) & 1) == 1)   // we are mutable!
         return OneObject(s);  // This is OneMutable
     // Here we are immutable:
-    if (HasRingTable[gtype])
+    if (HasRingTable[gtype]) {
         // Rings are always immutable!
-        return OneSMSingObj(RING_SINGOBJ(s));
+        ring r = CXXRING_SINGOBJ(s);
+        if (r == 0 || r->ext_ref == 0)
+            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+        return OneSMSingObj((Obj)r->ext_ref);
+    }
     return OneMutObject(s);
 }
 

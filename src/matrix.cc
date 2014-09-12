@@ -43,7 +43,7 @@ Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
         }
     }
     omFree(polylist);
-    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,rr);
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX, mat, r);
 }
 
 /// Installed as SI_bigintmat method
@@ -226,7 +226,7 @@ Obj Func_SI_matrix_from_els(Obj self, Obj nrrows, Obj nrcols, Obj l)
             row++;
         }
     }
-    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX,mat,RING_SINGOBJ(t));
+    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX, mat, r);
 }
 
 
@@ -236,8 +236,6 @@ Obj Func_SI_MatElm(Obj self, Obj obj, Obj row_, Obj col_)
 {
     UInt gtype = TYPE_SINGOBJ(obj);
     void *data = CXX_SINGOBJ(obj);
-    Obj rr = RING_SINGOBJ(obj);
-    ring r = CXXRING_SINGOBJ(obj);
 
     int row = INT_INTOBJ(row_);
     int col = INT_INTOBJ(col_);
@@ -266,6 +264,7 @@ Obj Func_SI_MatElm(Obj self, Obj obj, Obj row_, Obj col_)
 
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
+            ring r = CXXRING_SINGOBJ(obj);
             matrix mat = (matrix)data;
             if (row <= 0 || row > mat->nrows ||
                 col <= 0 || col > mat->ncols) {
@@ -273,7 +272,7 @@ Obj Func_SI_MatElm(Obj self, Obj obj, Obj row_, Obj col_)
             }
             poly p = MATELEM(mat, row, col);
             p = p_Copy(p, r);
-            return NEW_SINGOBJ_RING(SINGTYPE_POLY, p, rr);
+            return NEW_SINGOBJ_RING(SINGTYPE_POLY, p, r);
             }
 
         default:
@@ -289,8 +288,6 @@ Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
 {
     UInt gtype = TYPE_SINGOBJ(obj);
     void *data = CXX_SINGOBJ(obj);
-    //Obj rr = RING_SINGOBJ(obj);
-    ring r = CXXRING_SINGOBJ(obj);
 
     int row = INT_INTOBJ(row_);
     int col = INT_INTOBJ(col_);
@@ -333,6 +330,7 @@ Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
 
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
+            ring r = CXXRING_SINGOBJ(obj);
             matrix mat = (matrix)data;
             if (row <= 0 || row > mat->nrows ||
                 col <= 0 || col > mat->ncols) {
