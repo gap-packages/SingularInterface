@@ -48,31 +48,6 @@ InstallMethod(SI_ideal,[IsSingularObj],_SI_ideal_singular);
 InstallMethod(SI_ideal,[IsSingularRing, IsStringRep], _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 
-InstallGlobalFunction( _SI_BindSingularProcs,
-  function( prefix )
-    local n,nn,procs,st,s;
-    procs := _SI_SingularProcs();
-    st := "";
-    for n in procs do
-        nn := Concatenation(prefix,n);
-        if not(IsBoundGlobal(nn)) then
-            Append(st,Concatenation("BindGlobal(\"",
-                nn,"\", function(arg) return SI_CallProc(\"",
-                n,"\",arg); end);\n"));
-        fi;
-    od;
-    s := InputTextString(st);
-    Read(s);
-  end );
-
-# This is a dirty hack but seems to work:
-MakeReadWriteGVar("SI_LIB");
-Unbind(SI_LIB);
-BindGlobal("SI_LIB",function(libname)
-  SI_load(libname,"with");
-  _SI_BindSingularProcs("SIL_");
-end);
-
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
   function( poly )
@@ -121,83 +96,6 @@ InstallMethod( ViewString, "for a singular ideal",
     return STRINGIFY("<singular ideal",mut,", ",SI_ncols(ideal)," gens>");
   end );
 
-
-InstallMethod( Singular, "for a string in stringrep",
-  [ IsStringRep ],
-  function( st )
-    local ret;
-    SI_Errors := "";
-    ret := _SI_EVALUATE(st);
-    if Length(SI_Errors) > 0 then
-        Print(SI_Errors);
-    fi;
-    return ret;
-  end );
-
-# empty string is not in string rep, handle it separately
-InstallMethod( Singular, "for a string in stringrep",
-  [ IsString and IsEmpty ],
-  function( st )
-    return 0;
-  end );
-
-InstallMethod( Singular, "without arguments",
-  [ ],
-  function()
-    local i,s;
-    i := InputTextUser();
-    while true do
-        Print("\rS> \c");
-        s := ReadLine(i);
-        if s = "\n" then break; fi;
-        Singular(s);
-        Print(SI_LastOutput());
-    od;
-    CloseStream(i);
-  end );
-
-InstallMethod(SI_Proxy, "for a singular object and a positive integer",
-  [ IsSingularObj, IsPosInt ],
-  function( o, i )
-    local l;
-    l := [o,i];
-    Objectify(_SI_ProxiesType, l);
-    return l;
-  end );
-
-InstallMethod(SI_Proxy, "for a singular object and two positive integers",
-  [ IsSingularObj, IsPosInt, IsPosInt ],
-  function( o, i, j)
-    local l;
-    l := [o,i,j];
-    Objectify(_SI_ProxiesType, l);
-    return l;
-  end );
-
-InstallMethod(SI_Proxy, "for a singular object and a string",
-  [ IsSingularObj, IsStringRep ],
-  function( o, s)
-    local l;
-    l := [o,s];
-    Objectify(_SI_ProxiesType, l);
-    return l;
-  end );
-
-InstallMethod(ViewString, "for a singular proxy object",
-  [ IsSingularProxy ],
-  function(p)
-    local str;
-    str := "<proxy for ";
-    Append(str, ViewString(p![1]));
-    Append(str, "[");
-    Append(str, ViewString(p![2]));
-    if IsBound(p![3]) then
-        Append(str, ",");
-        Append(str, ViewString(p![3]));
-    fi;
-    Append(str, "]>");
-    return str;
-  end );
 
 # TODO: Quoting the GAP manual:
 # "ViewObj should print the object to the standard output in a short and

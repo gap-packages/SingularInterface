@@ -8,10 +8,6 @@ DeclareGlobalFunction( "_SI_Subtraction" );
 DeclareGlobalFunction( "_SI_Negation" );
 DeclareGlobalFunction( "_SI_Negation_fast" );
 
-DeclareOperation( "Singular", [IsStringRep] );
-DeclareOperation( "Singular", [IsString and IsEmpty] );
-DeclareOperation( "Singular", [] );
-
 DeclareOperation("SI_bigint",[IsSingularObj]);
 DeclareOperation("SI_bigint",[IsInt]);
 
@@ -45,10 +41,6 @@ DeclareOperation("SI_IdentityMat",[IsSingularRing, IsPosInt]);
 DeclareOperation("SI_ideal",[IsSingularObj]);
 DeclareOperation("SI_ideal",[IsSingularRing, IsStringRep]);
 DeclareOperation("SI_ideal",[IsList]);
-
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt] );
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt, IsPosInt] );
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
 
 DeclareGlobalFunction( "_SI_Comparer" );
 

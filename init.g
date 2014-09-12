@@ -21,4 +21,7 @@ ReadPackage("SingularInterface", "lib/highlevel_mappings.g");
 ReadPackage("SingularInterface", "lib/singtypes.gd");
 ReadPackage("SingularInterface", "lib/libsing.gd");
 
+ReadPackage("SingularInterface", "lib/interpreter.gd");
+ReadPackage("SingularInterface", "lib/proxy.gd");
+
 ReadPackage("SingularInterface", "lib/types/ring.gd");
