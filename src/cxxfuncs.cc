@@ -8,6 +8,7 @@ This file contains all of the code that deals with C++ libraries.
 #include "libsing.h"
 #include "singobj.h"
 #include "lowlevel_mappings.h"
+#include "matrix.h" // for Func_SI_Matintmat / Func_SI_Matbigintmat
 #include "number.h"
 #include "poly.h"
 
@@ -686,11 +687,22 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
             Int i = (Int) CXX_SINGOBJ(singobj);
             return INTOBJ_INT(i);
         }
+        case SINGTYPE_INTMAT:
+        case SINGTYPE_INTMAT_IMM: {
+            return Func_SI_Matintmat(self, singobj);
+        }
+        case SINGTYPE_INTVEC:
+        case SINGTYPE_INTVEC_IMM: {
+            return Func_SI_Plistintvec(self, singobj);
+        }
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM: {
-            // TODO
             number n = (number) CXX_SINGOBJ(singobj);
             return _SI_BIGINT_OR_INT_TO_GAP(n);
+        }
+        case SINGTYPE_BIGINTMAT:
+        case SINGTYPE_BIGINTMAT_IMM: {
+            return Func_SI_Matbigintmat(self, singobj);
         }
         default:
             return Fail;
