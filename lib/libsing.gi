@@ -1,20 +1,20 @@
-InstallMethod(SI_bigint,[IsSingularObj],SI_bigint_singular);
+InstallMethod(SI_bigint,[IsSingularObj],_SI_bigint_singular);
 InstallMethod(SI_bigint,[IsInt],_SI_bigint);
 
-InstallMethod(SI_bigintmat,[IsSingularObj],SI_bigintmat_singular);
-#InstallMethod(SI_bigintmat,[IsSingularObj,IsPosInt,IsPosInt],SI_bigintmat_singular);
+InstallMethod(SI_bigintmat,[IsSingularObj],_SI_bigintmat_singular);
+#InstallMethod(SI_bigintmat,[IsSingularObj,IsPosInt,IsPosInt],_SI_bigintmat_singular);
 InstallMethod(SI_bigintmat,[IsList],_SI_bigintmat);
 
-InstallMethod(SI_number,[IsSingularRing, IsSingularObj],SI_number_singular);
+InstallMethod(SI_number,[IsSingularRing, IsSingularObj],_SI_number_singular);
 InstallMethod(SI_number,[IsSingularRing, IsInt],_SI_number);
 InstallMethod(SI_number,[IsSingularRing, IsFFE],_SI_number);
 InstallMethod(SI_number,[IsSingularRing, IsRat],_SI_number);
 
-InstallMethod(SI_intvec,[IsSingularObj],SI_intvec_singular);
+InstallMethod(SI_intvec,[IsSingularObj],_SI_intvec_singular);
 InstallMethod(SI_intvec,[IsList],_SI_intvec);
 
-InstallMethod(SI_intmat,[IsSingularObj],SI_intmat_singular);
-InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],SI_intmat_singular);
+InstallMethod(SI_intmat,[IsSingularObj],_SI_intmat_singular);
+InstallMethod(SI_intmat,[IsSingularObj,IsPosInt,IsPosInt],_SI_intmat_singular);
 InstallMethod(SI_intmat,[IsList],_SI_intmat);
 
 
@@ -142,7 +142,7 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
     return result;
 end );
 
-InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],SI_ring_singular);
+InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],_SI_ring_singular);
 InstallMethod(SI_ring,[IsInt,IsList,IsList],
   function( charact, names, orderings )
     local bad;
@@ -179,12 +179,12 @@ InstallMethod(SI_ring,[IsInt,IsList],
 
 InstallMethod(SI_ring,["IsSingularObj"], SI_RingOfSingobj);
 
-InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],SI_poly_singular);
+InstallMethod(SI_poly,[IsSingularRing, IsSingularObj],_SI_poly_singular);
 InstallMethod(SI_poly,[IsSingularRing, IsStringRep],_SI_poly_from_String);
 
-InstallMethod(SI_matrix,["IsSingularObj"],SI_matrix_singular);
+InstallMethod(SI_matrix,["IsSingularObj"],_SI_matrix_singular);
 InstallMethod(SI_matrix,["IsSingularObj","IsPosInt","IsPosInt"],
-  SI_matrix_singular);
+  _SI_matrix_singular);
 InstallMethod(SI_matrix,["IsSingularRing","IsPosInt","IsPosInt","IsStringRep"],
               _SI_matrix_from_String);
 InstallMethod(SI_matrix,["IsPosInt", "IsPosInt", "IsList"], 
@@ -204,9 +204,9 @@ function(r, len, str)
   # this returns the first column(!) of mat as vector
   return SI_\[(mat,1);
 end);
-InstallMethod(SI_vector,["IsSingularObj"],SI_vector_singular);
+InstallMethod(SI_vector,["IsSingularObj"],_SI_vector_singular);
 
-InstallMethod(SI_ideal,[IsSingularObj],SI_ideal_singular);
+InstallMethod(SI_ideal,[IsSingularObj],_SI_ideal_singular);
 InstallMethod(SI_ideal,[IsSingularRing, IsStringRep], _SI_ideal_from_String);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 

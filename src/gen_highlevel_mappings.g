@@ -1,10 +1,39 @@
 Read("highlevel_mappings_table.g");;
-IsRingDep := 
-Set(["ideal","map","matrix","module","number","poly","qring","ring","vector"]);;
+
+IsRingDep := Set([
+    "ideal",
+    "map",
+    "matrix",
+    "module",
+    "number",
+    "poly",
+    "qring",
+    "ring",
+    "vector",
+]);;
 IsRingDepVariant := function(tabrow)
-  return ForAll(tabrow[2],x->not(x in IsRingDep)) and
-         tabrow[3] in IsRingDep;
+    return ForAll(tabrow[2], x->not (x in IsRingDep)) and
+           tabrow[3] in IsRingDep;
 end;;
+
+#
+# The following constructors get installed under a different
+# name ("_SI_op_singular" instead of "SI_op") as we want to
+# provide operations with the same name.
+singularConstructors := Set([
+    "bigint",
+    "bigintmat",
+    "ideal",
+    "intmat",
+    "intvec",
+    "matrix",
+    "number",
+    "poly",
+    "ring",
+    "vector",
+]);;
+
+
 
 doit := function()
   local needring,s,ops,ops2,op,poss,name,nr,i;
@@ -26,7 +55,11 @@ for op in ops do
             needring := true;
         fi;
     od;
-    name := Concatenation("SI_",op);
+    if op in singularConstructors then
+        name := Concatenation("_SI_", op, "_singular");
+    else
+        name := Concatenation("SI_", op);
+    fi;
     if poss{[2..4]} = [[],[],[]] then
         # occurs only with one argument
         if needring then
