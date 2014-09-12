@@ -5,7 +5,10 @@ if LoadPackage("io") = fail then Error("Could not load package: 'IO'!"); fi;
 
 SetPackagePath("SingularInterface", ".");
 
-if LoadPackage("SingularInterface") = fail then Error("Could not load package: 'SingularInterface'!"); fi;
+if LoadPackage("SingularInterface") = fail then
+    Print("Could not load package: 'SingularInterface'\n");
+    IO_exit(99); # make check: FAILED
+fi;
 
 d := DirectoriesPackageLibrary("SingularInterface","tst");
 
