@@ -19,8 +19,12 @@ InstallGlobalFunction( _SI_BindSingularProcs,
 MakeReadWriteGVar("SI_LIB");
 Unbind(SI_LIB);
 BindGlobal("SI_LIB",function(libname)
-  SI_load(libname,"with");
-  _SI_BindSingularProcs("SIL_");
+    local res;
+    res := SI_load(libname,"with");
+    if res = true then
+        _SI_BindSingularProcs("SIL_");
+    fi;
+    return res;
 end);
 
 
