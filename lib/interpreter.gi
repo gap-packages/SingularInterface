@@ -58,3 +58,10 @@ InstallMethod( Singular, "without arguments",
     CloseStream(i);
   end );
 
+
+
+# Useful little helper to undefine a Singular var or proc
+BindGlobal( "SI_Undef", function(x)
+   Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));
+end);
+
