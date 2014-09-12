@@ -1,12 +1,8 @@
 SetPackageInfo( rec(
 
-##  This is case sensitive, use your preferred spelling.
-##
 PackageName := "SingularInterface",
 
-##  This may be used by a default banner or on a Web page, should fit on
-##  one line.
-Subtitle := "Linking Singular as a library into a GAP process",
+Subtitle := "A GAP interface to Singular",
 
 Version := Maximum( [
                    "2014.01.06", ## Franks's version
@@ -155,8 +151,9 @@ ArchiveFormats := ".tar.gz .tar.bz2",
 ##  '<span class="pkgname">MyPKG</span>' for specifing package names.
 ##  
 AbstractHTML := 
-  "The <span class=\"pkgname\">SingularInterface</span> package links Singular\
-  as a library into a GAP process.",
+  "The <span class=\"pkgname\">SingularInterface</span> package provides\
+  a GAP interface to Singular, enabling direct access to the complete\
+  functionality of Singular.",
 
 PackageDoc := rec(
   # use same as in GAP
@@ -164,52 +161,21 @@ PackageDoc := rec(
   ArchiveURLSubset := ["doc"],
   HTMLStart := "doc/chap0.html",
   PDFFile   := "doc/manual.pdf",
-  # the path to the .six file used by GAP's help system
   SixFile   := "doc/manual.six",
-  # a longer title of the book, this together with the book name should
-  # fit on a single text line (appears with the '?books' command in GAP)
   LongTitle := ~.Subtitle,
-  # Should this help book be autoloaded when GAP starts up? This should
-  # usually be 'true', otherwise say 'false'. 
   Autoload  := true
 ),
 
-
-##  Are there restrictions on the operating system for this package? Or does
-##  the package need other packages to be available?
 Dependencies := rec(
-  # GAP version, use version strings for specifying exact versions,
-  # prepend a '>=' for specifying a least version.
   GAP := ">=4.7.2",
-  # list of pairs [package name, (least) version],  package name is case
-  # insensitive, least version denoted with '>=' prepended to version string.
-  # without these, the package will not load
-  # NeededOtherPackages := [["GAPDoc", ">= 0.99"]],
   NeededOtherPackages := [],
-  # without these the package will issue a warning while loading
-  # SuggestedOtherPackages := [],
   SuggestedOtherPackages := [
     ["GAPDoc", "1.2"],
     ["AutoDoc", "2014.03.27"],
     ],
-  # needed external conditions (programs, operating system, ...)  provide 
-  # just strings as text or
-  # pairs [text, URL] where URL  provides further information
-  # about that point.
-  # (no automatic test will be done for this, do this in your 
-  # 'AvailabilityTest' function below)
-  # ExternalConditions := []
-  ExternalConditions := []
+  ExternalConditions := ["Singular 4"]
 ),
 
-##  Provide a test function for the availability of this package.
-##  For packages which will not fully work, use 'Info(InfoWarning, 1,
-##  ".....")' statements. For packages containing nothing but GAP code,
-##  just say 'ReturnTrue' here.
-##  With the new package loading mechanism (GAP >=4.4)  the availability
-##  tests of other packages, as given under .Dependencies above, will be 
-##  done automatically and need not be included in this function.
-#AvailabilityTest := ReturnTrue,
 AvailabilityTest := function()
   local path;
     # test for existence of the compiled binary
@@ -222,23 +188,8 @@ AvailabilityTest := function()
     return true;
   end,
 
-##  Suggest here if the package should be *automatically loaded* when GAP is 
-##  started.  This should usually be 'false'. Say 'true' only if your package 
-##  provides some improvements of the GAP library which are likely to enhance 
-##  the overall system performance for many users.
-Autoload := false,
-
-##  *Optional*, but recommended: path relative to package root to a file which 
-##  contains as many tests of the package functionality as sensible.
-##  The file can either consist of 'ReadTest' calls or it is itself read via
-##  'ReadTest'; it is assumed that the latter case occurs if and only if
-##  the file contains the string 'gap> START_TEST('.
-##  For submitted packages, these tests are run regularly, as a part of the
-##  standard GAP test suite.
 TestFile := "tst/testall.g",
 
-##  *Optional*: Here you can list some keyword related to the topic 
-##  of the package.
 Keywords := ["Singular", "polynomials", "groebner"],
 
 
