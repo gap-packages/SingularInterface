@@ -1,29 +1,29 @@
 gap> r := SI_ring(0,["x","y","z"]);
 <singular ring>
 gap> a := SI_poly(r,"xy");
-<singular poly (mutable):xy>
+x*y
 gap> ai := MakeImmutable(SI_poly(r,"xy"));
-<singular poly:xy>
+x*y
 gap> b := SI_poly(r,"xz");
-<singular poly (mutable):xz>
+x*z
 gap> bi := MakeImmutable(SI_poly(r,"xz"));
-<singular poly:xz>
+x*z
 gap> a+b;
-<singular poly (mutable):xy+xz>
+x*y+x*z
 gap> a+bi;
-<singular poly (mutable):xy+xz>
+x*y+x*z
 gap> ai+b;
-<singular poly (mutable):xy+xz>
+x*y+x*z
 gap> ai+bi;
-<singular poly:xy+xz>
+x*y+x*z
 gap> a-b;
-<singular poly (mutable):xy-xz>
+x*y-x*z
 gap> a-bi;
-<singular poly (mutable):xy-xz>
+x*y-x*z
 gap> ai-b;
-<singular poly (mutable):xy-xz>
+x*y-x*z
 gap> ai-bi;
-<singular poly:xy-xz>
+x*y-x*z
 gap> a := SI_IdentityMat(r,3);
 <singular matrix (mutable):
 1,0,0,

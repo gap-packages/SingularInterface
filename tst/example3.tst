@@ -5,8 +5,8 @@ gap> s := SI_ring(0,["a","b"]);
 <singular ring>
 gap> m := SI_matrix(s,2,2,"a,b,ab,1");
 <singular matrix (mutable):
-a, b,
-ab,1 >
+a,  b,
+a*b,1 >
 gap> v1 := SI_intvec([1]);
 <singular intvec:[ 1 ]>
 gap> v2 := SI_intvec([2]);

@@ -42,18 +42,18 @@ gap>
 gap> r := SI_ring(0,["x"]);; a := SI_poly(r,"x2");; b := SI_poly(r,"x3");;
 gap> m3 := SI_matrix(2,3,[a,b,a+b,a-b,a*b,a-a]);
 <singular matrix (mutable):
-x2,    x3,x3+x2,
--x3+x2,x5,0     >
+x^2,     x^3,x^3+x^2,
+-x^3+x^2,x^5,0       >
 gap> _SI_MatElm(m3, 1, 3);
-<singular poly (mutable):x3+x2>
+x^3+x^2
 gap> _SI_MatElm(m3, 2, 3);
-<singular poly (mutable):0>
+0
 gap> _SI_MatElm(m3, 4, 3);
 Error, matrix indices out of range
 gap> _SI_SetMatElm(m3, 1, 3, 23*a+42*b);
 gap> _SI_MatElm(m3, 1, 3);
-<singular poly (mutable):42x3+23x2>
+42*x^3+23*x^2
 gap> m3;
 <singular matrix (mutable):
-x2,    x3,42x3+23x2,
--x3+x2,x5,0         >
+x^2,     x^3,42*x^3+23*x^2,
+-x^3+x^2,x^5,0             >

@@ -31,34 +31,34 @@ gap> SI_ValueOfVar("y");
 gap> s := SI_ring(3,["a","b"]);
 <singular ring>
 gap> i := SI_Indeterminates(s);
-[ <singular poly (mutable):a>, <singular poly (mutable):b> ]
+[ a, b ]
 gap> _SI_p_String(i[1]);
 "a"
 gap> _SI_p_String(i[2]);
 "b"
 gap> a := _SI_MONOMIAL(s,2,[2,3]);
-<singular poly (mutable):-a2b3>
+-a^2*b^3
 gap> aa := _SI_MULT_POLY_NUMBER(a,2);
-<singular poly (mutable):a2b3>
+a^2*b^3
 gap> #aa := _SI_pp_Mult_nn(a,2);
 gap> b := _SI_MONOMIAL(s,2,[4,5]);
-<singular poly (mutable):-a4b5>
+-a^4*b^5
 gap> c := _SI_p_Add_q(a,b);
-<singular poly (mutable):-a4b5-a2b3>
+-a^4*b^5-a^2*b^3
 gap> d := _SI_pp_Mult_qq(a,b);
-<singular poly (mutable):a6b8>
+a^6*b^8
 gap> e := _SI_p_Neg(a);
-<singular poly (mutable):a2b3>
+a^2*b^3
 gap> _SI_p_String(a);
-"-a2b3"
+"-a^2*b^3"
 gap> _SI_p_String(b);
-"-a4b5"
+"-a^4*b^5"
 gap> _SI_p_String(c);
-"-a4b5-a2b3"
+"-a^4*b^5-a^2*b^3"
 gap> _SI_p_String(d);
-"a6b8"
+"a^6*b^8"
 gap> _SI_p_String(e);
-"a2b3"
+"a^2*b^3"
 gap> Unbind(a);
 gap> Unbind(b);
 gap> Unbind(c);
@@ -111,15 +111,15 @@ true
 gap> s := SI_ring(17,["a","b"]);
 <singular ring>
 gap> ind := SI_Indeterminates(s);
-[ <singular poly (mutable):a>, <singular poly (mutable):b> ]
+[ a, b ]
 gap> id := SI_ideal(ind);
 <singular ideal (mutable), 2 gens>
 gap> x := _SI_MONOMIAL(s,12,[2,3]);
-<singular poly (mutable):-5a2b3>
+-5*a^2*b^3
 gap> y := _SI_MONOMIAL(s,2,[4,3]);
-<singular poly (mutable):2a4b3>
+2*a^4*b^3
 gap> _SI_p_Add_q(x,y);
-<singular poly (mutable):2a4b3-5a2b3>
+2*a^4*b^3-5*a^2*b^3
 gap> id := SI_ideal([x,y]);
 <singular ideal (mutable), 2 gens>
 gap> p1 := SI_Proxy(id,1);
@@ -127,14 +127,14 @@ gap> p1 := SI_Proxy(id,1);
 gap> p2 := SI_Proxy(id,2);
 <proxy for <singular ideal (mutable), 2 gens>[2]>
 gap> _SI_COPY_POLY(p1);
-<singular poly (mutable):-5a2b3>
+-5*a^2*b^3
 gap> _SI_COPY_POLY(p2);
-<singular poly (mutable):2a4b3>
+2*a^4*b^3
 gap> _SI_p_Add_q(x,p2);
-<singular poly (mutable):2a4b3-5a2b3>
+2*a^4*b^3-5*a^2*b^3
 gap> _SI_p_Add_q(p2,y);
-<singular poly (mutable):4a4b3>
+4*a^4*b^3
 gap> _SI_p_Add_q(p2,p1);
-<singular poly (mutable):2a4b3-5a2b3>
+2*a^4*b^3-5*a^2*b^3
 gap> 
 gap> 

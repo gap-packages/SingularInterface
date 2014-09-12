@@ -249,10 +249,14 @@ InstallMethod( ViewObj, "for a singular ring",
 
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
-  function( r )
+  function( poly )
     local i;
-    if IsMutable(r) then i := " (mutable)"; else i := ""; fi;
-    return STRINGIFY("<singular poly",i,":",_SI_p_String(r),">");
+    if SI_DEBUG_MODE then
+        if IsMutable(poly) then i := " (mutable)"; else i := ""; fi;
+        return STRINGIFY("<singular poly",i,":",_SI_p_String(poly),">");
+    else
+        return _SI_p_String(poly);
+    fi;
   end );
 
 InstallMethod( ViewString, "for a singular bigint",

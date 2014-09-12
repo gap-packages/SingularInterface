@@ -367,6 +367,8 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
                       nrords,ord,block0,block1,wvhdl);
     r->ref++;
 
+    r->ShortOut = FALSE;
+
     tmp = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,r,NULL,NULL);
     return tmp;
 }

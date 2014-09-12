@@ -34,9 +34,9 @@ gap> #
 gap> s := SI_ring(32003,["x","y","z"]);
 <singular ring>
 gap> a := SI_poly(s,"x2y+151xyz10+169y21");
-<singular poly (mutable):169y21+151xyz10+x2y>
+169*y^21+151*x*y*z^10+x^2*y
 gap> b := SI_poly(s,"xz14+6x2y4+z24");
-<singular poly (mutable):z24+xz14+6x2y4>
+z^24+x*z^14+6*x^2*y^4
 gap> x := SI_poly(s,"x");;
 gap> y := SI_poly(s,"y");;
 gap> z := SI_poly(s,"z");;
@@ -47,19 +47,19 @@ gap> b = x*z^14+6*x^2*y^4+z^24;
 true
 gap> 
 gap> a + b;
-<singular poly (mutable):z24+169y21+xz14+151xyz10+6x2y4+x2y>
+z^24+169*y^21+x*z^14+151*x*y*z^10+6*x^2*y^4+x^2*y
 gap> a - b;
-<singular poly (mutable):-z24+169y21-xz14+151xyz10-6x2y4+x2y>
+-z^24+169*y^21-x*z^14+151*x*y*z^10-6*x^2*y^4+x^2*y
 gap> a * 10;
-<singular poly (mutable):1690y21+1510xyz10+10x2y>
+1690*y^21+1510*x*y*z^10+10*x^2*y
 gap> 10 * a;
-<singular poly (mutable):1690y21+1510xyz10+10x2y>
+1690*y^21+1510*x*y*z^10+10*x^2*y
 gap> a * 32003;
-<singular poly (mutable):0>
+0
 gap> 32003 * a;
-<singular poly (mutable):0>
+0
 gap> -a;
-<singular poly (mutable):-169y21-151xyz10-x2y>
+-169*y^21-151*x*y*z^10-x^2*y
 gap> a = b;
 false
 gap> a = a;
@@ -69,27 +69,27 @@ true
 gap> -a = (-1) * b;
 false
 gap> 0 * a;
-<singular poly (mutable):0>
+0
 gap> a - a;
-<singular poly (mutable):0>
+0
 gap> 
 gap> 
 gap> a * b;
-<singular poly (mutable):169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906\
-x3y5z10+x3yz14+6x4y5>
+169*y^21*z^24+169*x*y^21*z^14+151*x*y*z^34+1014*x^2*y^25+152*x^2*y*z^24+906*x^\
+3*y^5*z^10+x^3*y*z^14+6*x^4*y^5
 gap> a * b = b * a;
 true
 gap> a * a = a^2;
 true
 gap> One(a);
-<singular poly:1>
+1
 gap> a^0;
-<singular poly (mutable):1>
+1
 gap> a^1;
-<singular poly (mutable):169y21+151xyz10+x2y>
+169*y^21+151*x*y*z^10+x^2*y
 gap> a^2;
-<singular poly (mutable):-3442y42-12968xy22z10+338x2y22-9202x2y2z20+302x3y2z10\
-+x4y2>
+-3442*y^42-12968*x*y^22*z^10+338*x^2*y^22-9202*x^2*y^2*z^20+302*x^3*y^2*z^10+x\
+^4*y^2
 gap> 
 gap> ############################################
 gap> # Polynomials in characteristic 0
@@ -97,27 +97,27 @@ gap> #
 gap> s := SI_ring(0,["x","y","z"]);
 <singular ring>
 gap> a := SI_poly(s,"x2y+151xyz10+169y21");
-<singular poly (mutable):169y21+151xyz10+x2y>
+169*y^21+151*x*y*z^10+x^2*y
 gap> b := SI_poly(s,"xz14+6x2y4+z24");
-<singular poly (mutable):z24+xz14+6x2y4>
+z^24+x*z^14+6*x^2*y^4
 gap> x := SI_poly(s,"x");;
 gap> y := SI_poly(s,"y");;
 gap> z := SI_poly(s,"z");;
 gap> 
 gap> a + b;
-<singular poly (mutable):z24+169y21+xz14+151xyz10+6x2y4+x2y>
+z^24+169*y^21+x*z^14+151*x*y*z^10+6*x^2*y^4+x^2*y
 gap> a - b;
-<singular poly (mutable):-z24+169y21-xz14+151xyz10-6x2y4+x2y>
+-z^24+169*y^21-x*z^14+151*x*y*z^10-6*x^2*y^4+x^2*y
 gap> a * 10;
-<singular poly (mutable):1690y21+1510xyz10+10x2y>
+1690*y^21+1510*x*y*z^10+10*x^2*y
 gap> 10 * a;
-<singular poly (mutable):1690y21+1510xyz10+10x2y>
+1690*y^21+1510*x*y*z^10+10*x^2*y
 gap> a * 32003;
-<singular poly (mutable):5408507y21+4832453xyz10+32003x2y>
+5408507*y^21+4832453*x*y*z^10+32003*x^2*y
 gap> 32003 * a;
-<singular poly (mutable):5408507y21+4832453xyz10+32003x2y>
+5408507*y^21+4832453*x*y*z^10+32003*x^2*y
 gap> -a;
-<singular poly (mutable):-169y21-151xyz10-x2y>
+-169*y^21-151*x*y*z^10-x^2*y
 gap> a = b;
 false
 gap> a = a;
@@ -127,28 +127,28 @@ true
 gap> -a = (-1) * b;
 false
 gap> 0 * a;
-<singular poly (mutable):0>
+0
 gap> a - a;
-<singular poly (mutable):0>
+0
 gap> Zero(a);
-<singular poly:0>
+0
 gap> 
 gap> a * b;
-<singular poly (mutable):169y21z24+169xy21z14+151xyz34+1014x2y25+152x2yz24+906\
-x3y5z10+x3yz14+6x4y5>
+169*y^21*z^24+169*x*y^21*z^14+151*x*y*z^34+1014*x^2*y^25+152*x^2*y*z^24+906*x^\
+3*y^5*z^10+x^3*y*z^14+6*x^4*y^5
 gap> a * b = b * a;
 true
 gap> a * a = a^2;
 true
 gap> One(a);
-<singular poly:1>
+1
 gap> a^0;
-<singular poly (mutable):1>
+1
 gap> a^1;
-<singular poly (mutable):169y21+151xyz10+x2y>
+169*y^21+151*x*y*z^10+x^2*y
 gap> a^2;
-<singular poly (mutable):28561y42+51038xy22z10+338x2y22+22801x2y2z20+302x3y2z1\
-0+x4y2>
+28561*y^42+51038*x*y^22*z^10+338*x^2*y^22+22801*x^2*y^2*z^20+302*x^3*y^2*z^10+\
+x^4*y^2
 gap> 
 gap> ############################################
 gap> # int
