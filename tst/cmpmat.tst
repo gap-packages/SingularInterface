@@ -5,11 +5,11 @@ x^2
 gap> b := SI_poly(r,"x3");
 x^3
 gap> m := SI_matrix(2,2,[a,b,a,b]);
-<singular matrix (mutable):
+<singular matrix:
 x^2,x^3,
 x^2,x^3 >
 gap> n := SI_matrix(2,2,[a,b,a,b]);
-<singular matrix (mutable):
+<singular matrix:
 x^2,x^3,
 x^2,x^3 >
 gap> m=n;

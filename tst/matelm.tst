@@ -2,7 +2,7 @@ gap> SI_intmat([[1,2,3],[4,5,6]] * 7^15);
 Error, m must contain small integers
 gap> 
 gap> m1 := SI_intmat([[1,2,3],[4,5,6]]);
-<singular intmat (mutable):[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+<singular intmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
 gap> _SI_MatElm(m1, 1, 3);
 3
 gap> _SI_MatElm(m1, 2, 3);
@@ -13,7 +13,7 @@ gap> _SI_SetMatElm(m1, 1, 3, 42);
 gap> _SI_MatElm(m1, 1, 3);
 42
 gap> m1;
-<singular intmat (mutable):[ [ 1, 2, 42 ], [ 4, 5, 6 ] ]>
+<singular intmat:[ [ 1, 2, 42 ], [ 4, 5, 6 ] ]>
 gap> 
 gap> 
 gap> 
@@ -41,7 +41,7 @@ gap>
 gap> 
 gap> r := SI_ring(0,["x"]);; a := SI_poly(r,"x2");; b := SI_poly(r,"x3");;
 gap> m3 := SI_matrix(2,3,[a,b,a+b,a-b,a*b,a-a]);
-<singular matrix (mutable):
+<singular matrix:
 x^2,     x^3,x^3+x^2,
 -x^3+x^2,x^5,0       >
 gap> _SI_MatElm(m3, 1, 3);
@@ -54,6 +54,6 @@ gap> _SI_SetMatElm(m3, 1, 3, 23*a+42*b);
 gap> _SI_MatElm(m3, 1, 3);
 42*x^3+23*x^2
 gap> m3;
-<singular matrix (mutable):
+<singular matrix:
 x^2,     x^3,42*x^3+23*x^2,
 -x^3+x^2,x^5,0             >

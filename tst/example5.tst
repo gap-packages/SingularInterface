@@ -98,12 +98,12 @@ gap> m:=List([1..10],i->List([1..10],j-> j*i));
   [ 9, 18, 27, 36, 45, 54, 63, 72, 81, 90 ], 
   [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ] ]
 gap> im:=SI_intmat(m);
-<singular intmat (mutable):[ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 2, 4, 6, 8, \
-10, 12, 14, 16, 18, 20 ], [ 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 ], [ 4, 8, 12,\
- 16, 20, 24, 28, 32, 36, 40 ], [ 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 ], [ 6,\
- 12, 18, 24, 30, 36, 42, 48, 54, 60 ], [ 7, 14, 21, 28, 35, 42, 49, 56, 63, 70\
- ], [ 8, 16, 24, 32, 40, 48, 56, 64, 72, 80 ], [ 9, 18, 27, 36, 45, 54, 63, 72\
-, 81, 90 ], [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ] ]>
+<singular intmat:[ [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ], [ 2, 4, 6, 8, 10, 12, 14\
+, 16, 18, 20 ], [ 3, 6, 9, 12, 15, 18, 21, 24, 27, 30 ], [ 4, 8, 12, 16, 20, 2\
+4, 28, 32, 36, 40 ], [ 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 ], [ 6, 12, 18, 2\
+4, 30, 36, 42, 48, 54, 60 ], [ 7, 14, 21, 28, 35, 42, 49, 56, 63, 70 ], [ 8, 1\
+6, 24, 32, 40, 48, 56, 64, 72, 80 ], [ 9, 18, 27, 36, 45, 54, 63, 72, 81, 90 ]\
+, [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ] ]>
 gap> _SI_Plistintvec(iv) = [1..100];
 true
 gap> _SI_Matintmat(im) = m;
@@ -113,7 +113,7 @@ gap> s := SI_ring(17,["a","b"]);
 gap> ind := SI_Indeterminates(s);
 [ a, b ]
 gap> id := SI_ideal(ind);
-<singular ideal (mutable), 2 gens>
+<singular ideal, 2 gens>
 gap> x := _SI_MONOMIAL(s,12,[2,3]);
 -5*a^2*b^3
 gap> y := _SI_MONOMIAL(s,2,[4,3]);
@@ -121,11 +121,11 @@ gap> y := _SI_MONOMIAL(s,2,[4,3]);
 gap> _SI_p_Add_q(x,y);
 2*a^4*b^3-5*a^2*b^3
 gap> id := SI_ideal([x,y]);
-<singular ideal (mutable), 2 gens>
+<singular ideal, 2 gens>
 gap> p1 := SI_Proxy(id,1);
-<proxy for <singular ideal (mutable), 2 gens>[1]>
+<proxy for <singular ideal, 2 gens>[1]>
 gap> p2 := SI_Proxy(id,2);
-<proxy for <singular ideal (mutable), 2 gens>[2]>
+<proxy for <singular ideal, 2 gens>[2]>
 gap> _SI_COPY_POLY(p1);
 -5*a^2*b^3
 gap> _SI_COPY_POLY(p2);

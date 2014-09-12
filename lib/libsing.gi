@@ -237,23 +237,23 @@ end);
 
 InstallMethod( ViewString, "for a singular ring",
   [ IsSingularRing ],
-  function( r )
+  function( ring )
     return "<singular ring>";
   end );
 # As long as the library has a ViewObj for ring-with-one method, we need:
 InstallMethod( ViewObj, "for a singular ring",
   [ IsSingularRing ],
-  function( r )
+  function( ring )
     Print("<singular ring>");
   end );
 
 InstallMethod( ViewString, "for a singular poly",
   [ IsSingularPoly ],
   function( poly )
-    local i;
+    local mut;
     if SI_DEBUG_MODE then
-        if IsMutable(poly) then i := " (mutable)"; else i := ""; fi;
-        return STRINGIFY("<singular poly",i,":",_SI_p_String(poly),">");
+        if IsMutable(poly) then mut := " (mutable)"; else mut := ""; fi;
+        return STRINGIFY("<singular poly",mut,":",_SI_p_String(poly),">");
     else
         return _SI_p_String(poly);
     fi;
@@ -261,38 +261,38 @@ InstallMethod( ViewString, "for a singular poly",
 
 InstallMethod( ViewString, "for a singular bigint",
   [ IsSingularBigInt ],
-  function( r )
-    return STRINGIFY("<singular bigint:",_SI_Intbigint(r),">");
+  function( bigint )
+    return STRINGIFY("<singular bigint:",_SI_Intbigint(bigint),">");
   end );
 
 InstallMethod( ViewString, "for a singular bigintmat",
   [ IsSingularBigIntMat ],
-  function( i )
-    return STRINGIFY("<singular intmat:",_SI_Matbigintmat(i),">");
+  function( bigintmat )
+    return STRINGIFY("<singular intmat:",_SI_Matbigintmat(bigintmat),">");
   end );
 
 InstallMethod( ViewString, "for a singular intvec",
   [ IsSingularIntVec ],
-  function( i )
-    local ii;
-    if IsMutable(i) then ii := " (mutable)"; else ii := ""; fi;
-    return STRINGIFY("<singular intvec",ii,":",_SI_Plistintvec(i),">");
+  function( intvec )
+    local mut;
+    if SI_DEBUG_MODE and IsMutable(intvec) then mut := " (mutable)"; else mut := ""; fi;
+    return STRINGIFY("<singular intvec",mut,":",_SI_Plistintvec(intvec),">");
   end );
 
 InstallMethod( ViewString, "for a singular intmat",
   [ IsSingularIntMat ],
-  function( i )
-    local ii;
-    if IsMutable(i) then ii := " (mutable)"; else ii := ""; fi;
-    return STRINGIFY("<singular intmat",ii,":",_SI_Matintmat(i),">");
+  function( intmat )
+    local mut;
+    if SI_DEBUG_MODE and IsMutable(intmat) then mut := " (mutable)"; else mut := ""; fi;
+    return STRINGIFY("<singular intmat",mut,":",_SI_Matintmat(intmat),">");
   end );
 
 InstallMethod( ViewString, "for a singular ideal",
   [ IsSingularIdeal ],
   function( ideal )
-    local ii;
-    if IsMutable(ideal) then ii := " (mutable)"; else ii := ""; fi;
-    return STRINGIFY("<singular ideal",ii,", ",SI_ncols(ideal)," gens>");
+    local mut;
+    if SI_DEBUG_MODE and IsMutable(ideal) then mut := " (mutable)"; else mut := ""; fi;
+    return STRINGIFY("<singular ideal",mut,", ",SI_ncols(ideal)," gens>");
   end );
 
 
@@ -379,9 +379,11 @@ InstallMethod(ViewString, "for a singular proxy object",
 # the resulting object of a computation"
 InstallMethod(ViewString, "for a generic singular object",
   [ IsSingularObj ],
-  function( s )
-    return Concatenation("<singular ",_SI_TypeName(s),":\n",
-                         SI_ToGAP(SI_print(s)),">");
+  function( sobj )
+    local mut;
+    if SI_DEBUG_MODE and IsMutable(sobj) then mut := " (mutable)"; else mut := ""; fi;
+    return Concatenation("<singular ",_SI_TypeName(sobj),mut,":\n",
+                         SI_ToGAP(SI_print(sobj)),">");
   end );
 
 

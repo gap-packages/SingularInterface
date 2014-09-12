@@ -4,13 +4,13 @@ gap> #
 gap> s := SI_ring(0,["a","b","c"]);
 <singular ring>
 gap> m := SI_matrix(s,4,3,"1,0,4,2,0,5,0,0,0,3,0,6");
-<singular matrix (mutable):
+<singular matrix:
 1,0,4,
 2,0,5,
 0,0,0,
 3,0,6 >
 gap> SI_syz(m);
-<singular module (mutable):
+<singular module:
 0,
 1,
 0 >
@@ -31,7 +31,7 @@ gap> #
 gap> R := SI_ring( 0, [ "x" ] );
 <singular ring>
 gap> M := SI_matrix( R, 2, 2, "0" );
-<singular matrix (mutable):
+<singular matrix:
 0,0,
 0,0 >
 gap> f := function( M ) SI_\[(M,1,1,SI_poly(R,"1")); end;;
@@ -44,7 +44,7 @@ gap> #
 gap> r := SI_ring(0,["x","y","z"],[["lp",3]]);
 <singular ring>
 gap> SI_ringlist(r);
-<singular list (mutable):
+<singular list:
 [1]:
    0
 [2]:

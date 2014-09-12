@@ -25,5 +25,5 @@ gap> SI_names();;
 gap> s := SI_ring(3,["a","b"],[["dp",2]]);
 <singular ring>
 gap> SI_names(s);
-<singular list (mutable):
+<singular list:
 empty list>
