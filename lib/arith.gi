@@ -116,10 +116,9 @@ InstallOtherMethod(ZeroMutable, ["IsSingularObj"], sobj -> sobj - sobj);
 InstallTrueMethod(IsRingElementWithOne, IsSingularPoly);
 
 # list access makes sense for many Singular objects
-BindGlobal("SI_Entry", function(sobj, i)
-  return _SI_CallFunc2(91, sobj, i); end);
-#    this is not used in GAP 4.5.5, kernel complains
-InstallOtherMethod(\[\], [IsSingularObj, IsInt], SI_Entry);
+InstallOtherMethod(\[\], [IsSingularObj, IsInt], function(sobj, i)
+    return SI_\[(sobj, i);
+end);
 
 # multiplicative inverses, first the generic delegation to Singular
 InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
