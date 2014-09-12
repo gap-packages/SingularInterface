@@ -19,6 +19,8 @@ SingularInterface_la_SOURCES = \
     lowlevel_mappings.h \
     matrix.cc \
     matrix.h \
+    number.cc \
+    number.h \
     poly.cc \
     poly.h \
     singobj.cc \

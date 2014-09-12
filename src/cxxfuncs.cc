@@ -8,6 +8,7 @@ This file contains all of the code that deals with C++ libraries.
 #include "libsing.h"
 #include "singobj.h"
 #include "lowlevel_mappings.h"
+#include "number.h"
 #include "poly.h"
 
 #include <coeffs/bigintmat.h>

@@ -1,5 +1,5 @@
+#include "number.h"
 #include "poly.h"
-#include "singobj.h"
 
 static poly _SI_GET_poly(Obj o, Obj &rr)
 {
