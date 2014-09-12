@@ -19,68 +19,79 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-AC_PREREQ(2.68)
-LT_PREREQ([2.4.2])
+dnl ##
+dnl ## Setup autoconf
+dnl ##
+AC_PREREQ([2.68])
 AC_INIT([SingularInterface], m4_esyscmd([tr -d '\n' < VERSION]), [gapsing@mathematik.uni-kl.de])
 AC_CONFIG_SRCDIR([src/libsing.h])
 AC_CONFIG_HEADER([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([cnf])
+
+dnl ##
+dnl ## Get canonical host info
+dnl ##
+AC_CANONICAL_HOST
+
+dnl ##
+dnl ## Setup automake
+dnl ##
 AM_INIT_AUTOMAKE([foreign])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
+AM_PROG_AR
+
+#AC_PREFIX_DEFAULT([${PWD}/src])
+
+dnl ##
+dnl ## Check for the compiler
+dnl ##
+AC_PROG_CXX
+
+dnl ##
+dnl ## Setup libtool (for building the GAP kernel extension)
+dnl ##
+LT_PREREQ([2.4.2])
 LT_INIT([disable-static dlopen win32-dll])
 
-AC_PREFIX_DEFAULT([${PWD}/src])
-
-AC_PROG_CXX
-AC_PROG_CC
-
-## Find out what the best compiler flags are
-AX_CC_MAXOPT
-
+dnl ##
+dnl ## Locate the GAP root dir
+dnl ##
 AC_FIND_GAP
 
-AC_CHECK_SIZEOF([void **])
-
-case "$host" in
-    *cygwin* )
-    AC_DEFINE(SYS_IS_CYGWIN32, 1, are we on CYGWIN?)
-    CYGWIN=yes
-    ;;
-    * )
-    AC_DEFINE([SYS_IS_CYGWIN32], [0], [are we on CYGWIN?])
-    CYGWIN=no
-    ;;
-esac
-AM_CONDITIONAL([SYS_IS_CYGWIN], [test "$CYGWIN" = "yes"])
-
-
-
-## 
-if test "$ac_test_CXXFLAGS" != "set"; then
-  AC_LANG_PUSH([C++])
-  CXXFLAGS=$CFLAGS
-  AX_CHECK_COMPILER_FLAGS($CXXFLAGS, [], [
-  echo ""
-  echo "-----------------------------------------------------------------------"
-  echo "  WARNING: The guessed best CXXFLAGS were copied from CFLAGS but don't"
-  echo "  seem to work with your C++ compiler. Use ./configure CXXFLAGS=...  to"
-  echo "  specify your own flags, otherwise the default (slow) compiler"
-  echo "  optimisation settings will be used."
-  echo "-----------------------------------------------------------------------"
-  echo ""
-  CXXFLAGS=""
-  ])
-  AC_LANG_POP([C++])
-fi
-
-AC_LIBTOOL_DLOPEN
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
-
+dnl ##
+dnl ## Check for Singular >= 4.0.0
+dnl ##
 LB_CHECK_LIBSINGULAR([4.0.0],
  [],
  [AC_MSG_ERROR([required library libSingular not found])])
 
+dnl ##
+dnl ## Detect pointer size to distinguish 32 and 64 bit builds
+dnl ##
+AC_CHECK_SIZEOF([void **])
+
+dnl ##
+dnl ## Detect Windows resp. Cygwin
+dnl ##
+case $host_os in
+  *cygwin* ) CYGWIN=yes;;
+         * ) CYGWIN=no;;
+esac
+AM_CONDITIONAL([SYS_IS_CYGWIN], [test "$CYGWIN" = "yes"])
+if test "$CYGWIN" = "yes"; then
+  AC_DEFINE(SYS_IS_CYGWIN32, 1, are we on CYGWIN?)
+else
+  AC_DEFINE(SYS_IS_CYGWIN32, 0, are we on CYGWIN?)
+fi
+
+dnl ##
+dnl ## Rebuild configure if VERSION file changes
+dnl ##
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/VERSION'])
+
+dnl ##
+dnl ## Output everything
+dnl ##
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

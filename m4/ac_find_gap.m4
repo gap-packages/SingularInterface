@@ -1,6 +1,6 @@
 # Find the location of GAP
 # Sets GAPROOT, GAPARCH and GAP_CPPFLAGS appropriately
-# Can be configured using --with-gaproot=... and --with-configname=...
+# Can be configured using --with-gaproot=... and CONFIGNAME=...
 #######################################################################
 
 AC_DEFUN([AC_FIND_GAP],
