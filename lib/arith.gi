@@ -120,6 +120,29 @@ InstallOtherMethod(\[\], [IsSingularObj, IsInt], function(sobj, i)
     return SI_\[(sobj, i);
 end);
 
+# Alternative access via the syntax mat[[row,col]]
+#
+_SI_MatElm_with_list := function(mat, l)
+    Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
+    return _SI_MatElm(mat, l[1], l[2]);
+end;
+
+InstallOtherMethod(\[\], [IsSingularMatrix, IsList], _SI_MatElm_with_list);
+InstallOtherMethod(\[\], [IsSingularIntMat, IsList], _SI_MatElm_with_list);
+InstallOtherMethod(\[\], [IsSingularBigIntMat, IsList], _SI_MatElm_with_list);
+
+# Currently, GAP does not support []:= with a non-integer index.
+# But once it does, enable the following:
+#
+# _SI_SetMatElm_with_list := function(mat, l, val)
+#     Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
+#     _SI_SetMatElm(mat, l[1], l[2], val);
+# end;
+# InstallOtherMethod(\[\]\:\=, [IsSingularMatrix, IsList, IsObject], _SI_SetMatElm_with_list);
+# InstallOtherMethod(\[\]\:\=, [IsSingularIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+# InstallOtherMethod(\[\]\:\=, [IsSingularBigIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+
+
 # multiplicative inverses, first the generic delegation to Singular
 InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
   local res;
