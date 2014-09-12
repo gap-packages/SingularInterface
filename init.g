@@ -1,3 +1,5 @@
+SI_DEBUG_MODE := false;
+
 # load kernel functions if possible
 # try the static module first
 if not IsBound(_SI_SINGULARINTERFACE_LOADED) then
