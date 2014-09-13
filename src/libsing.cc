@@ -265,14 +265,14 @@ static StructInitInfo module = {
 Function called by GAP as soon as the library is dynamically loaded.
 This returns the StructInitInfo data for this library
 **/
-extern "C"
-StructInitInfo * Init__Dynamic (void)
+extern "C" StructInitInfo * Init__Dynamic(void);
+extern "C" StructInitInfo * Init__Dynamic(void)
 {
     return &module;
 }
 #endif
-extern "C"
-StructInitInfo * Init__libsing(void)
+extern "C" StructInitInfo * Init__libsing(void);
+extern "C" StructInitInfo * Init__libsing(void)
 {
     return &module;
 }
