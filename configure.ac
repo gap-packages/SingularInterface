@@ -37,8 +37,8 @@ AC_CANONICAL_HOST
 dnl ##
 dnl ## Setup automake
 dnl ##
-AM_INIT_AUTOMAKE([foreign])
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
+AM_INIT_AUTOMAKE([-Wall foreign subdir-objects])
+AM_SILENT_RULES([yes])
 AM_PROG_AR
 
 #AC_PREFIX_DEFAULT([${PWD}/src])
@@ -93,5 +93,5 @@ AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/VERSION'])
 dnl ##
 dnl ## Output everything
 dnl ##
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

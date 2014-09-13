@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-Read("highlevel_mappings_table.g");;
+Read("src/highlevel_mappings_table.g");;
 
 IsRingDep := Set([
     "ideal",
@@ -58,7 +58,7 @@ singularConstructors := Set([
 
 doit := function()
   local needring,s,ops,ops2,op,poss,name,nr,i;
-s := OutputTextFile("highlevel_mappings.g",false);
+s := OutputTextFile("lib/highlevel_mappings.g",false);
 PrintTo(s,"# DO NOT EDIT, this file is generated automatically.\n");
 
 ops := Set(Concatenation(List(SI_OPERATIONS,x->List(x,y->y[1]))));

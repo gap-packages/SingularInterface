@@ -37,7 +37,6 @@ if not IsBound(_SI_SINGULARINTERFACE_LOADED) then
   fi;
 fi;
 
-#ReadPackage("SingularInterface", "lib/highlevel_mappings_table.g");
 ReadPackage("SingularInterface", "lib/highlevel_mappings.g");
 ReadPackage("SingularInterface", "lib/singtypes.gd");
 ReadPackage("SingularInterface", "lib/libsing.gd");

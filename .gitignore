@@ -1,4 +1,4 @@
-/src/gentableforGAP
+/gentableforGAP
 /lib/highlevel_mappings.g
 /lib/highlevel_mappings_table.g
 /src/highlevel_mappings.g
@@ -13,8 +13,9 @@
 /src/pkgconfig.h
 /src/stamp-h1
 /libtool
-/src/.deps
-/src/.libs/
+/src/.deps/
+/src/.dirstamp
+/.libs/
 
 /doc/chap*.txt
 /doc/*.html
@@ -45,19 +46,12 @@
 *.la
 *.lo
 *.o
-Makefile
 /config.log
 /config.status
+/Makefile
 /Makefile.in
 /aclocal.m4
-/cnf/compile
-/cnf/config.guess
-/cnf/config.sub
-/cnf/depcomp
-/cnf/install-sh
-/cnf/ltmain.sh
-/cnf/missing
-/cnf/test-driver
+/cnf/
 /test-suite.log
 /test.sh.log
 /test.sh.trs
@@ -67,7 +61,6 @@ Makefile
 /m4/ltsugar.m4
 /m4/ltversion.m4
 /m4/lt~obsolete.m4
-/src/Makefile.in
 
 /autom4te\.cache/
 /singular/

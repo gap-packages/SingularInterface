@@ -42,11 +42,11 @@
 #
 basename := "lowlevel_mappings";;
 # - for the source file containing the wrapper functions
-stream_cc := OutputTextFile(Concatenation(basename, ".cc"), false);;
+stream_cc := OutputTextFile(Concatenation("src/", basename, ".cc"), false);;
 # - for the header file containing declarations for the wrappers
-stream_h := OutputTextFile(Concatenation(basename, ".h"), false);;
+stream_h := OutputTextFile(Concatenation("src/", basename, ".h"), false);;
 # - for the header file containing entries for the GVarFuncs table
-stream_table_h := OutputTextFile(Concatenation(basename, "_table.h"), false);;
+stream_table_h := OutputTextFile(Concatenation("src/", basename, "_table.h"), false);;
 
 # indention level
 indent := 0;;
@@ -164,7 +164,7 @@ Generate_SINGULAR_funcs := function()
 
 	SINGULAR_funcs := [];
 
-	input := InputTextFile("lowlevel_mappings_src.h");
+	input := InputTextFile("src/lowlevel_mappings_src.h");
 
 	while not IsEndOfStream(input) do
 		# Read lines until we encounter a semicolon
