@@ -23,6 +23,6 @@
 
 cd singular/build
 
-make
+make $@
 make check
 make install
