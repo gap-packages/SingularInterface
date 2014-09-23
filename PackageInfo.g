@@ -28,7 +28,7 @@ Subtitle := "A GAP interface to Singular",
 Version := Maximum( [
                    "2014.01.06", ## Franks's version
                    ## this line prevents merge conflicts
-                   "2014.09.12", ## Max's version
+                   "2014.09.23", ## Max's version
                    ## this line prevents merge conflicts
                    "2014.09.10", ## Mohamed's version
                    ] ),
