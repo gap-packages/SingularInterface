@@ -55,11 +55,6 @@ SingularInterface_la_CXXFLAGS = -Wall -Wmissing-prototypes
 
 
 all-local: $(GAPINSTALLLIB) lib/highlevel_mappings.g
-	@echo "***********************************************************************"
-	@echo ""
-	@echo "  SUCCESS!"
-	@echo ""
-	@echo "***********************************************************************"
 
 clean-local: 
 	rm -f $(GAPINSTALLLIB)
