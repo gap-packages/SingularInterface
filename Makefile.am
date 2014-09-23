@@ -48,8 +48,7 @@ SingularInterface_la_SOURCES = \
     src/singobj.h \
     src/singtypes.cc \
     src/singtypes.h
-SingularInterface_la_LDFLAGS = -module -avoid-version
-# -R$(LIBSINGULAR_HOME)/lib -R$(LIBSINGULAR_HOME)/lib/singular
+SingularInterface_la_LDFLAGS = -module -avoid-version -R$(LIBSINGULAR_HOME)/lib
 SingularInterface_la_LIBADD = $(LIBSINGULAR_LIBS)
 SingularInterface_la_CPPFLAGS = $(GAP_CPPFLAGS) $(AM_CPPFLAGS)
 SingularInterface_la_CXXFLAGS = -Wall -Wmissing-prototypes
