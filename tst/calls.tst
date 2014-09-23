@@ -23,7 +23,7 @@ gap> SI_option("set", SI_intvec(old_opts));
 true
 gap> SI_names();;
 gap> s := SI_ring(3,["a","b"],[["dp",2]]);
-<singular ring>
+<singular ring, 2 indeterminates>
 gap> SI_names(s);
 <singular list:
 empty list>

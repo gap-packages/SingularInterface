@@ -1,5 +1,5 @@
 gap> r := SI_ring(0,["x","y"]);
-<singular ring>
+<singular ring, 2 indeterminates>
 gap> a := SI_poly(r,"xy");
 x*y
 gap> IsMutable(r);

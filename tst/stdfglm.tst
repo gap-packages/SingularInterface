@@ -1,5 +1,5 @@
 gap> r := SI_ring(0,["x","y","z"],[["lp",3]]);
-<singular ring>
+<singular ring, 3 indeterminates>
 gap> i := SI_ideal([SI_poly(r,"y3+x2"),SI_poly(r,"x2y+x2"),SI_poly(r,"x3-x2"),
 > SI_poly(r,"z4-x2-y")]);
 <singular ideal, 4 gens>

@@ -1,5 +1,5 @@
 gap> r := SI_ring(0,["x","y","z"]);
-<singular ring>
+<singular ring, 3 indeterminates>
 gap> a := SI_poly(r,"xy");
 x*y
 gap> ai := MakeImmutable(SI_poly(r,"xy"));
@@ -25,62 +25,26 @@ x*y-x*z
 gap> ai-bi;
 x*y-x*z
 gap> a := SI_IdentityMat(r,3);
-<singular matrix:
-1,0,0,
-0,1,0,
-0,0,1 >
+<singular matrix, 3x3>
 gap> ai := MakeImmutable(SI_IdentityMat(r,3));
-<singular matrix:
-1,0,0,
-0,1,0,
-0,0,1 >
+<singular matrix, 3x3>
 gap> b := SI_IdentityMat(r,3);
-<singular matrix:
-1,0,0,
-0,1,0,
-0,0,1 >
+<singular matrix, 3x3>
 gap> bi := MakeImmutable(SI_IdentityMat(r,3));
-<singular matrix:
-1,0,0,
-0,1,0,
-0,0,1 >
+<singular matrix, 3x3>
 gap> a+b;
-<singular matrix:
-2,0,0,
-0,2,0,
-0,0,2 >
+<singular matrix, 3x3>
 gap> a+bi;
-<singular matrix:
-2,0,0,
-0,2,0,
-0,0,2 >
+<singular matrix, 3x3>
 gap> ai+b;
-<singular matrix:
-2,0,0,
-0,2,0,
-0,0,2 >
+<singular matrix, 3x3>
 gap> ai+bi;
-<singular matrix:
-2,0,0,
-0,2,0,
-0,0,2 >
+<singular matrix, 3x3>
 gap> a-b;
-<singular matrix:
-0,0,0,
-0,0,0,
-0,0,0 >
+<singular matrix, 3x3>
 gap> a-bi;
-<singular matrix:
-0,0,0,
-0,0,0,
-0,0,0 >
+<singular matrix, 3x3>
 gap> ai-b;
-<singular matrix:
-0,0,0,
-0,0,0,
-0,0,0 >
+<singular matrix, 3x3>
 gap> ai-bi;
-<singular matrix:
-0,0,0,
-0,0,0,
-0,0,0 >
+<singular matrix, 3x3>

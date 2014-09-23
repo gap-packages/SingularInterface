@@ -1,5 +1,5 @@
 gap> r := SI_ring(37, ["x","y"]);
-<singular ring>
+<singular ring, 2 indeterminates>
 gap> SI_number(r, 1);
 <singular number:
 1>

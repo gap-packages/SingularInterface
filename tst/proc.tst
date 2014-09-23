@@ -15,17 +15,17 @@ gap> SI_CallProc("p2", [-11,"abc"]);
 [ -11, <singular string:
     abc> ]
 gap> r := SI_ring(0,[ "x" ]);
-<singular ring>
+<singular ring, 1 indeterminate>
 gap> SI_Undef("p3");Singular("proc p3(a){return(a);}");
 0
 gap> SI_CallProc("p3", [23]);
 23
 gap> r2 := SI_CallProc("p3", [r]);
-<singular ring>
+<singular ring, 1 indeterminate>
 gap> r = r2;
 true
 gap> s := SI_ring(37,[ "y" ]);
-<singular ring>
+<singular ring, 1 indeterminate>
 gap> SI_CallProc("p2", [r,s]) = [r,s];
 true
 gap> SI_SetCurrRing(r);
@@ -51,4 +51,4 @@ fail
 gap> Singular("if(defined(myRingMaker)){kill myRingMaker;};proc myRingMaker(){ring r=0,a,dp;return(r);}");
 0
 gap> t := SI_CallProc("myRingMaker", []);
-<singular ring>
+<singular ring, 1 indeterminate>

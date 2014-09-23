@@ -182,16 +182,22 @@ InstallMethod(SI_ring,[IsInt,IsList],
 InstallMethod(SI_ring,["IsSingularObj"], SI_RingOfSingobj);
 
 
+BindGlobal("_SI_ViewString_ring", function( ring )
+    local suffix;
+    if SI_nvars(ring) = 1 then suffix := ""; else suffix := "s"; fi;
+    return Concatenation("<singular ring, ", String(SI_nvars(ring)),
+                         " indeterminate", suffix, ">");
+end );
+
 InstallMethod( ViewString, "for a singular ring",
   [ IsSingularRing ],
-  function( ring )
-    return "<singular ring>";
-  end );
+  _SI_ViewString_ring );
+
 # As long as the library has a ViewObj for ring-with-one method, we need:
 InstallMethod( ViewObj, "for a singular ring",
   [ IsSingularRing ],
   function( ring )
-    Print("<singular ring>");
+    Print(_SI_ViewString_ring(ring));
   end );
 
 

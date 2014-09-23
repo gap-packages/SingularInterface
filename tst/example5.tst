@@ -29,7 +29,7 @@ gap> Singular("intmat y[3][5]=1,3,5,7,8,9,10,11,12,13;");
 gap> SI_ValueOfVar("y");
 [ [ 1, 3, 5, 7, 8 ], [ 9, 10, 11, 12, 13 ], [ 0, 0, 0, 0, 0 ] ]
 gap> s := SI_ring(3,["a","b"]);
-<singular ring>
+<singular ring, 2 indeterminates>
 gap> i := SI_Indeterminates(s);
 [ a, b ]
 gap> _SI_p_String(i[1]);
@@ -109,7 +109,7 @@ true
 gap> _SI_Matintmat(im) = m;
 true
 gap> s := SI_ring(17,["a","b"]);
-<singular ring>
+<singular ring, 2 indeterminates>
 gap> ind := SI_Indeterminates(s);
 [ a, b ]
 gap> id := SI_ideal(ind);
