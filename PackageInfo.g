@@ -90,7 +90,7 @@ Persons := [
     LastName      := "Motsak",
     FirstNames    := "Oleksandr",
     IsAuthor      := true,
-    IsMaintainer  := true,
+    IsMaintainer  := false,
     Email         := "http://goo.gl/mcpzY",
     WWWHome       := "http://www.mathematik.uni-kl.de/~motsak/",
     PostalAddress := Concatenation( [
@@ -106,22 +106,20 @@ Persons := [
     FirstNames    := "Max",
     IsAuthor      := true,
     IsMaintainer  := false,
-    Email         := "neunhoef@mcs.st-andrews.ac.uk",
+    Email         := "max@9hoeffer.de",
     WWWHome       := "http://www-groups.msc.st-andrews.ac.uk/~neunhoef",
     PostalAddress := Concatenation( [
-                       "School of Mathematics and Statistics\n",
-                       "Mathematical Institute\n",
-                       "North Haugh\n",
-                       "St Andrews, Fife KY16 9SS\n",
-                       "Scotland, UK" ] ),
-    Place         := "St Andrews",
-    Institution   := "University of St Andrews"
+                       "Gustav-Freytag-Straße 40\n",
+                       "50354 Hürth\n",
+                       "Germany" ] ),
+    #Place         := "St Andrews",
+    #Institution   := "University of St Andrews"
   ),
   rec(
     LastName      := "Schoenemann",
     FirstNames    := "Hans",
     IsAuthor      := true,
-    IsMaintainer  := true,
+    IsMaintainer  := false,
     Email         := "hannes@mathematik.uni-kl.de",
     WWWHome       := "http://www.mathematik.uni-kl.de/~hannes/",
     PostalAddress := Concatenation( [
