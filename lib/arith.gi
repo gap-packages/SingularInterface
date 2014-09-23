@@ -141,27 +141,57 @@ InstallOtherMethod(\[\], [IsSingularObj, IsInt], function(sobj, i)
     return SI_\[(sobj, i);
 end);
 
+#
 # Alternative access via the syntax mat[[row,col]]
 #
+# This is a syntax extension in GAP; most of it is not yet
+# in a released GAP version.
+#
+# Usage example:
+#
+#
+# gap> m:=SI_intmat([[1,2,3],[4,5,6]]);
+# <singular intmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+# gap> IsBound(m[[1,2]]);
+# true
+# gap> m[[1,2]];
+# 2
+# gap> m[[1,2]]:=42;
+# 42
+# gap> m[[1,2]];
+# 42
+# gap> m;
+# <singular intmat:[ [ 1, 42, 3 ], [ 4, 5, 6 ] ]>
+#
 _SI_MatElm_with_list := function(mat, l)
-    Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
+    Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));   # TODO: replace by proper error
     return _SI_MatElm(mat, l[1], l[2]);
 end;
-
 InstallOtherMethod(\[\], [IsSingularMatrix, IsList], _SI_MatElm_with_list);
 InstallOtherMethod(\[\], [IsSingularIntMat, IsList], _SI_MatElm_with_list);
 InstallOtherMethod(\[\], [IsSingularBigIntMat, IsList], _SI_MatElm_with_list);
 
-# Currently, GAP does not support []:= with a non-integer index.
-# But once it does, enable the following:
-#
-# _SI_SetMatElm_with_list := function(mat, l, val)
-#     Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
-#     _SI_SetMatElm(mat, l[1], l[2], val);
-# end;
-# InstallOtherMethod(\[\]\:\=, [IsSingularMatrix, IsList, IsObject], _SI_SetMatElm_with_list);
-# InstallOtherMethod(\[\]\:\=, [IsSingularIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
-# InstallOtherMethod(\[\]\:\=, [IsSingularBigIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+_SI_SetMatElm_with_list := function(mat, l, val)
+    Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
+    _SI_SetMatElm(mat, l[1], l[2], val);
+end;
+InstallOtherMethod(\[\]\:\=, [IsSingularMatrix, IsList, IsObject], _SI_SetMatElm_with_list);
+InstallOtherMethod(\[\]\:\=, [IsSingularIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+InstallOtherMethod(\[\]\:\=, [IsSingularBigIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+
+_SI_MatElmIsBound_with_list := function(mat, l)
+    return Length(l) = 2 and l[1] in [1..SI_nrows(mat)] and l[2] in [1..SI_ncols(mat)];
+end;
+InstallOtherMethod(ISB_LIST, [IsSingularMatrix, IsList], _SI_MatElmIsBound_with_list);
+InstallOtherMethod(ISB_LIST, [IsSingularIntMat, IsList], _SI_MatElmIsBound_with_list);
+InstallOtherMethod(ISB_LIST, [IsSingularBigIntMat, IsList], _SI_MatElmIsBound_with_list);
+
+_SI_MatElmUnbind_with_list := function(mat, l)
+    Error("Cannot unbind entries of singular matrix");
+end;
+InstallOtherMethod(UNB_LIST, [IsSingularMatrix, IsList], _SI_MatElmUnbind_with_list);
+InstallOtherMethod(UNB_LIST, [IsSingularIntMat, IsList], _SI_MatElmUnbind_with_list);
+InstallOtherMethod(UNB_LIST, [IsSingularBigIntMat, IsList], _SI_MatElmUnbind_with_list);
 
 
 # multiplicative inverses, first the generic delegation to Singular
