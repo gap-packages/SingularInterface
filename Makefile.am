@@ -22,7 +22,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 BINARCHDIR = bin/$(GAPARCH)
-GAPINSTALLLIB = $(abs_top_srcdir)/$(BINARCHDIR)/SingularInterface.so
+GAPINSTALLLIB = $(BINARCHDIR)/SingularInterface.so
 AM_CPPFLAGS= $(LIBSINGULAR_CFLAGS)
 
 lib_LTLIBRARIES = SingularInterface.la
@@ -66,7 +66,7 @@ clean-local:
 	rm -f $(GAPINSTALLLIB)
 
 $(GAPINSTALLLIB): SingularInterface.la
-	$(mkdir_p) $(top_srcdir)/$(BINARCHDIR)
+	$(mkdir_p) $(BINARCHDIR)
 	cp .libs/SingularInterface.so $(GAPINSTALLLIB)
 
 # Apply C++ preprocessor to lowlevel_mappings_src.h to strip out

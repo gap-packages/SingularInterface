@@ -112,7 +112,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, ring r)
 static Obj makeHighlevelWrapper(Obj rr)
 {
     // TODO: Create high level wrapper for ring. For now
-    // as a temporary hack, we set the (low leverl) wrapper
+    // as a temporary hack, we set the (low level) wrapper
     // itself.
     return rr;
 }

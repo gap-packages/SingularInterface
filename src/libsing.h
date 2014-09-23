@@ -244,6 +244,7 @@ extern UInt _SI_internalRingRNam;
 Obj UnwrapHighlevelWrapper(Obj obj);
 
 
+
 //////////////// C++ functions to be called from C ////////////////////
 
 

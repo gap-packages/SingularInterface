@@ -20,4 +20,5 @@ tests := List(tests, test -> Filename(d,test));
 for test in tests do
     Print("Running test '",test,"'\n");
     Test(test, rec(compareFunction:="uptowhitespace"));
+    #Test(test, rec(compareFunction:="uptowhitespace", rewriteToFile:=test));
 od;

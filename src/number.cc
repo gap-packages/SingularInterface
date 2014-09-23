@@ -62,12 +62,12 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         Int i = INT_INTOBJ(n);
 #ifdef SYS_IS_64_BIT
         if (i >= (-1L << 31) && i < (1L << 31))
-            return n_Init(i,r);
+            return n_Init(i, r);
 #else
-        return n_Init(i,r);
+        return n_Init(i, r);
 #endif
     }
-
+    
     if (rField_is_Zp(r)) {
         if (IS_INTOBJ(n)) {
             return n_Init(INT_INTOBJ(n) % rChar(r), r);
@@ -124,7 +124,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         nn = DEN_RAT(n);
         if (IS_INTOBJ(nn)) { // a GAP immediate integer
             Int i = INT_INTOBJ(nn);
-            mpz_init_set_si(res->n,i);
+            mpz_init_set_si(res->n, i);
         } else {
             _SI_GMP_FROM_GAP(nn, res->n);
         }
