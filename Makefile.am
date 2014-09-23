@@ -105,3 +105,9 @@ indent:
 AM_COLOR_TESTS = always
 TESTS_ENVIRONMENT = GAP_EXECUTABLE='$(GAPROOT)/bin/gap.sh'
 TESTS = test.sh
+
+
+doc:
+	($(GAPROOT)/bin/gap.sh -A makedoc.g)
+
+.PHONY: doc
