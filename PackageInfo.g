@@ -22,20 +22,9 @@
 SetPackageInfo( rec(
 
 PackageName := "SingularInterface",
-
 Subtitle := "A GAP interface to Singular",
-
-Version := Maximum( [
-                   "2014.01.06", ## Franks's version
-                   ## this line prevents merge conflicts
-                   "2014.09.23", ## Max's version
-                   ## this line prevents merge conflicts
-                   "2014.09.10", ## Mohamed's version
-                   ] ),
-
-# this avoids git-merge conflicts
-Date := ~.Version{[ 1 .. 10 ]},
-Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+Version := "0.6",
+Date    := "02/10/2014", # dd/mm/yyyy format
 
 Persons := [
   rec(
