@@ -182,7 +182,6 @@ static Int InitKernel(StructInitInfo* module)
     LengthFuncs[ T_SINGULAR ] = LengthObject;
     IsbListFuncs[ T_SINGULAR ] = IsbListObject;
     IsbvListFuncs[ T_SINGULAR ] = IsbListObject;
-    IsbbListFuncs[ T_SINGULAR ] = IsbbListObject;
     Elm0ListFuncs[ T_SINGULAR ] = Elm0ListObject;
     Elm0vListFuncs[ T_SINGULAR ] = Elm0ListObject;
     ElmListFuncs[  T_SINGULAR ] = ElmListObject;
@@ -190,9 +189,7 @@ static Int InitKernel(StructInitInfo* module)
     ElmwListFuncs[ T_SINGULAR ] = ElmListObject;
     ElmsListFuncs[ T_SINGULAR ] = ElmsListObject;
     UnbListFuncs[ T_SINGULAR ] = UnbListObject;
-    UnbbListFuncs[ T_SINGULAR ] = UnbbListObject;
     AssListFuncs[ T_SINGULAR ] = AssListObject;
-    AssbListFuncs[ T_SINGULAR ] = AssbListObject;
     AsssListFuncs[ T_SINGULAR ] = AsssListObject;
     IsDenseListFuncs[ T_SINGULAR ] = IsDenseListObject;
     IsHomogListFuncs[ T_SINGULAR ] = IsHomogListObject;
