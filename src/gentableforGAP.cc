@@ -240,7 +240,7 @@ void ttGen1()
         printf("  [\"%s\",[\"%s\"],\"%s\",%d],\n",
               s,
               Tok2Cmdname(dArith1[i].arg),
-              Tok2Cmdname(ABS(dArith1[i].res)),
+              Tok2Cmdname(dArith1[i].res),
               i);
     }
     i++;
