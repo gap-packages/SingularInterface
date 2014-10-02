@@ -60,9 +60,9 @@ dnl ##
 AC_FIND_GAP
 
 dnl ##
-dnl ## Check for Singular >= 4.0.0
+dnl ## Check for Singular >= 4.0.1
 dnl ##
-LB_CHECK_LIBSINGULAR([4.0.0],
+LB_CHECK_LIBSINGULAR([4.0.1],
  [],
  [AC_MSG_ERROR([required library libSingular not found])])
 

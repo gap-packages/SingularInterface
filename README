@@ -40,7 +40,7 @@ GAP and Singular on Windows is a bit tricky. If you are interested in
 Windows support, please contact us.
 
 Using SingularInterface requires a recent version of GAP (we recommend
-4.7.2 or later), and Singular 4.0.0 or later. For technical reasons
+4.7.2 or later), and Singular 4.0.1 or later. For technical reasons
 (specifically, to allow coexistence of their respective memory
 management systems), both should be built as 64 bit versions.
 

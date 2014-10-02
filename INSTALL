@@ -3,7 +3,7 @@ Compiling SingularInterface
 The following instructions require that GNU autoconf, automake
 and libtool are installed on your system.
 
-SingularInterface requires Singular 4.0.0 or later, and that Singular
+SingularInterface requires Singular 4.0.1 or later, and that Singular
 and GAP are compiled against the exact same version of the GMP
 library.
 
@@ -16,7 +16,7 @@ instructions should get you going.
 
 1. Fetch the Singular source code. For your convenience, we provide
    two shell scripts which do this for you. If you want to use
-   Singular 4.0.0, run
+   Singular 4.0.1, run
      ./fetchsingular
    If you want the development version run
      ./fetchsingular.dev
