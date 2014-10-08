@@ -25,7 +25,7 @@ VERSION=4.0.1
 PATCHLEVEL=
 TARFILE=singular-$VERSION$PATCHLEVEL.tar.gz
 URL=http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-0-1/$TARFILE
-MD5=1edece3a417c9f0050b480864337e83f
+MD5=c1c2ae10005dfcd699111d1cde63db7d
 
 mkdir -p singular
 
