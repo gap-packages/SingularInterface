@@ -196,8 +196,11 @@ end );
 
 
 # HACK: Since we mark some types (e.g. intvecs) as lists,
-# GAP's Display() method for lists gets triggered.
-InstallMethod(Display, "for a generic singular object", [ IsSI_Object and IsList ],
+# GAP's Display() method for lists gets triggered. In particular,
+# the resclasses package has a Display method for IsList which
+# uses SUM_FLAGS... baaad. 
+InstallMethod(Display, "for a singular object which is a list", [ IsSI_Object and IsList ],
+    SUM_FLAGS,
 function( obj )
     local st;
     st := DisplayString( obj );
