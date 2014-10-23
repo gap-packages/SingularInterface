@@ -29,6 +29,7 @@
 /doc/*.aux
 /doc/*.bbl
 /doc/*.blg
+/doc/*.brf
 /doc/*.idx
 /doc/*.ilg
 /doc/*.ind

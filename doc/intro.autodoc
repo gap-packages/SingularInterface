@@ -1,17 +1,47 @@
 @Chapter Introduction
 
-@Section What is the idea of the SingularInterface package?
+@Section What is SingularInterface?
 
-TODO
+The &GAP; package &SingularInterface; is a highly efficient and robust
+unidirectional low-level interface to &Singular;
+<Cite Key="singular" />. It is the outcome of an intensive collaboration
+between core developers of both systems.
+
+The goal of this interface is to map all of &Singular;’s powerful
+functionality into &GAP;. To achieve this it automatically wraps
+<E>all</E> &Singular; datatypes and exports <E>all</E> of &Singular;’s
+interface procedures to &GAP;. Furthermore, all procedures
+of any contributed library can be loaded on demand. 
+
+This package is a rather <Q>faithful</Q> image of &Singular;; it does not
+make an extensive attempt for a better integration of &Singular; into
+the &GAP; ecosystem. This is intentionally left to other packages, which
+are free to realize this in different ways.
+
+The development of &SingularInterface; has reached a $\beta$-phase and
+is already actively used in some research projects. We hope to attract
+more users in the near future, whose feedback will be crucial for a
+successful further development.
+
+
 
 @Section Conventions
 
-- TODO: document prefix SI_, SIL_, _SI_, ...?
+Almost all functions provided by &SingularInterface; have a name
+starting with one of the following prefixes:
+
+* <C>SI_</C>: &Singular; interpreter functions such as <C>std</C> are prefixed with <C>SI_</C>, resulting in the &GAP; name <C>SI_std</C>.
+* <C>SIL_</C>: &Singular; library functions such as <C>groebner</C> are prefixed with <C>SIL_</C>, resulting in the &GAP; name <C>SIL_groebner</C>.
+* <C>_SI_</C>: Various low-level methods start with the prefix <C>_SI_</C>; these are for internal use and currently undocumented.
+* <C>IsSI_</C>: These are names of types provided by &SingularInterface;, such as <C>IsSI_matrix</C>.
+
+One notable exception is the function <Ref Func="Singular"/>.
+
+
+@Section TODO
+
 - TODO: document  SI_LIB()
 - TODO: document Singular()
-
-
-
 
 
 @Chapter Rings and ring elements
