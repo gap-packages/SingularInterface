@@ -44,6 +44,14 @@ One notable exception is the function <Ref Func="Singular"/>.
 - TODO: document Singular()
 
 
+
+Insert Rundbrief example after this point:
+
+
+
+
+
+
 @Chapter Rings and ring elements
 
 @Section Constructors
