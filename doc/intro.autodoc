@@ -53,15 +53,18 @@ This makes it relatively easy to discover all functions provided by &SingularInt
 One notable exception to this naming scheme is the function <Ref Func="Singular"/>.
 
 
-@Section How to get it?
+@Section Obtaining and installing SingularInterface
 
-TODO: have this section?? Fill it!
+The latest &SingularInterface; release can be downloaded from
+<URL>http://gap-system.github.io/SingularInterface/</URL>.
+<P/>
+
+For instructions on how to compile the &SingularInterface; source code, please refer to the <F>INSTALL</F> file accompanying it.
 
 To check that the package has been successfully installed, start &GAP; and type:
 <Log><![CDATA[
 gap> LoadPackage( "SingularInterface" );
-true
-]]></Log>
+true]]></Log>
 
 
 
@@ -75,15 +78,6 @@ true
 @Chapter Getting started
 
 @Section First steps
-
-To see all imported procedures type:
-<Log><![CDATA[
-gap> SI_<press TAB twice>
-]]></Log>
-The &Singular; library <C>standard.lib</C> is loaded by default. To see all imported &Singular; library procedures type:
-<Log><![CDATA[
-gap> SIL_<press TAB twice>
-]]></Log>
 
 <ManSection>
 <Func Name="SI_LIB" Arg="libname"/>
