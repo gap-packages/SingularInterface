@@ -23,8 +23,8 @@ SetPackageInfo( rec(
 
 PackageName := "SingularInterface",
 Subtitle := "A GAP interface to Singular",
-Version := "0.6",
-Date    := "02/10/2014", # dd/mm/yyyy format
+Version := "0.7",
+Date    := "23/10/2014", # dd/mm/yyyy format
 
 Persons := [
   rec(
