@@ -1,0 +1,155 @@
+@Chapter Matrices
+
+@Section Constructors
+
+In this section we discuss constructors for &Singular; matrices. We
+also treat the three datatypes <C>ideal</C>, <C>module</C>, and
+<C>vector</C> in this section as they are in first approximation
+sparse representations of &Singular; matrices.
+
+<ManSection>
+<Oper Name="SI_matrix" Arg="r,c,str" Label="for two integers and a string"/>
+<Description>
+
+  Construct a matrix over the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Oper Name="SI_ideal" Arg="r,str" Label="for a Singular ring and a string"/>
+<Description>
+
+  Construct an <Q>ideal</Q> in the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+  
+  The datatype <C>ideal</C> in &Singular; is in first approximation a
+  specialized data structure for matrices consisting of a single
+  row. However, the print method in &Singular; prints them as a single
+  column.
+
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_module" Arg="mat" Label="for a Singular matrix"/>
+<Description>
+  
+  Convert the &Singular; matrix <A>mat</A> into a &Singular;
+  <Q>module</Q>.
+
+  The datatype <C>module</C> in &Singular; is in first approximation a
+  specialized sparse data structure for column oriented matrices with
+  compressed columns. Each column has the &Singular; datatype
+  <C>vector</C>.
+  
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_vector" Arg="r,str" Label="for a Singular ring and a string"/>
+<Description>
+
+  Construct a <Q>vector</Q> over the &Singular; ring <A>r</A> using the
+  string <A>str</A>.
+
+  The datatype <C>vector</C> in &Singular; is in first approximation a
+  specialized sparse data structure for matrices consisting of a
+  single column. However, the print method in &Singular; prints them
+  as a single row or rather a list.
+  
+</Description>
+</ManSection>
+
+
+@Section Operations
+
+<ManSection>
+<Func Name="SI_ncols" Arg="mat" Label="for a Singular matrix"/>
+<Description>
+TODO (make sure to have examples for this and matrices, modules, vectors and ideals
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_nrows" Arg="mat" Label="for a Singular matrix"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="SI_transpose" Arg="mat" Label="for a Singular matrix"/>
+<Attr Name="TransposedMat" Arg="mat" Label="for a Singular matrix"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="SI_det" Arg="mat" Label="for a Singular matrix"/>
+<Attr Name="Determinant" Arg="mat" Label="for a Singular matrix"/>
+<Attr Name="DeterminantMat" Arg="mat" Label="for a Singular matrix"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+
+<ManSection>
+<Func Name="\[\]" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+TODO: also mention SI_\[ as low level function behind it
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_std" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_reduce" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_lift" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_syz" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_modulo" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_nres" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+
+
+

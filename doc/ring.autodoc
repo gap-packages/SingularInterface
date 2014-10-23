@@ -1,0 +1,60 @@
+@Chapter Rings and ring elements
+
+@Section Constructors
+
+<ManSection>
+<Oper Name="SI_ring" Arg="char,indets,ord" Label="for an integer and two lists"/>
+<Description>
+
+Construct a &Singular; ring over the prime field of characteristic
+<A>char</A> with the indeterminates given by <A>indets</A> and
+ordering given by the list <A>ord</A>. The list <A>indets</A> is
+allowed to be empty.
+
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_poly" Arg="r,str" Label="for a Singular ring and a string"/>
+<Description>
+  Construct a polynomial in the &Singular; ring <A>r</A> using the string <A>str</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_number" Arg="r,a" Label="for a Singular ring and a rational number"/>
+<Description>
+  Construct a number in the &Singular; ring <A>r</A> using the rational number <A>a</A>.
+
+</Description>
+</ManSection>
+
+
+@Section Operations
+
+<ManSection>
+<Func Name="SI_imap" Arg="TODO" Label="for a TODO"/>
+<Description>
+  TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_deg" Arg="r" Label="for a Singular polynomial"/>
+<Description>
+  Compute the degree of the polynomial <A>a</A>.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="SI_gcd" Arg="a,b" Label="for two Singular polynomials"/>
+<Description>
+	
+  Compute the greatest common divisor of the two polynomial <A>a</A>
+  and <A>b</A>.
+  
+</Description>
+</ManSection>
+
+
+

@@ -40,6 +40,9 @@ AutoDoc( "SingularInterface" :
          rec(
              files := [
                      "doc/intro.autodoc",
+                     "doc/ring.autodoc",
+                     "doc/matrix.autodoc",
+                     "doc/integer.autodoc",
                      "doc/example.g",
                      ],
              )

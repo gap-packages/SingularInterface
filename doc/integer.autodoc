@@ -1,0 +1,49 @@
+@Chapter Integer types
+
+@Section Constructors
+
+
+<ManSection>
+<Oper Name="SI_int" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_intmat" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_intvec" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_bigint" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_bigintmat" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+<ManSection>
+<Oper Name="SI_bigintvec" Arg="TODO" Label="for a TODO"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
+
+
