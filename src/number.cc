@@ -45,6 +45,24 @@ static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
 }
 
 
+
+/// Convert a GAP finite field element object to a GAP integer object. This
+/// simply calls the GAP function IntFFE().
+static Obj IntFFE(Obj o)
+{
+    // Normally, we would do this:
+    //    return CALL_1ARGS(SI_IntFFE, o);
+    // However, this fails in C++ due to the stricter type checking.
+    // Thus we expand the macro once, and add the appropriate type case.
+    // This should eventually be fixed in GAP.
+    typedef Obj (* ObjFunc1Arg) (Obj self, Obj a);
+    ObjFunc of = HDLR_FUNC(SI_IntFFE, 1);
+    ObjFunc1Arg of1 = (ObjFunc1Arg)of;
+    return of1(SI_IntFFE, o);
+    
+}
+
+
 /// This internal function converts a GAP number n into a coefficient
 /// number for the ring r. n can be an immediate integer, a GMP integer
 /// or a rational number. If anything goes wrong, NULL is returned.
@@ -75,7 +93,8 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
             FF ff = FLD_FFE(n);
             if (CHAR_FF(ff) != rChar(r) || DEGR_FF(ff) != 1)
                 ErrorQuit("Argument is in wrong field.\n",0L,0L);
-            return n_Init(VAL_FFE(n), r);
+            Obj v = IntFFE(n);
+            return n_Init(INT_INTOBJ(v), r);
         } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG || TNUM_OBJ(n) == T_RAT) {
             n = MOD( n, INTOBJ_INT( rChar(r) ) );
             if (n != Fail && IS_INTOBJ(n)) {

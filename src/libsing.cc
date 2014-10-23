@@ -97,6 +97,12 @@ Obj SI_Errors;
 Obj _SI_ProxiesType;
 UInt _SI_internalRingRNam;
 
+/** 
+Stores the GAP object that is the function IntFFE() so that we can
+call it to convert finite field elements to integers.
+*/
+Obj SI_IntFFE;
+
 
 // This is defined in arith.c but not exported in arith.h:
 extern "C" Int EqObject(Obj opL, Obj opR);
@@ -138,6 +144,7 @@ static Int InitKernel(StructInitInfo* module)
 
     InitCopyGVar("SI_Errors", &SI_Errors);
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
+    InitFopyGVar( "IntFFE", &SI_IntFFE );
 
     TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
     InfoBags[T_SINGULAR].name = "singular wrapper object";

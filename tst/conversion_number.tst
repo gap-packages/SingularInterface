@@ -11,7 +11,7 @@ gap> SI_number(r, 37^100+2);
 2>
 gap> SI_number(r, 5*Z(37)^0);
 <singular number:
--13>
+5>
 gap> SI_number(r, Z(47));
 Error, Argument is in wrong field.
 
