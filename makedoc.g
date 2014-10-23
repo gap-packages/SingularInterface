@@ -40,6 +40,7 @@ AutoDoc( "SingularInterface" :
          rec(
              files := [
                      "doc/intro.autodoc",
+                     "doc/example.g",
                      ],
              )
          );
