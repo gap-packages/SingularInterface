@@ -97,5 +97,6 @@ function( arg ) ... end]]></Example>
 </Description>
 </ManSection>
 
+@Subsection Example
 
-
+@InsertSystem Rundbrief_Example

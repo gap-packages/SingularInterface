@@ -43,9 +43,14 @@ AutoDoc( "SingularInterface" :
                      "doc/ring.autodoc",
                      "doc/matrix.autodoc",
                      "doc/integer.autodoc",
-                     "doc/example.g",
                      ],
-             )
+             ),
+        
+        maketest := rec( folder := ".",
+                         commands :=
+                         [ "LoadPackage( \"SingularInterface\" );",
+                           ],
+                         )
          );
 
 # Create VERSION file for "make towww"

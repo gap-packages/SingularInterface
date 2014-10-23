@@ -17,6 +17,8 @@
 /src/.dirstamp
 /.libs/
 
+maketest.g
+
 /doc/chap*.txt
 /doc/*.html
 /doc/*.css
