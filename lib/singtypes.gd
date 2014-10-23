@@ -26,7 +26,6 @@ Setter(ElementsFamily)(SingularFamily, SingularFamily); # HACK: Grrrrrrrrr
 
 DeclareCategory( "IsSI_Object", IsObject );
 
-DeclareCategory( "IsSI_void", IsSI_Object );
 DeclareCategory( "IsSI_bigint", IsSI_Object and IsRingElementWithOne );
 DeclareCategory( "IsSI_bigintmat", IsSI_Object and IsList );
 DeclareCategory( "IsSI_ideal", IsSI_Object );
@@ -50,8 +49,6 @@ DeclareCategory( "IsSI_proxy", IsPositionalObjectRep and IsSI_Object );
 
 _SI_Types := [];
 
-_SI_Types[_SI_TYPENRS.SINGTYPE_VOID]
-   := NewType(SingularFamily,IsSI_void);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT]
    := NewType(SingularFamily,IsSI_bigint and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT_IMM]

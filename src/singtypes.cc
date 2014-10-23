@@ -38,7 +38,7 @@ static Obj _SI_Types;    /* A kernel copy of a plain list of types */
 
 const int GAPtoSingType[] = {
     0, /* NOTUSED */
-    0, /* VOID */
+    0, /* NOTUSED */
     BIGINT_CMD,
     BIGINT_CMD,
     BIGINTMAT_CMD,
@@ -91,7 +91,7 @@ int SingtoGAPType[MAX_TOK];
 
 const int HasRingTable[] = {
     0, // NOTUSED
-    0, // SINGTYPE_VOID          = 1
+    0, // NOTUSED
     0, // SINGTYPE_BIGINT        = 2,
     0, // SINGTYPE_BIGINT_IMM    = 3,
     0, // SINGTYPE_BIGINTMAT     = 4,
@@ -160,7 +160,6 @@ void InitSingTypesFromKernel()
     }
 
     tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
-    AssPRec(tmp,RNamName("SINGTYPE_VOID"), INTOBJ_INT(SINGTYPE_VOID));
     AssPRec(tmp,RNamName("SINGTYPE_BIGINT"), INTOBJ_INT(SINGTYPE_BIGINT));
     AssPRec(tmp,RNamName("SINGTYPE_BIGINT_IMM"), INTOBJ_INT(SINGTYPE_BIGINT_IMM));
     AssPRec(tmp,RNamName("SINGTYPE_BIGINTMAT"), INTOBJ_INT(SINGTYPE_BIGINTMAT));

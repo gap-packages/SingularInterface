@@ -19,7 +19,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-InstallMethod( _SI_TypeName, ["IsSI_void"], x->"void" );
 InstallMethod( _SI_TypeName, ["IsSI_bigint"], x->"bigint" );
 InstallMethod( _SI_TypeName, ["IsSI_bigintmat"], x->"bigintmat" );
 InstallMethod( _SI_TypeName, ["IsSI_ideal"], x->"ideal" );

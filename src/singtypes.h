@@ -28,7 +28,6 @@ extern "C" {
 /* If you change these numbers, then also adjust the tables GAPtoSingType
  * and HasRingTable in cxxfuncs.cc! */
 enum SingType {
-    SINGTYPE_VOID          = 1,
     SINGTYPE_BIGINT        = 2,
     SINGTYPE_BIGINT_IMM    = 3,
     SINGTYPE_BIGINTMAT     = 4,
