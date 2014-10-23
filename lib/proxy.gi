@@ -20,7 +20,7 @@
 #
 
 InstallMethod(SI_Proxy, "for a singular object and a positive integer",
-  [ IsSingularObj, IsPosInt ],
+  [ IsSI_Object, IsPosInt ],
   function( o, i )
     local l;
     l := [o,i];
@@ -29,7 +29,7 @@ InstallMethod(SI_Proxy, "for a singular object and a positive integer",
   end );
 
 InstallMethod(SI_Proxy, "for a singular object and two positive integers",
-  [ IsSingularObj, IsPosInt, IsPosInt ],
+  [ IsSI_Object, IsPosInt, IsPosInt ],
   function( o, i, j)
     local l;
     l := [o,i,j];
@@ -38,7 +38,7 @@ InstallMethod(SI_Proxy, "for a singular object and two positive integers",
   end );
 
 InstallMethod(SI_Proxy, "for a singular object and a string",
-  [ IsSingularObj, IsStringRep ],
+  [ IsSI_Object, IsStringRep ],
   function( o, s)
     local l;
     l := [o,s];
@@ -47,7 +47,7 @@ InstallMethod(SI_Proxy, "for a singular object and a string",
   end );
 
 InstallMethod(ViewString, "for a singular proxy object",
-  [ IsSingularProxy ],
+  [ IsSI_proxy ],
   function(p)
     local str;
     str := "<proxy for ";

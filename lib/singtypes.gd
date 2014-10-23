@@ -24,104 +24,104 @@
 SingularFamily := NewFamily("SingularFamily");
 Setter(ElementsFamily)(SingularFamily, SingularFamily); # HACK: Grrrrrrrrr
 
-DeclareCategory( "IsSingularObj", IsObject );
+DeclareCategory( "IsSI_Object", IsObject );
 
-DeclareCategory( "IsSingularVoid", IsSingularObj );
-DeclareCategory( "IsSingularBigInt", IsSingularObj and IsRingElementWithOne );
-DeclareCategory( "IsSingularBigIntMat", IsSingularObj and IsList );
-DeclareCategory( "IsSingularIdeal", IsSingularObj );
-DeclareCategory( "IsSingularIntMat", IsSingularObj and IsList );
-DeclareCategory( "IsSingularIntVec", IsSingularObj and IsList );
-DeclareCategory( "IsSingularLink", IsSingularObj );
-DeclareCategory( "IsSingularList", IsSingularObj and IsList);
-DeclareCategory( "IsSingularMap", IsSingularObj );
-DeclareCategory( "IsSingularMatrix", IsSingularObj );
-DeclareCategory( "IsSingularModule", IsSingularObj );
-DeclareCategory( "IsSingularNumber", IsSingularObj and IsRingElementWithOne );
-DeclareCategory( "IsSingularPoly", IsSingularObj and IsRingElementWithOne );
-DeclareCategory( "IsSingularQRing", IsSingularObj and IsAdditiveMagmaWithZero
+DeclareCategory( "IsSI_void", IsSI_Object );
+DeclareCategory( "IsSI_bigint", IsSI_Object and IsRingElementWithOne );
+DeclareCategory( "IsSI_bigintmat", IsSI_Object and IsList );
+DeclareCategory( "IsSI_ideal", IsSI_Object );
+DeclareCategory( "IsSI_intmat", IsSI_Object and IsList );
+DeclareCategory( "IsSI_intvec", IsSI_Object and IsList );
+DeclareCategory( "IsSI_link", IsSI_Object );
+DeclareCategory( "IsSI_list", IsSI_Object and IsList);
+DeclareCategory( "IsSI_map", IsSI_Object );
+DeclareCategory( "IsSI_matrix", IsSI_Object );
+DeclareCategory( "IsSI_module", IsSI_Object );
+DeclareCategory( "IsSI_number", IsSI_Object and IsRingElementWithOne );
+DeclareCategory( "IsSI_poly", IsSI_Object and IsRingElementWithOne );
+DeclareCategory( "IsSI_qring", IsSI_Object and IsAdditiveMagmaWithZero
                   and IsRingWithOne );
-DeclareCategory( "IsSingularResolution", IsSingularObj );
-DeclareCategory( "IsSingularRing", IsSingularObj and IsAdditiveMagmaWithZero
+DeclareCategory( "IsSI_resolution", IsSI_Object );
+DeclareCategory( "IsSI_ring", IsSI_Object and IsAdditiveMagmaWithZero
                   and IsRingWithOne );
-DeclareCategory( "IsSingularString", IsSingularObj and IsList );
-DeclareCategory( "IsSingularVector", IsSingularObj and IsList );
-DeclareCategory( "IsSingularProxy", IsPositionalObjectRep and IsSingularObj );
+DeclareCategory( "IsSI_string", IsSI_Object and IsList );
+DeclareCategory( "IsSI_vector", IsSI_Object and IsList );
+DeclareCategory( "IsSI_proxy", IsPositionalObjectRep and IsSI_Object );
 
 _SI_Types := [];
 
 _SI_Types[_SI_TYPENRS.SINGTYPE_VOID]
-   := NewType(SingularFamily,IsSingularVoid);
+   := NewType(SingularFamily,IsSI_void);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT]
-   := NewType(SingularFamily,IsSingularBigInt and IsMutable);
+   := NewType(SingularFamily,IsSI_bigint and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINT_IMM]
-   := NewType(SingularFamily,IsSingularBigInt);
+   := NewType(SingularFamily,IsSI_bigint);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINTMAT]
-   := NewType(SingularFamily,IsSingularBigIntMat and IsMutable);
+   := NewType(SingularFamily,IsSI_bigintmat and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_BIGINTMAT_IMM]
-   := NewType(SingularFamily,IsSingularBigIntMat);
+   := NewType(SingularFamily,IsSI_bigintmat);
 _SI_Types[_SI_TYPENRS.SINGTYPE_IDEAL]
-   := NewType(SingularFamily,IsSingularIdeal and IsMutable);
+   := NewType(SingularFamily,IsSI_ideal and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_IDEAL_IMM]
-   := NewType(SingularFamily,IsSingularIdeal);
+   := NewType(SingularFamily,IsSI_ideal);
 _SI_Types[_SI_TYPENRS.SINGTYPE_INTMAT]
-   := NewType(SingularFamily,IsSingularIntMat and IsMutable);
+   := NewType(SingularFamily,IsSI_intmat and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_INTMAT_IMM]
-   := NewType(SingularFamily,IsSingularIntMat);
+   := NewType(SingularFamily,IsSI_intmat);
 _SI_Types[_SI_TYPENRS.SINGTYPE_INTVEC]
-   := NewType(SingularFamily,IsSingularIntVec and IsMutable);
+   := NewType(SingularFamily,IsSI_intvec and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_INTVEC_IMM]
-   := NewType(SingularFamily,IsSingularIntVec);
+   := NewType(SingularFamily,IsSI_intvec);
 _SI_Types[_SI_TYPENRS.SINGTYPE_LINK]
-   := NewType(SingularFamily,IsSingularLink and IsMutable);
+   := NewType(SingularFamily,IsSI_link and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_LINK_IMM]
-   := NewType(SingularFamily,IsSingularLink);
+   := NewType(SingularFamily,IsSI_link);
 _SI_Types[_SI_TYPENRS.SINGTYPE_LIST]
-   := NewType(SingularFamily,IsSingularList and IsMutable);
+   := NewType(SingularFamily,IsSI_list and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_LIST_IMM]
-   := NewType(SingularFamily,IsSingularList);
+   := NewType(SingularFamily,IsSI_list);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MAP]
-   := NewType(SingularFamily,IsSingularMap and IsMutable);
+   := NewType(SingularFamily,IsSI_map and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MAP_IMM]
-   := NewType(SingularFamily,IsSingularMap);
+   := NewType(SingularFamily,IsSI_map);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MATRIX]
-   := NewType(SingularFamily,IsSingularMatrix and IsMutable);
+   := NewType(SingularFamily,IsSI_matrix and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MATRIX_IMM]
-   := NewType(SingularFamily,IsSingularMatrix);
+   := NewType(SingularFamily,IsSI_matrix);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MODULE]
-   := NewType(SingularFamily,IsSingularModule and IsMutable);
+   := NewType(SingularFamily,IsSI_module and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_MODULE_IMM]
-   := NewType(SingularFamily,IsSingularModule);
+   := NewType(SingularFamily,IsSI_module);
 _SI_Types[_SI_TYPENRS.SINGTYPE_NUMBER]
-   := NewType(SingularFamily,IsSingularNumber and IsMutable);
+   := NewType(SingularFamily,IsSI_number and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_NUMBER_IMM]
-   := NewType(SingularFamily,IsSingularNumber);
+   := NewType(SingularFamily,IsSI_number);
 _SI_Types[_SI_TYPENRS.SINGTYPE_POLY]
-   := NewType(SingularFamily,IsSingularPoly and IsMutable);
+   := NewType(SingularFamily,IsSI_poly and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_POLY_IMM]
-   := NewType(SingularFamily,IsSingularPoly);
+   := NewType(SingularFamily,IsSI_poly);
 _SI_Types[_SI_TYPENRS.SINGTYPE_QRING]
-   := NewType(SingularFamily,IsSingularQRing and IsMutable);
+   := NewType(SingularFamily,IsSI_qring and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_QRING_IMM]
-   := NewType(SingularFamily,IsSingularQRing);
+   := NewType(SingularFamily,IsSI_qring);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION]
-   := NewType(SingularFamily,IsSingularResolution and IsMutable);
+   := NewType(SingularFamily,IsSI_resolution and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RESOLUTION_IMM]
-   := NewType(SingularFamily,IsSingularResolution);
+   := NewType(SingularFamily,IsSI_resolution);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RING]
-   := NewType(SingularFamily,IsSingularRing and IsMutable);
+   := NewType(SingularFamily,IsSI_ring and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_RING_IMM]
-   := NewType(SingularFamily,IsSingularRing);
+   := NewType(SingularFamily,IsSI_ring);
 _SI_Types[_SI_TYPENRS.SINGTYPE_STRING]
-   := NewType(SingularFamily,IsSingularString and IsMutable);
+   := NewType(SingularFamily,IsSI_string and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_STRING_IMM]
-   := NewType(SingularFamily,IsSingularString);
+   := NewType(SingularFamily,IsSI_string);
 _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR]
-   := NewType(SingularFamily,IsSingularVector and IsMutable);
+   := NewType(SingularFamily,IsSI_vector and IsMutable);
 _SI_Types[_SI_TYPENRS.SINGTYPE_VECTOR_IMM]
-   := NewType(SingularFamily,IsSingularVector);
+   := NewType(SingularFamily,IsSI_vector);
 
 BindGlobal("_SI_ProxiesType",
-  NewType( SingularFamily, IsSingularProxy and IsMutable));
+  NewType( SingularFamily, IsSI_proxy and IsMutable));
 
-DeclareOperation( "_SI_TypeName", [IsSingularObj] );
+DeclareOperation( "_SI_TypeName", [IsSI_Object] );

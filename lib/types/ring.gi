@@ -144,7 +144,7 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
     return result;
 end );
 
-InstallMethod(SI_ring,[IsSingularRing, IsSingularObj],_SI_ring_singular);
+InstallMethod(SI_ring,[IsSI_ring, IsSI_Object],_SI_ring_singular);
 InstallMethod(SI_ring,[IsInt,IsList,IsList],
   function( charact, names, orderings )
     local bad;
@@ -179,7 +179,7 @@ InstallMethod(SI_ring,[IsInt,IsList],
     return SI_ring(charact, names, [["dp",Length(names)]]);
   end);
 
-InstallMethod(SI_ring,["IsSingularObj"], SI_RingOfSingobj);
+InstallMethod(SI_ring,["IsSI_Object"], SI_RingOfSingobj);
 
 
 BindGlobal("_SI_ViewString_ring", function( ring )
@@ -190,12 +190,12 @@ BindGlobal("_SI_ViewString_ring", function( ring )
 end );
 
 InstallMethod( ViewString, "for a singular ring",
-  [ IsSingularRing ],
+  [ IsSI_ring ],
   _SI_ViewString_ring );
 
 # As long as the library has a ViewObj for ring-with-one method, we need:
 InstallMethod( ViewObj, "for a singular ring",
-  [ IsSingularRing ],
+  [ IsSI_ring ],
   function( ring )
     Print(_SI_ViewString_ring(ring));
   end );
@@ -204,12 +204,12 @@ InstallMethod( ViewObj, "for a singular ring",
 # this causes that DefaultRing of a Singular object with ring returns that ring
 InstallOtherMethod(DefaultRingByGenerators, fam->
     fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_ring(l[1]));
-InstallMethod(\in, ["IsSingularPoly", "IsRing"], function(pol, r)
+InstallMethod(\in, ["IsSI_poly", "IsRing"], function(pol, r)
   return SI_ring(pol) = r;
 end);
 
 # HACK for demo in Konstanz
-InstallMethod(AssignGeneratorVariables, ["IsSingularRing"], function(r)
+InstallMethod(AssignGeneratorVariables, ["IsSI_ring"], function(r)
   local gens;
   gens := SI_Indeterminates(r);
   DoAssignGenVars(gens);

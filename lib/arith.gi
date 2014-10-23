@@ -30,9 +30,9 @@ InstallGlobalFunction( _SI_Addition,
     if IsMutable(a) or IsMutable(b) then return c;
     else return MakeImmutable(c); fi;
   end );
-InstallOtherMethod(\+, ["IsSingularObj","IsSingularObj"], _SI_Addition);
-InstallOtherMethod(\+, ["IsInt","IsSingularObj"], _SI_Addition);
-InstallOtherMethod(\+, ["IsSingularObj","IsInt"], _SI_Addition);
+InstallOtherMethod(\+, ["IsSI_Object","IsSI_Object"], _SI_Addition);
+InstallOtherMethod(\+, ["IsInt","IsSI_Object"], _SI_Addition);
+InstallOtherMethod(\+, ["IsSI_Object","IsInt"], _SI_Addition);
 
 # For small polynomials this variant can be 30%  faster. If SI_\+ were
 # using SI_CallFuncM, it  would be slower again by a similar factor.
@@ -43,7 +43,7 @@ InstallGlobalFunction( _SI_Addition_fast,
     if IsMutable(a) or IsMutable(b) then return c; 
     else return MakeImmutable(c); fi;
   end );
-InstallOtherMethod(\+, ["IsSingularPoly","IsSingularPoly"], _SI_Addition_fast);
+InstallOtherMethod(\+, ["IsSI_poly","IsSI_poly"], _SI_Addition_fast);
 
 InstallGlobalFunction( _SI_Subtraction,
   function(a,b)
@@ -52,9 +52,9 @@ InstallGlobalFunction( _SI_Subtraction,
     if IsMutable(a) or IsMutable(b) then return c;
     else return MakeImmutable(c); fi;
   end );
-InstallOtherMethod(\-, ["IsSingularObj","IsSingularObj"], _SI_Subtraction);
-InstallOtherMethod(\-, ["IsInt","IsSingularObj"], _SI_Subtraction);
-InstallOtherMethod(\-, ["IsSingularObj","IsInt"], _SI_Subtraction);
+InstallOtherMethod(\-, ["IsSI_Object","IsSI_Object"], _SI_Subtraction);
+InstallOtherMethod(\-, ["IsInt","IsSI_Object"], _SI_Subtraction);
+InstallOtherMethod(\-, ["IsSI_Object","IsInt"], _SI_Subtraction);
 
 InstallGlobalFunction( _SI_Negation,
   function(a)
@@ -70,16 +70,16 @@ InstallGlobalFunction( _SI_Negation_fast,
     if IsMutable(a) then return c; 
     else return MakeImmutable(c); fi;
   end );
-InstallOtherMethod(AINV, ["IsSingularObj"], _SI_Negation);
-InstallOtherMethod(AINV, ["IsSingularPoly"], _SI_Negation_fast);
+InstallOtherMethod(AINV, ["IsSI_Object"], _SI_Negation);
+InstallOtherMethod(AINV, ["IsSI_poly"], _SI_Negation_fast);
 
 
-InstallOtherMethod(\*, ["IsSingularObj","IsSingularObj"], SI_\*);
-InstallOtherMethod(\*, ["IsInt","IsSingularObj"], SI_\*);
-InstallOtherMethod(\*, ["IsSingularObj","IsInt"], SI_\*);
-InstallOtherMethod(\*, ["IsSingularPoly","IsSingularPoly"], _SI_p_Mult_q);
+InstallOtherMethod(\*, ["IsSI_Object","IsSI_Object"], SI_\*);
+InstallOtherMethod(\*, ["IsInt","IsSI_Object"], SI_\*);
+InstallOtherMethod(\*, ["IsSI_Object","IsInt"], SI_\*);
+InstallOtherMethod(\*, ["IsSI_poly","IsSI_poly"], _SI_p_Mult_q);
 
-InstallOtherMethod(\^, ["IsSingularObj","IsInt"], SI_\^);
+InstallOtherMethod(\^, ["IsSI_Object","IsInt"], SI_\^);
 
 InstallGlobalFunction( _SI_Comparer,
   function(a,b)
@@ -91,53 +91,53 @@ InstallGlobalFunction( _SI_Comparer,
 # Note: we must use a rank higher than 4, as otherwise a generic
 # method of the IO package for comparing lists may be triggered
 # (which then fails to actually perform the comparison).
-InstallOtherMethod(\=, ["IsSingularObj","IsSingularObj"], 10, _SI_Comparer);
+InstallOtherMethod(\=, ["IsSI_Object","IsSI_Object"], 10, _SI_Comparer);
 
 # Zero and One for rings and polys:
-InstallOtherMethod(ZeroImmutable, ["IsSingularRing"], ZeroSM);
-InstallOtherMethod(ZeroImmutable, ["IsSingularPoly"], function(sobj)
+InstallOtherMethod(ZeroImmutable, ["IsSI_ring"], ZeroSM);
+InstallOtherMethod(ZeroImmutable, ["IsSI_poly"], function(sobj)
   return ZeroSM(SI_ring(sobj));
 end);
-InstallOtherMethod(ZeroMutable, ["IsSingularRing"], function(sobj)
+InstallOtherMethod(ZeroMutable, ["IsSI_ring"], function(sobj)
   return SI_poly(sobj, "0");
 end);
-InstallOtherMethod(ZeroMutable, ["IsSingularPoly"], function(sobj)
+InstallOtherMethod(ZeroMutable, ["IsSI_poly"], function(sobj)
   return SI_poly(SI_ring(sobj), "0");
 end);
 # ZeroSM for rings and polys is done in the kernel!
 # This is efficient for rings and immutable polys and
 # for mutable polys it delegates to ZeroMutable and method selection!
 
-InstallOtherMethod(OneImmutable, ["IsSingularRing"], function(sobj)
+InstallOtherMethod(OneImmutable, ["IsSI_ring"], function(sobj)
   return OneSM(sobj);
 end);
-InstallOtherMethod(OneImmutable, ["IsSingularPoly"], function(sobj)
+InstallOtherMethod(OneImmutable, ["IsSI_poly"], function(sobj)
   return OneSM(SI_ring(sobj));
 end);
-InstallOtherMethod(OneMutable, ["IsSingularRing"], function(sobj)
+InstallOtherMethod(OneMutable, ["IsSI_ring"], function(sobj)
   return SI_poly(sobj, "1");
 end);
-InstallOtherMethod(OneMutable, ["IsSingularPoly"], function(sobj)
+InstallOtherMethod(OneMutable, ["IsSI_poly"], function(sobj)
   return SI_poly(SI_ring(sobj), "1");
 end);
 # OneSM for rings and polys is done in the kernel!
 # This is efficient for rings and immutable polys and
 # for mutable polys it delegates to OneMutable and method selection!
 
-InstallOtherMethod(Zero, ["IsSingularBigInt"], sobj -> SI_bigint(0));
-InstallOtherMethod(ZeroMutable, ["IsSingularBigInt"], sobj -> SI_bigint(0));
-InstallOtherMethod(One, ["IsSingularBigInt"], sobj -> SI_bigint(1));
-InstallOtherMethod(OneMutable, ["IsSingularBigInt"], sobj -> SI_bigint(1));
+InstallOtherMethod(Zero, ["IsSI_bigint"], sobj -> SI_bigint(0));
+InstallOtherMethod(ZeroMutable, ["IsSI_bigint"], sobj -> SI_bigint(0));
+InstallOtherMethod(One, ["IsSI_bigint"], sobj -> SI_bigint(1));
+InstallOtherMethod(OneMutable, ["IsSI_bigint"], sobj -> SI_bigint(1));
 
 # HACK: Fallback (works correctly only for objects that support subtracting
-InstallOtherMethod(Zero, ["IsSingularObj"], sobj -> sobj - sobj);
-InstallOtherMethod(ZeroMutable, ["IsSingularObj"], sobj -> sobj - sobj);
+InstallOtherMethod(Zero, ["IsSI_Object"], sobj -> sobj - sobj);
+InstallOtherMethod(ZeroMutable, ["IsSI_Object"], sobj -> sobj - sobj);
 
 # now we can make use of  the following implication
-InstallTrueMethod(IsRingElementWithOne, IsSingularPoly);
+InstallTrueMethod(IsRingElementWithOne, IsSI_poly);
 
 # list access makes sense for many Singular objects
-InstallOtherMethod(\[\], [IsSingularObj, IsInt], function(sobj, i)
+InstallOtherMethod(\[\], [IsSI_Object, IsInt], function(sobj, i)
     return SI_\[(sobj, i);
 end);
 
@@ -167,35 +167,35 @@ _SI_MatElm_with_list := function(mat, l)
     Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));   # TODO: replace by proper error
     return _SI_MatElm(mat, l[1], l[2]);
 end;
-InstallOtherMethod(\[\], [IsSingularMatrix, IsList], _SI_MatElm_with_list);
-InstallOtherMethod(\[\], [IsSingularIntMat, IsList], _SI_MatElm_with_list);
-InstallOtherMethod(\[\], [IsSingularBigIntMat, IsList], _SI_MatElm_with_list);
+InstallOtherMethod(\[\], [IsSI_matrix, IsList], _SI_MatElm_with_list);
+InstallOtherMethod(\[\], [IsSI_intmat, IsList], _SI_MatElm_with_list);
+InstallOtherMethod(\[\], [IsSI_bigintmat, IsList], _SI_MatElm_with_list);
 
 _SI_SetMatElm_with_list := function(mat, l, val)
     Assert(0, Length(l) = 2 and ForAll(l, IsPosInt));
     _SI_SetMatElm(mat, l[1], l[2], val);
 end;
-InstallOtherMethod(\[\]\:\=, [IsSingularMatrix, IsList, IsObject], _SI_SetMatElm_with_list);
-InstallOtherMethod(\[\]\:\=, [IsSingularIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
-InstallOtherMethod(\[\]\:\=, [IsSingularBigIntMat, IsList, IsObject], _SI_SetMatElm_with_list);
+InstallOtherMethod(\[\]\:\=, [IsSI_matrix, IsList, IsObject], _SI_SetMatElm_with_list);
+InstallOtherMethod(\[\]\:\=, [IsSI_intmat, IsList, IsObject], _SI_SetMatElm_with_list);
+InstallOtherMethod(\[\]\:\=, [IsSI_bigintmat, IsList, IsObject], _SI_SetMatElm_with_list);
 
 _SI_MatElmIsBound_with_list := function(mat, l)
     return Length(l) = 2 and l[1] in [1..SI_nrows(mat)] and l[2] in [1..SI_ncols(mat)];
 end;
-InstallOtherMethod(ISB_LIST, [IsSingularMatrix, IsList], _SI_MatElmIsBound_with_list);
-InstallOtherMethod(ISB_LIST, [IsSingularIntMat, IsList], _SI_MatElmIsBound_with_list);
-InstallOtherMethod(ISB_LIST, [IsSingularBigIntMat, IsList], _SI_MatElmIsBound_with_list);
+InstallOtherMethod(ISB_LIST, [IsSI_matrix, IsList], _SI_MatElmIsBound_with_list);
+InstallOtherMethod(ISB_LIST, [IsSI_intmat, IsList], _SI_MatElmIsBound_with_list);
+InstallOtherMethod(ISB_LIST, [IsSI_bigintmat, IsList], _SI_MatElmIsBound_with_list);
 
 _SI_MatElmUnbind_with_list := function(mat, l)
     Error("Cannot unbind entries of singular matrix");
 end;
-InstallOtherMethod(UNB_LIST, [IsSingularMatrix, IsList], _SI_MatElmUnbind_with_list);
-InstallOtherMethod(UNB_LIST, [IsSingularIntMat, IsList], _SI_MatElmUnbind_with_list);
-InstallOtherMethod(UNB_LIST, [IsSingularBigIntMat, IsList], _SI_MatElmUnbind_with_list);
+InstallOtherMethod(UNB_LIST, [IsSI_matrix, IsList], _SI_MatElmUnbind_with_list);
+InstallOtherMethod(UNB_LIST, [IsSI_intmat, IsList], _SI_MatElmUnbind_with_list);
+InstallOtherMethod(UNB_LIST, [IsSI_bigintmat, IsList], _SI_MatElmUnbind_with_list);
 
 
 # multiplicative inverses, first the generic delegation to Singular
-InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
+InstallOtherMethod(InverseSM, ["IsSI_Object"], function(sobj)
   local res;
   res := SI_\/(One(sobj), sobj);
   if not IsMutable(sobj) then
@@ -204,7 +204,7 @@ InstallOtherMethod(InverseSM, ["IsSingularObj"], function(sobj)
   return res;
 end);
 # above doesn't handle non-constant polynomials correctly:
-InstallOtherMethod(InverseSM, ["IsSingularPoly"], function(pol)
+InstallOtherMethod(InverseSM, ["IsSI_poly"], function(pol)
   local res;
   if SI_deg(pol) > 0 or IsZero(pol) then
     return fail;
@@ -215,13 +215,13 @@ InstallOtherMethod(InverseSM, ["IsSingularPoly"], function(pol)
   fi;
   return res;
 end);
-InstallOtherMethod(InverseMutable, ["IsSingularPoly"], function(pol)
+InstallOtherMethod(InverseMutable, ["IsSI_poly"], function(pol)
   if SI_deg(pol) > 0 or IsZero(pol) then
     return fail;
   fi;
   return SI_\/(1, pol);
 end);
 
-InstallOtherMethod(QUO, ["IsSingularObj", "IsSingularObj"], function(a, b)
+InstallOtherMethod(QUO, ["IsSI_Object", "IsSI_Object"], function(a, b)
   return SI_\/(a, b);
 end);

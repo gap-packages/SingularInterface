@@ -19,21 +19,21 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-InstallMethod( _SI_TypeName, ["IsSingularVoid"], x->"void" );
-InstallMethod( _SI_TypeName, ["IsSingularBigInt"], x->"bigint" );
-InstallMethod( _SI_TypeName, ["IsSingularBigIntMat"], x->"bigintmat" );
-InstallMethod( _SI_TypeName, ["IsSingularIdeal"], x->"ideal" );
-InstallMethod( _SI_TypeName, ["IsSingularIntMat"], x->"intmat" );
-InstallMethod( _SI_TypeName, ["IsSingularIntVec"], x->"intvec" );
-InstallMethod( _SI_TypeName, ["IsSingularLink"], x->"link" );
-InstallMethod( _SI_TypeName, ["IsSingularList"], x->"list" );
-InstallMethod( _SI_TypeName, ["IsSingularMap"], x->"map" );
-InstallMethod( _SI_TypeName, ["IsSingularMatrix"], x->"matrix" );
-InstallMethod( _SI_TypeName, ["IsSingularModule"], x->"module" );
-InstallMethod( _SI_TypeName, ["IsSingularNumber"], x->"number" );
-InstallMethod( _SI_TypeName, ["IsSingularPoly"], x->"poly" );
-InstallMethod( _SI_TypeName, ["IsSingularQRing"], x->"qring" );
-InstallMethod( _SI_TypeName, ["IsSingularResolution"], x->"resolution" );
-InstallMethod( _SI_TypeName, ["IsSingularRing"], x->"ring" );
-InstallMethod( _SI_TypeName, ["IsSingularString"], x->"string" );
-InstallMethod( _SI_TypeName, ["IsSingularVector"], x->"vector" );
+InstallMethod( _SI_TypeName, ["IsSI_void"], x->"void" );
+InstallMethod( _SI_TypeName, ["IsSI_bigint"], x->"bigint" );
+InstallMethod( _SI_TypeName, ["IsSI_bigintmat"], x->"bigintmat" );
+InstallMethod( _SI_TypeName, ["IsSI_ideal"], x->"ideal" );
+InstallMethod( _SI_TypeName, ["IsSI_intmat"], x->"intmat" );
+InstallMethod( _SI_TypeName, ["IsSI_intvec"], x->"intvec" );
+InstallMethod( _SI_TypeName, ["IsSI_link"], x->"link" );
+InstallMethod( _SI_TypeName, ["IsSI_list"], x->"list" );
+InstallMethod( _SI_TypeName, ["IsSI_map"], x->"map" );
+InstallMethod( _SI_TypeName, ["IsSI_matrix"], x->"matrix" );
+InstallMethod( _SI_TypeName, ["IsSI_module"], x->"module" );
+InstallMethod( _SI_TypeName, ["IsSI_number"], x->"number" );
+InstallMethod( _SI_TypeName, ["IsSI_poly"], x->"poly" );
+InstallMethod( _SI_TypeName, ["IsSI_qring"], x->"qring" );
+InstallMethod( _SI_TypeName, ["IsSI_resolution"], x->"resolution" );
+InstallMethod( _SI_TypeName, ["IsSI_ring"], x->"ring" );
+InstallMethod( _SI_TypeName, ["IsSI_string"], x->"string" );
+InstallMethod( _SI_TypeName, ["IsSI_vector"], x->"vector" );

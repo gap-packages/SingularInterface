@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt] );
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsPosInt, IsPosInt] );
-DeclareOperation( "SI_Proxy", [IsSingularObj, IsStringRep] );
+DeclareOperation( "SI_Proxy", [IsSI_Object, IsPosInt] );
+DeclareOperation( "SI_Proxy", [IsSI_Object, IsPosInt, IsPosInt] );
+DeclareOperation( "SI_Proxy", [IsSI_Object, IsStringRep] );
 

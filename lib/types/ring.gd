@@ -19,9 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-DeclareOperation("SI_ring",[IsSingularRing, IsSingularObj]);
+DeclareOperation("SI_ring",[IsSI_ring, IsSI_Object]);
 DeclareOperation("SI_ring",[IsInt,IsList]);
 DeclareOperation("SI_ring",[IsInt,IsList,IsList]);
 # to get back associated ring
-DeclareOperation("SI_ring",[IsSingularObj]);
+DeclareOperation("SI_ring",[IsSI_Object]);
 
