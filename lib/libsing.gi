@@ -161,8 +161,10 @@ function( module )
                      " vector",suffix," in free module of rank ",SI_nrows(module),">");
 end );
 
-
-
+InstallMethod(ViewString, "for a singular number", [ IsSI_number ],
+function( sobj )
+    return Concatenation("<singular number: ", SI_ToGAP(SI_print(sobj)),">");
+end );
 
 
 # TODO: Quoting the GAP manual:
