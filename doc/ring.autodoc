@@ -22,6 +22,9 @@ The list <A>ord</A> may be omitted, in which case TODO
 
 You may use <Ref Oper="AssignGeneratorVariables" BookName="Reference"/> to make the ring
 variables accessible as &GAP; variables.
+<P/>
+
+<C>SI_ring( )</C> is equivalent to <C>SI_ring( 32003, ["x","y","z"] )</C>.
 
 <Example><![CDATA[
 gap> r := SI_ring( 32003, ["x","y","z"] );
