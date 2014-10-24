@@ -1,5 +1,9 @@
 gap> bim := SI_bigintmat([[1,2,3],[4,5,6]]);
 <singular bigintmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+gap> SI_ncols(bim);
+3
+gap> SI_nrows(bim);
+2
 gap> Length(bim);
 3
 gap> SI_ToGAP(bim);
