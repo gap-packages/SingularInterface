@@ -79,12 +79,14 @@ true]]></Log>
 
 <ManSection>
 <Func Name="Singular" Arg="str"/>
+<Func Name="SingularLastOutput" Arg=""/>
+<Func Name="SingularLastError" Arg=""/>
 <Description>
 Instructs the Singular interpreter to execute the command given by the string <A>str</A>.
 It returns <C>true</C> in case &Singular; succeeds, otherwise <C>false</C> (i.e. if an error occurred).
 These are not the return values of a computation done by &Singular; but merely an <Q>exit code</Q>.
-A subsequent call to <Ref Func="SingularLastOutput"/> returns a string containing the output of the Singular interpreter.
-Similarly <Ref Func="SingularLastError"/> returns a string containing the last error message output by the Singular interpreter, if any.
+A subsequent call to <C>SingularLastOutput( )</C> returns a string containing the output of the Singular interpreter.
+Similarly <C>SingularLastError( )</C> returns a string containing the last error message output by the Singular interpreter, if any.
 <Example><![CDATA[
 gap> Singular( "1+1;" );
 true
