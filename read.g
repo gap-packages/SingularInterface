@@ -21,11 +21,13 @@
 
 ReadPackage("SingularInterface", "lib/singtypes.gi");
 ReadPackage("SingularInterface", "lib/libsing.gi");
+ReadPackage("SingularInterface", "lib/view.gi");
 ReadPackage("SingularInterface", "lib/arith.gi");
 
 ReadPackage("SingularInterface", "lib/interpreter.gi");
 ReadPackage("SingularInterface", "lib/proxy.gi");
 
+ReadPackage("SingularInterface", "lib/types/matrix.gi");
 ReadPackage("SingularInterface", "lib/types/ring.gi");
 
 
