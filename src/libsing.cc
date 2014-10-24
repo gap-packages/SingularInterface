@@ -47,7 +47,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_debug, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularValueOfVar, 1, "name"),
@@ -75,7 +74,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_SetCurrRing, 1, "r"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_CallProc, 2, "name, args"),
 
-    GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_matrix_from_String, 4, "rr, nrrows, nrcols, st"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_bigintmat, 1, "m"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_Matbigintmat, 1, "im"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_intmat, 1, "m"),
@@ -84,7 +82,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_MatElm, 3, "mat, row, col"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_SetMatElm, 4, "mat, row, col, val"),
 
-    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_poly_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_COPY_POLY, 1, "poly"),
     GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_MULT_POLY_NUMBER, 2, "a, b"),
 

@@ -24,48 +24,6 @@
 
 #include <coeffs/bigintmat.h>
 
-
-/// Installed as SI_matrix method
-Obj Func_SI_matrix_from_String(Obj self, Obj rr, Obj nrrows, Obj nrcols,
-                               Obj st)
-{
-    if (!(IS_INTOBJ(nrrows) && IS_INTOBJ(nrcols) &&
-          INT_INTOBJ(nrrows) > 0 && INT_INTOBJ(nrcols) > 0)) {
-        ErrorQuit("nrrows and nrcols must be positive integers",0L,0L);
-        return Fail;
-    }
-    Int c_nrrows = INT_INTOBJ(nrrows);
-    Int c_nrcols = INT_INTOBJ(nrcols);
-    rr = UnwrapHighlevelWrapper(rr);
-    if (!ISSINGOBJ(SINGTYPE_RING_IMM,rr)) {
-        ErrorQuit("Argument rr must be a singular ring",0L,0L);
-        return Fail;
-    }
-    if (!IS_STRING_REP(st)) {
-        ErrorQuit("Argument st must be a string",0L,0L);
-        return Fail;
-    }
-    ring r = (ring) CXX_SINGOBJ(rr);
-    if (r != currRing) rChangeCurrRing(r);
-    const char *p = CSTR_STRING(st);
-    poly *polylist;
-    Int len = ParsePolyList(r, p, (int) (c_nrrows * c_nrrows), polylist);
-    matrix mat = mpNew(c_nrrows,c_nrcols);
-    Int i;
-    Int row = 1;
-    Int col = 1;
-    for (i = 0; i < len && row <= c_nrrows; i++) {
-        MATELEM(mat,row,col) = polylist[i];
-        col++;
-        if (col > c_nrcols) {
-            col = 1;
-            row++;
-        }
-    }
-    omFree(polylist);
-    return NEW_SINGOBJ_RING(SINGTYPE_MATRIX, mat, r);
-}
-
 /// Installed as SI_bigintmat method
 Obj Func_SI_bigintmat(Obj self, Obj m)
 {

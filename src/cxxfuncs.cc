@@ -425,31 +425,6 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
 }
 
 
-/// Installed as SI_ideal method
-Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st)
-{
-    rr = UnwrapHighlevelWrapper(rr);
-    if (!ISSINGOBJ(SINGTYPE_RING_IMM, rr)) {
-        ErrorQuit("Argument rr must be a singular ring",0L,0L);
-        return Fail;
-    }
-    if (!IS_STRING_REP(st)) {
-        ErrorQuit("Argument st must be a string",0L,0L);
-        return Fail;
-    }
-    ring r = (ring) CXX_SINGOBJ(rr);
-    if (r != currRing) rChangeCurrRing(r);
-    const char *p = CSTR_STRING(st);
-    poly *polylist;
-    Int len = ParsePolyList(r, p, 100, polylist);
-    ideal id = idInit(len,1);
-    Int i;
-    for (i = 0; i < len; i++)
-        id->m[i] = polylist[i];
-    omFree(polylist);
-    return NEW_SINGOBJ_RING(SINGTYPE_IDEAL, id, r);
-}
-
 /// Installed as SI_bigint method
 Obj Func_SI_bigint(Obj self, Obj nr)
 {

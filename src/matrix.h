@@ -23,7 +23,6 @@
 
 #include "libsing.h"
 
-Obj Func_SI_matrix_from_String(Obj self,Obj rr,Obj nrrows, Obj nrcols, Obj st);
 Obj Func_SI_bigintmat(Obj self, Obj m);
 Obj Func_SI_Matbigintmat(Obj self, Obj im);
 Obj Func_SI_intmat(Obj self, Obj m);
