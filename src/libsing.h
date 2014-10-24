@@ -261,7 +261,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj r);
 Obj Func_SI_ideal_from_String(Obj self, Obj rr, Obj st);
 Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj Func_SI_EVALUATE(Obj self, Obj st);
-Obj FuncSI_ValueOfVar(Obj self, Obj name);
+Obj FuncSingularValueOfVar(Obj self, Obj name);
 Obj Func_SI_SingularProcs(Obj self);
 Obj FuncSI_ToGAP(Obj self, Obj singobj);
 Obj FuncSingularLastOutput(Obj self);

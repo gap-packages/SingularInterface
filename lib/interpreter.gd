@@ -26,3 +26,6 @@ DeclareOperation( "Singular", [IsString and IsEmpty] );
 DeclareOperation( "Singular", [] );
 
 DeclareGlobalFunction( "SingularLastError" );
+
+# Useful little helper to undefine a Singular var or proc
+DeclareGlobalFunction( "SingularUnbind" );

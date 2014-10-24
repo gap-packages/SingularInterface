@@ -50,7 +50,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ideal_from_String, 2, "rr, st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ValueOfVar, 1, "name"),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularValueOfVar, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_SingularProcs, 0, ""),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ToGAP, 1, "singobj"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularLastOutput, 0, ""),

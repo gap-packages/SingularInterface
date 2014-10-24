@@ -559,7 +559,7 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
 }
 
 /* if needed, handle more cases */
-Obj FuncSI_ValueOfVar(Obj self, Obj name)
+Obj FuncSingularValueOfVar(Obj self, Obj name)
 {
     Int len;
     Obj tmp,tmp2;

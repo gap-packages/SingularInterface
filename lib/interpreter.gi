@@ -85,7 +85,6 @@ InstallGlobalFunction( SingularLastError,
     return _SI_LastErrorString;
   end );
 
-# Useful little helper to undefine a Singular var or proc
-BindGlobal( "SI_Undef", function(x)
+InstallGlobalFunction( SingularUnbind, function(x)
    Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));
 end);

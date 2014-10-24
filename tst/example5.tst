@@ -1,30 +1,30 @@
 gap> LoadPackage("SingularInterface");
 true
-gap> if SI_ValueOfVar("ver") <> fail then Singular("kill ver;"); fi;
+gap> SingularUnbind("ver");
 gap> Singular("int ver=3160;");
 true
-gap> SI_ValueOfVar("ver");
+gap> SingularValueOfVar("ver");
 3160
-gap> SI_ValueOfVar("version");   # gives fail
+gap> SingularValueOfVar("version");   # gives fail
 fail
 gap> Singular("print(ver);");
 true
 gap> SingularLastOutput();   # gives version number as string
 "3160\n"
-gap> if SI_ValueOfVar("a") <> fail then Singular("kill a;"); fi;
+gap> SingularUnbind("a");
 gap> Singular("string a=\"Max\";");
 true
-gap> SI_ValueOfVar("a");
+gap> SingularValueOfVar("a");
 "Max"
-gap> if SI_ValueOfVar("x") <> fail then Singular("kill x;"); fi;
+gap> SingularUnbind("x");
 gap> Singular("intvec x=1,1,2,3,5,8,13;");
 true
-gap> SI_ValueOfVar("x");
+gap> SingularValueOfVar("x");
 [ 1, 1, 2, 3, 5, 8, 13 ]
-gap> if SI_ValueOfVar("y") <> fail then Singular("kill y;"); fi;
+gap> SingularUnbind("y");
 gap> Singular("intmat y[3][5]=1,3,5,7,8,9,10,11,12,13;");
 true
-gap> SI_ValueOfVar("y");
+gap> SingularValueOfVar("y");
 [ [ 1, 3, 5, 7, 8 ], [ 9, 10, 11, 12, 13 ], [ 0, 0, 0, 0, 0 ] ]
 gap> s := SI_ring(3,["a","b"]);
 <singular ring, 2 indeterminates>
