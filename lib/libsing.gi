@@ -38,18 +38,27 @@ InstallMethod(SI_intmat,[IsSI_Object],_SI_intmat_singular);
 InstallMethod(SI_intmat,[IsSI_Object,IsPosInt,IsPosInt],_SI_intmat_singular);
 InstallMethod(SI_intmat,[IsList],_SI_intmat);
 
-InstallMethod(SI_poly,[IsSI_ring, IsSI_Object],_SI_poly_singular);
-InstallMethod(SI_poly,[IsSI_ring, IsStringRep],_SI_poly_from_String);
+InstallMethod(SI_poly, [IsSI_ring, IsSI_Object], _SI_poly_singular);
+InstallMethod(SI_poly, [IsSI_ring, IsStringRep],
+function(ring, desc)
+    local str;
+    SI_SetCurrRing(ring);
+    SingularUnbind("SI_poly_maker");
+    str := Concatenation("proc SI_poly_maker(){poly p = ", desc, "; return(p);}");
+    Singular(str);
+    return SI_CallProc("SI_poly_maker", []);
+end);
 
-InstallMethod(SI_matrix,["IsSI_Object"],_SI_matrix_singular);
-InstallMethod(SI_matrix,["IsSI_Object","IsPosInt","IsPosInt"],
+InstallMethod(SI_matrix, ["IsSI_Object"], _SI_matrix_singular);
+InstallMethod(SI_matrix, ["IsSI_Object", "IsPosInt", "IsPosInt"],
   _SI_matrix_singular);
-InstallMethod(SI_matrix,["IsSI_ring","IsPosInt","IsPosInt","IsStringRep"],
+InstallMethod(SI_matrix, ["IsSI_ring", "IsPosInt", "IsPosInt", "IsStringRep"],
 function(ring, rows, cols, desc)
     local str;
     SI_SetCurrRing(ring);
-    Singular("if(defined(SI_matrix_maker)){kill SI_matrix_maker;};");
-    str := Concatenation("proc SI_matrix_maker(){matrix m[",String(rows),"][",String(cols),"] = ",desc,";  return(m);}");
+    SingularUnbind("SI_matrix_maker");
+    str := Concatenation("proc SI_matrix_maker(){matrix m[",
+                String(rows), "][", String(cols), "] = ", desc, "; return(m);}");
     Singular(str);
     return SI_CallProc("SI_matrix_maker", []);
 end);
@@ -77,8 +86,16 @@ function(r, len, str)
 end);
 InstallMethod(SI_vector,["IsSI_Object"],_SI_vector_singular);
 
-InstallMethod(SI_ideal,[IsSI_Object],_SI_ideal_singular);
-InstallMethod(SI_ideal,[IsSI_ring, IsStringRep], _SI_ideal_from_String);
+InstallMethod(SI_ideal, [IsSI_Object], _SI_ideal_singular);
+InstallMethod(SI_ideal, [IsSI_ring, IsStringRep],
+function(ring, desc)
+    local str;
+    SI_SetCurrRing(ring);
+    SingularUnbind("SI_ideal_maker");
+    str := Concatenation("proc SI_ideal_maker(){ideal i = ", desc, "; return(i);}");
+    Singular(str);
+    return SI_CallProc("SI_ideal_maker", []);
+end);
 InstallMethod(SI_ideal,[IsList], _SI_ideal_from_els);
 
 InstallMethod( ViewString, "for a singular poly", [ IsSI_poly ],
