@@ -806,7 +806,6 @@ bool IsCopyableSingularType(Int gtype)
 		    return 1;
     }
 
-    ErrorQuit("IsCopyableObjSingular: unsupported singtype", 0, 0);
     ErrorQuit("IsCopyableObjSingular: unsupported singtype %d", gtype, 0);
     return 0;
 }
