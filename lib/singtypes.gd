@@ -27,15 +27,15 @@ Setter(ElementsFamily)(SingularFamily, SingularFamily); # HACK: Grrrrrrrrr
 DeclareCategory( "IsSI_Object", IsObject );
 
 DeclareCategory( "IsSI_bigint", IsSI_Object and IsRingElementWithOne );
-DeclareCategory( "IsSI_bigintmat", IsSI_Object and IsList );
+DeclareCategory( "IsSI_bigintmat", IsSI_Object and IsMatrixObj );
 DeclareCategory( "IsSI_ideal", IsSI_Object );
-DeclareCategory( "IsSI_intmat", IsSI_Object and IsList );
-DeclareCategory( "IsSI_intvec", IsSI_Object and IsList );
+DeclareCategory( "IsSI_intmat", IsSI_Object and IsMatrixObj );
+DeclareCategory( "IsSI_intvec", IsSI_Object and IsHomogeneousList );
 DeclareCategory( "IsSI_link", IsSI_Object );
 DeclareCategory( "IsSI_list", IsSI_Object and IsList);
 DeclareCategory( "IsSI_map", IsSI_Object );
-DeclareCategory( "IsSI_matrix", IsSI_Object );
-DeclareCategory( "IsSI_module", IsSI_Object );
+DeclareCategory( "IsSI_matrix", IsSI_Object and IsMatrixObj );
+DeclareCategory( "IsSI_module", IsSI_Object and IsMatrixObj );
 DeclareCategory( "IsSI_number", IsSI_Object and IsRingElementWithOne );
 DeclareCategory( "IsSI_poly", IsSI_Object and IsRingElementWithOne );
 DeclareCategory( "IsSI_qring", IsSI_Object and IsAdditiveMagmaWithZero
@@ -43,8 +43,8 @@ DeclareCategory( "IsSI_qring", IsSI_Object and IsAdditiveMagmaWithZero
 DeclareCategory( "IsSI_resolution", IsSI_Object );
 DeclareCategory( "IsSI_ring", IsSI_Object and IsAdditiveMagmaWithZero
                   and IsRingWithOne );
-DeclareCategory( "IsSI_string", IsSI_Object and IsList );
-DeclareCategory( "IsSI_vector", IsSI_Object and IsList );
+DeclareCategory( "IsSI_string", IsSI_Object and IsHomogeneousList );
+DeclareCategory( "IsSI_vector", IsSI_Object and IsHomogeneousList );
 DeclareCategory( "IsSI_proxy", IsPositionalObjectRep and IsSI_Object );
 
 _SI_Types := [];

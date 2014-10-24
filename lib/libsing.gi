@@ -219,10 +219,9 @@ InstallMethod(PrintObj, "default method delegating to PrintString",
   [IsObject], 1, function(o) Print(PrintString(o)); end );
 
 
-InstallOtherMethod(TransposedMat, [IsSI_intmat], SI_transpose);
-InstallOtherMethod(TransposedMat, [IsSI_bigintmat], SI_transpose);
-InstallOtherMethod(TransposedMat, [IsSI_matrix], SI_transpose);
-InstallOtherMethod(TransposedMat, [IsSI_module], SI_transpose);
+InstallOtherMethod(TraceMat, [IsSI_Object and IsMatrixObj], SI_trace);
+
+InstallOtherMethod(TransposedMat, [IsSI_Object and IsMatrixObj], SI_transpose);
 
 InstallOtherMethod(Determinant, [IsSI_intmat], SI_det);
 InstallOtherMethod(Determinant, [IsSI_bigintmat], SI_det);
@@ -232,3 +231,15 @@ InstallOtherMethod(DeterminantMat, [IsSI_intmat], SI_det);
 InstallOtherMethod(DeterminantMat, [IsSI_bigintmat], SI_det);
 InstallOtherMethod(DeterminantMat, [IsSI_matrix], SI_det);
 
+#DeclareAttribute( "TransposedMatImmutable", IsMatrixObj );
+#DeclareOperation( "TransposedMatMutable", [IsMatrixObj] );
+
+InstallMethod(MatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt], _SI_MatElm);
+InstallMethod(SetMatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt, IsObject], _SI_SetMatElm);
+
+InstallMethod(Length, [IsSI_Object and IsMatrixObj], SI_ncols);
+
+InstallMethod(Length, [IsSI_intvec], SI_nrows);
+InstallMethod(Length, [IsSI_vector], SI_nrows);
+
+InstallMethod(Length, [IsSI_string], SI_size);
