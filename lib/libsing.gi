@@ -65,12 +65,12 @@ end);
 InstallMethod(SI_matrix,["IsPosInt", "IsPosInt", "IsList"], 
               _SI_matrix_from_els);
 
-InstallMethod(SI_ZeroMat,["IsSI_ring", "IsPosInt", "IsPosInt"],
+InstallMethod(SIC_ZeroMat,["IsSI_ring", "IsPosInt", "IsPosInt"],
 function(r, rows, cols)
     return SI_matrix(r, rows, cols," ");
 end );
 
-InstallMethod(SI_IdentityMat,["IsSI_ring", "IsPosInt"],
+InstallMethod(SIC_IdentityMat,["IsSI_ring", "IsPosInt"],
 function(r, rows)
     return SI_matrix(SI_freemodule(r, rows));
 end );

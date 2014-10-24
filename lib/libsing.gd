@@ -52,8 +52,8 @@ DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsList]);
 DeclareOperation("SI_vector",[IsSI_Object]);
 DeclareOperation("SI_vector",[IsSI_ring, IsPosInt, IsStringRep]);
 
-DeclareOperation("SI_ZeroMat",[IsSI_ring, IsPosInt, IsPosInt]);
-DeclareOperation("SI_IdentityMat",[IsSI_ring, IsPosInt]);
+DeclareOperation("SIC_ZeroMat",[IsSI_ring, IsPosInt, IsPosInt]);
+DeclareOperation("SIC_IdentityMat",[IsSI_ring, IsPosInt]);
 
 DeclareOperation("SI_ideal",[IsSI_Object]);
 DeclareOperation("SI_ideal",[IsSI_ring, IsStringRep]);

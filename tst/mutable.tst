@@ -24,13 +24,17 @@ gap> ai-b;
 x*y-x*z
 gap> ai-bi;
 x*y-x*z
-gap> a := SI_IdentityMat(r,3);
+gap> a := SIC_IdentityMat(r,3);
 <singular matrix, 3x3>
-gap> ai := MakeImmutable(SI_IdentityMat(r,3));
+gap> IsMutable(a);
+true
+gap> ai := MakeImmutable(SIC_IdentityMat(r,3));
 <singular matrix, 3x3>
-gap> b := SI_IdentityMat(r,3);
+gap> IsMutable(ai);
+false
+gap> b := SIC_IdentityMat(r,3);
 <singular matrix, 3x3>
-gap> bi := MakeImmutable(SI_IdentityMat(r,3));
+gap> bi := MakeImmutable(SIC_IdentityMat(r,3));
 <singular matrix, 3x3>
 gap> a+b;
 <singular matrix, 3x3>
