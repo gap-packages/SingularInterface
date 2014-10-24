@@ -83,7 +83,8 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     BOOLEAN err = iiAllStart(NULL, ost, BT_proc, 0);
     inerror = 0;
     EndPrintCapture();
-    // Note that iiEStart uses omFree internally to free the string ost
+
+    omFree(ost);
 
     return err ? False : True;
 }
