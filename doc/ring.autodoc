@@ -31,7 +31,8 @@ gap> AssignGeneratorVariables( r );
 gap> s := SI_ring( 32003, "x1..4,y1..6", [["dp",4],["lp",6]] );
 <singular ring, 10 indeterminates>
 gap> SI_Indeterminates(s);
-[ x1, x2, x3, x4, y1, y2, y3, y4, y5, y6 ]]]></Example>
+[ x1, x2, x3, x4, y1, y2, y3, y4, y5, y6 ]
+]]></Example>
 
 </Description>
 </ManSection>
@@ -50,7 +51,8 @@ x*y*z+3*x*z^2
 gap> s1 + s2;
 7*x*y*z^10+x^2*y+x*y*z+3*x*z^2-x*y
 gap> s1 * x * y;
-7*x^2*y^2*z^10+x^3*y^2-x^2*y^2]]></Example>
+7*x^2*y^2*z^10+x^3*y^2-x^2*y^2
+]]></Example>
 
 </Description>
 </ManSection>
@@ -65,7 +67,9 @@ gap> s1 * x * y;
 gap> SI_number( r, 33000 );
 <singular number: 997>
 gap> SI_number( r, Z(32003)^603 );
-<singular number: 997>]]></Example>
+<singular number: 997>
+]]></Example>
+
 </Description>
 </ManSection>
 
@@ -93,7 +97,9 @@ with <C>SI_</C>.
 gap> f := -5*x^3*y + (x*y*z)^5;
 x^5*y^5*z^5-5*x^3*y
 gap> SI_deg(f);
-15]]></Example>
+15
+]]></Example>
+
 </Description>
 </ManSection>
 

@@ -24,6 +24,7 @@ gap> Display( m );
 x,  y,  z,
 x^2,y^2,z^2
 ]]></Example>
+
 </Description>
 </ManSection>
 
@@ -51,6 +52,7 @@ x^2,
 x*y,
 z^2
 ]]></Example>
+
 </Description>
 </ManSection>
 
@@ -78,6 +80,7 @@ gap> Display( M );
 x,  y,  z,
 x^2,y^2,z^2
 ]]></Example>
+
 </Description>
 </ManSection>
 
