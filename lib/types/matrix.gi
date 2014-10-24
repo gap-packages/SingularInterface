@@ -23,21 +23,11 @@
 #
 # Make some Singular interpreter functions for matrices available as methods
 # for the corresponding GAP operations
-
-InstallOtherMethod(TraceMat, [IsSI_Object and IsMatrixObj], SI_trace);
-
-InstallOtherMethod(TransposedMat, [IsSI_Object and IsMatrixObj], SI_transpose);
-
-InstallOtherMethod(Determinant, [IsSI_intmat], SI_det);
-InstallOtherMethod(Determinant, [IsSI_bigintmat], SI_det);
-InstallOtherMethod(Determinant, [IsSI_matrix], SI_det);
-
-InstallOtherMethod(DeterminantMat, [IsSI_intmat], SI_det);
-InstallOtherMethod(DeterminantMat, [IsSI_bigintmat], SI_det);
-InstallOtherMethod(DeterminantMat, [IsSI_matrix], SI_det);
-
-#DeclareAttribute( "TransposedMatImmutable", IsMatrixObj );
-#DeclareOperation( "TransposedMatMutable", [IsMatrixObj] );
+#
+InstallMethod(TraceMat, [IsSI_Object and IsMatrixObj], SI_trace);
+InstallMethod(TransposedMat, [IsSI_Object and IsMatrixObj], SI_transpose);
+InstallMethod(Determinant, [IsSI_Object and IsMatrixObj], SI_det);
+InstallOtherMethod(DeterminantMat, [IsSI_Object and IsMatrixObj], SI_det);
 
 InstallMethod(MatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt], _SI_MatElm);
 InstallMethod(SetMatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt, IsObject], _SI_SetMatElm);
