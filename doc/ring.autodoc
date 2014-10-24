@@ -3,13 +3,35 @@
 @Section Constructors
 
 <ManSection>
-<Oper Name="SI_ring" Arg="char,indets,ord" Label="for an integer and two lists"/>
+<Oper Name="SI_ring" Arg="char,indets[,ord]" Label="for an integer and two lists"/>
 <Description>
 
 Construct a &Singular; ring over the prime field of characteristic
 <A>char</A> with the indeterminates given by <A>indets</A> and
-ordering given by the list <A>ord</A>. The list <A>indets</A> is
+term ordering given by the list <A>ord</A>. The list <A>indets</A> is
 allowed to be empty.
+<P/>
+
+The indeterminates may be specified in one of multiple ways:
+* <A>indets</A> may be a list of strings, where each strings is the name of an indeterminate.
+* <A>indets</A> may be a string such as <C>"x1..4,y1..6"</C>. TODO: 
+<P/>
+
+The list <A>ord</A> may be omitted, in which case TODO
+<P/>
+
+You may use <Ref Oper="AssignGeneratorVariables"/> to make the ring
+variables accessible as &GAP; variables.
+
+<Example><![CDATA[
+gap> r := SI_ring(32003,["x","y","z"]);
+<singular ring, 3 indeterminates>
+gap> AssignGeneratorVariables(r);
+#I  Assigned the global variables [ x, y, z ]
+gap> s := SI_ring(32003,"x1..4,y1..6", [["dp",4],["lp",6]]);
+<singular ring, 10 indeterminates>
+gap> SI_Indeterminates(s);
+[ x1, x2, x3, x4, y1, y2, y3, y4, y5, y6 ]]]></Example>
 
 </Description>
 </ManSection>
@@ -18,19 +40,43 @@ allowed to be empty.
 <Oper Name="SI_poly" Arg="r,str" Label="for a Singular ring and a string"/>
 <Description>
   Construct a polynomial in the &Singular; ring <A>r</A> using the string <A>str</A>.
+  
+  Polynomials constructed this way support the usual operations.
+<Example><![CDATA[
+gap> s1 := SI_poly(r,"x2y+7xyz10-xy");
+7*x*y*z^10+x^2*y-x*y
+gap> s2 := 3*x*z^2 + x*y*z;
+x*y*z+3*x*z^2
+gap> s1 + s2;
+7*x*y*z^10+x^2*y+x*y*z+3*x*z^2-x*y
+gap> s1 * x * y;
+7*x^2*y^2*z^10+x^3*y^2-x^2*y^2]]></Example>
+
 </Description>
 </ManSection>
 
 <ManSection>
 <Oper Name="SI_number" Arg="r,a" Label="for a Singular ring and a rational number"/>
 <Description>
-  Construct a number in the &Singular; ring <A>r</A> using the rational number <A>a</A>.
+  Construct a number in the &Singular; ring <A>r</A> using the &GAP; number <A>a</A>,
+  which may be an integer, a rational number or an element of a finite prime field.
 
+<Example><![CDATA[
+gap> SI_number(r,33000);
+<singular number: 997>
+gap> SI_number(r, Z(32003)^603);
+<singular number: 997>]]></Example>
 </Description>
 </ManSection>
 
 
 @Section Operations
+
+Below we list just some relevant commands, to give you the general
+gist of what is available. For a comprehensive overview, please
+refer to the &Singular; manual and remember that you can map
+&Singular; function names to their &GAP; equivalent by prefixing them
+with <C>SI_</C>.
 
 <ManSection>
 <Func Name="SI_imap" Arg="TODO" Label="for a TODO"/>
@@ -43,6 +89,11 @@ allowed to be empty.
 <Func Name="SI_deg" Arg="r" Label="for a Singular polynomial"/>
 <Description>
   Compute the degree of the polynomial <A>a</A>.
+<Example><![CDATA[
+gap> f := -5*x^3*y + (x*y*z)^5;
+x^5*y^5*z^5-5*x^3*y
+gap> SI_deg(f);
+15]]></Example>
 </Description>
 </ManSection>
 
