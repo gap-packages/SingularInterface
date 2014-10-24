@@ -473,16 +473,30 @@ x3+1,x0,x3,0,        x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3
 </ManSection>
 
 <ManSection>
-<Func Name="SI_reduce" Arg="mat1,mat2" Label="for two Singular matrices"/>
+<Func Name="SI_lift" Arg="mat,std" Label="for two Singular matrices"/>
 <Description>
-TODO
+
+The matrix <A>std</A> is assumed to be the output of <C>SI_std</C> and
+the number of rows of <A>mat</A> and <A>std</A> must coincide.
+If the columns of <A>mat</A> are linear combinations of the columns of <A>std</A>
+then the resulting matrix <M>T</M> satisfies the matrix equation
+<M><A>mat</A> * T = <A>std</A></M>.
+
+This holds for commutative rings.
+For noncommutative rings provided by &Plural; we refer the reader to the &Plural; manual.
+
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="SI_lift" Arg="mat1,mat2" Label="for two Singular matrices"/>
+<Func Name="SI_reduce" Arg="mat,std" Label="for two Singular matrices"/>
 <Description>
-TODO
+
+The matrix <A>std</A> is assumed to be the output of <C>SI_std</C> and
+the number of rows of <A>mat</A> and <A>std</A> must coincide.
+The output is a matrix having the same shape as <A>mat</A>.
+It columns are the reductions of the columns of <A>mat</A> modulo those of <A>std</A>.
+
 </Description>
 </ManSection>
 
@@ -544,15 +558,14 @@ x0, x1*x3,
 </ManSection>
 
 <ManSection>
-<Func Name="SI_modulo" Arg="mat1,mat2" Label="for two Singular matrices"/>
+<Func Name="SI_modulo" Arg="mat,rel" Label="for two Singular matrices"/>
 <Description>
-TODO
-</Description>
-</ManSection>
 
-<ManSection>
-<Func Name="SI_nres" Arg="mat" Label="for a Singular matrices"/>
-<Description>
-TODO
+The number of rows of the matrices <A>mat</A> and <A>rel</A> must coincide.
+The procedures returns the column syzygies of <A>mat</A> modulo the columns of <A>rel</A>.
+
+This holds for commutative rings.
+For noncommutative rings provided by &Plural; we refer the reader to the &Plural; manual.
+
 </Description>
 </ManSection>
