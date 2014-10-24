@@ -25,25 +25,28 @@
 
 #include <vector>
 
-// HACK: inerror is set by the Singular interpreter if there is
-// a syntax error. We use this in SI_EVALUATE and SI_CallProc
-// to reset the interpreter error state.
+// The global variable inerror is an internal variable of the Singular
+// interpreter which is set to 1 if there is a syntax error. We use this
+// in SI_EVALUATE and SI_CallProc to reset the interpreter error state.
 extern int inerror;
 
-// The following functions allow access to the singular interpreter.
-// They are exported to the GAP level.
+// A GAP string containing the last error printed by a Singular command.
+Obj _SI_LastErrorString;
 
-//! This global is used to store the return value of SPrintEnd
+//! This global is used to store the return value of SPrintEnd.
 static char *_SI_LastOutputBuf = NULL;
 
-static void ClearLastOutputBuf() {
+
+static void ClearLastOutputBuf()
+{
     if (_SI_LastOutputBuf) {
         omFree(_SI_LastOutputBuf);
         _SI_LastOutputBuf = NULL;
     }
 }
 
-static void StartPrintCapture() {
+static void StartPrintCapture()
+{
     ClearLastOutputBuf();
     SPrintStart();
     errorreported = 0;
@@ -56,13 +59,28 @@ static void EndPrintCapture() {
 Obj FuncSI_LastOutput(Obj self)
 {
     if (_SI_LastOutputBuf) {
-        UInt len = (UInt) strlen(_SI_LastOutputBuf);
+        UInt len = (UInt)strlen(_SI_LastOutputBuf);
         Obj tmp = NEW_STRING(len);
-        SET_LEN_STRING(tmp,len);
-        memcpy(CHARS_STRING(tmp),_SI_LastOutputBuf,len+1);
+        SET_LEN_STRING(tmp, len);
+        memcpy(CHARS_STRING(tmp), _SI_LastOutputBuf, len + 1);
         ClearLastOutputBuf();
         return tmp;
-    } else return Fail;
+    }
+    return Fail;
+}
+
+void _SI_ErrorCallback(const char *st)
+{
+    UInt len = (UInt)strlen(st);
+    if (IS_STRING(_SI_LastErrorString)) {
+        UInt oldlen = GET_LEN_STRING(_SI_LastErrorString);
+        GROW_STRING(_SI_LastErrorString, oldlen + len + 2);
+        char *p = CSTR_STRING(_SI_LastErrorString);
+        memcpy(p + oldlen, st, len);
+        p[oldlen+len] = '\n';
+        p[oldlen+len+1] = 0;
+        SET_LEN_STRING(_SI_LastErrorString, oldlen + len + 1);
+    }
 }
 
 ///! Send a string to the Singular interpreter, which is then evaluated.                   
@@ -77,6 +95,13 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     char *ost = (char *)omalloc(len + sizeof(return_str));
     memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)), len);
     memcpy(ost+len, return_str, sizeof(return_str) );
+
+    // Clear the error string
+    if (IS_STRING(_SI_LastErrorString)) {
+        SET_LEN_STRING(_SI_LastErrorString, 0);
+        CSTR_STRING(_SI_LastErrorString)[0] = 0;
+        SHRINK_STRING(_SI_LastErrorString);
+    }
 
     StartPrintCapture();
     myynest = 1;

@@ -19,10 +19,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-SI_Errors := "";
-
-DeclareGlobalFunction( "_SI_BindSingularProcs" );
-
 DeclareGlobalFunction( "_SI_Addition" );
 DeclareGlobalFunction( "_SI_Addition_fast" );
 DeclareGlobalFunction( "_SI_Subtraction" );

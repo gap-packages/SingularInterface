@@ -87,13 +87,13 @@ otherwise <C>false</C>. These are not the return values of &Singular; but merely
 (rather flushes) a string containing the output of the interpreter. Every other call
 of <C>SI_LastOutput( )</C> returns <C>fail</C>.
 The error message of the last call of <C>Singular</C> is stored as a string in the
-global variable <C>SI_Errors</C>.
+global variable <C>_SI_LastErrorString</C>.
 <Example><![CDATA[
 gap> Singular( "1+1;" );
 true
 gap> SI_LastOutput( );
 "2\n"
-gap> SI_Errors;
+gap> _SI_LastErrorString;
 ""
 gap> SI_LastOutput( );
 fail

@@ -53,10 +53,9 @@ InstallMethod( Singular, "for a string in stringrep",
   [ IsStringRep ],
   function( st )
     local ret;
-    SI_Errors := "";
     ret := _SI_EVALUATE(st);
-    if Length(SI_Errors) > 0 then
-        Print(SI_Errors);
+    if Length(_SI_LastErrorString) > 0 then
+        Print(_SI_LastErrorString);
     fi;
     return ret;
   end );

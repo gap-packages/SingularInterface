@@ -93,7 +93,6 @@ static StructGVarFunc GVarFuncs[] = {
     { 0 } /* Finish with an empty entry */
 };
 
-Obj SI_Errors;
 Obj _SI_ProxiesType;
 UInt _SI_internalRingRNam;
 
@@ -142,7 +141,7 @@ static Int InitKernel(StructInitInfo* module)
 
     InitSingTypesFromKernel();
 
-    InitCopyGVar("SI_Errors", &SI_Errors);
+    InitCopyGVar("_SI_LastErrorString", &_SI_LastErrorString);
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
     InitFopyGVar( "IntFFE", &SI_IntFFE );
 

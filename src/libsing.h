@@ -52,7 +52,7 @@ extern "C" {
 #error GAPs word size is different from ours, 64bit/32bit mismatch
 #endif
 
-extern Obj SI_Errors;   //!< A kernel copy of a string
+extern Obj _SI_LastErrorString;   //!< A kernel copy of a string
 extern Obj _SI_ProxiesType;   //!< A kernel copy of the type of proxy elements
 
 extern Obj SI_IntFFE;
