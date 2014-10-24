@@ -139,6 +139,10 @@ gap> SI_nrows( I );
 1
 gap> SI_ncols( I );
 6
+gap> i := SI_matrix( I );
+<singular matrix, 1x6>
+gap> Display( i );
+x,y,z,x^2,y^2,z^2
 gap> M := SI_module( m );
 <singular module, 3 vectors in free module of rank 2>
 gap> Display( M );
