@@ -66,6 +66,18 @@ z^2
   compressed columns. Each column has the &Singular; datatype
   <C>vector</C>.
   
+<Example><![CDATA[
+gap> r := SI_ring( 32003, "x,y,z" );
+<singular ring, 3 indeterminates>
+gap> x := SI_var( r, 1 );; y := SI_var( r, 2 );; z := SI_var( r, 3 );;
+gap> m := SI_matrix( 2, 3, [x,y,z,x^2,y^2,z^2] );
+<singular matrix, 2x3>
+gap> M := SI_module( m );
+<singular module, 3 vectors in free module of rank 2>
+gap> Display( M );
+x,  y,  z,
+x^2,y^2,z^2
+]]></Example>
 </Description>
 </ManSection>
 
