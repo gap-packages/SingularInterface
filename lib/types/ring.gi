@@ -144,8 +144,11 @@ BindGlobal("_ParseIndeterminatesDescription", function(str)
     return result;
 end );
 
-InstallMethod(SI_ring,[IsSI_ring, IsSI_Object],_SI_ring_singular);
-InstallMethod(SI_ring,[IsInt,IsList,IsList],
+# The interpreter 'ring' function handles conversions
+InstallMethod(SI_ring, [IsSI_ring, IsSI_Object], _SI_ring_singular);
+
+# Factory for SI_rings
+InstallMethod(SI_ring, [IsInt, IsList, IsList],
   function( charact, names, orderings )
     local bad;
     if IsString(names) then
@@ -171,7 +174,8 @@ InstallMethod(SI_ring,[IsInt,IsList,IsList],
     return _SI_ring(charact, names, orderings);
   end);
 
-InstallMethod(SI_ring,[IsInt,IsList],
+# Factory for SI_rings with information on "orderings" omitted
+InstallMethod(SI_ring, [IsInt, IsList],
   function( charact, names )
     if IsString(names) then
         names := _ParseIndeterminatesDescription(names);
@@ -179,7 +183,15 @@ InstallMethod(SI_ring,[IsInt,IsList],
     return SI_ring(charact, names, [["dp",Length(names)]]);
   end);
 
-InstallMethod(SI_ring,["IsSI_Object"], SI_RingOfSingobj);
+# Factory for SI_rings with a default characteristic and variables.
+InstallOtherMethod(SI_ring, [],
+  function()
+    return SI_ring(32003, ["x","y","z"], [["dp",3]]);
+  end);
+
+# Ring 'getter' method for determining the ring object associated to
+# a singular variable.
+InstallMethod(SI_ring, ["IsSI_Object"], SI_RingOfSingobj);
 
 
 BindGlobal("_SI_ViewString_ring", function( ring )
