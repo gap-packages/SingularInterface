@@ -122,3 +122,11 @@ BindGlobal("_SI_ProxiesType",
   NewType( SingularFamily, IsSI_proxy and IsMutable));
 
 DeclareOperation( "_SI_TypeName", [IsSI_Object] );
+
+# HACK: The following is only there because we explicitly referred to
+# IsSingularPoly in the Computeralgebra Rundbrief. To ensure the example
+# described there keeps working, we add the code below:
+BindGlobal("IsSingularPoly", function(x)
+    Info(InfoObsolete, 1, "IsSingularPoly is obsolete, please use IsSI_poly instead.");
+    return IsSI_poly(x);
+end);

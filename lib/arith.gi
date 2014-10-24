@@ -225,3 +225,13 @@ end);
 InstallOtherMethod(QUO, ["IsSI_Object", "IsSI_Object"], function(a, b)
   return SI_\/(a, b);
 end);
+
+
+InstallOtherMethod(Length, [IsSI_matrix], SI_ncols);
+InstallOtherMethod(Length, [IsSI_intmat], SI_ncols);
+InstallOtherMethod(Length, [IsSI_bigintmat], SI_ncols);
+
+InstallOtherMethod(Length, [IsSI_intvec], SI_nrows);
+InstallOtherMethod(Length, [IsSI_vector], SI_nrows);
+
+InstallOtherMethod(Length, [IsSI_string], SI_size);
