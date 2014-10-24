@@ -261,7 +261,6 @@ void _SI_ObjMarkFunc(Bag o)
 /// Installed as SI_ring method
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
-    char **array;
     char *p;
     UInt nrvars;
     UInt nrords;
@@ -325,11 +324,6 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         return Fail;
     }
 
-    // Now allocate strings for the variable names:
-    array = (char **) omalloc(sizeof(char *) * nrvars);
-    for (i = 0; i < nrvars; i++)
-        array[i] = omStrDup(CSTR_STRING(ELM_LIST(names,i+1)));
-
     // Now allocate int lists for the orderings:
     ord = (int *) omalloc(sizeof(int) * (nrords+1));
     ord[nrords] = 0;
@@ -361,9 +355,16 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         }
     }
 
-    ring r = rDefault(INT_INTOBJ(charact),nrvars,array,
-                      nrords,ord,block0,block1,wvhdl);
+    // Now allocate strings for the variable names:
+    char **cnames = (char **)omalloc(sizeof(char *) * nrvars);
+    for (i = 0; i < nrvars; i++)
+        cnames[i] = CSTR_STRING(ELM_LIST(names,i+1));
+
+    ring r = rDefault(INT_INTOBJ(charact), nrvars, cnames,
+                      nrords, ord, block0, block1, wvhdl);
     r->ref++;
+    
+    omFree(cnames);
 
     r->ShortOut = FALSE;
 
