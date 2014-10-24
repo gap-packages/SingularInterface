@@ -215,9 +215,10 @@ InstallMethod( ViewObj, "for a singular ring",
 
 # this causes that DefaultRing of a Singular object with ring returns that ring
 InstallOtherMethod(DefaultRingByGenerators, fam->
-    fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_ring(l[1]));
+    fam = CollectionsFamily(SingularFamily), ["IsList"], l-> SI_RingOfSingobj(l[1]));
+
 InstallMethod(\in, ["IsSI_poly", "IsRing"], function(pol, r)
-  return SI_ring(pol) = r;
+  return SI_RingOfSingobj(pol) = r;
 end);
 
 # HACK for demo in Konstanz

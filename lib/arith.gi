@@ -96,13 +96,13 @@ InstallOtherMethod(\=, ["IsSI_Object","IsSI_Object"], 10, _SI_Comparer);
 # Zero and One for rings and polys:
 InstallOtherMethod(ZeroImmutable, ["IsSI_ring"], ZeroSM);
 InstallOtherMethod(ZeroImmutable, ["IsSI_poly"], function(sobj)
-  return ZeroSM(SI_ring(sobj));
+  return ZeroSM(SI_RingOfSingobj(sobj));
 end);
 InstallOtherMethod(ZeroMutable, ["IsSI_ring"], function(sobj)
   return SI_poly(sobj, "0");
 end);
 InstallOtherMethod(ZeroMutable, ["IsSI_poly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "0");
+  return SI_poly(SI_RingOfSingobj(sobj), "0");
 end);
 # ZeroSM for rings and polys is done in the kernel!
 # This is efficient for rings and immutable polys and
@@ -112,13 +112,13 @@ InstallOtherMethod(OneImmutable, ["IsSI_ring"], function(sobj)
   return OneSM(sobj);
 end);
 InstallOtherMethod(OneImmutable, ["IsSI_poly"], function(sobj)
-  return OneSM(SI_ring(sobj));
+  return OneSM(SI_RingOfSingobj(sobj));
 end);
 InstallOtherMethod(OneMutable, ["IsSI_ring"], function(sobj)
   return SI_poly(sobj, "1");
 end);
 InstallOtherMethod(OneMutable, ["IsSI_poly"], function(sobj)
-  return SI_poly(SI_ring(sobj), "1");
+  return SI_poly(SI_RingOfSingobj(sobj), "1");
 end);
 # OneSM for rings and polys is done in the kernel!
 # This is efficient for rings and immutable polys and
