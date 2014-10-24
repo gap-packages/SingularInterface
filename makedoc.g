@@ -30,6 +30,7 @@ AutoDoc( "SingularInterface" :
         rec(
             entities := [
                     "Singular",
+                    "Plural",
                     ],
             appendix := [
                      "appendix-implementation.xml",

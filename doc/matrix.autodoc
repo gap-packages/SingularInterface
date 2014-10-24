@@ -472,14 +472,14 @@ x3+1,x0,x3,0,        x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3
 </ManSection>
 
 <ManSection>
-<Func Name="SI_reduce" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_reduce" Arg="mat1,mat2" Label="for two Singular matrices"/>
 <Description>
 TODO
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="SI_lift" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_lift" Arg="mat1,mat2" Label="for two Singular matrices"/>
 <Description>
 TODO
 </Description>
@@ -542,14 +542,14 @@ x0, x1*x3,
 </ManSection>
 
 <ManSection>
-<Func Name="SI_modulo" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_modulo" Arg="mat1,mat2" Label="for two Singular matrices"/>
 <Description>
 TODO
 </Description>
 </ManSection>
 
 <ManSection>
-<Func Name="SI_nres" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_nres" Arg="mat" Label="for a Singular matrices"/>
 <Description>
 TODO
 </Description>
