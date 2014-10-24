@@ -425,6 +425,7 @@ x
 
 Compute the standard basis of the columns of the matrix <A>mat</A>, which can
 be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
+<P/>
 
 This holds for commutative rings.
 For noncommutative rings provided by &Plural; the result is the transposed
@@ -491,6 +492,7 @@ TODO
 
 Compute the matrix of column syzygies of the matrix <A>mat</A>, which can
 be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
+<P/>
 
 This holds for commutative rings.
 For noncommutative rings provided by &Plural; the result is the transposed
