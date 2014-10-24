@@ -45,7 +45,14 @@ InstallMethod(SI_matrix,["IsSI_Object"],_SI_matrix_singular);
 InstallMethod(SI_matrix,["IsSI_Object","IsPosInt","IsPosInt"],
   _SI_matrix_singular);
 InstallMethod(SI_matrix,["IsSI_ring","IsPosInt","IsPosInt","IsStringRep"],
-              _SI_matrix_from_String);
+function(ring, rows, cols, desc)
+    local str;
+    SI_SetCurrRing(ring);
+    Singular("if(defined(SI_matrix_maker)){kill SI_matrix_maker;};");
+    str := Concatenation("proc SI_matrix_maker(){matrix m[",String(rows),"][",String(cols),"] = ",desc,";  return(m);}");
+    Singular(str);
+    return SI_CallProc("SI_matrix_maker", []);
+end);
 InstallMethod(SI_matrix,["IsPosInt", "IsPosInt", "IsList"], 
               _SI_matrix_from_els);
 
