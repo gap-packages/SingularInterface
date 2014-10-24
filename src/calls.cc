@@ -65,28 +65,27 @@ Obj FuncSI_LastOutput(Obj self)
     } else return Fail;
 }
 
-///! Send a string to the Singular interpreter, which is then evaluated as   
-///! the body of a function (so that variables you declare are local, and are
-///! released after evaluation of the string completes).                     
+///! Send a string to the Singular interpreter, which is then evaluated.                   
+///! We append "return();" to the evaluated string so that control returns
+///! to use once the evaluation is complete.
 ///! 
-///! To ensure this works correctly, we append "return();" to string.
+///! Returns 'true' upon success, and 'false' if an error occurred.
 Obj Func_SI_EVALUATE(Obj self, Obj st)
 {
-    // Append an explicit return() to the 
     const char return_str[] = "return();";
     UInt len = GET_LEN_STRING(st);
-    char *ost = (char *) omalloc(len + sizeof(return_str));
+    char *ost = (char *)omalloc(len + sizeof(return_str));
     memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)), len);
     memcpy(ost+len, return_str, sizeof(return_str) );
 
     StartPrintCapture();
     myynest = 1;
-    Int err = (Int) iiAllStart(NULL,ost,BT_proc,0);
+    BOOLEAN err = iiAllStart(NULL, ost, BT_proc, 0);
     inerror = 0;
     EndPrintCapture();
     // Note that iiEStart uses omFree internally to free the string ost
 
-    return ObjInt_Int((Int) err);
+    return err ? False : True;
 }
 
 /// Wrap the content of a Singular interpreter object in a GAP object.
