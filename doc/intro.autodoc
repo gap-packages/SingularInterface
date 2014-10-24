@@ -89,7 +89,6 @@ function <C>SIL_submat</C>.
 <Example><![CDATA[
 gap> SIL_submat;
 Error, Variable: 'SIL_submat' must have a value
-not in any function at line 2 of *stdin*
 gap> SI_LIB( "matrix.lib" );
 true
 gap> SIL_submat;
