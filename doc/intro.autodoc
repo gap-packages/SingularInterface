@@ -70,14 +70,39 @@ true]]></Log>
 
 @Section TODO
 
-- document  SI_LIB()
-- document Singular()
 - reference Rundbrief article
 
 
 @Chapter Getting started
 
 @Section First steps
+
+<ManSection>
+<Func Name="Singular" Arg="str"/>
+<Description>
+Instructs the Singular interpreter to execute the command
+given by the string <A>str</A>. It returns <C>true</C> in case &Singular; succeeds,
+otherwise <C>false</C>. These are not the return values of &Singular; but merely an
+<Q>exit code</Q>. The first subsequent call of <C>SI_LastOutput( )</C> returns
+(rather flushes) a string containing the output of the interpreter. Every other call
+of <C>SI_LastOutput( )</C> returns <C>fail</C>.
+The error message of the last call of <C>Singular</C> is stored as a string in the
+global variable <C>SI_Errors</C>.
+<Example><![CDATA[
+gap> Singular( "1+1;" );
+true
+gap> SI_LastOutput( );
+"2\n"
+gap> SI_Errors;
+""
+gap> SI_LastOutput( );
+fail
+gap> Singular( "1+1;" );;
+gap> Display( SI_LastOutput( ) );
+2
+]]></Example>
+</Description>
+</ManSection>
 
 <ManSection>
 <Func Name="SI_LIB" Arg="libname"/>
