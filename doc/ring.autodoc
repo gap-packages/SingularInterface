@@ -20,7 +20,7 @@ The indeterminates may be specified in one of multiple ways:
 The list <A>ord</A> may be omitted, in which case TODO
 <P/>
 
-You may use <Ref Oper="AssignGeneratorVariables"/> to make the ring
+You may use <Ref Oper="AssignGeneratorVariables" BookName="Reference"/> to make the ring
 variables accessible as &GAP; variables.
 
 <Example><![CDATA[
