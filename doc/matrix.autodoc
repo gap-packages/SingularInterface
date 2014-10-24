@@ -486,9 +486,58 @@ TODO
 </ManSection>
 
 <ManSection>
-<Func Name="SI_syz" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_syz" Arg="mat" Label="for a Singular matrices"/>
 <Description>
-TODO
+
+Compute the matrix of column syzygies of the matrix <A>mat</A>, which can
+be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
+
+This holds for commutative rings.
+For noncommutative rings provided by &Plural; the result is the transposed
+of the matrix of row syzygies of the transposed of <A>mat</A>.
+
+<Example><![CDATA[
+gap> R := SI_ring( 0, "x0..3" );
+<singular ring, 4 indeterminates>
+gap> SI_option( "redTail" );
+true
+gap> I := SI_ideal( R, "x0^2-x1*x3, x0*x1-x2*x3" );
+<singular ideal, 2 gens>
+gap> Display( I );
+x0^2-x1*x3,
+x0*x1-x2*x3
+gap> K := SI_syz( I );
+<singular module, 1 vector in free module of rank 2>
+gap> Display( K );
+-x0*x1+x2*x3,
+x0^2-x1*x3
+gap> J := SI_std( I );
+<singular ideal, 3 gens>
+gap> Display( J );
+x0*x1-x2*x3,
+x0^2-x1*x3,
+x1^2*x3-x0*x2*x3
+gap> S := SI_syz( J );
+<singular module, 2 vectors in free module of rank 3>
+gap> Display( S );
+x0, x1*x3,
+-x1,-x2*x3,
+-1, -x0
+gap> S2 := SI_syz( S );
+<singular module, 1 vector in free module of rank 2>
+gap> Display( S2 );
+0,
+0
+gap> j := SI_matrix( J );
+<singular matrix, 1x3>
+gap> s := SI_syz( j );
+<singular module, 2 vectors in free module of rank 3>
+gap> Display( s );
+x0, x1*x3,
+-x1,-x2*x3,
+-1, -x0
+]]></Example>
+
 </Description>
 </ManSection>
 
