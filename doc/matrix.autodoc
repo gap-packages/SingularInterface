@@ -420,9 +420,51 @@ x
 </ManSection>
 
 <ManSection>
-<Func Name="SI_std" Arg="TODO" Label="for a TODO"/>
+<Func Name="SI_std" Arg="mat" Label="for a Singular matrix"/>
 <Description>
-TODO
+
+Compute the standard basis of the columns of the matrix <A>mat</A>, which can
+be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
+
+<Example><![CDATA[
+gap> R := SI_ring( 0, "x0..3" );
+<singular ring, 4 indeterminates>
+gap> SI_option( "redTail" );
+true
+gap> I := SI_ideal( R, "x0^2-x1*x3, x0*x1-x2*x3" );
+<singular ideal, 2 gens>
+gap> Display( I );
+x0^2-x1*x3,
+x0*x1-x2*x3
+gap> J := SI_std( I );
+<singular ideal, 3 gens>
+gap> Display( J );
+x0*x1-x2*x3,
+x0^2-x1*x3,
+x1^2*x3-x0*x2*x3
+gap> m := SI_matrix( R, 3, 4, "x0,x1*x3,x0,x3, -x1,-x2*x3,x1,x2, -1,-x0,x3,x0" );
+<singular matrix, 3x4>
+gap> Display( m );
+x0, x1*x3, x0,x3,
+-x1,-x2*x3,x1,x2,
+-1, -x0,   x3,x0
+gap> g := SI_std( m );
+<singular module, 6 vectors in free module of rank 3>
+gap> Display( g );
+0,   x3,x0,x1*x3+x3, 0,                    x2*x3^3-x2*x3,
+2*x1,x2,x1,-x2*x3+x2,2*x0*x2*x3-2*x0*x2,   x2^2*x3^2-x2^2,
+x3+1,x0,x3,0,        x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3
+gap> M := SI_module( m );
+<singular module, 4 vectors in free module of rank 3>
+gap> G := SI_std( M );
+<singular module, 6 vectors in free module of rank 3>
+gap> Display( G );
+0,   x3,x0,x1*x3+x3, 0,                    x2*x3^3-x2*x3,
+2*x1,x2,x1,-x2*x3+x2,2*x0*x2*x3-2*x0*x2,   x2^2*x3^2-x2^2,
+x3+1,x0,x3,0,        x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3
+]]></Example>
+
+
 </Description>
 </ManSection>
 
