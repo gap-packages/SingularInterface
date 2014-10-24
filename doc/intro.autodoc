@@ -83,7 +83,7 @@ true]]></Log>
 <Func Name="SI_LIB" Arg="libname"/>
 <Description>
 Instructs the Singular interpreter to load the library with the given
-name. For example, we can load <C>matrix.lib</C> which provides
+name <A>libname</A>. For example, we can load <C>matrix.lib</C> which provides
 the &Singular; function <C>submat</C>, which is mapped to the &GAP;
 function <C>SIL_submat</C>.
 <Example><![CDATA[
