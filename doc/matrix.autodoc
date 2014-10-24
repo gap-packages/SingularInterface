@@ -152,6 +152,32 @@ gap> SI_nrows( M );
 2
 gap> SI_ncols( M );
 3
+gap> v0 := SI_vector( r, "0,0,0,0" );
+<singular vector, 0 entries>
+gap> Display( v0 );
+[0]
+gap> v2 := SI_vector( r, "0,x,0,0" );
+<singular vector, 2 entries>
+gap> Display( v2 );
+[0,x]
+gap> v3 := SI_vector( r, "0,x,y^2,0" );
+<singular vector, 3 entries>
+gap> Display( v3 );
+[0,x,y^2]
+gap> v4 := SI_vector( r, "0,x,y^2,z^3" );
+<singular vector, 4 entries>
+gap> Display( v4 );
+[0,x,y^2,z^3]
+gap> SI_ncols( v0 ); SI_ncols( v2 ); SI_ncols( v3 ); SI_ncols( v4 );
+1
+1
+1
+1
+gap> SI_nrows( v0 ); SI_nrows( v2 ); SI_nrows( v3 ); SI_nrows( v4 );
+0
+2
+3
+4
 ]]></Example>
 
 </Description>
@@ -204,6 +230,38 @@ gap> Display( N );
 x,x^2,
 y,y^2,
 z,z^2
+gap> v0 := SI_vector( r, "0,0,0,0" );
+<singular vector, 0 entries>
+gap> Display( v0 );
+[0]
+gap> t0 := SI_transpose( v0 );
+<singular matrix, 1x1>
+gap> Display( t0 );
+0
+gap> v2 := SI_vector( r, "0,x,0,0" );
+<singular vector, 2 entries>
+gap> Display( v2 );
+[0,x]
+gap> t2 := SI_transpose( v2 );
+<singular matrix, 1x2>
+gap> Display( t2 );
+0,x
+gap> v3 := SI_vector( r, "0,x,y^2,0" );
+<singular vector, 3 entries>
+gap> Display( v3 );
+[0,x,y^2]
+gap> t3 := SI_transpose( v3 );
+<singular matrix, 1x3>
+gap> Display( t3 );
+0,x,y^2
+gap> v4 := SI_vector( r, "0,x,y^2,z^3" );
+<singular vector, 4 entries>
+gap> Display( v4 );
+[0,x,y^2,z^3]
+gap> t4 := SI_transpose( v4 );
+<singular matrix, 1x4>
+gap> Display( t4 );
+0,x,y^2,z^3
 ]]></Example>
 
 </Description>
