@@ -263,28 +263,24 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     char *p;
     UInt nrvars;
     UInt nrords;
-    int *ord;
-    int *block0;
-    int *block1;
-    int **wvhdl;
     UInt i;
     Int j;
     int covered;
-    Obj tmp,tmp2;
+    Obj tmp, tmp2;
 
     // Some checks:
     if (!IS_INTOBJ(charact) || !IS_LIST(names) || !IS_LIST(orderings)) {
-        ErrorQuit("Need immediate integer and two lists",0L,0L);
+        ErrorQuit("Need immediate integer and two lists", 0L, 0L);
         return Fail;
     }
     nrvars = LEN_LIST(names);
     if (nrvars == 0) {
-        ErrorQuit("Need at least one variable name",0L,0L);
+        ErrorQuit("Need at least one variable name", 0L, 0L);
         return Fail;
     }
     for (i = 1; i <= nrvars; i++) {
         if (!IS_STRING_REP(ELM_LIST(names,i))) {
-            ErrorQuit("Variable names must be strings",0L,0L);
+            ErrorQuit("Variable names must be strings", 0L, 0L);
             return Fail;
         }
     }
@@ -293,63 +289,64 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     covered = 0;
     nrords = LEN_LIST(orderings);
     for (i = 1; i <= nrords; i++) {
-        tmp = ELM_LIST(orderings,i);
+        tmp = ELM_LIST(orderings, i);
         if (!IS_LIST(tmp) || LEN_LIST(tmp) != 2) {
-            ErrorQuit("Orderings must be lists of length 2",0L,0L);
+            ErrorQuit("Orderings must be lists of length 2", 0L, 0L);
             return Fail;
         }
-        if (!IS_STRING_REP(ELM_LIST(tmp,1))) {
-            ErrorQuit("First entry of ordering must be a string",0L,0L);
+        if (!IS_STRING_REP(ELM_LIST(tmp, 1))) {
+            ErrorQuit("First entry of ordering must be a string", 0L, 0L);
             return Fail;
         }
-        tmp2 = ELM_LIST(tmp,2);
-        if (IS_INTOBJ(tmp2)) covered += (int) INT_INTOBJ(tmp2);
+        tmp2 = ELM_LIST(tmp, 2);
+        if (IS_INTOBJ(tmp2))
+            covered += INT_INTOBJ(tmp2);
         else if (IS_LIST(tmp2)) {
-            covered += (int) LEN_LIST(tmp2);
+            covered += (int)LEN_LIST(tmp2);
             for (j = 1; j <= LEN_LIST(tmp2); j++) {
                 if (!IS_INTOBJ(ELM_LIST(tmp2,j))) {
-                    ErrorQuit("Weights must be immediate integers",0L,0L);
+                    ErrorQuit("Weights must be immediate integers", 0L, 0L);
                     return Fail;
                 }
             }
         } else {
             ErrorQuit("Second entry of ordering must be an integer or a "
-                      "plain list",0L,0L);
+                      "plain list", 0L, 0L);
             return Fail;
         }
     }
     if (covered != (int) nrvars) {
-        ErrorQuit("Orderings do not cover exactly the variables",0L,0L);
+        ErrorQuit("Orderings do not cover exactly the variables", 0L, 0L);
         return Fail;
     }
 
     // Now allocate int lists for the orderings:
-    ord = (int *) omalloc(sizeof(int) * (nrords+1));
+    int *ord = (int *)omalloc(sizeof(int) * (nrords+1));        // array of orderings
     ord[nrords] = 0;
-    block0 = (int *) omalloc(sizeof(int) * (nrords+1));
-    block1 = (int *) omalloc(sizeof(int) * (nrords+1));
-    wvhdl = (int **) omAlloc0(sizeof(int *) * (nrords+1));
+    int *block0 = (int *)omalloc(sizeof(int) * (nrords+1));     // starting position of blocks
+    int *block1 = (int *)omalloc(sizeof(int) * (nrords+1));     // ending position of blocks
+    int **wvhdl = (int **)omAlloc0(sizeof(int *) * (nrords+1)); // array of weight vectors
     covered = 0;
     for (i = 0; i < nrords; i++) {
-        tmp = ELM_LIST(orderings,i+1);
-        p = omStrDup(CSTR_STRING(ELM_LIST(tmp,1)));
+        tmp = ELM_LIST(orderings, i + 1);
+        p = omStrDup(CSTR_STRING(ELM_LIST(tmp, 1)));
         ord[i] = rOrderName(p);
         if (ord[i] == 0) {
             Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
-               (Int) (CSTR_STRING(ELM_LIST(tmp,1))),0L);
+               (Int) (CSTR_STRING(ELM_LIST(tmp, 1))),0L);
             ord[i] = rOrderName(omStrDup("dp"));
         }
-        block0[i] = covered+1;
-        tmp2 = ELM_LIST(tmp,2);
+        block0[i] = covered + 1;
+        tmp2 = ELM_LIST(tmp, 2);
         if (IS_INTOBJ(tmp2)) {
-            block1[i] = covered+ (int) (INT_INTOBJ(tmp2));
+            block1[i] = covered + INT_INTOBJ(tmp2);
             wvhdl[i] = NULL;
-            covered += (int) (INT_INTOBJ(tmp2));
+            covered += INT_INTOBJ(tmp2);
         } else {   // IS_LIST(tmp2) and consisting of immediate integers
-            block1[i] = covered+(int) (LEN_LIST(tmp2));
-            wvhdl[i] = (int *) omalloc(sizeof(int) * LEN_LIST(tmp2));
+            block1[i] = covered + LEN_LIST(tmp2);
+            wvhdl[i] = (int *)omalloc(sizeof(int) * LEN_LIST(tmp2));
             for (j = 0; j < LEN_LIST(tmp2); j++) {
-                wvhdl[i][j] = (int) (INT_INTOBJ(ELM_LIST(tmp2,j+1)));
+                wvhdl[i][j] = INT_INTOBJ(ELM_LIST(tmp2, j + 1));
             }
         }
     }
