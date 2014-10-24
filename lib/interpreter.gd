@@ -19,11 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-BindGlobal( "_SI_LastErrorString", "" );
-
 DeclareGlobalFunction( "_SI_BindSingularProcs" );
 
 DeclareOperation( "Singular", [IsStringRep] );
 DeclareOperation( "Singular", [IsString and IsEmpty] );
 DeclareOperation( "Singular", [] );
 
+DeclareGlobalFunction( "SingularLastError" );

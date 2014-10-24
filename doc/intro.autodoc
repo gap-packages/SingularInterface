@@ -80,25 +80,20 @@ true]]></Log>
 <ManSection>
 <Func Name="Singular" Arg="str"/>
 <Description>
-Instructs the Singular interpreter to execute the command
-given by the string <A>str</A>. It returns <C>true</C> in case &Singular; succeeds,
-otherwise <C>false</C>. These are not the return values of &Singular; but merely an
-<Q>exit code</Q>. The first subsequent call of <C>SI_LastOutput( )</C> returns
-(rather flushes) a string containing the output of the interpreter. Every other call
-of <C>SI_LastOutput( )</C> returns <C>fail</C>.
-The error message of the last call of <C>Singular</C> is stored as a string in the
-global variable <C>_SI_LastErrorString</C>.
+Instructs the Singular interpreter to execute the command given by the string <A>str</A>.
+It returns <C>true</C> in case &Singular; succeeds, otherwise <C>false</C> (i.e. if an error occurred).
+These are not the return values of a computation done by &Singular; but merely an <Q>exit code</Q>.
+A subsequent call to <Ref Func="SingularLastOutput"/> returns a string containing the output of the Singular interpreter.
+Similarly <Ref Func="SingularLastError"/> returns a string containing the last error message output by the Singular interpreter, if any.
 <Example><![CDATA[
 gap> Singular( "1+1;" );
 true
-gap> SI_LastOutput( );
+gap> SingularLastOutput( );
 "2\n"
-gap> _SI_LastErrorString;
+gap> SingularLastError( );
 ""
-gap> SI_LastOutput( );
-fail
 gap> Singular( "1+1;" );;
-gap> Display( SI_LastOutput( ) );
+gap> Display( SingularLastOutput( ) );
 2
 ]]></Example>
 </Description>

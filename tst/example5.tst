@@ -9,10 +9,8 @@ gap> SI_ValueOfVar("version");   # gives fail
 fail
 gap> Singular("print(ver);");
 true
-gap> SI_LastOutput();   # gives version number as string
+gap> SingularLastOutput();   # gives version number as string
 "3160\n"
-gap> SI_LastOutput();   # gives fail
-fail
 gap> if SI_ValueOfVar("a") <> fail then Singular("kill a;"); fi;
 gap> Singular("string a=\"Max\";");
 true

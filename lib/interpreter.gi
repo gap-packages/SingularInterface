@@ -54,9 +54,7 @@ InstallMethod( Singular, "for a string in stringrep",
   function( st )
     local ret;
     ret := _SI_EVALUATE(st);
-    if Length(_SI_LastErrorString) > 0 then
-        Print(_SI_LastErrorString);
-    fi;
+    Print(SingularLastError());
     return ret;
   end );
 
@@ -77,15 +75,17 @@ InstallMethod( Singular, "without arguments",
         s := ReadLine(i);
         if s = "\n" then break; fi;
         Singular(s);
-        Print(SI_LastOutput());
+        Print(SingularLastOutput());
     od;
     CloseStream(i);
   end );
 
-
+InstallGlobalFunction( SingularLastError,
+  function()
+    return _SI_LastErrorString;
+  end );
 
 # Useful little helper to undefine a Singular var or proc
 BindGlobal( "SI_Undef", function(x)
    Singular(Concatenation("if(defined(",x,")){kill ",x,";};"));
 end);
-

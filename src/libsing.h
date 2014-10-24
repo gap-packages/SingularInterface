@@ -52,7 +52,9 @@ extern "C" {
 #error GAPs word size is different from ours, 64bit/32bit mismatch
 #endif
 
-extern Obj _SI_LastErrorString;   //!< A kernel copy of a string
+extern UInt _SI_LastErrorStringGVar;
+extern UInt _SI_LastOutputStringGVar;
+
 extern Obj _SI_ProxiesType;   //!< A kernel copy of the type of proxy elements
 
 extern Obj SI_IntFFE;
@@ -262,7 +264,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st);
 Obj FuncSI_ValueOfVar(Obj self, Obj name);
 Obj Func_SI_SingularProcs(Obj self);
 Obj FuncSI_ToGAP(Obj self, Obj singobj);
-Obj FuncSI_LastOutput(Obj self);
+Obj FuncSingularLastOutput(Obj self);
 Obj Func_SI_bigint(Obj self, Obj nr);
 Obj Func_SI_Intbigint(Obj self, Obj b);
 Obj Func_SI_number(Obj self, Obj r, Obj nr);

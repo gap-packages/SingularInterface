@@ -30,24 +30,36 @@
 // in SI_EVALUATE and SI_CallProc to reset the interpreter error state.
 extern int inerror;
 
-// A GAP string containing the last error printed by a Singular command.
-Obj _SI_LastErrorString;
+// GVar id of a global gap variable containing a GAP string object
+// which in turn contains the last error printed by a Singular command.
+UInt _SI_LastErrorStringGVar = 0;
+
+// GVar id of a global gap variable containing a GAP string object
+// which in turn contains the last output printed by a Singular command.
+UInt _SI_LastOutputStringGVar = 0;
 
 //! This global is used to store the return value of SPrintEnd.
 static char *_SI_LastOutputBuf = NULL;
 
-
-static void ClearLastOutputBuf()
+static void ResetString(UInt gvar)
 {
-    if (_SI_LastOutputBuf) {
-        omFree(_SI_LastOutputBuf);
-        _SI_LastOutputBuf = NULL;
+    Obj strObj = VAL_GVAR(gvar);
+    if (IS_STRING(strObj)) {
+        SET_LEN_STRING(strObj, 0);
+        CSTR_STRING(strObj)[0] = 0;
+        SHRINK_STRING(strObj);
     }
 }
 
 static void StartPrintCapture()
 {
-    ClearLastOutputBuf();
+    if (_SI_LastOutputBuf) {
+        omFree(_SI_LastOutputBuf);
+    }
+    _SI_LastOutputBuf = NULL;
+
+    ResetString(_SI_LastOutputStringGVar);
+
     SPrintStart();
     errorreported = 0;
 }
@@ -56,30 +68,32 @@ static void EndPrintCapture() {
     _SI_LastOutputBuf = SPrintEnd();
 }
 
-Obj FuncSI_LastOutput(Obj self)
+Obj FuncSingularLastOutput(Obj self)
 {
-    if (_SI_LastOutputBuf) {
+    Obj strObj = VAL_GVAR(_SI_LastOutputStringGVar);
+    if (_SI_LastOutputBuf && IS_STRING(strObj)) {
         UInt len = (UInt)strlen(_SI_LastOutputBuf);
-        Obj tmp = NEW_STRING(len);
-        SET_LEN_STRING(tmp, len);
-        memcpy(CHARS_STRING(tmp), _SI_LastOutputBuf, len + 1);
-        ClearLastOutputBuf();
-        return tmp;
+        GROW_STRING(strObj, len + 1);
+        memcpy(CHARS_STRING(strObj), _SI_LastOutputBuf, len + 1);
+        SET_LEN_STRING(strObj, len);
+        omFree(_SI_LastOutputBuf);
+        _SI_LastOutputBuf = NULL;
     }
-    return Fail;
+    return strObj ? strObj : Fail;
 }
 
 void _SI_ErrorCallback(const char *st)
 {
-    UInt len = (UInt)strlen(st);
-    if (IS_STRING(_SI_LastErrorString)) {
-        UInt oldlen = GET_LEN_STRING(_SI_LastErrorString);
-        GROW_STRING(_SI_LastErrorString, oldlen + len + 2);
-        char *p = CSTR_STRING(_SI_LastErrorString);
+    Obj strObj = VAL_GVAR(_SI_LastErrorStringGVar);
+    if (IS_STRING(strObj)) {
+        UInt len = (UInt)strlen(st);
+        UInt oldlen = GET_LEN_STRING(strObj);
+        GROW_STRING(strObj, oldlen + len + 2);
+        char *p = CSTR_STRING(strObj);
         memcpy(p + oldlen, st, len);
         p[oldlen+len] = '\n';
         p[oldlen+len+1] = 0;
-        SET_LEN_STRING(_SI_LastErrorString, oldlen + len + 1);
+        SET_LEN_STRING(strObj, oldlen + len + 1);
     }
 }
 
@@ -96,12 +110,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(st)), len);
     memcpy(ost+len, return_str, sizeof(return_str) );
 
-    // Clear the error string
-    if (IS_STRING(_SI_LastErrorString)) {
-        SET_LEN_STRING(_SI_LastErrorString, 0);
-        CSTR_STRING(_SI_LastErrorString)[0] = 0;
-        SHRINK_STRING(_SI_LastErrorString);
-    }
+    ResetString(_SI_LastErrorStringGVar);
 
     StartPrintCapture();
     myynest = 1;

@@ -53,7 +53,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ValueOfVar, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_SingularProcs, 0, ""),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_ToGAP, 1, "singobj"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_LastOutput, 0, ""),
+    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularLastOutput, 0, ""),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_bigint, 1, "nr"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_Intbigint, 1, "nr"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_number, 2, "ring, nr"),
@@ -141,7 +141,6 @@ static Int InitKernel(StructInitInfo* module)
 
     InitSingTypesFromKernel();
 
-    InitCopyGVar("_SI_LastErrorString", &_SI_LastErrorString);
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
     InitFopyGVar( "IntFFE", &SI_IntFFE );
 
@@ -211,18 +210,22 @@ static Int InitKernel(StructInitInfo* module)
 }
 
 
-/**
-The second function to be called when the library is loaded by the kernel.
-**/
-static Int InitLibrary(StructInitInfo* module)
+// Called after workspace is restored (and also when GAP starts).
+static Int PostRestore(StructInitInfo* module)
 {
-    /* init filters and functions                                          */
-    InitGVarFuncsFromTable(GVarFuncs);
+    _SI_LastErrorStringGVar = GVarName("_SI_LastErrorString");
+    AssGVar(_SI_LastErrorStringGVar, NEW_STRING(0));
+    MakeReadOnlyGVar(_SI_LastErrorStringGVar);
+
+    _SI_LastOutputStringGVar = GVarName("_SI_LastOutputString");
+    AssGVar(_SI_LastOutputStringGVar, NEW_STRING(0));
+    MakeReadOnlyGVar(_SI_LastOutputStringGVar);
 
     /* Set '_SI_LIBSING_LOADED' as a canary variable, so we can detect (and prevent)
       attempts to load the C code more than once. */
-    AssGVar(GVarName("_SI_LIBSING_LOADED"), NEW_PREC(0));
-    MakeReadOnlyGVar(GVarName("_SI_LIBSING_LOADED"));
+    UInt gvar = GVarName("_SI_LIBSING_LOADED");
+    AssGVar(gvar, NEW_PREC(0));
+    MakeReadOnlyGVar(gvar);
 
     _SI_internalRingRNam = RNamName("internalRing");
 
@@ -235,6 +238,19 @@ static Int InitLibrary(StructInitInfo* module)
 
     /* return success                                                      */
     return 0;
+}
+
+
+/**
+The second function to be called when the library is loaded by the kernel.
+**/
+static Int InitLibrary(StructInitInfo* module)
+{
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable(GVarFuncs);
+
+    /* return success                                                      */
+    return PostRestore(module);
 }
 
 
@@ -259,7 +275,7 @@ static StructInitInfo module = {
     /* checkInit   = */ 0,
     /* preSave     = */ 0,
     /* postSave    = */ 0,
-    /* postRestore = */ 0
+    /* postRestore = */ PostRestore
 };
 
 
