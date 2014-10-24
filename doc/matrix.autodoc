@@ -343,7 +343,8 @@ x^4*y^2-2*x^3*y^3+x^2*y^4+x^4*z^2+y^4*z^2-2*x^3*z^3-2*y^3*z^3+x^2*z^4+y^2*z^4
 
 
 <ManSection>
-<Func Name="\[\]" Arg="mat,i" Label="for a Singular matrix"/>
+<Func Name="SI_\[" Arg="mat,i" Label="for a Singular matrix"/>
+<Oper Name="\[\]" Arg="mat,i" Label="for a Singular matrix"/>
 <Description>
 
 The syntax <A>mat</A><C>[</C><A>i</A><C>]</C> is a shorthand for
