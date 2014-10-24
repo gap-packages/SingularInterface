@@ -78,8 +78,8 @@ end );
 # A singular vector is a "polynomial" in which each monomial also carries
 # its position
 InstallMethod(SI_vector, [IsSI_Object], _SI_vector_singular);
-InstallMethod(SI_vector, [IsSI_ring, IsPosInt, IsStringRep],
-function(ring, len, desc)
+InstallMethod(SI_vector, [IsSI_ring, IsStringRep],
+function(ring, desc)
     local str;
     SI_SetCurrRing(ring);
     SingularUnbind("SI_vector_maker");

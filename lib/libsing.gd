@@ -29,7 +29,7 @@ DeclareOperation("SI_bigint",[IsSI_Object]);
 DeclareOperation("SI_bigint",[IsInt]);
 
 DeclareOperation("SI_bigintmat",[IsSI_Object]);
-#DeclareOperation("SI_bigintmat",[IsSI_Object,IsPosInt,IsPosInt]);
+#DeclareOperation("SI_bigintmat",[IsSI_Object, IsPosInt, IsPosInt]);
 DeclareOperation("SI_bigintmat",[IsList]);
 
 DeclareOperation("SI_number",[IsSI_ring, IsObject]);
@@ -38,19 +38,19 @@ DeclareOperation("SI_intvec",[IsSI_Object]);
 DeclareOperation("SI_intvec",[IsList]);
 
 DeclareOperation("SI_intmat",[IsSI_Object]);
-DeclareOperation("SI_intmat",[IsSI_Object,IsPosInt,IsPosInt]);
+DeclareOperation("SI_intmat",[IsSI_Object, IsPosInt, IsPosInt]);
 DeclareOperation("SI_intmat",[IsList]);
 
 DeclareOperation("SI_poly",[IsSI_ring, IsSI_Object]);
 DeclareOperation("SI_poly",[IsSI_ring, IsStringRep]);
 
 DeclareOperation("SI_matrix",[IsSI_Object]);
-DeclareOperation("SI_matrix",[IsSI_Object,IsPosInt,IsPosInt]);
+DeclareOperation("SI_matrix",[IsSI_Object, IsPosInt, IsPosInt]);
 DeclareOperation("SI_matrix",[IsSI_ring, IsPosInt, IsPosInt, IsStringRep]);
 DeclareOperation("SI_matrix",[IsPosInt, IsPosInt, IsList]);
 
 DeclareOperation("SI_vector",[IsSI_Object]);
-DeclareOperation("SI_vector",[IsSI_ring, IsPosInt, IsStringRep]);
+DeclareOperation("SI_vector",[IsSI_ring, IsStringRep]);
 
 DeclareOperation("SIC_ZeroMat",[IsSI_ring, IsPosInt, IsPosInt]);
 DeclareOperation("SIC_IdentityMat",[IsSI_ring, IsPosInt]);
