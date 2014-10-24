@@ -343,10 +343,78 @@ x^4*y^2-2*x^3*y^3+x^2*y^4+x^4*z^2+y^4*z^2-2*x^3*z^3-2*y^3*z^3+x^2*z^4+y^2*z^4
 
 
 <ManSection>
-<Func Name="\[\]" Arg="TODO" Label="for a TODO"/>
+<Func Name="\[\]" Arg="mat,i" Label="for a Singular matrix"/>
 <Description>
-TODO
-TODO: also mention SI_\[ as low level function behind it
+
+The syntax <A>mat</A><C>[</C><A>i</A><C>]</C> is a shorthand for
+<C>SI_\[(</C><A>mat</A>,<A>i</A><C>)</C>.
+
+If <A>mat</A> is of type
+<List>
+  <Item>
+     <C>matrix</C> then return <A>i</A>-th column as a <C>vector</C>.
+  </Item>
+  <Item>
+     <C>module</C> then return <A>i</A>-th column as a <C>vector</C>.
+  </Item>
+  <Item>
+     <C>ideal</C> then return <A>i</A>-th entry as a <C>poly</C>.
+  </Item>
+  <Item>
+     <C>vector</C> then return <A>i</A>-th entry as a <C>poly</C>.
+  </Item>
+</List>
+
+<Example><![CDATA[
+gap> r := SI_ring( );
+<singular ring, 3 indeterminates>
+gap> m := SI_matrix( r, 2, 3, "x,y,0,z^2,0,0" );
+<singular matrix, 2x3>
+gap> Display( m );
+x,  y,0,
+z^2,0,0
+gap> m1 := m[1];
+<singular vector, 2 entries>
+gap> Display( m1 );
+[x,z^2]
+gap> m2 := m[2];
+<singular vector, 1 entry>
+gap> Display( m2 );
+[y]
+gap> m3 := m[3];
+<singular vector, 0 entries>
+gap> Display( m3 );
+[0]
+gap> M := SI_module( m );
+<singular module, 3 vectors in free module of rank 2>
+gap> M1 := M[1];
+<singular vector, 2 entries>
+gap> Display( M1 );
+[x,z^2]
+gap> M[1][2];
+z^2
+gap> M2 := M[2];
+<singular vector, 1 entry>
+gap> Display( M2 );
+[y]
+gap> M3 := M[3];
+<singular vector, 0 entries>
+gap> Display( M3 );
+[0]
+gap> I := SI_ideal( m );
+<singular ideal, 6 gens>
+gap> Display( I );
+x,
+y,
+0,
+z^2,
+0,
+0
+gap> I[1]; I[6];
+x
+0
+]]></Example>
+
 </Description>
 </ManSection>
 
