@@ -40,6 +40,18 @@ x^2,y^2,z^2
   row. However, the print method in &Singular; prints them as a single
   column.
 
+<Example><![CDATA[
+gap> r := SI_ring( 32003, "x,y,z" );
+<singular ring, 3 indeterminates>
+gap> x := SI_var( r, 1 );; y := SI_var( r, 2 );; z := SI_var( r, 3 );;
+gap> I := SI_ideal( [x^2,x*y,z^2] );
+<singular ideal, 3 gens>
+gap> Display( I );
+x^2,
+x*y,
+z^2
+]]></Example>
+
 </Description>
 </ManSection>
 
