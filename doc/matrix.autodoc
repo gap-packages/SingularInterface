@@ -178,6 +178,26 @@ gap> SI_nrows( v0 ); SI_nrows( v2 ); SI_nrows( v3 ); SI_nrows( v4 );
 2
 3
 4
+gap> bim := SI_bigintmat( [[1,2,3],[4,5,6]] );
+<singular bigintmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+gap> Display( bim );
+1,2,3,
+4,5,6
+gap> SI_nrows( bim );
+2
+gap> SI_ncols( bim );
+3
+gap> iv := SI_intvec( [ 1, 2, 3, 0 ] );
+<singular intvec:[ 1, 2, 3, 0 ]>
+gap> Display( iv );
+1,
+2,
+3,
+0
+gap> SI_nrows( iv );
+4
+gap> SI_ncols( iv );
+fail
 ]]></Example>
 
 </Description>
@@ -262,6 +282,30 @@ gap> t4 := SI_transpose( v4 );
 <singular matrix, 1x4>
 gap> Display( t4 );
 0,x,y^2,z^3
+gap> bim := SI_bigintmat( [[1,2,3],[4,5,6]] );
+<singular bigintmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>
+gap> Display( bim );
+1,2,3,
+4,5,6
+gap> tim := SI_transpose( bim );
+<singular bigintmat:[ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ] ]>
+gap> Display( tim );
+1,4,
+2,5,
+3,6
+gap> iv := SI_intvec( [ 1, 2, 3, 0 ] );
+<singular intvec:[ 1, 2, 3, 0 ]>
+gap> Display( iv );
+1,
+2,
+3,
+0
+gap> tv := SI_transpose( iv );
+<singular intmat:[ [ 1, 2, 3, 0 ] ]>
+gap> Display( tv );
+     1     2     3     0
+gap> SI_transpose( tv );
+<singular intmat:[ [ 1 ], [ 2 ], [ 3 ], [ 0 ] ]>
 ]]></Example>
 
 </Description>
