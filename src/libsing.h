@@ -258,7 +258,6 @@ Obj _SI_TypeObj(Obj o);
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings);
 Obj FuncSI_RingOfSingobj( Obj self, Obj singobj );
 Obj FuncSI_Indeterminates(Obj self, Obj r);
-Obj Func_SI_MONOMIAL(Obj self, Obj rr, Obj coeff, Obj exps);
 Obj Func_SI_EVALUATE(Obj self, Obj st);
 Obj FuncSingularValueOfVar(Obj self, Obj name);
 Obj Func_SI_SingularProcs(Obj self);

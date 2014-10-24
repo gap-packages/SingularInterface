@@ -22,7 +22,6 @@
 #include "lowlevel_mappings.h"
 #include "singtypes.h"
 #include "matrix.h"
-#include "poly.h"
 
 /******************** The interface to GAP ***************/
 
@@ -47,7 +46,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_debug, 1, "obj"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_MONOMIAL, 3, "ring, coeff, exponents"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularValueOfVar, 1, "name"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_SingularProcs, 0, ""),
@@ -81,9 +79,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_matrix_from_els, 3, "nrrows, nrcols, l"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_MatElm, 3, "mat, row, col"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_SetMatElm, 4, "mat, row, col, val"),
-
-    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_COPY_POLY, 1, "poly"),
-    GVAR_FUNC_TABLE_ENTRY("poly.cc", _SI_MULT_POLY_NUMBER, 2, "a, b"),
 
 #include "lowlevel_mappings_table.h"
 

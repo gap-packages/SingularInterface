@@ -23,7 +23,6 @@
 #include "lowlevel_mappings.h"
 #include "matrix.h" // for Func_SI_Matintmat / Func_SI_Matbigintmat
 #include "number.h"
-#include "poly.h"
 
 #include <coeffs/bigintmat.h>
 #include <coeffs/longrat.h>

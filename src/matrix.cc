@@ -20,7 +20,6 @@
 
 #include "matrix.h"
 #include "number.h"
-#include "poly.h"
 
 #include <coeffs/bigintmat.h>
 

@@ -42,8 +42,6 @@ SingularInterface_la_SOURCES = \
     src/matrix.h \
     src/number.cc \
     src/number.h \
-    src/poly.cc \
-    src/poly.h \
     src/singobj.cc \
     src/singobj.h \
     src/singtypes.cc \

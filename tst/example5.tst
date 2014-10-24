@@ -34,12 +34,9 @@ gap> _SI_p_String(i[1]);
 "a"
 gap> _SI_p_String(i[2]);
 "b"
-gap> a := _SI_MONOMIAL(s,2,[2,3]);
+gap> a := 2 * SI_monomial(s, SI_intvec([2,3]));
 -a^2*b^3
-gap> aa := _SI_MULT_POLY_NUMBER(a,2);
-a^2*b^3
-gap> #aa := _SI_pp_Mult_nn(a,2);
-gap> b := _SI_MONOMIAL(s,2,[4,5]);
+gap> b := 2 * SI_monomial(s, SI_intvec([4,5]));
 -a^4*b^5
 gap> c := _SI_p_Add_q(a,b);
 -a^4*b^5-a^2*b^3
@@ -64,7 +61,6 @@ gap> Unbind(d);
 gap> Unbind(e);
 gap> Unbind(i);
 gap> Unbind(s);
-gap> Unbind(aa);
 gap> 1;2;3;
 1
 2
@@ -112,9 +108,9 @@ gap> ind := SI_Indeterminates(s);
 [ a, b ]
 gap> id := SI_ideal(ind);
 <singular ideal, 2 gens>
-gap> x := _SI_MONOMIAL(s,12,[2,3]);
+gap> x := 12 * SI_monomial(s, SI_intvec([2,3]));
 -5*a^2*b^3
-gap> y := _SI_MONOMIAL(s,2,[4,3]);
+gap> y := 2 * SI_monomial(s, SI_intvec([4,3]));
 2*a^4*b^3
 gap> _SI_p_Add_q(x,y);
 2*a^4*b^3-5*a^2*b^3
@@ -124,10 +120,6 @@ gap> p1 := SI_Proxy(id,1);
 <proxy for <singular ideal, 2 gens>[1]>
 gap> p2 := SI_Proxy(id,2);
 <proxy for <singular ideal, 2 gens>[2]>
-gap> _SI_COPY_POLY(p1);
--5*a^2*b^3
-gap> _SI_COPY_POLY(p2);
-2*a^4*b^3
 gap> _SI_p_Add_q(x,p2);
 2*a^4*b^3-5*a^2*b^3
 gap> _SI_p_Add_q(p2,y);
