@@ -75,16 +75,18 @@ function(r, rows)
     return SI_matrix(SI_freemodule(r, rows));
 end );
 
-# a Singular vector is a "polynomial" in which each monomial also carries
+# A singular vector is a "polynomial" in which each monomial also carries
 # its position
-InstallMethod(SI_vector,[IsSI_ring, IsPosInt, IsStringRep], 
-function(r, len, str)
-    local mat;
-    mat := SI_matrix(r, len, 1, str);
-    # this returns the first column(!) of mat as vector
-    return SI_\[(mat,1);
+InstallMethod(SI_vector, [IsSI_Object], _SI_vector_singular);
+InstallMethod(SI_vector, [IsSI_ring, IsPosInt, IsStringRep],
+function(ring, len, desc)
+    local str;
+    SI_SetCurrRing(ring);
+    SingularUnbind("SI_vector_maker");
+    str := Concatenation("proc SI_vector_maker(){vector v = [", desc, "]; return(v);}");
+    Singular(str);
+    return SI_CallProc("SI_vector_maker", []);
 end);
-InstallMethod(SI_vector,["IsSI_Object"],_SI_vector_singular);
 
 InstallMethod(SI_ideal, [IsSI_Object], _SI_ideal_singular);
 InstallMethod(SI_ideal, [IsSI_ring, IsStringRep],
