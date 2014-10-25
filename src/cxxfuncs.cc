@@ -253,6 +253,21 @@ void _SI_ObjMarkFunc(Bag o)
     }
 }
 
+
+static bool IsIntList(Obj list)
+{
+    if (!list || !IS_LIST(list))
+        return false;
+
+    const int len = LEN_LIST(list);
+    for (int j = 1; j <= len; j++) {
+        if (!IS_INTOBJ(ELM_LIST(list, j)))
+            return false;
+    }
+
+    return true;
+}
+
 // The following functions are implementations of functions which
 // appear on the GAP level. There are a lot of constructors amongst
 // them:
@@ -260,13 +275,12 @@ void _SI_ObjMarkFunc(Bag o)
 /// Installed as SI_ring method
 Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 {
-    char *p;
     UInt nrvars;
     UInt nrords;
     UInt i;
     Int j;
     int covered;
-    Obj tmp, tmp2;
+    bool c_ord_is_present = false;
 
     // Some checks:
     if (!IS_INTOBJ(charact) || !IS_LIST(names) || !IS_LIST(orderings)) {
@@ -289,30 +303,76 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     covered = 0;
     nrords = LEN_LIST(orderings);
     for (i = 1; i <= nrords; i++) {
-        tmp = ELM_LIST(orderings, i);
-        if (!IS_LIST(tmp) || LEN_LIST(tmp) != 2) {
-            ErrorQuit("Orderings must be lists of length 2", 0L, 0L);
+        Obj tmp = ELM_LIST(orderings, i);
+
+        if (!IS_LIST(tmp) || (LEN_LIST(tmp) != 1 && LEN_LIST(tmp) != 2)) {
+            ErrorQuit("Orderings must be lists of length 1 or 2", 0L, 0L);
             return Fail;
         }
-        if (!IS_STRING_REP(ELM_LIST(tmp, 1))) {
+
+        Obj name = ELM_LIST(tmp, 1);
+        Obj spec = (LEN_LIST(tmp) == 2) ? ELM_LIST(tmp, 2) : 0;
+
+        if (!IS_STRING_REP(name)) {
             ErrorQuit("First entry of ordering must be a string", 0L, 0L);
             return Fail;
         }
-        tmp2 = ELM_LIST(tmp, 2);
-        if (IS_INTOBJ(tmp2))
-            covered += INT_INTOBJ(tmp2);
-        else if (IS_LIST(tmp2)) {
-            covered += (int)LEN_LIST(tmp2);
-            for (j = 1; j <= LEN_LIST(tmp2); j++) {
-                if (!IS_INTOBJ(ELM_LIST(tmp2,j))) {
-                    ErrorQuit("Weights must be immediate integers", 0L, 0L);
-                    return Fail;
-                }
-            }
-        } else {
-            ErrorQuit("Second entry of ordering must be an integer or a "
-                      "plain list", 0L, 0L);
+        
+        Int namelen = GET_LEN_STRING(name);
+        if (namelen != 1 && namelen != 2) {
+            ErrorQuit("First entry of ordering must be a string of length 1 or 2", 0L, 0L);
             return Fail;
+        }
+        
+        const char *nameStr = CSTR_STRING(name);
+
+        if (namelen == 1 && nameStr[0] == 'M') {
+            // Matrix orderings: "M" must be followed by an intmat (flattened to an intvec of square length)
+            if (!IsIntList(spec)) {
+                ErrorQuit("Second entry of ordering of type '%s' must be a plain list of integers", (Int)nameStr, 0L);
+                return Fail;
+            }
+            covered += sqrt(LEN_LIST(spec));
+
+        } else if ((namelen == 1 && nameStr[0] == 'a')
+                || (namelen == 2 && tolower(nameStr[0]) == 'w')) {
+            // wp, Wp, ws, Ws must be followed by an int vector
+            // Extra weight vector: "a" followed by intvec, can appear anywhere
+            if (!IsIntList(spec)) {
+                ErrorQuit("Second entry of ordering of type '%s' must be a plain list of integers", (Int)nameStr, 0L);
+                return Fail;
+            }
+            
+            if (0 == strcmp(nameStr, "a")) {
+                // Extra weight vector, no extra vars covered
+            } else {
+                covered += LEN_LIST(spec);
+            }
+
+        } else if (namelen == 1 && tolower(nameStr[0]) == 'c') {
+            // Module ordering: at most once a "c" or "C" followed by nothing may appear.
+#if 0
+            if (spec != 0)  {
+                ErrorQuit("Ordering of type '%s' must not be followed by second entry", (Int)nameStr, 0L);
+                return Fail;
+            }
+#endif
+
+            if (c_ord_is_present) {
+                ErrorQuit("At most one ordering of type 'c' or 'C' may be used", 0L, 0L);
+                return Fail;
+            }
+
+            c_ord_is_present = true;
+        
+        } else {
+            // lp, rp, dp, Dp, ls, rs, ds, Ds may be followed by an int
+            if (!spec || !IS_INTOBJ(spec)) {
+                ErrorQuit("Second entry of ordering of type '%s' must be an integer", (Int)nameStr, 0L);
+                return Fail;
+            }
+
+            covered += INT_INTOBJ(spec);
         }
     }
     if (covered != (int) nrvars) {
@@ -328,8 +388,8 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     int **wvhdl = (int **)omAlloc0(sizeof(int *) * (nrords+1)); // array of weight vectors
     covered = 0;
     for (i = 0; i < nrords; i++) {
-        tmp = ELM_LIST(orderings, i + 1);
-        p = omStrDup(CSTR_STRING(ELM_LIST(tmp, 1)));
+        Obj tmp = ELM_LIST(orderings, i + 1);
+        char *p = omStrDup(CSTR_STRING(ELM_LIST(tmp, 1)));
         ord[i] = rOrderName(p);
         if (ord[i] == 0) {
             Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
@@ -337,7 +397,8 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
             ord[i] = rOrderName(omStrDup("dp"));
         }
         block0[i] = covered + 1;
-        tmp2 = ELM_LIST(tmp, 2);
+
+        Obj tmp2 = ELM_LIST(tmp, 2);
         if (IS_INTOBJ(tmp2)) {
             block1[i] = covered + INT_INTOBJ(tmp2);
             wvhdl[i] = NULL;
@@ -364,8 +425,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 
     r->ShortOut = FALSE;
 
-    tmp = NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,r,NULL,NULL);
-    return tmp;
+    return NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,r,NULL,NULL);
 }
 
 /// Installed as SI_ring method
