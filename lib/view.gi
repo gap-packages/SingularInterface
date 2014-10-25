@@ -21,11 +21,7 @@
 
 InstallMethod( ViewString, "for a singular poly", [ IsSI_poly ],
 function( poly )
-    if SI_DEBUG_MODE then
-        return STRINGIFY("<singular poly:",_SI_p_String(poly),">");
-    else
-        return _SI_p_String(poly);
-    fi;
+    return _SI_p_String(poly);
 end );
 
 InstallMethod( ViewString, "for a singular bigint", [ IsSI_bigint ],
