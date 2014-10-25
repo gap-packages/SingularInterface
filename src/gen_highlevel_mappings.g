@@ -37,10 +37,9 @@ IsRingDepVariant := function(tabrow)
            tabrow[3] in IsRingDep;
 end;;
 
-#
-# The following constructors get installed under a different
-# name ("_SI_op_singular" instead of "SI_op") as we want to
-# provide operations with the same name.
+# The following constructors get installed under different names than
+# everything else ("_SI_op_singular" instead of "SI_op"), since we need to
+# provide operations with the same names.
 singularConstructors := Set([
     "bigint",
     "bigintmat",
@@ -72,7 +71,7 @@ for op in ops do
     poss := List(SI_OPERATIONS,l->Filtered([1..Length(l)],i->l[i][1] = op));
     needring := false;
     for i in [1..3] do
-        if ForAny(SI_OPERATIONS[i]{poss[i]},IsRingDepVariant) then
+        if ForAny(SI_OPERATIONS[i]{poss[i]}, IsRingDepVariant) then
             needring := true;
         fi;
     od;
@@ -118,12 +117,12 @@ for op in ops do
                       "  end );\n\n");
         fi;
     elif poss[4] <> [] then
-        # variable argument count: we only use _SI_CallFuncM, and relay
+        # variable argument count: we only use _SI_CallFuncM, and rely
         # on the Singular interpreter (resp. on jjCALL1ARG etc. entries
         # in table dArithM) to dispatch to the 1/2/3 arg variants as needed.
         
-        # For now we just assume these that the parameter lists always
-        # specify a ring for these commands.
+        # For now we just assume that the parameter lists always specify
+        # a ring for these commands.
         if needring then
             Error("vararg op ", op, " needs ring\n");
         fi;
