@@ -484,7 +484,25 @@ then the resulting matrix <M>T</M> satisfies the matrix equation
 <P/>
 
 This holds for commutative rings.
-For noncommutative rings provided by &Plural; we refer the reader to the &Plural; manual.
+For noncommutative rings provided by &Plural; an inequivalent equlity holds:
+<C>SI_transpose(</C>T<C>)</C> <M>*</M> <C>SI_transpose(</C><A>mat</A><C>)</C> <M>=</M> <C>SI_transpose(</C><A>std</A><C>)</C>,
+which is equivalent to
+<C>SI_transpose(SI_transpose(</C>T<C>)</C> <M>*</M> <C>SI_transpose(</C><A>mat</A><C>))</C> <M>=</M> <A>std</A>
+but not to
+<M><A>mat</A> * T = <A>std</A></M>
+if the ring is noncommutative.
+<P/>
+
+This is due to a design decision in &Plural;:
+It decided to comply with of &Singular;'s column convention
+while implemeting the noncommutative Gröbner basis algorithmis for <E>left</E> ideals and modules.
+This is incompatible with matrix multiplication and the latter means that &Plural;
+should have either used the row convention or should have implemented the
+Gröbner basis algorithmis for <E>right</E> ideals and modules instead.
+<P/>
+
+This problem is completely resovled in the &homalg; project <Cite Key="homalg-project"/>
+by mimicking the row convention. The details are too technical to be exposed here.
 
 </Description>
 </ManSection>
