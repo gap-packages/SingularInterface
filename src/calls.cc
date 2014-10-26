@@ -448,13 +448,13 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     WrapMultiArgs wrap(args, r);
     if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
 
-    assert(currRingHdl == 0);
     if (r)
         rChangeCurrRing(r);
 
     BOOLEAN bool_ret;
     if (currRing) {
-        // FIXME: Perhaps we should be using getSingularIdhdl() here, too?
+        // TODO: perhaps only create this handle if there isn't already a handle for the ring???
+        // TODO: Perhaps we should be using getSingularIdhdl() here, too?
         tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
         assert(tmpHdl);
         IDRING(tmpHdl) = currRing;
