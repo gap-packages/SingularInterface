@@ -1,6 +1,7 @@
 LoadPackage("SingularInterface");
 d1 := DirectoriesPackageLibrary("SingularInterface","tst");
-d2 := DirectoriesPackageLibrary("SingularInterface","tst/types");
+d2 := DirectoriesPackageLibrary("SingularInterface","tst/cmds");
+d3 := DirectoriesPackageLibrary("SingularInterface","tst/types");
 
 HasSuffix := function(list, suffix)
   local len;
@@ -9,7 +10,7 @@ HasSuffix := function(list, suffix)
   return list{[len-Length(suffix)+1..len]} = suffix;
 end;
 
-for d in [d1, d2] do
+for d in [d1, d2, d3] do
     # Load all tests in that directory
     tests := DirectoryContents(d[1]);
     tests := Filtered(tests, name -> HasSuffix(name, ".tst"));
