@@ -65,10 +65,10 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_flags, 1, "singobj"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_type, 1, "singobj"),
 
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc1, 2, "op, input"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 3, "op, a, b"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 4, "op, a, b, c"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFuncM, 2, "op, arg"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc1, 3, "r, op, input"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 4, "r, op, a, b"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 5, "r, op, a, b, c"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFuncM, 3, "r, op, arg"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_SetCurrRing, 1, "r"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_CallProc, 2, "name, args"),
 

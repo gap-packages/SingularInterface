@@ -270,10 +270,10 @@ Obj Func_SI_intvec(Obj self, Obj l);
 Obj Func_SI_Plistintvec(Obj self, Obj iv);
 Obj Func_SI_ideal_from_els(Obj self, Obj l);
 
-Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a);
-Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b);
-Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c);
-Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg);
+Obj Func_SI_CallFunc1(Obj self, Obj ringOrZero, Obj op, Obj a);
+Obj Func_SI_CallFunc2(Obj self, Obj ringOrZero, Obj op, Obj a, Obj b);
+Obj Func_SI_CallFunc3(Obj self, Obj ringOrZero, Obj op, Obj a, Obj b, Obj c);
+Obj Func_SI_CallFuncM(Obj self, Obj ringOrZero, Obj op, Obj arg);
 
 Obj FuncSI_SetCurrRing(Obj self, Obj r);
 

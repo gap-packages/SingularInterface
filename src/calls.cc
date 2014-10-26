@@ -287,6 +287,18 @@ public:
 };
 
 
+static ring extractRing(Obj ringOrZero)
+{
+    ring r = 0;
+    // TODO: what about qring?
+    if (TNUM_OBJ(ringOrZero) == T_SINGULAR &&
+        TYPE_SINGOBJ(ringOrZero) == SINGTYPE_RING_IMM) {
+        r = (ring)CXX_SINGOBJ(ringOrZero);
+    }
+    if (r != currRing) rChangeCurrRing(r);
+    return r;
+}
+
 // The following functions allow access to all functions of the
 // Singular C++ library that the Singular interpreter can call.
 // They do not provide a fast path into the library, because they
@@ -294,9 +306,9 @@ public:
 // function arguments are wrapped by some Singular interpreter data
 // structure.
 
-Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
+Obj Func_SI_CallFunc1(Obj self, Obj ringOrZero, Obj op, Obj a)
 {
-    ring r = NULL;
+    ring r = extractRing(ringOrZero);
 
     SingularIdHdlWithWrap sing(0, a, r);
     if (sing.error) { ErrorQuit(sing.error, 0L, 0L); }
@@ -313,9 +325,9 @@ Obj Func_SI_CallFunc1(Obj self, Obj op, Obj a)
     return gapwrap(result, r);
 }
 
-Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
+Obj Func_SI_CallFunc2(Obj self, Obj ringOrZero, Obj op, Obj a, Obj b)
 {
-    ring r = NULL;
+    ring r = extractRing(ringOrZero);
 
     SingularIdHdlWithWrap singa(0, a, r);
     if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
@@ -336,9 +348,9 @@ Obj Func_SI_CallFunc2(Obj self, Obj op, Obj a, Obj b)
     return gapwrap(result, r);
 }
 
-Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
+Obj Func_SI_CallFunc3(Obj self, Obj ringOrZero, Obj op, Obj a, Obj b, Obj c)
 {
-    ring r = NULL;
+    ring r = extractRing(ringOrZero);
 
     SingularIdHdlWithWrap singa(0, a, r);
     if (singa.error) { ErrorQuit(singa.error, 0L, 0L); }
@@ -413,9 +425,9 @@ public:
     }
 };
 
-Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
+Obj Func_SI_CallFuncM(Obj self, Obj ringOrZero, Obj op, Obj arg)
 {
-    ring r = NULL;
+    ring r = extractRing(ringOrZero);
 
     int nrargs = (int)LEN_PLIST(arg);
     WrapMultiArgs wrap(arg, r);

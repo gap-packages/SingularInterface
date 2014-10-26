@@ -84,38 +84,35 @@ for op in ops do
         # occurs only with one argument
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a)\n",
-                      "    SI_SetCurrRing(r);\n",
-                      "    return _SI_CallFunc1(",nr,",a);\n",
+                      "    return _SI_CallFunc1(r,",nr,",a);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a)\n",
-                      "    return _SI_CallFunc1(",nr,",a);\n",
+                      "    return _SI_CallFunc1(0,",nr,",a);\n",
                       "  end );\n\n");
         fi;
     elif poss{[1,3,4]} = [[],[],[]] then
         # occurs only with two arguments
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b)\n",
-                      "    SI_SetCurrRing(r);\n",
-                      "    return _SI_CallFunc2(",nr,",a,b);\n",
+                      "    return _SI_CallFunc2(r,",nr,",a,b);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b)\n",
-                      "    return _SI_CallFunc2(",nr,",a,b);\n",
+                      "    return _SI_CallFunc2(0,",nr,",a,b);\n",
                       "  end );\n\n");
         fi;
     elif poss{[1,2,4]} = [[],[],[]] then
         # occurs only with three arguments
         if needring then
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(r,a,b,c)\n",
-                      "    SI_SetCurrRing(r);\n",
-                      "    return _SI_CallFunc3(",nr,",a,b,c);\n",
+                      "    return _SI_CallFunc3(r,",nr,",a,b,c);\n",
                       "  end );\n\n");
         else
             PrintTo(s,"BindGlobal(\"",name,"\",\n  function(a,b,c)\n",
-                      "    return _SI_CallFunc3(",nr,",a,b,c);\n",
+                      "    return _SI_CallFunc3(0,",nr,",a,b,c);\n",
                       "  end );\n\n");
-        fi;
+        fi; 
     elif poss[4] <> [] then
         # variable argument count: we only use _SI_CallFuncM, and rely
         # on the Singular interpreter (resp. on jjCALL1ARG etc. entries
@@ -141,7 +138,7 @@ for op in ops do
                       "      Error(\"incorrect number of arguments\");\n",
                       "    fi;\n");
         fi;
-        PrintTo(s,    "    return _SI_CallFuncM(",nr,",arg);\n",
+        PrintTo(s,    "    return _SI_CallFuncM(0,",nr,",arg);\n",
                       "  end );\n\n");
     else
         # op occurs with at least two different fixed argument counts
@@ -150,17 +147,17 @@ for op in ops do
         PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
         if 1 in poss then
             PrintTo(s,"    if Length(arg) = 1 then\n",
-                      "      return _SI_CallFunc1(",nr,",arg[1]);\n",
+                      "      return _SI_CallFunc1(0,",nr,",arg[1]);\n",
                       "    fi;\n");
         fi;
         if 2 in poss then
             PrintTo(s,"    if Length(arg) = 2 then\n",
-                      "      return _SI_CallFunc2(",nr,",arg[1],arg[2]);\n",
+                      "      return _SI_CallFunc2(0,",nr,",arg[1],arg[2]);\n",
                       "    fi;\n");
         fi;
         if 3 in poss then
             PrintTo(s,"    if Length(arg) = 3 then\n",
-                      "      return _SI_CallFunc3(",nr,",arg[1],arg[2],arg[3]);\n",
+                      "      return _SI_CallFunc3(0,",nr,",arg[1],arg[2],arg[3]);\n",
                       "    fi;\n");
         fi;
         PrintTo(s,    "    Error(\"incorrect number of arguments\");\n",
