@@ -41,9 +41,9 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
                            const char *(&error))
 {
     // To end the recursion:
-    if ((UInt) pos >= SIZE_OBJ(proxy)/sizeof(UInt))
+    if ((UInt)pos >= SIZE_OBJ(proxy) / sizeof(UInt))
         return current;
-    if (!IS_INTOBJ(ELM_PLIST(proxy,pos))) {
+    if (!IS_INTOBJ(ELM_PLIST(proxy, pos))) {
         error = "proxy index must be an immediate integer";
         return NULL;
     }
@@ -51,8 +51,8 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
     switch (currgtype) {
         case SINGTYPE_IDEAL:
         case SINGTYPE_IDEAL_IMM: {
-            Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
-            ideal id = (ideal) current;
+            Int index = INT_INTOBJ(ELM_PLIST(proxy, pos));
+            ideal id = (ideal)current;
             if (index <= 0 || index > IDELEMS(id)) {
                 error = "ideal index out of range";
                 return NULL;
@@ -62,62 +62,62 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         case SINGTYPE_MATRIX:
         case SINGTYPE_MATRIX_IMM: {
-            if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+            if ((UInt)pos+1 >= SIZE_OBJ(proxy) / sizeof(UInt) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos)) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos+1))) {
                 error = "need two integer indices for matrix proxy element";
                 return NULL;
             }
-            Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
-            Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
-            matrix mat = (matrix) current;
+            Int row = INT_INTOBJ(ELM_PLIST(proxy, pos));
+            Int col = INT_INTOBJ(ELM_PLIST(proxy, pos+1));
+            matrix mat = (matrix)current;
             if (row <= 0 || row > mat->nrows ||
                 col <= 0 || col > mat->ncols) {
                 error = "matrix indices out of range";
                 return NULL;
             }
-            return MATELEM(mat,row,col);
+            return MATELEM(mat, row, col);
         }
         case SINGTYPE_LIST:
         case SINGTYPE_LIST_IMM: {
-            lists l = (lists) current;
-            Int index = INT_INTOBJ(ELM_PLIST(proxy,pos));
+            lists l = (lists)current;
+            Int index = INT_INTOBJ(ELM_PLIST(proxy, pos));
             if (index <= 0 || index > l->nr+1 ) {
                 error = "list index out of range";
                 return NULL;
             }
             currgtype = SingtoGAPType[l->m[index-1].Typ()];
             current = l->m[index-1].Data();
-            return FOLLOW_SUBOBJ(proxy,pos+1,current,currgtype,error);
+            return FOLLOW_SUBOBJ(proxy, pos+1, current, currgtype, error);
         }
         case SINGTYPE_INTMAT:
         case SINGTYPE_INTMAT_IMM: {
-            if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+            if ((UInt)pos+1 >= SIZE_OBJ(proxy) / sizeof(UInt) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos)) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos+1))) {
                 error = "need two integer indices for intmat proxy element";
                 return NULL;
             }
-            Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
-            Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
-            intvec *mat = (intvec *) current;
+            Int row = INT_INTOBJ(ELM_PLIST(proxy, pos));
+            Int col = INT_INTOBJ(ELM_PLIST(proxy, pos+1));
+            intvec *mat = (intvec *)current;
             if (row <= 0 || row > mat->rows() ||
                 col <= 0 || col > mat->cols()) {
                 error = "intmat indices out of range";
                 return NULL;
             }
             currgtype = SINGTYPE_INT_IMM;
-            return (void *) (long) IMATELEM(*mat,row,col);
+            return (void *) (long)IMATELEM(*mat, row, col);
         }
         case SINGTYPE_INTVEC:
         case SINGTYPE_INTVEC_IMM: {
-            if ((UInt)pos >= SIZE_OBJ(proxy)/sizeof(UInt) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos))) {
+            if ((UInt)pos >= SIZE_OBJ(proxy) / sizeof(UInt) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos))) {
                 error = "need an integer index for intvec proxy element";
                 return NULL;
             }
-            Int n = INT_INTOBJ(ELM_PLIST(proxy,pos));
-            intvec *v = (intvec *) current;
+            Int n = INT_INTOBJ(ELM_PLIST(proxy, pos));
+            intvec *v = (intvec *)current;
             if (n <= 0 || n > v->length()) {
                 error = "vector index out of range";
                 return NULL;
@@ -127,22 +127,22 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
         }
         case SINGTYPE_BIGINTMAT:
         case SINGTYPE_BIGINTMAT_IMM: {
-            if ((UInt)pos+1 >= SIZE_OBJ(proxy)/sizeof(UInt) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos)) ||
-                !IS_INTOBJ(ELM_PLIST(proxy,pos+1))) {
+            if ((UInt)pos+1 >= SIZE_OBJ(proxy) / sizeof(UInt) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos)) ||
+                !IS_INTOBJ(ELM_PLIST(proxy, pos+1))) {
                 error = "need two integer indices for bigintmat proxy element";
                 return NULL;
             }
-            Int row = INT_INTOBJ(ELM_PLIST(proxy,pos));
-            Int col = INT_INTOBJ(ELM_PLIST(proxy,pos+1));
-            bigintmat *mat = (bigintmat *) current;
+            Int row = INT_INTOBJ(ELM_PLIST(proxy, pos));
+            Int col = INT_INTOBJ(ELM_PLIST(proxy, pos+1));
+            bigintmat *mat = (bigintmat *)current;
             if (row <= 0 || row > mat->rows() ||
                 col <= 0 || col > mat->cols()) {
                 error = "bigintmat indices out of range";
                 return NULL;
             }
             currgtype = SINGTYPE_BIGINT_IMM;
-            return (void *) BIMATELEM(*mat,row,col);
+            return (void *)BIMATELEM(*mat, row, col);
         }
         default:
             error = "Singular object has no subobjects";
@@ -160,16 +160,16 @@ void SingObj::init(Obj input, ring &r)
 
     if (IS_INTOBJ(input) ||
         TNUM_OBJ(input) == T_INTPOS || TNUM_OBJ(input) == T_INTNEG) {
-        int gtype = _SI_BIGINT_OR_INT_FROM_GAP(input,obj);
+        int gtype = _SI_BIGINT_OR_INT_FROM_GAP(input, obj);
         if (gtype != SINGTYPE_INT && gtype != SINGTYPE_INT_IMM) {
             needcleanup = true;
         }
     } else if (TNUM_OBJ(input) == T_STRING) {
         UInt len = GET_LEN_STRING(input);
-        char *ost = (char *) omalloc((size_t) len + 1);
-        memcpy(ost,reinterpret_cast<char*>(CHARS_STRING(input)),len);
+        char *ost = (char *)omalloc((size_t)len + 1);
+        memcpy(ost, reinterpret_cast<char*>(CHARS_STRING(input)), len);
         ost[len] = 0;
-        obj.data = (void *) ost;
+        obj.data = (void *)ost;
         obj.rtyp = STRING_CMD;
         needcleanup = true;
     } else if (TNUM_OBJ(input) == T_SINGULAR) {
@@ -177,20 +177,20 @@ void SingObj::init(Obj input, ring &r)
         obj.data = CXX_SINGOBJ(input);
         obj.rtyp = GAPtoSingType[gtype];
         obj.flag = FLAGS_SINGOBJ(input);
-        obj.attribute = (attr) ATTRIB_SINGOBJ(input);
+        obj.attribute = (attr)ATTRIB_SINGOBJ(input);
         if (HasRingTable[gtype]) {
-            r = (ring) CXXRING_SINGOBJ(input);
+            r = (ring)CXXRING_SINGOBJ(input);
             if (r != currRing) rChangeCurrRing(r);
         } else if (/*  gtype == SINGTYPE_RING ||  */
                     gtype == SINGTYPE_RING_IMM ||
                     /* gtype == SINGTYPE_QRING ||  */
                     gtype == SINGTYPE_QRING_IMM) {
-            r = (ring) CXX_SINGOBJ(input);
+            r = (ring)CXX_SINGOBJ(input);
         }
     } else if (IS_POSOBJ(input) && TYPE_OBJ(input) == _SI_ProxiesType) {
-        if (IS_INTOBJ(ELM_PLIST(input,2))) {
+        if (IS_INTOBJ(ELM_PLIST(input, 2))) {
             // This is a proxy object for a subobject:
-            Obj ob = ELM_PLIST(input,1);
+            Obj ob = ELM_PLIST(input, 1);
             if (TNUM_OBJ(ob) != T_SINGULAR) {
                 obj.Init();
                 error = "proxy object does not refer to Singular object";
@@ -198,12 +198,12 @@ void SingObj::init(Obj input, ring &r)
             }
             int gtype = TYPE_SINGOBJ(ob);
             if (HasRingTable[gtype] && CXXRING_SINGOBJ(ob) != 0) {
-                r = (ring) CXXRING_SINGOBJ(ob);
+                r = (ring)CXXRING_SINGOBJ(ob);
                 if (r != currRing) rChangeCurrRing(r);
             }
-            obj.data = FOLLOW_SUBOBJ(input,2,CXX_SINGOBJ(ob),gtype,error);
+            obj.data = FOLLOW_SUBOBJ(input, 2, CXX_SINGOBJ(ob), gtype, error);
             obj.rtyp = GAPtoSingType[gtype];
-        } else if (IS_STRING_REP(ELM_PLIST(input,2))) {
+        } else if (IS_STRING_REP(ELM_PLIST(input, 2))) {
             // This is a proxy object for an interpreter variable
             obj.Init();
             error = "proxy objects to Singular interpreter variables are not yet implemented";

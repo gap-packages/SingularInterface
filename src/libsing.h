@@ -127,14 +127,14 @@ inline void SET_FLAGS_SINGOBJ( Obj obj, unsigned int val )
 ///! of an arbitrary wrapper object.
 inline void *CXX_SINGOBJ( Obj obj )
 {
-    return (void *) ADDR_OBJ(obj)[1];
+    return (void *)ADDR_OBJ(obj)[1];
 }
 
 ///! Set pointer to the underlying Singular C data structure
 ///! of an arbitrary wrapper object.
 inline void SET_CXX_SINGOBJ( Obj obj, void *val )
 {
-    ADDR_OBJ(obj)[1] = (Obj) val;
+    ADDR_OBJ(obj)[1] = (Obj)val;
 }
 
 //
@@ -146,14 +146,14 @@ inline void SET_CXX_SINGOBJ( Obj obj, void *val )
 ///! wrapper object obj.
 inline ring CXXRING_SINGOBJ( Obj obj )
 {
-    return (ring) ADDR_OBJ(obj)[2];
+    return (ring)ADDR_OBJ(obj)[2];
 }
 
 ///! Set pointer to the Singular base ring of the ring dependant
 ///! wrapper object obj.
 inline void SET_CXXRING_SINGOBJ( Obj obj, ring r )
 {
-    ADDR_OBJ(obj)[2] = (Obj) r;
+    ADDR_OBJ(obj)[2] = (Obj)r;
 }
 
 //

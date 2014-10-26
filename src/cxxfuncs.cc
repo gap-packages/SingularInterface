@@ -50,14 +50,14 @@ static inline void possiblytriggerGC(void)
     if ((om_Info.CurrentBytesFromValloc) > gc_omalloc_threshold) {
         if (GCCOUNT == 10) {
             GCCOUNT = 0;
-            CollectBags(0,1);
+            CollectBags(0, 1);
         } else {
             GCCOUNT++;
-            CollectBags(0,0);
+            CollectBags(0, 0);
         }
-        //printf("\nGC: %ld -> ",gc_omalloc_threshold);
+        //printf("\nGC: %ld -> ", gc_omalloc_threshold);
         gc_omalloc_threshold = 2 * om_Info.CurrentBytesFromValloc;
-        //printf("%ld \n",gc_omalloc_threshold); fflush(stdout);
+        //printf("%ld \n", gc_omalloc_threshold); fflush(stdout);
     }
 }
 
@@ -83,9 +83,9 @@ Obj NEW_SINGOBJ(UInt type, void *cxx)
 {
     possiblytriggerGC();
     Obj tmp = NewBag(T_SINGULAR, 2*sizeof(Obj));
-    SET_TYPE_SINGOBJ(tmp,type);
-    SET_FLAGS_SINGOBJ(tmp,0u);
-    SET_CXX_SINGOBJ(tmp,cxx);
+    SET_TYPE_SINGOBJ(tmp, type);
+    SET_FLAGS_SINGOBJ(tmp, 0u);
+    SET_CXX_SINGOBJ(tmp, cxx);
     return tmp;
 }
 
@@ -106,7 +106,7 @@ Obj NEW_SINGOBJ_RING(UInt type, void *cxx, ring r)
     return tmp;
 }
 
-//! Create a high level wrapper for a (lowleverl) wrapper object
+//! Create a high level wrapper for a (low level) wrapper object
 //! for a singular ring.
 static Obj makeHighlevelWrapper(Obj rr)
 {
@@ -142,7 +142,7 @@ Obj NEW_SINGOBJ_ZERO_ONE(UInt type, ring r, Obj zero, Obj one)
     // Check if the ring has already been wrapped. In principle, we could
     // then just return ext_ref, 
     if (r->ext_ref != 0) {
-        ErrorQuit("Oops, Singular ring already wrapped again, please report this to SingularInterface team",0L,0L);
+        ErrorQuit("Oops, Singular ring already wrapped again, please report this to SingularInterface team", 0L, 0L);
     }
     possiblytriggerGC();
     Obj rr = NewBag(T_SINGULAR, 5 * sizeof(Obj));
@@ -173,12 +173,12 @@ static int SRTC_capacity = 0;
 static void AddSingularRingToCleanup(ring r)
 {
     if (SingularRingsToCleanup == NULL) {
-        SingularRingsToCleanup = (ring *) malloc(100*sizeof(ring));
+        SingularRingsToCleanup = (ring *)malloc(100*sizeof(ring));
         SRTC_nr = 0;
         SRTC_capacity = 100;
     } else if (SRTC_nr == SRTC_capacity) {
         SRTC_capacity *= 2;
-        SingularRingsToCleanup = (ring *) realloc(SingularRingsToCleanup,
+        SingularRingsToCleanup = (ring *)realloc(SingularRingsToCleanup,
                                  SRTC_capacity*sizeof(ring));
     }
     SingularRingsToCleanup[SRTC_nr++] = r;
@@ -194,7 +194,7 @@ static void SingularRingCleaner(void)
     int i;
     for (i = 0; i < SRTC_nr; i++) {
         rKill( SingularRingsToCleanup[i] );
-        // Pr("killed a ring\n",0L,0L);
+        // Pr("killed a ring\n", 0L, 0L);
     }
     SRTC_nr = 0;
     oldpostGCfunc();
@@ -218,7 +218,7 @@ void _SI_FreeFunc(Obj o)
     obj.data = CXX_SINGOBJ(o);
     obj.rtyp = GAPtoSingType[gtype];
     obj.flag = FLAGS_SINGOBJ(o);
-    obj.attribute = (attr) ATTRIB_SINGOBJ(o);
+    obj.attribute = (attr)ATTRIB_SINGOBJ(o);
     ring r = HasRingTable[gtype] ? CXXRING_SINGOBJ(o) : 0;
 
     switch (gtype) {
@@ -226,8 +226,8 @@ void _SI_FreeFunc(Obj o)
         case SINGTYPE_QRING_IMM:
         case SINGTYPE_RING:
         case SINGTYPE_RING_IMM:
-            // Pr("scheduled a ring for killing\n",0L,0L);
-            AddSingularRingToCleanup((ring) obj.data);
+            // Pr("scheduled a ring for killing\n", 0L, 0L);
+            AddSingularRingToCleanup((ring)obj.data);
             break;
         default:
             obj.CleanUp(r);
@@ -293,7 +293,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         return Fail;
     }
     for (i = 1; i <= nrvars; i++) {
-        if (!IS_STRING_REP(ELM_LIST(names,i))) {
+        if (!IS_STRING_REP(ELM_LIST(names, i))) {
             ErrorQuit("Variable names must be strings", 0L, 0L);
             return Fail;
         }
@@ -375,7 +375,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
             covered += INT_INTOBJ(spec);
         }
     }
-    if (covered != (int) nrvars) {
+    if (covered != (int)nrvars) {
         ErrorQuit("Orderings do not cover exactly the variables", 0L, 0L);
         return Fail;
     }
@@ -393,7 +393,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         ord[i] = rOrderName(p);
         if (ord[i] == 0) {
             Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
-               (Int) (CSTR_STRING(ELM_LIST(tmp, 1))),0L);
+               (Int) (CSTR_STRING(ELM_LIST(tmp, 1))), 0L);
             ord[i] = rOrderName(omStrDup("dp"));
         }
         block0[i] = covered + 1;
@@ -415,7 +415,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     // Now allocate strings for the variable names:
     char **cnames = (char **)omalloc(sizeof(char *) * nrvars);
     for (i = 0; i < nrvars; i++)
-        cnames[i] = CSTR_STRING(ELM_LIST(names,i+1));
+        cnames[i] = CSTR_STRING(ELM_LIST(names, i+1));
 
     ring r = rDefault(INT_INTOBJ(charact), nrvars, cnames,
                       nrords, ord, block0, block1, wvhdl);
@@ -425,7 +425,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
 
     r->ShortOut = FALSE;
 
-    return NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM,r,NULL,NULL);
+    return NEW_SINGOBJ_ZERO_ONE(SINGTYPE_RING_IMM, r, NULL, NULL);
 }
 
 /// Installed as SI_ring method
@@ -433,12 +433,12 @@ Obj FuncSI_RingOfSingobj( Obj self, Obj singobj )
 {
     singobj = UnwrapHighlevelWrapper(singobj);
     if (TNUM_OBJ(singobj) != T_SINGULAR)
-        ErrorQuit("argument must be singular object.",0L,0L);
+        ErrorQuit("argument must be singular object.", 0L, 0L);
     Int gtype = TYPE_SINGOBJ(singobj);
     if (HasRingTable[gtype]) {
         ring r = CXXRING_SINGOBJ(singobj);
         if (r == 0 || r->ext_ref == 0)
-            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+            ErrorQuit("internal error: bad ring reference in ring dependant object", 0L, 0L);
         return (Obj)r->ext_ref;
     } else if (/* gtype == SINGTYPE_RING || */
         gtype == SINGTYPE_RING_IMM ||
@@ -446,7 +446,7 @@ Obj FuncSI_RingOfSingobj( Obj self, Obj singobj )
         gtype == SINGTYPE_QRING_IMM) {
         return singobj;
     } else {
-        ErrorQuit("argument must have associated singular ring.",0L,0L);
+        ErrorQuit("argument must have associated singular ring.", 0L, 0L);
         return Fail;
     }
 }
@@ -458,7 +458,7 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
     /* check arg */
     rr = UnwrapHighlevelWrapper(rr);
     if (! ISSINGOBJ(SINGTYPE_RING_IMM, rr))
-        ErrorQuit("argument must be Singular ring.",0L,0L);
+        ErrorQuit("argument must be Singular ring.", 0L, 0L);
 
     ring r = (ring)CXX_SINGOBJ(rr);
     UInt nrvars = rVar(r);
@@ -485,14 +485,14 @@ Obj FuncSI_Indeterminates(Obj self, Obj rr)
 /// Installed as SI_bigint method
 Obj Func_SI_bigint(Obj self, Obj nr)
 {
-    return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM,_SI_BIGINT_FROM_GAP(nr));
+    return NEW_SINGOBJ(SINGTYPE_BIGINT_IMM, _SI_BIGINT_FROM_GAP(nr));
 }
 
 /// Used for bigint ViewString method.
 // TODO: get rid of _SI_Intbigint and use SI_ToGAP instead ?
 Obj Func_SI_Intbigint(Obj self, Obj nr)
 {
-    number n = (number) CXX_SINGOBJ(nr);
+    number n = (number)CXX_SINGOBJ(nr);
     return _SI_BIGINT_OR_INT_TO_GAP(n);
 }
 
@@ -500,7 +500,7 @@ Obj Func_SI_Intbigint(Obj self, Obj nr)
 Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 {
     rr = UnwrapHighlevelWrapper(rr);
-    ring r = (ring) CXX_SINGOBJ(rr);
+    ring r = (ring)CXX_SINGOBJ(rr);
     number num = _SI_NUMBER_FROM_GAP(r, nr);
     return NEW_SINGOBJ_RING(SINGTYPE_NUMBER_IMM, num, r);
 }
@@ -509,14 +509,14 @@ Obj Func_SI_number(Obj self, Obj rr, Obj nr)
 Obj Func_SI_intvec(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
-        ErrorQuit("l must be a list",0L,0L);
+        ErrorQuit("l must be a list", 0L, 0L);
         return Fail;
     }
     UInt len = LEN_LIST(l);
     UInt i;
     intvec *iv = new intvec(len);
     for (i = 1; i <= len; i++) {
-        Obj t = ELM_LIST(l,i);
+        Obj t = ELM_LIST(l, i);
         if (!IS_INTOBJ(t)
 #ifdef SYS_IS_64_BIT
             || (INT_INTOBJ(t) < -(1L << 31) || INT_INTOBJ(t) >= (1L << 31))
@@ -527,26 +527,26 @@ Obj Func_SI_intvec(Obj self, Obj l)
         }
         (*iv)[i-1] = (int) (INT_INTOBJ(t));
     }
-    return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM,iv);
+    return NEW_SINGOBJ(SINGTYPE_INTVEC_IMM, iv);
 }
 
 /// Used for intvec ViewString method.
 // TODO: get rid of _SI_Plistintvec and use SI_ToGAP instead ?
 Obj Func_SI_Plistintvec(Obj self, Obj iv)
 {
-    if (!(ISSINGOBJ(SINGTYPE_INTVEC,iv) || ISSINGOBJ(SINGTYPE_INTVEC_IMM,iv))) {
+    if (!(ISSINGOBJ(SINGTYPE_INTVEC, iv) || ISSINGOBJ(SINGTYPE_INTVEC_IMM, iv))) {
         ErrorQuit("iv must be a singular intvec", 0L, 0L);
         return Fail;
     }
-    intvec *i = (intvec *) CXX_SINGOBJ(iv);
+    intvec *i = (intvec *)CXX_SINGOBJ(iv);
     UInt len = i->length();
-    Obj ret = NEW_PLIST(T_PLIST_CYC,len);
+    Obj ret = NEW_PLIST(T_PLIST_CYC, len);
     UInt j;
     for (j = 1; j <= len; j++) {
-        SET_ELM_PLIST(ret,j,ObjInt_Int( (Int) ((*i)[j-1])));
+        SET_ELM_PLIST(ret, j, ObjInt_Int( (Int) ((*i)[j-1])));
         CHANGED_BAG(ret);
     }
-    SET_LEN_PLIST(ret,len);
+    SET_LEN_PLIST(ret, len);
     return ret;
 }
 
@@ -554,12 +554,12 @@ Obj Func_SI_Plistintvec(Obj self, Obj iv)
 Obj Func_SI_ideal_from_els(Obj self, Obj l)
 {
     if (!IS_LIST(l)) {
-        ErrorQuit("l must be a list",0L,0L);
+        ErrorQuit("l must be a list", 0L, 0L);
         return Fail;
     }
     UInt len = LEN_LIST(l);
     if (len == 0) {
-        ErrorQuit("l must contain at least one element",0L,0L);
+        ErrorQuit("l must contain at least one element", 0L, 0L);
         return Fail;
     }
     ideal id;
@@ -567,24 +567,25 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
     Obj t = NULL;
     ring r = NULL;
     for (i = 1; i <= len; i++) {
-        t = ELM_LIST(l,i);
-        if (!(ISSINGOBJ(SINGTYPE_POLY,t) || ISSINGOBJ(SINGTYPE_POLY_IMM,t))) {
-            if (i > 1) id_Delete(&id,r);
-            ErrorQuit("l must only contain singular polynomials",0L,0L);
+        t = ELM_LIST(l, i);
+        if (!(ISSINGOBJ(SINGTYPE_POLY, t) || ISSINGOBJ(SINGTYPE_POLY_IMM, t))) {
+            if (i > 1)
+                id_Delete(&id, r);
+            ErrorQuit("l must only contain singular polynomials", 0L, 0L);
             return Fail;
         }
         if (i == 1) {
             r = CXXRING_SINGOBJ(t);
             if (r != currRing) rChangeCurrRing(r);
-            id = idInit(len,1);
+            id = idInit(len, 1);
         } else {
             if (r != CXXRING_SINGOBJ(t)) {
-                id_Delete(&id,r);
-                ErrorQuit("all elements of l must have the same ring",0L,0L);
+                id_Delete(&id, r);
+                ErrorQuit("all elements of l must have the same ring", 0L, 0L);
                 return Fail;
             }
         }
-        poly p = p_Copy((poly) CXX_SINGOBJ(t),r);
+        poly p = p_Copy((poly)CXX_SINGOBJ(t), r);
         id->m[i-1] = p;
     }
     return NEW_SINGOBJ_RING(SINGTYPE_IDEAL, id, r);
@@ -594,47 +595,48 @@ Obj Func_SI_ideal_from_els(Obj self, Obj l)
 Obj FuncSingularValueOfVar(Obj self, Obj name)
 {
     Int len;
-    Obj tmp,tmp2;
+    Obj tmp, tmp2;
     intvec *v;
-    int i,j,k;
+    int i, j, k;
     Int rows, cols;
     /* number n;   */
 
     idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
-    if (h == NULL) return Fail;
+    if (h == NULL)
+        return Fail;
     switch (IDTYP(h)) {
         case INT_CMD:
             return ObjInt_Int( (Int) (IDINT(h)) );
         case STRING_CMD:
-            len = (Int) strlen(IDSTRING(h));
+            len = (Int)strlen(IDSTRING(h));
             tmp = NEW_STRING(len);
-            SET_LEN_STRING(tmp,len);
-            memcpy(CHARS_STRING(tmp),IDSTRING(h),len+1);
+            SET_LEN_STRING(tmp, len);
+            memcpy(CHARS_STRING(tmp), IDSTRING(h), len+1);
             return tmp;
         case INTVEC_CMD:
             v = IDINTVEC(h);
-            len = (Int) v->length();
-            tmp = NEW_PLIST(T_PLIST_CYC,len);
-            SET_LEN_PLIST(tmp,len);
+            len = (Int)v->length();
+            tmp = NEW_PLIST(T_PLIST_CYC, len);
+            SET_LEN_PLIST(tmp, len);
             for (i = 0; i < len; i++) {
-                SET_ELM_PLIST(tmp,i+1,ObjInt_Int( (Int) ((*v)[i]) ));
+                SET_ELM_PLIST(tmp, i+1, ObjInt_Int( (Int) ((*v)[i]) ));
                 CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
             }
             return tmp;
         case INTMAT_CMD:
             v = IDINTVEC(h);
-            rows = (Int) v->rows();
-            cols = (Int) v->cols();
-            tmp = NEW_PLIST(T_PLIST_DENSE,rows);
-            SET_LEN_PLIST(tmp,rows);
+            rows = (Int)v->rows();
+            cols = (Int)v->cols();
+            tmp = NEW_PLIST(T_PLIST_DENSE, rows);
+            SET_LEN_PLIST(tmp, rows);
             k = 0;
             for (i = 0; i < rows; i++) {
-                tmp2 = NEW_PLIST(T_PLIST_CYC,cols);
-                SET_LEN_PLIST(tmp2,cols);
-                SET_ELM_PLIST(tmp,i+1,tmp2);
+                tmp2 = NEW_PLIST(T_PLIST_CYC, cols);
+                SET_LEN_PLIST(tmp2, cols);
+                SET_ELM_PLIST(tmp, i+1, tmp2);
                 CHANGED_BAG(tmp); // ObjInt_Int can trigger garbage collections
                 for (j = 0; j < cols; j++) {
-                    SET_ELM_PLIST(tmp2,j+1,ObjInt_Int( (Int) ((*v)[k++])));
+                    SET_ELM_PLIST(tmp2, j+1, ObjInt_Int( (Int) ((*v)[k++])));
                     CHANGED_BAG(tmp2);
                 }
             }
@@ -656,21 +658,22 @@ Obj Func_SI_SingularProcs(Obj self)
     Int i;
     idhdl x = IDROOT;
     while (x) {
-        if (x->typ == PROC_CMD) len++;
+        if (x->typ == PROC_CMD)
+            len++;
         x = x->next;
     }
-    l = NEW_PLIST(T_PLIST_DENSE,len);
-    SET_LEN_PLIST(l,0);
+    l = NEW_PLIST(T_PLIST_DENSE, len);
+    SET_LEN_PLIST(l, 0);
     x = IDROOT;
     i = 1;
     while (x) {
         if (x->typ == PROC_CMD) {
-            slen = (UInt) strlen(x->id);
+            slen = (UInt)strlen(x->id);
             n = NEW_STRING(slen);
-            SET_LEN_STRING(n,slen);
-            memcpy(CHARS_STRING(n),x->id,slen+1);
-            SET_ELM_PLIST(l,i,n);
-            SET_LEN_PLIST(l,i);
+            SET_LEN_STRING(n, slen);
+            memcpy(CHARS_STRING(n), x->id, slen+1);
+            SET_ELM_PLIST(l, i, n);
+            SET_LEN_PLIST(l, i);
             CHANGED_BAG(l);
             i++;
         }
@@ -686,22 +689,22 @@ Obj Func_SI_SingularProcs(Obj self)
 Obj FuncSI_ToGAP(Obj self, Obj singobj)
 {
     if (TNUM_OBJ(singobj) != T_SINGULAR) {
-        ErrorQuit("singobj must be a wrapped Singular object",0L,0L);
+        ErrorQuit("singobj must be a wrapped Singular object", 0L, 0L);
         return Fail;
     }
     switch (TYPE_SINGOBJ(singobj)) {
         case SINGTYPE_STRING:
         case SINGTYPE_STRING_IMM: {
-            char *st = (char *) CXX_SINGOBJ(singobj);
-            UInt len = (UInt) strlen(st);
+            char *st = (char *)CXX_SINGOBJ(singobj);
+            UInt len = (UInt)strlen(st);
             Obj tmp = NEW_STRING(len);
-            SET_LEN_STRING(tmp,len);
-            memcpy(CHARS_STRING(tmp),st,len+1);
+            SET_LEN_STRING(tmp, len);
+            memcpy(CHARS_STRING(tmp), st, len+1);
             return tmp;
         }
         case SINGTYPE_INT:
         case SINGTYPE_INT_IMM: {
-            Int i = (Int) CXX_SINGOBJ(singobj);
+            Int i = (Int)CXX_SINGOBJ(singobj);
             return INTOBJ_INT(i);
         }
         case SINGTYPE_INTMAT:
@@ -714,7 +717,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
         }
         case SINGTYPE_BIGINT:
         case SINGTYPE_BIGINT_IMM: {
-            number n = (number) CXX_SINGOBJ(singobj);
+            number n = (number)CXX_SINGOBJ(singobj);
             return _SI_BIGINT_OR_INT_TO_GAP(n);
         }
         case SINGTYPE_BIGINTMAT:
@@ -735,7 +738,7 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
 static Obj CopySingObj(Obj s, bool immutable)
 {
     if (TNUM_OBJ(s) != T_SINGULAR) {
-        ErrorQuit("argument must be a singular object",0L,0L);
+        ErrorQuit("argument must be a singular object", 0L, 0L);
         return Fail;
     }
 
@@ -749,11 +752,12 @@ static Obj CopySingObj(Obj s, bool immutable)
     obj.data = CXX_SINGOBJ(s);
     obj.rtyp = GAPtoSingType[gtype];
     obj.flag = FLAGS_SINGOBJ(s);
-    obj.attribute = (attr) ATTRIB_SINGOBJ(s);
+    obj.attribute = (attr)ATTRIB_SINGOBJ(s);
     ring r = HasRingTable[gtype] ? CXXRING_SINGOBJ(s) : 0;
 
     sleftv copy;
-    if (r && r != currRing) rChangeCurrRing(r);
+    if (r && r != currRing)
+        rChangeCurrRing(r);
     copy.Copy(&obj);
     
     if (immutable)
@@ -880,13 +884,14 @@ Obj ZeroSMSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
-    //Pr("Zero\n",0L,0L);
+    //Pr("Zero\n", 0L, 0L);
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ZERO_SINGOBJ(s);
-        if (res != NULL) return res;
+        if (res != NULL)
+            return res;
         res = ZeroMutObject(s);  // This makes a mutable zero
         MakeImmutable(res);
-        SET_ZERO_SINGOBJ(s,res);
+        SET_ZERO_SINGOBJ(s, res);
         CHANGED_BAG(s);
         return res;
     }
@@ -897,7 +902,7 @@ Obj ZeroSMSingObj(Obj s)
         // Rings are always immutable!
         ring r = CXXRING_SINGOBJ(s);
         if (r == 0 || r->ext_ref == 0)
-            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+            ErrorQuit("internal error: bad ring reference in ring dependant object", 0L, 0L);
         return ZeroSMSingObj((Obj)r->ext_ref);
     }
     return ZeroObject(s);
@@ -907,13 +912,14 @@ Obj OneSMSingObj(Obj s)
 {
     Obj res;
     int gtype = TYPE_SINGOBJ(s);
-    //Pr("One\n",0L,0L);
+    //Pr("One\n", 0L, 0L);
     if (gtype == SINGTYPE_RING_IMM || gtype == SINGTYPE_QRING_IMM) {
         res = ONE_SINGOBJ(s);
-        if (res != NULL) return res;
+        if (res != NULL)
+            return res;
         res = OneObject(s);   // This is OneMutable and gives us mutable
         MakeImmutable(res);
-        SET_ONE_SINGOBJ(s,res);
+        SET_ONE_SINGOBJ(s, res);
         CHANGED_BAG(s);
         return res;
     }
@@ -924,7 +930,7 @@ Obj OneSMSingObj(Obj s)
         // Rings are always immutable!
         ring r = CXXRING_SINGOBJ(s);
         if (r == 0 || r->ext_ref == 0)
-            ErrorQuit("internal error: bad ring reference in ring dependant object",0L,0L);
+            ErrorQuit("internal error: bad ring reference in ring dependant object", 0L, 0L);
         return OneSMSingObj((Obj)r->ext_ref);
     }
     return OneMutObject(s);
@@ -957,7 +963,7 @@ Obj Func_SI_attrib( Obj self, Obj singobj )
 {
     singobj = UnwrapHighlevelWrapper(singobj);
     if (TNUM_OBJ(singobj) != T_SINGULAR)
-        ErrorQuit("argument must be singular object.",0L,0L);
+        ErrorQuit("argument must be singular object.", 0L, 0L);
     // TODO: for now we just return whether the
     // object has any attributes; but in the future we could
     // return a list with the actual attributes...
@@ -973,7 +979,7 @@ Obj Func_SI_flags( Obj self, Obj singobj )
 {
     singobj = UnwrapHighlevelWrapper(singobj);
     if (TNUM_OBJ(singobj) != T_SINGULAR)
-        ErrorQuit("argument must be singular object.",0L,0L);
+        ErrorQuit("argument must be singular object.", 0L, 0L);
     unsigned int flags = FLAGS_SINGOBJ(singobj);
     return INTOBJ_INT(flags);
 }
@@ -982,7 +988,7 @@ Obj Func_SI_type( Obj self, Obj singobj )
 {
     singobj = UnwrapHighlevelWrapper(singobj);
     if (TNUM_OBJ(singobj) != T_SINGULAR)
-        ErrorQuit("argument must be singular object.",0L,0L);
+        ErrorQuit("argument must be singular object.", 0L, 0L);
     Int gtype = TYPE_SINGOBJ(singobj);
     return INTOBJ_INT(gtype);
 }

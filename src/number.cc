@@ -39,8 +39,8 @@
 static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
 {
     UInt size = SIZE_INT(in);
-    mpz_init2(out,size*GMP_NUMB_BITS);
-    memcpy(out->_mp_d,ADDR_INT(in),sizeof(mp_limb_t)*size);
+    mpz_init2(out, size * GMP_NUMB_BITS);
+    memcpy(out->_mp_d, ADDR_INT(in), sizeof(mp_limb_t) * size);
     out->_mp_size = (TNUM_OBJ(in) == T_INTPOS) ? (Int)size : - (Int)size;
 }
 
@@ -92,7 +92,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         } else if (IS_FFE(n)) {
             FF ff = FLD_FFE(n);
             if (CHAR_FF(ff) != rChar(r) || DEGR_FF(ff) != 1)
-                ErrorQuit("Argument is in wrong field.\n",0L,0L);
+                ErrorQuit("Argument is in wrong field.\n", 0L, 0L);
             Obj v = IntFFE(n);
             return n_Init(INT_INTOBJ(v), r);
         } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG || TNUM_OBJ(n) == T_RAT) {
@@ -101,11 +101,11 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
                 return n_Init(INT_INTOBJ(n) % rChar(r), r);
             }
         }
-        ErrorQuit("Argument must be an integer, rational or finite prime field element.\n",0L,0L);
+        ErrorQuit("Argument must be an integer, rational or finite prime field element.\n", 0L, 0L);
         return NULL;  // never executed
     } else if (!rField_is_Q(r)) {
         // Other fields not yet supported
-        ErrorQuit("GAP numbers over this field not yet implemented.\n",0L,0L);
+        ErrorQuit("GAP numbers over this field not yet implemented.\n", 0L, 0L);
         return NULL;  // never executed
     }
     // Here we know that the rationals are the coefficients:
@@ -136,7 +136,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         Obj nn = NUM_RAT(n);
         if (IS_INTOBJ(nn)) { // a GAP immediate integer
             Int i = INT_INTOBJ(nn);
-            mpz_init_set_si(res->z,i);
+            mpz_init_set_si(res->z, i);
         } else {
             _SI_GMP_FROM_GAP(nn, res->z);
         }
@@ -149,7 +149,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         }
         return res;
     } else {
-        ErrorQuit("Argument must be an integer or rational.\n",0L,0L);
+        ErrorQuit("Argument must be an integer or rational.\n", 0L, 0L);
         return NULL;  // never executed
     }
 }
@@ -160,7 +160,7 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
         if (i >= (-1L << 28) && i < (1L << 28))
-            n = nlInit((int) i,NULL);
+            n = nlInit((int)i, NULL);
         else
             n = nlRInit(i);
     } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
@@ -172,7 +172,7 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
         #endif
         n->s = 3;  // indicates an integer
     } else {
-        ErrorQuit("Argument must be an integer.\n",0L,0L);
+        ErrorQuit("Argument must be an integer.\n", 0L, 0L);
     }
     return n;
 }
@@ -186,7 +186,7 @@ int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
 #ifdef SYS_IS_64_BIT
         if (i >= (-1L << 31) && i < (1L << 31)) {
 #endif
-            obj.data = (void *) i;
+            obj.data = (void *)i;
             obj.rtyp = INT_CMD;
             return SINGTYPE_INT_IMM;
 #ifdef SYS_IS_64_BIT
@@ -226,10 +226,10 @@ Obj _SI_BIGINT_OR_INT_TO_GAP(number n)
         }
 #endif
         if (sign > 0)
-            res = NewBag(T_INTPOS,sizeof(mp_limb_t)*size);
+            res = NewBag(T_INTPOS, sizeof(mp_limb_t) * size);
         else
-            res = NewBag(T_INTNEG,sizeof(mp_limb_t)*size);
-        memcpy(ADDR_INT(res),n->z->_mp_d,sizeof(mp_limb_t)*size);
+            res = NewBag(T_INTNEG, sizeof(mp_limb_t) * size);
+        memcpy(ADDR_INT(res), n->z->_mp_d, sizeof(mp_limb_t) * size);
         return res;
     }
 }

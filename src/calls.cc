@@ -129,7 +129,7 @@ static Obj gapwrap(sleftv &obj, ring r)
     if (r == 0 && obj.RingDependend()) {
         if (currRing == 0) {
             obj.CleanUp();
-            ErrorQuit("Result is ring dependent but can't figure out what the ring should be",0L,0L);
+            ErrorQuit("Result is ring dependent but can't figure out what the ring should be", 0L, 0L);
         }
         if (currRing->ext_ref == 0) {
             currRing->ref++;
@@ -339,7 +339,7 @@ Obj Func_SI_CallFunc3(Obj self, Obj op, Obj a, Obj b, Obj c)
 
     StartPrintCapture();
     sleftv result;
-    BOOLEAN ret = iiExprArith3(&result,INT_INTOBJ(op),
+    BOOLEAN ret = iiExprArith3(&result, INT_INTOBJ(op),
                                singa.ptr(),
                                singb.ptr(),
                                singc.ptr());
@@ -365,7 +365,7 @@ public:
     
     WrapMultiArgs(Obj arg, ring &r) : sing(0), error(0) {
         int i;
-        int nrargs = (int) LEN_PLIST(arg);
+        int nrargs = (int)LEN_PLIST(arg);
         if (nrargs > 0)
             sing = new SingularIdHdl[nrargs];
         for (i = 0; i < nrargs; i++) {
@@ -400,9 +400,10 @@ Obj Func_SI_CallFuncM(Obj self, Obj op, Obj arg)
 {
     ring r = NULL;
 
-    int nrargs = (int) LEN_PLIST(arg);
+    int nrargs = (int)LEN_PLIST(arg);
     WrapMultiArgs wrap(arg, r);
-    if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
+    if (wrap.error)
+        ErrorQuit(wrap.error, 0L, 0L);
 
     StartPrintCapture();
     sleftv result;
@@ -421,10 +422,10 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
     if (TNUM_OBJ(rr) != T_SINGULAR ||
         (TYPE_SINGOBJ(rr) != SINGTYPE_RING_IMM &&
          TYPE_SINGOBJ(rr) != SINGTYPE_QRING_IMM)) {
-        ErrorQuit("argument r must be a singular ring",0L,0L);
+        ErrorQuit("argument r must be a singular ring", 0L, 0L);
         return Fail;
     }
-    ring r = (ring) CXX_SINGOBJ(rr);
+    ring r = (ring)CXX_SINGOBJ(rr);
     if (r != currRing) rChangeCurrRing(r);
     return NULL;
 }
@@ -432,27 +433,28 @@ Obj FuncSI_SetCurrRing(Obj self, Obj rr)
 Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
 {
     if (!IsStringConv(name)) {
-        ErrorQuit("First argument must be a string.",0L,0L);
+        ErrorQuit("First argument must be a string.", 0L, 0L);
         return Fail;
     }
     if (!IS_LIST(args)) {
-        ErrorQuit("Second argument must be a list.",0L,0L);
+        ErrorQuit("Second argument must be a list.", 0L, 0L);
         return Fail;
     }
 
     idhdl h = ggetid(reinterpret_cast<char*>(CHARS_STRING(name)));
     if (h == NULL) {
         ErrorQuit("Proc %s not found in Singular interpreter.",
-                  (Int) CHARS_STRING(name),0L);
+                  (Int)CHARS_STRING(name), 0L);
         return Fail;
     }
 
     ring r = NULL;
     idhdl tmpHdl = 0;
 
-    int nrargs = (int) LEN_PLIST(args);
+    int nrargs = (int)LEN_PLIST(args);
     WrapMultiArgs wrap(args, r);
-    if (wrap.error) ErrorQuit(wrap.error, 0L, 0L);
+    if (wrap.error)
+        ErrorQuit(wrap.error, 0L, 0L);
 
     if (r)
         rChangeCurrRing(r);
@@ -493,7 +495,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
             leftv next = ret->next;
             ret->next = 0;
             SET_ELM_PLIST(list, i+1, gapwrap(*ret, r));
-            if (i > 0) omFreeBin(ret, sleftv_bin);
+            if (i > 0)
+                omFreeBin(ret, sleftv_bin);
             ret = next;
         }
         retObj = list;
