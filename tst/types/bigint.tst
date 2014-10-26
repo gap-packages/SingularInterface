@@ -46,3 +46,12 @@ gap> b := SI_bigint(a);
 <singular bigint:12>
 gap> a = b;
 true
+gap> i:=SI_bigint(42);
+<singular bigint:42>
+gap> _SI_Intbigint(i) = 42;
+true
+gap> i:=SI_bigint(42^42);
+<singular bigint:1501309375452965723567719721642544578140479705687387772358935\
+33016064>
+gap> _SI_Intbigint(i) = 42^42;
+true
