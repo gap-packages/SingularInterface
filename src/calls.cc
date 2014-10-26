@@ -148,13 +148,19 @@ static Obj gapwrap(sleftv &obj, ring r)
     }
 
     Obj res;
-    int gtype = SingtoGAPType[obj.Typ()];
+    const int typ = obj.Typ();
+    int gtype = SingtoGAPType[typ];
+    if (typ != NONE && (gtype <= 0 || gtype > SINGTYPE_LASTNUMBER)) {
+        obj.CleanUp();
+        ErrorQuit("gapwrap: unexpected singular object type %d\n", typ, 0L);
+    }
+    
     // Adjust gtype for mutable / immutable: objects which are not copyable
     // are created as immutable, all others as mutable.
-    if (obj.Typ() != NONE && !IsCopyableSingularType(gtype|1))
+    if (typ != NONE && !IsCopyableSingularType(gtype|1))
         gtype |= 1;
 
-    switch (obj.Typ()) {
+    switch (typ) {
         case NONE:
             obj.CleanUp();
             return True;

@@ -151,6 +151,7 @@ void InitSingTypesFromKernel()
     Obj tmp;
     Int gvar;
     int i;
+    memset(SingtoGAPType, 0, sizeof(SingtoGAPType));
     for (i = SINGTYPE_BIGINT; i <= SINGTYPE_VECTOR; i += 2) {
         if (GAPtoSingType[i] >= MAX_TOK) {
             Pr("Singular types have changed unforeseen",0L,0L);
