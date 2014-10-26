@@ -1,13 +1,13 @@
 LoadPackage("SingularInterface");
-d1 := DirectoriesPackageLibrary("SingularInterface","tst");
-d2 := DirectoriesPackageLibrary("SingularInterface","tst/cmds");
-d3 := DirectoriesPackageLibrary("SingularInterface","tst/types");
+d1 := DirectoriesPackageLibrary("SingularInterface", "tst");
+d2 := DirectoriesPackageLibrary("SingularInterface", "tst/cmds");
+d3 := DirectoriesPackageLibrary("SingularInterface", "tst/types");
 
 HasSuffix := function(list, suffix)
-  local len;
-  len := Length(list);
-  if Length(list) < Length(suffix) then return false; fi;
-  return list{[len-Length(suffix)+1..len]} = suffix;
+    local len;
+    len := Length(list);
+    if Length(list) < Length(suffix) then return false; fi;
+    return list{[len-Length(suffix)+1..len]} = suffix;
 end;
 
 for d in [d1, d2, d3] do
