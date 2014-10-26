@@ -16,15 +16,8 @@ gap> MySingularValueOfVar := function(name)
 gap> SingularUnbind("a");
 gap> Singular("ring r1=32003,(x,y,z),dp;");
 true
-gap> r1:=MySingularValueOfVar("r1");
-<singular ring, 3 indeterminates>
-gap> Singular("ideal i=x,y,z;");
-true
-gap> #i:=MySingularValueOfVar("i");
 gap> Singular("ring r2=32003,(a,b),dp;");
 true
-gap> r2:=MySingularValueOfVar("r2");
-<singular ring, 2 indeterminates>
 gap> Singular("map f=r1,a,b,a+b;");
 true
 gap> Singular("export f;");
