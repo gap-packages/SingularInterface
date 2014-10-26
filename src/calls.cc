@@ -458,7 +458,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         rChangeCurrRing(r);
 
     BOOLEAN bool_ret;
-    if (currRing) {
+    if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
         // TODO: perhaps only create this handle if there isn't already a handle for the ring???
         // TODO: Perhaps we should be using getSingularIdhdl() here, too?
         tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
@@ -475,19 +475,17 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     EndPrintCapture();
 
     inerror = 0;    // reset interpreter error flag
-    if (tmpHdl) {
-        killhdl(tmpHdl, currPack);
-    }
-    currRingHdl = NULL;
     
     // If the return value is ring dependant, then (according to Hans)
     // the current ring after iiMake_proc must be the same as
     // before iiMake_proc.
-
-    if (bool_ret == TRUE)
-        return Fail;
     leftv ret = &iiRETURNEXPR;
-    if (ret->next != NULL) {
+    Obj retObj;
+    if (bool_ret == TRUE) {
+        retObj = Fail;
+    } else if (ret->next != NULL) {
+        // TODO: Perhaps merge list handling into gapwrap?
+        // so that we can handle lists returned in other places...?
         Int len = ret->listLength();
         Obj list = NEW_PLIST( T_PLIST, len );
         SET_LEN_PLIST( list, len );
@@ -498,8 +496,15 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
             if (i > 0) omFreeBin(ret, sleftv_bin);
             ret = next;
         }
-        return list;
+        retObj = list;
+    } else {
+        retObj = gapwrap(*ret, r);
     }
 
-    return gapwrap(*ret, r);
+    if (tmpHdl) {
+        killhdl(tmpHdl, currPack);
+        currRingHdl = 0;
+    }
+
+    return retObj;
 }
