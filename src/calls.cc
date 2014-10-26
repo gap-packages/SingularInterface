@@ -112,6 +112,18 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
 
     ResetString(_SI_LastErrorStringGVar);
 
+    idhdl tmpHdl = 0;
+    // TODO: resolve code duplication between Func_SI_EVALUATE and FuncSI_CallProc
+    if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
+        // TODO: Perhaps we should be using getSingularIdhdl() here, too?
+        tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
+        assert(tmpHdl);
+        IDRING(tmpHdl) = currRing;
+        currRing->ref++;
+
+        currRingHdl = tmpHdl;
+    }
+
     StartPrintCapture();
     myynest = 1;
     BOOLEAN err = iiAllStart(NULL, ost, BT_proc, 0);
@@ -119,6 +131,11 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     EndPrintCapture();
 
     omFree(ost);
+
+    if (tmpHdl) {
+        killhdl(tmpHdl, currPack);
+        currRingHdl = 0;
+    }
 
     return err ? False : True;
 }
@@ -460,8 +477,8 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         rChangeCurrRing(r);
 
     BOOLEAN bool_ret;
+    // TODO: resolve code duplication between Func_SI_EVALUATE and FuncSI_CallProc
     if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
-        // TODO: perhaps only create this handle if there isn't already a handle for the ring???
         // TODO: Perhaps we should be using getSingularIdhdl() here, too?
         tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
         assert(tmpHdl);

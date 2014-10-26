@@ -11,11 +11,11 @@ gap> Singular("print(ver);");
 true
 gap> SingularLastOutput();   # gives version number as string
 "3160\n"
-gap> SingularUnbind("a");
-gap> Singular("string a=\"Max\";");
+gap> SingularUnbind("someVar");
+gap> Singular("string someVar=\"someValue\";");
 true
-gap> SingularValueOfVar("a");
-"Max"
+gap> SingularValueOfVar("someVar");
+"someValue"
 gap> SingularUnbind("x");
 gap> Singular("intvec x=1,1,2,3,5,8,13;");
 true
