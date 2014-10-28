@@ -20,16 +20,16 @@ gap> if not IsBound( SIH_ZeroColumns ) then
 > DeclareGlobalFunction( "SIH_UnionOfRows" );
 > DeclareGlobalFunction( "SIH_UnionOfColumns" );
 > InstallGlobalFunction( SIH_BasisOfColumnModule,
->  function( M )
->    
->    return SI_matrix( SI_std( M ) );
->    
+>   function( M )
+>     
+>     return SI_matrix( SI_std( M ) );
+>     
 > end );
 > InstallGlobalFunction( SIH_BasisOfRowModule,
->  function( M )
->    
->    return SI_transpose( SIH_BasisOfColumnModule( SI_transpose( M ) ) );
->    
+>   function( M )
+>     
+>     return SI_transpose( SIH_BasisOfColumnModule( SI_transpose( M ) ) );
+>     
 > end );
 > InstallGlobalFunction( SIH_BasisOfColumnsCoeff,
 >   function( M )
@@ -131,7 +131,7 @@ gap> if not IsBound( SIH_ZeroColumns ) then
 >   function( M, row_range, col_range )
 >     local N;
 >     
->     N := Flat( List( row_range, r -> List( col_range, c -> SI_\[( M , r, c ) ) ) );
+>     N := Flat( List( row_range, r -> List( col_range, c -> SI_\[( M, r, c ) ) ) );
 >     
 >     return SI_matrix( Length( row_range ), Length( col_range ), N );
 >     
@@ -169,15 +169,15 @@ gap> if not IsBound( SIH_ZeroColumns ) then
 >     
 > end );
 > fi;
-gap> homalg_variable_1 := SI_ring( 0, [ "dummy_variable" ] );;
-gap> homalg_variable_2 := Zero( homalg_variable_1 );;
-gap> homalg_variable_3 := One( homalg_variable_1 );;
-gap> homalg_variable_4 := -One( homalg_variable_1 );;
-gap> homalg_variable_5 := SI_ring(0,[ "x", "y", "z" ]);;
-gap> homalg_variable_6 := Zero( homalg_variable_5 );;
-gap> homalg_variable_7 := One( homalg_variable_5 );;
-gap> homalg_variable_8 := -One( homalg_variable_5 );;
-gap> homalg_variable_9 := SI_transpose( SI_matrix(homalg_variable_5,6,5,"xy,yz,z,0,0,x3z,x2z2,0,xz2,-z2,x4,x3z,0,x2z,-xz,0,0,xy,-y2,x2-1,0,0,x2z,-xyz,yz,0,0,x2y-x2,-xy2+xy,y2-y") );;
+gap> homalg_variable_1 := SI_ring(0,["dummy_variable"],[["dp",1],["c",0]]);;
+gap> homalg_variable_2 := Zero(homalg_variable_1);;
+gap> homalg_variable_3 := One(homalg_variable_1);;
+gap> homalg_variable_4 := -One(homalg_variable_1);;
+gap> homalg_variable_5 := SI_ring(0,[ "x", "y", "z" ],[["dp",3],["c",0]]);;
+gap> homalg_variable_6 := Zero(homalg_variable_5);;
+gap> homalg_variable_7 := One(homalg_variable_5);;
+gap> homalg_variable_8 := -One(homalg_variable_5);;
+gap> homalg_variable_9 := SI_transpose(SI_matrix(homalg_variable_5,6,5,"xy,yz,z,0,0,x3z,x2z2,0,xz2,-z2,x4,x3z,0,x2z,-xz,0,0,xy,-y2,x2-1,0,0,x2z,-xyz,yz,0,0,x2y-x2,-xy2+xy,y2-y"));;
 gap> homalg_variable_10 := SIH_BasisOfColumnModule(homalg_variable_9);;
 gap> SI_ncols(homalg_variable_10);
 6
