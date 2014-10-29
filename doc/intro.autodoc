@@ -66,7 +66,42 @@ To check that the package has been successfully installed, start &GAP; and type:
 gap> LoadPackage( "SingularInterface" );
 true]]></Log>
 
+@Section The noncommutative subsystems Plural and SCA
 
+The noncommutative extensions &Plural; and &SCA; of &Singular; (aka.
+noncommutative subsystems) decided to comply with &Singular;'s column
+convention while implementing the noncommutative Gröbner basis
+algorithms for <E>left</E> ideals and modules. This is
+<E>in</E>compatible with matrix multiplication resulting in various
+annoying side-effects (see, e.g.,
+<Ref Func="SI_lift" Label="for two Singular matrices"/>).
+
+<P/>
+
+These noncommutative subsystems should have either used the row
+convention (violating &Singular;'s established convention) or should
+have implemented the Gröbner basis algorithms for <E>right</E> ideals
+and modules instead (breaking with the existing literature on the
+subject which usually describes algorithms for left ideals and
+modules).
+
+<P/>
+
+&SingularInterface; makes no attempt to resolve this issue. Any higher
+implementation which needs the noncommutative subsystems will probably
+need to address this issue.
+
+<P/>
+
+For example, the &homalg; project <Cite Key="homalg-project"/>
+completely resolves this dilemma by mimicking the row convention. The
+details are too technical to be exposed here. The effect is that both
+left and right modules are properly supported in &homalg;, regardless
+of the commutativity of the ring. This is done in a way which is even
+compatible with base change from a commutative ring (in &Singular;) to
+a noncommutative ring extension (in &Plural; or &SCA;). The support
+for right modules depends on the existence of an involution of the
+noncommutative ring.
 
 @Section TODO
 
