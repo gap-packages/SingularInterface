@@ -427,9 +427,10 @@ Compute the standard basis of the columns of the matrix <A>mat</A>, which can
 be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
 <P/>
 
-This holds for commutative rings.
-For noncommutative rings provided by &Plural; the result is the transposed
-of the standard basis of the rows of the transposed of <A>mat</A>.
+This holds for commutative rings.  For noncommutative rings provided
+by &Plural; the result is the transposed of the standard basis of the
+rows of the transposed of <A>mat</A> (see also Section <Ref
+Sect="Chapter_Introduction_Section_The_noncommutative_subsystems_Plural_and_SCA"/>).
 
 <Example><![CDATA[
 gap> R := SI_ring( 0, "x0..3" );
@@ -477,32 +478,23 @@ x3+1,x0,x3,0,        x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3
 <Description>
 
 The matrix <A>std</A> is assumed to be the output of <C>SI_std</C> and
-the number of rows of <A>mat</A> and <A>std</A> must coincide.
-If the columns of <A>mat</A> are linear combinations of the columns of <A>std</A>
-then the resulting matrix <M>T</M> satisfies the matrix equation
-<M><A>mat</A> * T = <A>std</A></M>.
+the number of rows of <A>mat</A> and <A>std</A> must coincide.  If the
+columns of <A>mat</A> are linear combinations of the columns of
+<A>std</A> then the resulting matrix <M>T</M> satisfies the matrix
+equation <M><A>mat</A> * T = <A>std</A></M>.
+
 <P/>
 
-This holds for commutative rings.
-For noncommutative rings provided by &Plural; an inequivalent equlity holds:
-<C>SI_transpose(</C>T<C>)</C> <M>*</M> <C>SI_transpose(</C><A>mat</A><C>)</C> <M>=</M> <C>SI_transpose(</C><A>std</A><C>)</C>,
-which is equivalent to
-<C>SI_transpose(SI_transpose(</C>T<C>)</C> <M>*</M> <C>SI_transpose(</C><A>mat</A><C>))</C> <M>=</M> <A>std</A>
-but not to
-<M><A>mat</A> * T = <A>std</A></M>
-if the ring is noncommutative.
-<P/>
-
-This is due to a design decision in &Plural;:
-It decided to comply with of &Singular;'s column convention
-while implemeting the noncommutative Gröbner basis algorithmis for <E>left</E> ideals and modules.
-This is incompatible with matrix multiplication and the latter means that &Plural;
-should have either used the row convention or should have implemented the
-Gröbner basis algorithmis for <E>right</E> ideals and modules instead.
-<P/>
-
-This problem is completely resovled in the &homalg; project <Cite Key="homalg-project"/>
-by mimicking the row convention. The details are too technical to be exposed here.
+This holds for commutative rings.  For noncommutative rings provided
+by &Plural; an inequivalent equality holds:
+<C>SI_transpose(</C>T<C>)</C> <M>*</M>
+<C>SI_transpose(</C><A>mat</A><C>)</C> <M>=</M>
+<C>SI_transpose(</C><A>std</A><C>)</C>, which is equivalent to
+<C>SI_transpose(SI_transpose(</C>T<C>)</C> <M>*</M>
+<C>SI_transpose(</C><A>mat</A><C>))</C> <M>=</M> <A>std</A> but not to
+<M><A>mat</A> * T = <A>std</A></M> if the ring is noncommutative (see
+also Section <Ref
+Sect="Chapter_Introduction_Section_The_noncommutative_subsystems_Plural_and_SCA"/>).
 
 </Description>
 </ManSection>
@@ -512,9 +504,10 @@ by mimicking the row convention. The details are too technical to be exposed her
 <Description>
 
 The matrix <A>std</A> is assumed to be the output of <C>SI_std</C> and
-the number of rows of <A>mat</A> and <A>std</A> must coincide.
-The output is a matrix having the same shape as <A>mat</A>.
-It columns are the reductions of the columns of <A>mat</A> modulo those of <A>std</A>.
+the number of rows of <A>mat</A> and <A>std</A> must coincide.  The
+output is a matrix having the same shape as <A>mat</A>.  It columns
+are the reductions of the columns of <A>mat</A> modulo those of
+<A>std</A>.
 
 </Description>
 </ManSection>
@@ -527,9 +520,12 @@ Compute the matrix of column syzygies of the matrix <A>mat</A>, which can
 be of type <C>matrix</C>, <C>module</C>, or <C>ideal</C>.
 <P/>
 
-This holds for commutative rings.
-For noncommutative rings provided by &Plural; the result is the transposed
-of the matrix of row syzygies of the transposed of <A>mat</A>.
+This holds for commutative rings. For noncommutative rings provided by
+&Plural; and &SCA; the result is the transposed of the matrix of row
+syzygies of the transposed of <A>mat</A>. We refer the reader to the
+documentation of the corresponding procedure in the &Plural; manual
+(see also Section <Ref
+Sect="Chapter_Introduction_Section_The_noncommutative_subsystems_Plural_and_SCA"/>).
 
 <Example><![CDATA[
 gap> R := SI_ring( 0, "x0..3" );
@@ -584,8 +580,9 @@ The number of rows of the matrices <A>mat</A> and <A>rel</A> must coincide.
 The procedures returns the column syzygies of <A>mat</A> modulo the columns of <A>rel</A>.
 <P/>
 
-This holds for commutative rings.
-For noncommutative rings provided by &Plural; we refer the reader to the &Plural; manual.
+This holds for commutative rings.  For noncommutative rings provided
+by &Plural; and &SCA; we refer the reader to the documentation of the
+corresponding procedure in the &Plural; manual (see also Section <Ref
+Sect="Chapter_Introduction_Section_The_noncommutative_subsystems_Plural_and_SCA"/>).
 
-</Description>
-</ManSection>
+</Description> </ManSection>
