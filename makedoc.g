@@ -31,6 +31,7 @@ AutoDoc( "SingularInterface" :
             entities := [
                     "Singular",
                     "Plural",
+                    "SCA",
                     "homalg",
                     ],
             appendix := [
