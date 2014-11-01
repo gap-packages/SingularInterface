@@ -261,7 +261,6 @@ gap> homalg_variable_1 := SI_ring(0,["dummy_variable"],[["dp",1],["C",0]]);;
 gap> homalg_variable_2 := Zero(homalg_variable_1);;
 gap> homalg_variable_3 := One(homalg_variable_1);;
 gap> homalg_variable_4 := -One(homalg_variable_1);;
-gap> HOMALG_MATRICES.PreferDenseMatrices := false;;
 gap> homalg_variable_5 := SI_ring(0,[ "x", "y", "z" ],[["dp",3],["C",0]]);;
 gap> homalg_variable_6 := Zero(homalg_variable_5);;
 gap> homalg_variable_7 := One(homalg_variable_5);;

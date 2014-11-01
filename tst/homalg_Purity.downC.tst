@@ -19,6 +19,9 @@ gap> if not IsBound( SIH_ZeroColumns ) then
 > DeclareGlobalFunction( "SIH_Submatrix" );
 > DeclareGlobalFunction( "SIH_UnionOfRows" );
 > DeclareGlobalFunction( "SIH_UnionOfColumns" );
+> DeclareGlobalFunction( "SIH_GetColumnIndependentUnitPositions" );
+> DeclareGlobalFunction( "SIH_GetRowIndependentUnitPositions" );
+> DeclareGlobalFunction( "SIH_GetUnitPosition" );
 > InstallGlobalFunction( SIH_BasisOfColumnModule,
 >   function( M )
 >     
@@ -166,6 +169,91 @@ gap> if not IsBound( SIH_ZeroColumns ) then
 >               Flat( ListN( M, N,
 >                       function( r1, r2 ) return Flat( Concatenation( r1, r2 ) ); end
 >                         ) ) );
+>     
+> end );
+> InstallGlobalFunction( SIH_GetColumnIndependentUnitPositions,
+>   function( M, poslist )
+>     local R, rest, pos, i, j, k;
+>     
+>     R := SI_ring( M );
+>     
+>     rest := [ 1 .. SI_ncols( M ) ];
+>     
+>     pos := [ ];
+>     
+>     for i in [ 1 .. SI_nrows( M ) ] do
+>         for k in Reversed( rest ) do
+>             if not [ i, k ] in poslist and
+>                ##FIXME: IsUnit( R, MatElm( M, i, k ) ) then
+>                SI_deg( SI_\[( M, i, k ) ) = 0 then
+>                 Add( pos, [ i, k ] );
+>                 rest := Filtered( rest,
+>                                 a -> IsZero( SI_\[( M, i, a ) ) );
+>                 break;
+>             fi;
+>         od;
+>     od;
+>     
+>     ##FIXME:
+>     #if pos <> [ ] then
+>     #    SetIsZero( M, false );
+>     #fi;
+>     
+>     return pos;
+>     
+> end );
+> InstallGlobalFunction( SIH_GetRowIndependentUnitPositions,
+>   function( M, poslist )
+>     local R, rest, pos, j, i, k;
+>     
+>     R := SI_ring( M );
+>     
+>     rest := [ 1 .. SI_nrows( M ) ];
+>     
+>     pos := [ ];
+>     
+>     for j in [ 1 .. SI_ncols( M ) ] do
+>         for k in Reversed( rest ) do
+>             if not [ j, k ] in poslist and
+>                ##FIXME: IsUnit( R, MatElm( M, k, j ) ) then
+>                SI_deg( SI_\[( M, k, j ) ) = 0 then
+>                 Add( pos, [ j, k ] );
+>                 rest := Filtered( rest,
+>                                 a -> IsZero( SI_\[( M, a, j ) ) );
+>                 break;
+>             fi;
+>         od;
+>     od;
+>     
+>     ##FIXME:
+>     #if pos <> [ ] then
+>     #    SetIsZero( M, false );
+>     #fi;
+>     
+>     return pos;
+>     
+> end );
+> InstallGlobalFunction( SIH_GetUnitPosition,
+>   function( M, poslist )
+>     local R, pos, m, n, i, j;
+>     
+>     R := SI_ring( M );
+>     
+>     m := SI_ncols( M );
+>     n := SI_nrows( M );
+>     
+>     for i in [ 1 .. m ] do
+>         for j in [ 1 .. n ] do
+>             if not [ i, j ] in poslist and not j in poslist and
+>                ##FIXME: IsUnit( R, SI_\[( M, j, i ) ) then
+>                SI_deg( SI_\[( M, j, i ) ) = 0 then
+>                 ##FIXME: SetIsZero( M, false );
+>                 return [ i, j ];
+>             fi;
+>         od;
+>     od;
+>     
+>     return fail;
 >     
 > end );
 > fi;
