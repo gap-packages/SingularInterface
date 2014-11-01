@@ -8,11 +8,14 @@ also treat the three datatypes <C>ideal</C>, <C>module</C>, and
 sparse representations of &Singular; matrices.
 
 <ManSection>
-<Oper Name="SI_matrix" Arg="r,c,str" Label="for two integers and a string"/>
+<Oper Name="SI_matrix" Arg="r,rows,columns,str" Label="for a ring, two integers and a string"/>
+<Oper Name="SI_matrix" Arg="rows,columns,polys" Label="for two integers and a list of polynomials"/>
 <Description>
 
   Construct a matrix over the &Singular; ring <A>r</A> using the
   string <A>str</A>.
+  
+  TODO: describe variants
 
 <Example><![CDATA[
 gap> r := SI_ring( 32003, "x,y,z" );
@@ -36,10 +39,13 @@ x^2,y^2,z^2
 
 <ManSection>
 <Oper Name="SI_ideal" Arg="r,str" Label="for a Singular ring and a string"/>
+<Oper Name="SI_ideal" Arg="polys" Label="for a list of polynomials"/>
 <Description>
 
   Construct an <Q>ideal</Q> in the &Singular; ring <A>r</A> using the
   string <A>str</A>.
+  
+  TODO: describe variants
   
   The datatype <C>ideal</C> in &Singular; is in first approximation a
   specialized data structure for matrices consisting of a single
