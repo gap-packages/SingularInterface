@@ -166,10 +166,10 @@ InstallMethod(SI_ring, [IsInt, IsList, IsList],
     fi;
 
     if ForAll(orderings, x->x[1] <> "c" and x[1] <> "C") then
-        # FIXME: Why do we do this?
-        # It seems "c" stands for module orderings...
+        # If no module ordering has been specified, set a default one
+        # matching the Singular default.
         orderings := ShallowCopy(orderings);
-        Add(orderings, ["c",0]);
+        Add(orderings, ["C",0]);
     fi;
     return _SI_ring(charact, names, orderings);
   end);

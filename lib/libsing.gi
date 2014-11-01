@@ -62,7 +62,7 @@ function(ring, rows, cols, desc)
     Singular(str);
     return SI_CallProc("SI_matrix_maker", []);
 end);
-InstallMethod(SI_matrix,["IsPosInt", "IsPosInt", "IsList"], 
+InstallMethod(SI_matrix, ["IsPosInt", "IsPosInt", "IsList"],
               _SI_matrix_from_els);
 
 InstallMethod(SIC_ZeroMat,["IsSI_ring", "IsPosInt", "IsPosInt"],
