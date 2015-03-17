@@ -113,7 +113,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
         Int i = INT_INTOBJ(n);
         // Does not fit into a Singular immediate integer, or else it
         // would have already been handled above.
-        return nlRInit(i);
+        return n_Init(i,coeffs_BIGINT);
     } else if (TNUM_OBJ(n) == T_INTPOS || TNUM_OBJ(n) == T_INTNEG) {
         // n is a long GAP integer. Both GAP and Singular use GMP, but
         // GAP uses the low-level mpn API (where data is stored as an
@@ -160,9 +160,9 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
         if (i >= (-1L << 28) && i < (1L << 28))
-            n = nlInit((int)i, NULL);
+            n = n_Init((int)i, coeffs_BIGINT);
         else
-            n = nlRInit(i);
+            n = n_Init(i,coeffs_BIGINT);
     } else if (TNUM_OBJ(nr) == T_INTPOS || TNUM_OBJ(nr) == T_INTNEG) {
         // A long GAP integer
         n = ALLOC_RNUMBER();
@@ -191,7 +191,7 @@ int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
             return SINGTYPE_INT_IMM;
 #ifdef SYS_IS_64_BIT
         } else {
-            n = nlRInit(i);
+            n = n_Init(i,coeffs_BIGINT);
         }
 #endif
     } else {   // a long GAP integer
