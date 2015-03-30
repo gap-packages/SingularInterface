@@ -284,7 +284,7 @@ Obj Func_SI_SetMatElm(Obj self, Obj obj, Obj row_, Obj col_, Obj val)
             number n;
             if (ISSINGOBJ(SINGTYPE_BIGINT, val) || ISSINGOBJ(SINGTYPE_BIGINT_IMM, val)) {
                 n = (number)CXX_SINGOBJ(val);
-                n = nlCopy(n, coeffs_BIGINT);
+                n = n_Copy(n, coeffs_BIGINT);
             } else {
                 n = _SI_BIGINT_FROM_GAP(val);
             }

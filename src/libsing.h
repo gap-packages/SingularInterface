@@ -35,6 +35,8 @@ extern "C" {
 #include "Singular/libsingular.h"
 #include "singtypes.h"
 
+#include "coeffs/longrat.h"
+
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
 #undef PACKAGE_NAME
