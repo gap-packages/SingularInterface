@@ -149,7 +149,11 @@ ArchiveURL     := Concatenation("https://github.com/gap-system/SingularInterface
                                 "releases/download/v", ~.Version,
                                 "/SingularInterface-", ~.Version),
 ArchiveFormats := ".tar.gz .tar.bz2",
-
+SourceRepository := rec( 
+  Type := "git", 
+  URL := "https://github.com/gap-packages/SingularInterface"
+),
+IssueTrackerURL := Concatenation( ~.SourceRepository.URL, "/issues" ),
 
 ##  Here you  must provide a short abstract explaining the package content 
 ##  in HTML format (used on the package overview Web page) and an URL 
