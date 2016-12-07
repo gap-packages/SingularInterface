@@ -19,28 +19,17 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-if fail = LoadPackage("AutoDoc", ">= 2014.03.27") then
-    Error("AutoDoc version 2014.03.27 is required.");
+if fail = LoadPackage("AutoDoc", ">= 2016.01.21") then
+    Error("AutoDoc 2016.01.21 or newer is required");
 fi;
 
-SetPackagePath("SingularInterface", ".");
-AutoDoc( "SingularInterface" :
-        
-        scaffold :=
-        rec(
-            entities := [
-                    "Singular",
-                    "Plural",
-                    "SCA",
-                    "homalg",
-                    ],
-            appendix := [
-                     "appendix-implementation.xml",
-                     ]
+AutoDoc( rec(
+        scaffold := rec(
+            entities := [ "Singular", "Plural", "SCA", "homalg" ],
+            appendix := [ "appendix-implementation.xml" ]
             ),
-         
-         autodoc :=
-         rec(
+        autodoc :=
+        rec(
              files := [
                      "doc/intro.autodoc",
                      "doc/ring.autodoc",
@@ -50,13 +39,9 @@ AutoDoc( "SingularInterface" :
              ),
         
         maketest := rec( folder := ".",
-                         commands :=
-                         [ "LoadPackage( \"SingularInterface\" );",
-                           ],
+                         commands := [ "LoadPackage( \"SingularInterface\" );" ],
                          )
-         );
+));
 
 # Create VERSION file for "make towww"
-PrintTo( "VERSION", PackageInfo( "SingularInterface" )[1].Version );
-
-QUIT;
+PrintTo( "VERSION", GAPInfo.PackageInfoCurrent.Version );
