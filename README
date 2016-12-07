@@ -19,7 +19,7 @@ Obtaining SingularInterface
 
 You can obtain the latest version of SingularInterface from
 
-  https://github.com/gap-system/SingularInterface
+  https://github.com/gap-packages/SingularInterface
 
 
 Compiling SingularInterface
@@ -75,4 +75,4 @@ You can contact the SingularInterface team by sending an email to
 Bug reports or code contributions can be submitted via the issues
 tracker respectively via pull requests at
 
-  https://github.com/gap-system/SingularInterface
+  https://github.com/gap-packages/SingularInterface

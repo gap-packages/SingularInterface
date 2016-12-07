@@ -141,11 +141,10 @@ Status := "dev",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-PackageWWWHome := "http://gap-system.github.io/SingularInterface",
-
+PackageWWWHome := "http://gap-packages.github.io/SingularInterface",
 README_URL     := Concatenation( ~.PackageWWWHome, "/README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
-ArchiveURL     := Concatenation("https://github.com/gap-system/SingularInterface/",
+ArchiveURL     := Concatenation("https://github.com/gap-packages/SingularInterface/",
                                 "releases/download/v", ~.Version,
                                 "/SingularInterface-", ~.Version),
 ArchiveFormats := ".tar.gz .tar.bz2",
