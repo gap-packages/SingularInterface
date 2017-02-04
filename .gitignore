@@ -44,6 +44,7 @@ maketest.g
 /doc/manual.pdf
 /doc/manual.six
 /doc/Chapter_Introduction.xml
+/doc/_*.xml
 
 *.so
 *.la
