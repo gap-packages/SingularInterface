@@ -141,7 +141,7 @@ Status := "dev",
 # AcceptDate := "08/1999",
 #AcceptDate := "",
 
-PackageWWWHome := "http://gap-packages.github.io/SingularInterface",
+PackageWWWHome := "https://gap-packages.github.io/SingularInterface",
 README_URL     := Concatenation( ~.PackageWWWHome, "/README" ),
 PackageInfoURL := Concatenation( ~.PackageWWWHome, "/PackageInfo.g" ),
 ArchiveURL     := Concatenation("https://github.com/gap-packages/SingularInterface/",
