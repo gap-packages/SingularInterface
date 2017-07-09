@@ -44,7 +44,7 @@ static char *_SI_LastOutputBuf = NULL;
 static void ResetString(UInt gvar)
 {
     Obj strObj = VAL_GVAR(gvar);
-    if (IS_STRING(strObj)) {
+    if (IS_STRING_REP(strObj)) {
         SET_LEN_STRING(strObj, 0);
         CSTR_STRING(strObj)[0] = 0;
         SHRINK_STRING(strObj);
@@ -71,7 +71,7 @@ static void EndPrintCapture() {
 Obj FuncSingularLastOutput(Obj self)
 {
     Obj strObj = VAL_GVAR(_SI_LastOutputStringGVar);
-    if (_SI_LastOutputBuf && IS_STRING(strObj)) {
+    if (_SI_LastOutputBuf && IS_STRING_REP(strObj)) {
         UInt len = (UInt)strlen(_SI_LastOutputBuf);
         GROW_STRING(strObj, len + 1);
         memcpy(CHARS_STRING(strObj), _SI_LastOutputBuf, len + 1);
@@ -85,7 +85,7 @@ Obj FuncSingularLastOutput(Obj self)
 void _SI_ErrorCallback(const char *st)
 {
     Obj strObj = VAL_GVAR(_SI_LastErrorStringGVar);
-    if (IS_STRING(strObj)) {
+    if (IS_STRING_REP(strObj)) {
         UInt len = (UInt)strlen(st);
         UInt oldlen = GET_LEN_STRING(strObj);
         GROW_STRING(strObj, oldlen + len + 2);
