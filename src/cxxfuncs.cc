@@ -235,8 +235,7 @@ void _SI_FreeFunc(Obj o)
 }
 
 /// The following function is the marking function for the garbage
-/// collector for T_SINGULAR objects. In the current implementation
-/// this function is not actually needed.
+/// collector for T_SINGULAR objects.
 void _SI_ObjMarkFunc(Bag o)
 {
     Int gtype = TYPE_SINGOBJ(o);
