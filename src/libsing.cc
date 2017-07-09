@@ -88,6 +88,8 @@ static StructGVarFunc GVarFuncs[] = {
 Obj _SI_ProxiesType;
 UInt _SI_internalRingRNam;
 
+UInt T_SINGULAR = 0;
+
 /** 
 Stores the GAP object that is the function IntFFE() so that we can
 call it to convert finite field elements to integers.
@@ -127,6 +129,11 @@ The first function to be called when the library is loaded by the kernel.
 static Int InitKernel(StructInitInfo* module)
 {
     /* init filters and functions                                          */
+    Int tnum = RegisterPackageTNUM("singular wrapper object", _SI_TypeObj);
+    if (tnum < 0)
+        return -1; // failure
+    T_SINGULAR = (UInt)tnum;
+
     InitHdlrFuncsFromTable( GVarFuncs );
     InitFreeFuncBag(T_SINGULAR, &_SI_FreeFunc);
     InitMarkFuncBags(T_SINGULAR, &_SI_ObjMarkFunc);
@@ -135,9 +142,6 @@ static Int InitKernel(StructInitInfo* module)
 
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
     InitFopyGVar( "IntFFE", &SI_IntFFE );
-
-    TypeObjFuncs[T_SINGULAR] = _SI_TypeObj;
-    InfoBags[T_SINGULAR].name = "singular wrapper object";
 
     /* TODO:
      * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
@@ -158,8 +162,12 @@ static Int InitKernel(StructInitInfo* module)
      * PowFuncs fuer T_SINGULAR/T_INT... ist PowObject, OK?
      * CommFuncs fuer T_SINGULAR/T_SINGULAR ist CommDefault, OK?
      * ModFuncs fuer T_SINGULAR/T_SINGULAR ist ModObject, OK?
-     * IsListFuncs fuer T_SINGULAR ist
-     * IsSmallListFuncs fuer T_SINGULAR ist */
+     */
+
+    // The following are OK, see dev/ZEROONECHAOS for details!
+    ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
+    OneMutFuncs[T_SINGULAR] = OneSMSingObj;
+    EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
 
     IsCopyableObjFuncs[T_SINGULAR] = IsCopyableObjSingular;
     ShallowCopyObjFuncs[T_SINGULAR] = ShallowCopyObjSingular;
@@ -167,33 +175,6 @@ static Int InitKernel(StructInitInfo* module)
     CleanObjFuncs[T_SINGULAR] = CleanObjConstant;
     IsMutableObjFuncs[T_SINGULAR] = IsMutableSingObj;
     MakeImmutableObjFuncs[T_SINGULAR] = MakeImmutableSingObj;
-
-    // The following are OK, see dev/ZEROONECHAOS for details!
-    InFuncs[T_SINGULAR][T_SINGULAR] = InObject;
-    ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
-    OneMutFuncs[T_SINGULAR] = OneSMSingObj;
-    EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;
-    IsListFuncs[ T_SINGULAR ] = IsListObject;
-    IsSmallListFuncs[ T_SINGULAR ] = IsSmallListObject;
-    LenListFuncs[ T_SINGULAR ] = LenListObject;
-    LengthFuncs[ T_SINGULAR ] = LengthObject;
-    IsbListFuncs[ T_SINGULAR ] = IsbListObject;
-    IsbvListFuncs[ T_SINGULAR ] = IsbListObject;
-    Elm0ListFuncs[ T_SINGULAR ] = Elm0ListObject;
-    Elm0vListFuncs[ T_SINGULAR ] = Elm0ListObject;
-    ElmListFuncs[  T_SINGULAR ] = ElmListObject;
-    ElmvListFuncs[ T_SINGULAR ] = ElmListObject;
-    ElmwListFuncs[ T_SINGULAR ] = ElmListObject;
-    ElmsListFuncs[ T_SINGULAR ] = ElmsListObject;
-    UnbListFuncs[ T_SINGULAR ] = UnbListObject;
-    AssListFuncs[ T_SINGULAR ] = AssListObject;
-    AsssListFuncs[ T_SINGULAR ] = AsssListObject;
-    IsDenseListFuncs[ T_SINGULAR ] = IsDenseListObject;
-    IsHomogListFuncs[ T_SINGULAR ] = IsHomogListObject;
-    IsTableListFuncs[ T_SINGULAR ] = IsTableListObject;
-    IsSSortListFuncs[ T_SINGULAR ] = IsSSortListObject;
-    IsPossListFuncs[ T_SINGULAR ] = IsPossListObject;
-    PosListFuncs[ T_SINGULAR ] = PosListObject;
 
     InstallPrePostGCFuncs();
 

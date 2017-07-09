@@ -66,6 +66,11 @@ void InstallPrePostGCFuncs(void);
 extern void _SI_ErrorCallback(const char *st);
 
 
+#undef T_SINGULAR
+#define T_SINGULAR  T_SINGULAR_TNUM
+extern UInt T_SINGULAR;
+
+
 //////////////// Layout of the T_SINGULAR objects /////////////////////
 // There are 3 possibilites:
 // (1) objects without a ring (2) objects with a ring (3) ring objects.
