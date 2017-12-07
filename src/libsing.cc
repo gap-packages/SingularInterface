@@ -234,21 +234,14 @@ and the further initialisation functions to call.
 **/
 static StructInitInfo module = {
 #ifdef STATICMODULE
-    /* type        = */ MODULE_STATIC,
+    .type = MODULE_STATIC,
 #else
-    /* type        = */ MODULE_DYNAMIC,
+    .type = MODULE_DYNAMIC,
 #endif
-    /* name        = */ "libsingular interface",
-    /* revision_c  = */ 0,
-    /* revision_h  = */ 0,
-    /* version     = */ 0,
-    /* crc         = */ 0,
-    /* initKernel  = */ InitKernel,
-    /* initLibrary = */ InitLibrary,
-    /* checkInit   = */ 0,
-    /* preSave     = */ 0,
-    /* postSave    = */ 0,
-    /* postRestore = */ PostRestore
+    .name = "SingularInterface",
+    .initKernel = InitKernel,
+    .initLibrary = InitLibrary,
+    .postRestore = PostRestore
 };
 
 
