@@ -1,0 +1,104 @@
+  
+  [1X3 [33X[0;0YRings and ring elements[133X[101X
+  
+  
+  [1X3.1 [33X[0;0YConstructors[133X[101X
+  
+  [1X3.1-1 SI_ring[101X
+  
+  [29X[2XSI_ring[102X( [3Xchar[103X, [3Xindets[103X[, [3Xord[103X] ) [32X operation
+  
+  [33X[0;0YConstruct  a  [5XSingular[105X ring over the prime field of characteristic [3Xchar[103X with
+  the  indeterminates given by [3Xindets[103X and term ordering given by the list [3Xord[103X.
+  The list [3Xindets[103X is allowed to be empty.[133X
+  
+  [33X[0;0YThe indeterminates may be specified in one of multiple ways:[133X
+  
+  [30X    [33X[0;6Y[3Xindets[103X  may be a list of strings, where each strings is the name of an
+        indeterminate.[133X
+  
+  [30X    [33X[0;6Y[3Xindets[103X may be a string such as [10X"x1..4,y1..6"[110X. TODO:[133X
+  
+  [33X[0;0YThe list [3Xord[103X may be omitted, in which case TODO[133X
+  
+  [33X[0;0YYou  may  use [2XAssignGeneratorVariables[102X ([14XReference: AssignGeneratorVariables[114X)
+  to make the ring variables accessible as [5XGAP[105X variables.[133X
+  
+  [33X[0;0Y[10XSI_ring( )[110X is equivalent to [10XSI_ring( 32003, ["x","y","z"] )[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( 32003, ["x","y","z"] );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27XAssignGeneratorVariables( r );[127X[104X
+    [4X[28X#I Assigned the global variables [ x, y, z ][128X[104X
+    [4X[25Xgap>[125X [27Xs := SI_ring( 32003, "x1..4,y1..6", [["dp",4],["lp",6]] );[127X[104X
+    [4X[28X<singular ring, 10 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27XSI_Indeterminates(s);[127X[104X
+    [4X[28X[ x1, x2, x3, x4, y1, y2, y3, y4, y5, y6 ][128X[104X
+  [4X[32X[104X
+  
+  [1X3.1-2 SI_poly[101X
+  
+  [29X[2XSI_poly[102X( [3Xr[103X, [3Xstr[103X ) [32X operation
+  
+  [33X[0;0YConstruct  a  polynomial  in  the  [5XSingular[105X  ring  [3Xr[103X  using  the string [3Xstr[103X.
+  Polynomials constructed this way support the usual operations.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xs1 := SI_poly( r, "x2y+7xyz10-xy" );[127X[104X
+    [4X[28X7*x*y*z^10+x^2*y-x*y[128X[104X
+    [4X[25Xgap>[125X [27Xs2 := 3*x*z^2 + x*y*z;[127X[104X
+    [4X[28Xx*y*z+3*x*z^2[128X[104X
+    [4X[25Xgap>[125X [27Xs1 + s2;[127X[104X
+    [4X[28X7*x*y*z^10+x^2*y+x*y*z+3*x*z^2-x*y[128X[104X
+    [4X[25Xgap>[125X [27Xs1 * x * y;[127X[104X
+    [4X[28X7*x^2*y^2*z^10+x^3*y^2-x^2*y^2[128X[104X
+  [4X[32X[104X
+  
+  [1X3.1-3 SI_number[101X
+  
+  [29X[2XSI_number[102X( [3Xr[103X, [3Xa[103X ) [32X operation
+  
+  [33X[0;0YConstruct  a number in the [5XSingular[105X ring [3Xr[103X using the [5XGAP[105X number [3Xa[103X, which may
+  be an integer, a rational number or an element of a finite prime field.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XSI_number( r, 33000 );[127X[104X
+    [4X[28X<singular number: 997>[128X[104X
+    [4X[25Xgap>[125X [27XSI_number( r, Z(32003)^603 );[127X[104X
+    [4X[28X<singular number: 997>[128X[104X
+  [4X[32X[104X
+  
+  
+  [1X3.2 [33X[0;0YOperations[133X[101X
+  
+  [33X[0;0YBelow  we  list just some relevant commands, to give you the general gist of
+  what  is  available.  For  a  comprehensive  overview,  please  refer to the
+  [5XSingular[105X  manual  and  remember  that you can map [5XSingular[105X function names to
+  their [5XGAP[105X equivalent by prefixing them with [10XSI_[110X.[133X
+  
+  [1X3.2-1 SI_imap[101X
+  
+  [29X[2XSI_imap[102X( [3XTODO[103X ) [32X function
+  
+  [33X[0;0YTODO[133X
+  
+  [1X3.2-2 SI_deg[101X
+  
+  [29X[2XSI_deg[102X( [3Xr[103X ) [32X function
+  
+  [33X[0;0YCompute the degree of the polynomial [3Xa[103X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xf := -5*x^3*y + (x*y*z)^5;[127X[104X
+    [4X[28Xx^5*y^5*z^5-5*x^3*y[128X[104X
+    [4X[25Xgap>[125X [27XSI_deg(f);[127X[104X
+    [4X[28X15[128X[104X
+  [4X[32X[104X
+  
+  [1X3.2-3 SI_gcd[101X
+  
+  [29X[2XSI_gcd[102X( [3Xa[103X, [3Xb[103X ) [32X function
+  
+  [33X[0;0YCompute the greatest common divisor of the two polynomial [3Xa[103X and [3Xb[103X.[133X
+  

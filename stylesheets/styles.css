@@ -43,7 +43,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p, ul, ol, table, dl {
-  margin:0 0 22px;
+  margin:0 0 10px;
 }
 
 h1, h2, h3 {
@@ -173,7 +173,8 @@ pre {
   border:1px solid #D7D8C8;
   overflow: auto;
   overflow-y: hidden;
-	margin-bottom: 32px;
+	margin-top: 6px;
+	margin-bottom: 6px;
 }
 
 
@@ -263,7 +264,7 @@ header ul {
 
 header li {
 	list-style-type: none;
-  width:148px;
+  width:228px;
   height:15px;
 	margin-bottom: 12px;
 	line-height: 1em;

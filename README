@@ -1,0 +1,78 @@
+SingularInterface -- a GAP package for interfacing with Singular
+================================================================
+
+SingularInterface interfaces to the Singular interface on the kernel
+level. The old name of this package was libsing.
+
+This differentiates it from e.g. the GAP package "singular", which
+instead starts a regular Singular binary as a subprocess, and
+communicates with that by sending text commands (just as a user
+would), and then parsing the text replies Singular issues.
+
+Directly interfacing with the Singular C kernel is more complicated,
+but has the advantage of avoiding parsing issues due to changed output
+formatting, and also in general tends to be much, much faster.
+
+
+Obtaining SingularInterface
+===========================
+
+You can obtain the latest version of SingularInterface from
+
+  https://github.com/gap-system/SingularInterface
+
+
+Compiling SingularInterface
+===========================
+
+Please follow the steps in the file INSTALL.
+
+
+Requirements
+============
+
+Currently SingularInterface should work on any UNIX-like platform,
+including Linux and Mac OS X.
+
+Right now, there is no support for Windows, mainly because none of the
+SingularInterface developers uses Windows, but also because running
+GAP and Singular on Windows is a bit tricky. If you are interested in
+Windows support, please contact us.
+
+Using SingularInterface requires a recent version of GAP (we recommend
+4.7.2 or later), and Singular 4.0.1 or later. For technical reasons
+(specifically, to allow coexistence of their respective memory
+management systems), both should be built as 64 bit versions.
+
+In addition, you need the following tools to build SingularInterface:
+
+* GNU autoconf
+* GNU automake
+* GNU libtool
+* git
+
+Most Linux distributions (such as Ubuntu, Fedora, Gentoo, ...) already
+provide suitable packages for all of these. On Mac OS X, the most
+convenient way to install them is also via a package manager like
+Fink, MacPorts or Homebrew. Alternatively, you can install any of the
+above manually.
+   
+
+Using SingularInterface
+=======================
+
+Please consult the SingularInterface manual for instructions on how to
+use SingularInterface once you compiled it successfully.
+
+
+Contact
+=======
+
+You can contact the SingularInterface team by sending an email to
+
+  gapsing AT mathematik DOT uni-kl DOT de
+
+Bug reports or code contributions can be submitted via the issues
+tracker respectively via pull requests at
+
+  https://github.com/gap-system/SingularInterface

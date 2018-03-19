@@ -1,0 +1,44 @@
+  
+  
+  [1XIndex[101X
+  
+  [2X\[\][102X (for a Singular matrix)  4.2-4
+  [2XDeterminant[102X (for a Singular matrix)  4.2-3
+  [2XDeterminantMat[102X (for a Singular matrix)  4.2-3
+  [2XSI_\[[102X (for a Singular matrix)  4.2-4
+  [2XSI_bigint[102X (for a TODO)  5.1-4
+  [2XSI_bigintmat[102X (for a TODO)  5.1-5
+  [2XSI_bigintvec[102X (for a TODO)  5.1-6
+  [2XSI_deg[102X (for a Singular polynomial)  3.2-2
+  [2XSI_det[102X (for a Singular matrix)  4.2-3
+  [2XSI_gcd[102X (for two Singular polynomials)  3.2-3
+  [2XSI_ideal[102X (for a Singular ring and a string)  4.1-2
+  [2XSI_ideal[102X (for a list of polynomials)  4.1-2
+  [2XSI_imap[102X (for a TODO)  3.2-1
+  [2XSI_int[102X (for a TODO)  5.1-1
+  [2XSI_intmat[102X (for a TODO)  5.1-2
+  [2XSI_intvec[102X (for a TODO)  5.1-3
+  [2XSI_LIB[102X  2.1-2
+  [2XSI_lift[102X (for two Singular matrices)  4.2-6
+  [2XSI_matrix[102X (for a ring, two integers and a string)  4.1-1
+  [2XSI_matrix[102X (for two integers and a list of polynomials)  4.1-1
+  [2XSI_module[102X (for a Singular matrix)  4.1-3
+  [2XSI_modulo[102X (for two Singular matrices)  4.2-9
+  [2XSI_ncols[102X (for a Singular matrix)  4.2-1
+  [2XSI_nrows[102X (for a Singular matrix)  4.2-1
+  [2XSI_number[102X (for a Singular ring and a rational number)  3.1-3
+  [2XSI_poly[102X (for a Singular ring and a string)  3.1-2
+  [2XSI_reduce[102X (for two Singular matrices)  4.2-7
+  [2XSI_ring[102X (for an integer and two lists)  3.1-1
+  [2XSI_std[102X (for a Singular matrix)  4.2-5
+  [2XSI_syz[102X (for a Singular matrices)  4.2-8
+  [2XSI_transpose[102X (for a Singular matrix)  4.2-2
+  [2XSI_vector[102X (for a Singular ring and a string)  4.1-4
+  [2XSingular[102X  2.1-1
+  [5XSingularInterface[105X  .-2
+  [2XSingularLastError[102X  2.1-1
+  [2XSingularLastOutput[102X  2.1-1
+  [2XTransposedMat[102X (for a Singular matrix)  4.2-2
+  
+  
+  -------------------------------------------------------

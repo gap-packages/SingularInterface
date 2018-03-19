@@ -1,0 +1,517 @@
+  
+  [1X4 [33X[0;0YMatrices[133X[101X
+  
+  
+  [1X4.1 [33X[0;0YConstructors[133X[101X
+  
+  [33X[0;0YIn this section we discuss constructors for [5XSingular[105X matrices. We also treat
+  the three datatypes [10Xideal[110X, [10Xmodule[110X, and [10Xvector[110X in this section as they are in
+  first approximation sparse representations of [5XSingular[105X matrices.[133X
+  
+  [1X4.1-1 SI_matrix[101X
+  
+  [29X[2XSI_matrix[102X( [3Xr[103X, [3Xrows[103X, [3Xcolumns[103X, [3Xstr[103X ) [32X operation
+  [29X[2XSI_matrix[102X( [3Xrows[103X, [3Xcolumns[103X, [3Xpolys[103X ) [32X operation
+  
+  [33X[0;0YConstruct  a  matrix  over  the  [5XSingular[105X ring [3Xr[103X using the string [3Xstr[103X. TODO:
+  describe variants[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( 32003, "x,y,z" );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( r, 2, 3, "x,y,z,x^2,y^2,z^2" );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27Xx := SI_var( r, 1 );; y := SI_var( r, 2 );; z := SI_var( r, 3 );;[127X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( 2, 3, [x,y,z,x^2,y^2,z^2] );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+  [4X[32X[104X
+  
+  [1X4.1-2 SI_ideal[101X
+  
+  [29X[2XSI_ideal[102X( [3Xr[103X, [3Xstr[103X ) [32X operation
+  [29X[2XSI_ideal[102X( [3Xpolys[103X ) [32X operation
+  
+  [33X[0;0YConstruct  an  [21Xideal[121X  in  the  [5XSingular[105X  ring  [3Xr[103X using the string [3Xstr[103X. TODO:
+  describe variants The datatype [10Xideal[110X in [5XSingular[105X is in first approximation a
+  specialized data structure for matrices consisting of a single row. However,
+  the print method in [5XSingular[105X prints them as a single column.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( ); ## = SI_ring( 32003, "x,y,z" );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xx := SI_var( r, 1 );; y := SI_var( r, 2 );; z := SI_var( r, 3 );;[127X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( [x^2,x*y,z^2] );[127X[104X
+    [4X[28X<singular ideal, 3 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx^2,[128X[104X
+    [4X[28Xx*y,[128X[104X
+    [4X[28Xz^2[128X[104X
+  [4X[32X[104X
+  
+  [1X4.1-3 SI_module[101X
+  
+  [29X[2XSI_module[102X( [3Xmat[103X ) [32X operation
+  
+  [33X[0;0YConvert  the [5XSingular[105X matrix [3Xmat[103X into a [5XSingular[105X [21Xmodule[121X. The datatype [10Xmodule[110X
+  in  [5XSingular[105X  is  in first approximation a specialized sparse data structure
+  for  column  oriented  matrices with compressed columns. Each column has the
+  [5XSingular[105X datatype [10Xvector[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( 32003, "x,y,z" );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xx := SI_var( r, 1 );; y := SI_var( r, 2 );; z := SI_var( r, 3 );;[127X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( 2, 3, [x,y,z,x^2,y^2,z^2] );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XM := SI_module( m );[127X[104X
+    [4X[28X<singular module, 3 vectors in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+  [4X[32X[104X
+  
+  [1X4.1-4 SI_vector[101X
+  
+  [29X[2XSI_vector[102X( [3Xr[103X, [3Xstr[103X ) [32X operation
+  
+  [33X[0;0YConstruct  a  [21Xvector[121X  over  the  [5XSingular[105X  ring  [3Xr[103X using the string [3Xstr[103X. The
+  datatype  [10Xvector[110X  in [5XSingular[105X is in first approximation a specialized sparse
+  data  structure  for  matrices  consisting  of a single column. However, the
+  print method in [5XSingular[105X prints them as a single row or rather a list.[133X
+  
+  
+  [1X4.2 [33X[0;0YOperations[133X[101X
+  
+  [1X4.2-1 SI_nrows[101X
+  
+  [29X[2XSI_nrows[102X( [3Xmat[103X ) [32X function
+  [29X[2XSI_ncols[102X( [3Xmat[103X ) [32X function
+  
+  [33X[0;0YCompute the number of rows (resp. columns) of the matrix/ideal/module [3Xmat[103X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( r, 2, 3, "x,y,z,x^2,y^2,z^2" );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( m );[127X[104X
+    [4X[28X2[128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( m );[127X[104X
+    [4X[28X3[128X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( m );[127X[104X
+    [4X[28X<singular ideal, 6 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx,[128X[104X
+    [4X[28Xy,[128X[104X
+    [4X[28Xz,[128X[104X
+    [4X[28Xx^2,[128X[104X
+    [4X[28Xy^2,[128X[104X
+    [4X[28Xz^2[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( I );[127X[104X
+    [4X[28X1[128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( I );[127X[104X
+    [4X[28X6[128X[104X
+    [4X[25Xgap>[125X [27Xi := SI_matrix( I );[127X[104X
+    [4X[28X<singular matrix, 1x6>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( i );[127X[104X
+    [4X[28Xx,y,z,x^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27XM := SI_module( m );[127X[104X
+    [4X[28X<singular module, 3 vectors in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( M );[127X[104X
+    [4X[28X2[128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( M );[127X[104X
+    [4X[28X3[128X[104X
+    [4X[25Xgap>[125X [27Xv0 := SI_vector( r, "0,0,0,0" );[127X[104X
+    [4X[28X<singular vector, 0 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v0 );[127X[104X
+    [4X[28X[0][128X[104X
+    [4X[25Xgap>[125X [27Xv2 := SI_vector( r, "0,x,0,0" );[127X[104X
+    [4X[28X<singular vector, 2 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v2 );[127X[104X
+    [4X[28X[0,x][128X[104X
+    [4X[25Xgap>[125X [27Xv3 := SI_vector( r, "0,x,y^2,0" );[127X[104X
+    [4X[28X<singular vector, 3 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v3 );[127X[104X
+    [4X[28X[0,x,y^2][128X[104X
+    [4X[25Xgap>[125X [27Xv4 := SI_vector( r, "0,x,y^2,z^3" );[127X[104X
+    [4X[28X<singular vector, 4 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v4 );[127X[104X
+    [4X[28X[0,x,y^2,z^3][128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( v0 ); SI_ncols( v2 ); SI_ncols( v3 ); SI_ncols( v4 );[127X[104X
+    [4X[28X1[128X[104X
+    [4X[28X1[128X[104X
+    [4X[28X1[128X[104X
+    [4X[28X1[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( v0 ); SI_nrows( v2 ); SI_nrows( v3 ); SI_nrows( v4 );[127X[104X
+    [4X[28X0[128X[104X
+    [4X[28X2[128X[104X
+    [4X[28X3[128X[104X
+    [4X[28X4[128X[104X
+    [4X[25Xgap>[125X [27Xbim := SI_bigintmat( [[1,2,3],[4,5,6]] );[127X[104X
+    [4X[28X<singular bigintmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( bim );[127X[104X
+    [4X[28X1,2,3,[128X[104X
+    [4X[28X4,5,6[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( bim );[127X[104X
+    [4X[28X2[128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( bim );[127X[104X
+    [4X[28X3[128X[104X
+    [4X[25Xgap>[125X [27Xiv := SI_intvec( [ 1, 2, 3, 0 ] );[127X[104X
+    [4X[28X<singular intvec:[ 1, 2, 3, 0 ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( iv );[127X[104X
+    [4X[28X1,[128X[104X
+    [4X[28X2,[128X[104X
+    [4X[28X3,[128X[104X
+    [4X[28X0[128X[104X
+    [4X[25Xgap>[125X [27XSI_nrows( iv );[127X[104X
+    [4X[28X4[128X[104X
+    [4X[25Xgap>[125X [27XSI_ncols( iv );[127X[104X
+    [4X[28Xfail[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-2 SI_transpose[101X
+  
+  [29X[2XSI_transpose[102X( [3Xmat[103X ) [32X function
+  [29X[2XTransposedMat[102X( [3Xmat[103X ) [32X attribute
+  
+  [33X[0;0YReturn the transposed matrix of the matrix [3Xmat[103X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( r, 2, 3, "x,y,z,x^2,y^2,z^2" );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27Xt := SI_transpose( m );[127X[104X
+    [4X[28X<singular matrix, 3x2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( t );[127X[104X
+    [4X[28Xx,x^2,[128X[104X
+    [4X[28Xy,y^2,[128X[104X
+    [4X[28Xz,z^2[128X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( m );[127X[104X
+    [4X[28X<singular ideal, 6 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx,[128X[104X
+    [4X[28Xy,[128X[104X
+    [4X[28Xz,[128X[104X
+    [4X[28Xx^2,[128X[104X
+    [4X[28Xy^2,[128X[104X
+    [4X[28Xz^2[128X[104X
+    [4X[25Xgap>[125X [27Xi := SI_matrix( I );[127X[104X
+    [4X[28X<singular matrix, 1x6>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( i );[127X[104X
+    [4X[28Xx,y,z,x^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27XSI_transpose( I );[127X[104X
+    [4X[28X<singular matrix, 6x1>[128X[104X
+    [4X[25Xgap>[125X [27XM := SI_module( m );[127X[104X
+    [4X[28X<singular module, 3 vectors in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27XN := SI_transpose( M );[127X[104X
+    [4X[28X<singular module, 2 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( N );[127X[104X
+    [4X[28Xx,x^2,[128X[104X
+    [4X[28Xy,y^2,[128X[104X
+    [4X[28Xz,z^2[128X[104X
+    [4X[25Xgap>[125X [27Xv0 := SI_vector( r, "0,0,0,0" );[127X[104X
+    [4X[28X<singular vector, 0 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v0 );[127X[104X
+    [4X[28X[0][128X[104X
+    [4X[25Xgap>[125X [27Xt0 := SI_transpose( v0 );[127X[104X
+    [4X[28X<singular matrix, 1x1>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( t0 );[127X[104X
+    [4X[28X0[128X[104X
+    [4X[25Xgap>[125X [27Xv2 := SI_vector( r, "0,x,0,0" );[127X[104X
+    [4X[28X<singular vector, 2 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v2 );[127X[104X
+    [4X[28X[0,x][128X[104X
+    [4X[25Xgap>[125X [27Xt2 := SI_transpose( v2 );[127X[104X
+    [4X[28X<singular matrix, 1x2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( t2 );[127X[104X
+    [4X[28X0,x[128X[104X
+    [4X[25Xgap>[125X [27Xv3 := SI_vector( r, "0,x,y^2,0" );[127X[104X
+    [4X[28X<singular vector, 3 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v3 );[127X[104X
+    [4X[28X[0,x,y^2][128X[104X
+    [4X[25Xgap>[125X [27Xt3 := SI_transpose( v3 );[127X[104X
+    [4X[28X<singular matrix, 1x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( t3 );[127X[104X
+    [4X[28X0,x,y^2[128X[104X
+    [4X[25Xgap>[125X [27Xv4 := SI_vector( r, "0,x,y^2,z^3" );[127X[104X
+    [4X[28X<singular vector, 4 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( v4 );[127X[104X
+    [4X[28X[0,x,y^2,z^3][128X[104X
+    [4X[25Xgap>[125X [27Xt4 := SI_transpose( v4 );[127X[104X
+    [4X[28X<singular matrix, 1x4>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( t4 );[127X[104X
+    [4X[28X0,x,y^2,z^3[128X[104X
+    [4X[25Xgap>[125X [27Xbim := SI_bigintmat( [[1,2,3],[4,5,6]] );[127X[104X
+    [4X[28X<singular bigintmat:[ [ 1, 2, 3 ], [ 4, 5, 6 ] ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( bim );[127X[104X
+    [4X[28X1,2,3,[128X[104X
+    [4X[28X4,5,6[128X[104X
+    [4X[25Xgap>[125X [27Xtim := SI_transpose( bim );[127X[104X
+    [4X[28X<singular bigintmat:[ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ] ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( tim );[127X[104X
+    [4X[28X1,4,[128X[104X
+    [4X[28X2,5,[128X[104X
+    [4X[28X3,6[128X[104X
+    [4X[25Xgap>[125X [27Xiv := SI_intvec( [ 1, 2, 3, 0 ] );[127X[104X
+    [4X[28X<singular intvec:[ 1, 2, 3, 0 ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( iv );[127X[104X
+    [4X[28X1,[128X[104X
+    [4X[28X2,[128X[104X
+    [4X[28X3,[128X[104X
+    [4X[28X0[128X[104X
+    [4X[25Xgap>[125X [27Xtv := SI_transpose( iv );[127X[104X
+    [4X[28X<singular intmat:[ [ 1, 2, 3, 0 ] ]>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( tv );[127X[104X
+    [4X[28X1 2 3 0[128X[104X
+    [4X[25Xgap>[125X [27XSI_transpose( tv );[127X[104X
+    [4X[28X<singular intmat:[ [ 1 ], [ 2 ], [ 3 ], [ 0 ] ]>[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-3 SI_det[101X
+  
+  [29X[2XSI_det[102X( [3Xmat[103X ) [32X function
+  [29X[2XDeterminant[102X( [3Xmat[103X ) [32X attribute
+  [29X[2XDeterminantMat[102X( [3Xmat[103X ) [32X attribute
+  
+  [33X[0;0YReturn the determinant of the square matrix [3Xmat[103X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( r, 2, 3, "x,y,z,x^2,y^2,z^2" );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y, z,[128X[104X
+    [4X[28Xx^2,y^2,z^2[128X[104X
+    [4X[25Xgap>[125X [27Xn := m * SI_transpose( m );[127X[104X
+    [4X[28X<singular matrix, 2x2>[128X[104X
+    [4X[25Xgap>[125X [27XSI_det( n );[127X[104X
+    [4X[28Xx^4*y^2-2*x^3*y^3+x^2*y^4+x^4*z^2+y^4*z^2-2*x^3*z^3-2*y^3*z^3+x^2*z^4+y^2*z^4[128X[104X
+    [4X[25Xgap>[125X [27XN := SI_module( n );[127X[104X
+    [4X[28X<singular module, 2 vectors in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XSI_det( N );[127X[104X
+    [4X[28Xx^4*y^2-2*x^3*y^3+x^2*y^4+x^4*z^2+y^4*z^2-2*x^3*z^3-2*y^3*z^3+x^2*z^4+y^2*z^4[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-4 SI_\[[101X
+  
+  [29X[2XSI_\[[102X( [3Xmat[103X, [3Xi[103X ) [32X function
+  [29X[2X\[\][102X( [3Xmat[103X, [3Xi[103X ) [32X operation
+  
+  [33X[0;0YThe syntax [3Xmat[103X[10X[[110X[3Xi[103X[10X][110X is a shorthand for [10XSI_\[([110X[3Xmat[103X,[3Xi[103X[10X)[110X. If [3Xmat[103X is of type[133X
+  
+  [30X    [33X[0;6Y[10Xmatrix[110X then return [3Xi[103X-th column as a [10Xvector[110X.[133X
+  
+  [30X    [33X[0;6Y[10Xmodule[110X then return [3Xi[103X-th column as a [10Xvector[110X.[133X
+  
+  [30X    [33X[0;6Y[10Xideal[110X then return [3Xi[103X-th entry as a [10Xpoly[110X.[133X
+  
+  [30X    [33X[0;6Y[10Xvector[110X then return [3Xi[103X-th entry as a [10Xpoly[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xr := SI_ring( );[127X[104X
+    [4X[28X<singular ring, 3 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( r, 2, 3, "x,y,0,z^2,0,0" );[127X[104X
+    [4X[28X<singular matrix, 2x3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx, y,0,[128X[104X
+    [4X[28Xz^2,0,0[128X[104X
+    [4X[25Xgap>[125X [27Xm1 := m[1];[127X[104X
+    [4X[28X<singular vector, 2 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m1 );[127X[104X
+    [4X[28X[x,z^2][128X[104X
+    [4X[25Xgap>[125X [27Xm2 := m[2];[127X[104X
+    [4X[28X<singular vector, 1 entry>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m2 );[127X[104X
+    [4X[28X[y][128X[104X
+    [4X[25Xgap>[125X [27Xm3 := m[3];[127X[104X
+    [4X[28X<singular vector, 0 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m3 );[127X[104X
+    [4X[28X[0][128X[104X
+    [4X[25Xgap>[125X [27XM := SI_module( m );[127X[104X
+    [4X[28X<singular module, 3 vectors in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XM1 := M[1];[127X[104X
+    [4X[28X<singular vector, 2 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M1 );[127X[104X
+    [4X[28X[x,z^2][128X[104X
+    [4X[25Xgap>[125X [27XM[1][2];[127X[104X
+    [4X[28Xz^2[128X[104X
+    [4X[25Xgap>[125X [27XM2 := M[2];[127X[104X
+    [4X[28X<singular vector, 1 entry>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M2 );[127X[104X
+    [4X[28X[y][128X[104X
+    [4X[25Xgap>[125X [27XM3 := M[3];[127X[104X
+    [4X[28X<singular vector, 0 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( M3 );[127X[104X
+    [4X[28X[0][128X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( m );[127X[104X
+    [4X[28X<singular ideal, 6 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx,[128X[104X
+    [4X[28Xy,[128X[104X
+    [4X[28X0,[128X[104X
+    [4X[28Xz^2,[128X[104X
+    [4X[28X0,[128X[104X
+    [4X[28X0[128X[104X
+    [4X[25Xgap>[125X [27XI[1]; I[6];[127X[104X
+    [4X[28Xx[128X[104X
+    [4X[28X0[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-5 SI_std[101X
+  
+  [29X[2XSI_std[102X( [3Xmat[103X ) [32X function
+  
+  [33X[0;0YCompute the standard basis of the columns of the matrix [3Xmat[103X, which can be of
+  type [10Xmatrix[110X, [10Xmodule[110X, or [10Xideal[110X.[133X
+  
+  [33X[0;0YThis  holds  for  commutative  rings.  For  noncommutative rings provided by
+  [5XPlural[105X the result is the transposed of the standard basis of the rows of the
+  transposed of [3Xmat[103X (see also Section [14X1.4[114X).[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XR := SI_ring( 0, "x0..3" );[127X[104X
+    [4X[28X<singular ring, 4 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27XSI_option( "redTail" );[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( R, "x0^2-x1*x3, x0*x1-x2*x3" );[127X[104X
+    [4X[28X<singular ideal, 2 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx0*x1-x2*x3[128X[104X
+    [4X[25Xgap>[125X [27XJ := SI_std( I );[127X[104X
+    [4X[28X<singular ideal, 3 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( J );[127X[104X
+    [4X[28Xx0*x1-x2*x3,[128X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx1^2*x3-x0*x2*x3[128X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( R, 3, 4, "x0,x1*x3,x0,x3, -x1,-x2*x3,x1,x2, -1,-x0,x3,x0" );[127X[104X
+    [4X[28X<singular matrix, 3x4>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx0, x1*x3, x0,x3,[128X[104X
+    [4X[28X-x1,-x2*x3,x1,x2,[128X[104X
+    [4X[28X-1, -x0, x3,x0[128X[104X
+    [4X[25Xgap>[125X [27Xg := SI_std( m );[127X[104X
+    [4X[28X<singular module, 6 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( g );[127X[104X
+    [4X[28X0, x3,x0,x1*x3+x3, 0, x2*x3^3-x2*x3,[128X[104X
+    [4X[28X2*x1,x2,x1,-x2*x3+x2,2*x0*x2*x3-2*x0*x2, x2^2*x3^2-x2^2,[128X[104X
+    [4X[28Xx3+1,x0,x3,0, x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3[128X[104X
+    [4X[25Xgap>[125X [27XM := SI_module( m );[127X[104X
+    [4X[28X<singular module, 4 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XG := SI_std( M );[127X[104X
+    [4X[28X<singular module, 6 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( G );[127X[104X
+    [4X[28X0, x3,x0,x1*x3+x3, 0, x2*x3^3-x2*x3,[128X[104X
+    [4X[28X2*x1,x2,x1,-x2*x3+x2,2*x0*x2*x3-2*x0*x2, x2^2*x3^2-x2^2,[128X[104X
+    [4X[28Xx3+1,x0,x3,0, x1*x3^2-x1*x3+x3^2-x3,x1^2*x3^2-x1^2*x3+x1*x3^2-x1*x3[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-6 SI_lift[101X
+  
+  [29X[2XSI_lift[102X( [3Xmat[103X, [3Xstd[103X ) [32X function
+  
+  [33X[0;0YThe  matrix [3Xstd[103X is assumed to be the output of [10XSI_std[110X and the number of rows
+  of  [3Xmat[103X and [3Xstd[103X must coincide. If the columns of [3Xmat[103X are linear combinations
+  of  the  columns  of  [3Xstd[103X  then  the resulting matrix [22XT[122X satisfies the matrix
+  equation [22X[3Xmat[103X * T = [3Xstd[103X[122X.[133X
+  
+  [33X[0;0YThis  holds  for  commutative  rings.  For  noncommutative rings provided by
+  [5XPlural[105X an inequivalent equality holds: [10XSI_transpose([110XT[10X)[110X [22X*[122X [10XSI_transpose([110X[3Xmat[103X[10X)[110X [22X=[122X
+  [10XSI_transpose([110X[3Xstd[103X[10X)[110X,  which  is  equivalent  to [10XSI_transpose(SI_transpose([110XT[10X)[110X [22X*[122X
+  [10XSI_transpose([110X[3Xmat[103X[10X))[110X  [22X=[122X  [3Xstd[103X  but  not  to  [22X[3Xmat[103X  *  T  =  [3Xstd[103X[122X  if  the ring is
+  noncommutative (see also Section [14X1.4[114X).[133X
+  
+  [1X4.2-7 SI_reduce[101X
+  
+  [29X[2XSI_reduce[102X( [3Xmat[103X, [3Xstd[103X ) [32X function
+  
+  [33X[0;0YThe  matrix [3Xstd[103X is assumed to be the output of [10XSI_std[110X and the number of rows
+  of  [3Xmat[103X  and [3Xstd[103X must coincide. The output is a matrix having the same shape
+  as  [3Xmat[103X. It columns are the reductions of the columns of [3Xmat[103X modulo those of
+  [3Xstd[103X.[133X
+  
+  [1X4.2-8 SI_syz[101X
+  
+  [29X[2XSI_syz[102X( [3Xmat[103X ) [32X function
+  
+  [33X[0;0YCompute  the  matrix  of  column syzygies of the matrix [3Xmat[103X, which can be of
+  type [10Xmatrix[110X, [10Xmodule[110X, or [10Xideal[110X.[133X
+  
+  [33X[0;0YThis  holds  for  commutative  rings.  For  noncommutative rings provided by
+  [5XPlural[105X and [5XSCA[105X the result is the transposed of the matrix of row syzygies of
+  the  transposed  of  [3Xmat[103X.  We  refer  the reader to the documentation of the
+  corresponding procedure in the [5XPlural[105X manual (see also Section [14X1.4[114X).[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XR := SI_ring( 0, "x0..3" );[127X[104X
+    [4X[28X<singular ring, 4 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27XSI_option( "redTail" );[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal( R, "x0^2-x1*x3, x0*x1-x2*x3" );[127X[104X
+    [4X[28X<singular ideal, 2 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx0*x1-x2*x3[128X[104X
+    [4X[25Xgap>[125X [27XK := SI_syz( I );[127X[104X
+    [4X[28X<singular module, 1 vector in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( K );[127X[104X
+    [4X[28X-x0*x1+x2*x3,[128X[104X
+    [4X[28Xx0^2-x1*x3[128X[104X
+    [4X[25Xgap>[125X [27XJ := SI_std( I );[127X[104X
+    [4X[28X<singular ideal, 3 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( J );[127X[104X
+    [4X[28Xx0*x1-x2*x3,[128X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx1^2*x3-x0*x2*x3[128X[104X
+    [4X[25Xgap>[125X [27XS := SI_syz( J );[127X[104X
+    [4X[28X<singular module, 2 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( S );[127X[104X
+    [4X[28Xx0, x1*x3,[128X[104X
+    [4X[28X-x1,-x2*x3,[128X[104X
+    [4X[28X-1, -x0[128X[104X
+    [4X[25Xgap>[125X [27XS2 := SI_syz( S );[127X[104X
+    [4X[28X<singular module, 1 vector in free module of rank 2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( S2 );[127X[104X
+    [4X[28X0,[128X[104X
+    [4X[28X0[128X[104X
+    [4X[25Xgap>[125X [27Xj := SI_matrix( J );[127X[104X
+    [4X[28X<singular matrix, 1x3>[128X[104X
+    [4X[25Xgap>[125X [27Xs := SI_syz( j );[127X[104X
+    [4X[28X<singular module, 2 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( s );[127X[104X
+    [4X[28Xx0, x1*x3,[128X[104X
+    [4X[28X-x1,-x2*x3,[128X[104X
+    [4X[28X-1, -x0[128X[104X
+  [4X[32X[104X
+  
+  [1X4.2-9 SI_modulo[101X
+  
+  [29X[2XSI_modulo[102X( [3Xmat[103X, [3Xrel[103X ) [32X function
+  
+  [33X[0;0YThe number of rows of the matrices [3Xmat[103X and [3Xrel[103X must coincide. The procedures
+  returns the column syzygies of [3Xmat[103X modulo the columns of [3Xrel[103X.[133X
+  
+  [33X[0;0YThis  holds  for  commutative  rings.  For  noncommutative rings provided by
+  [5XPlural[105X and [5XSCA[105X we refer the reader to the documentation of the corresponding
+  procedure in the [5XPlural[105X manual (see also Section [14X1.4[114X).[133X
+  

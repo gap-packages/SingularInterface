@@ -1,0 +1,206 @@
+  
+  [1X2 [33X[0;0YGetting started[133X[101X
+  
+  
+  [1X2.1 [33X[0;0YFirst steps[133X[101X
+  
+  [1X2.1-1 Singular[101X
+  
+  [29X[2XSingular[102X( [3Xstr[103X ) [32X function
+  [29X[2XSingularLastOutput[102X(  ) [32X function
+  [29X[2XSingularLastError[102X(  ) [32X function
+  
+  [33X[0;0YInstructs  the  Singular  interpreter  to  execute  the command given by the
+  string [3Xstr[103X. It returns [10Xtrue[110X in case [5XSingular[105X succeeds, otherwise [10Xfalse[110X (i.e.
+  if an error occurred). These are not the return values of a computation done
+  by   [5XSingular[105X   but   merely   an   [21Xexit   code[121X.   A   subsequent   call  to
+  [10XSingularLastOutput( )[110X returns a string containing the output of the Singular
+  interpreter.  Similarly [10XSingularLastError( )[110X returns a string containing the
+  last error message output by the Singular interpreter, if any.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XSingular( "1+1;" );[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XSingularLastOutput( );[127X[104X
+    [4X[28X"2\n"[128X[104X
+    [4X[25Xgap>[125X [27XSingularLastError( );[127X[104X
+    [4X[28X""[128X[104X
+    [4X[25Xgap>[125X [27XSingular( "1+1;" );;[127X[104X
+    [4X[25Xgap>[125X [27XDisplay( SingularLastOutput( ) );[127X[104X
+    [4X[28X2[128X[104X
+  [4X[32X[104X
+  
+  [1X2.1-2 SI_LIB[101X
+  
+  [29X[2XSI_LIB[102X( [3Xlibname[103X ) [32X function
+  
+  [33X[0;0YInstructs  the  Singular interpreter to load the library with the given name
+  [3Xlibname[103X.  For  example,  we  can load [10Xmatrix.lib[110X which provides the [5XSingular[105X
+  function [10Xsubmat[110X, which is mapped to the [5XGAP[105X function [10XSIL_submat[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XSIL_submat;[127X[104X
+    [4X[28XError, Variable: 'SIL_submat' must have a value[128X[104X
+    [4X[25Xgap>[125X [27XSI_LIB( "matrix.lib" );[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XSIL_submat;[127X[104X
+    [4X[28Xfunction( arg ) ... end[128X[104X
+  [4X[32X[104X
+  
+  
+  [1X2.1-3 [33X[0;0YExample[133X[101X
+  
+  [33X[0;0YHere  is  a  short  example  in  [5XSingular[105X  4.0.1  demonstrating  some  basic
+  procedures.  [5XSingular[105X uses [10X=[110X for assignments and suppresses any output while
+  [5XGAP[105X  uses  [10X:=[110X  for assignments and triggers the so-called [10XView[110X-method, which
+  gives  a  very  brief  description  of  the  object  (unless suppressed by a
+  trailing  [10X;;[110X).  Basically,  [5XSingular[105X's  print  procedure  is  mapped  to the
+  so-called [10XDisplay[110X-method in [5XGAP[105X.[133X
+  
+  [33X[0;0YStart by loading [5XSingularInterface[105X in [5XGAP[105X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XLoadPackage( "SingularInterface" );[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YDefine  the  ring  [23XR  :=  \mathbb{Q}[x_0,  x_1, x_2, x_3][123X (with the monomial
+  ordering [10Xdegrevlex[110X):[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XR := SI_ring( 0, "x0..3", [["dp",4]] );[127X[104X
+    [4X[28X<singular ring, 4 indeterminates>[128X[104X
+    [4X[25Xgap>[125X [27X## short=0 is the default, disable by: Singular( "short=1" );[127X[104X
+    [4X[25Xgap>[125X [27XSI_option( "redTail" );[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YDefine the polynomial [23X(x_1+x_3)^2[123X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XAssignGeneratorVariables( R );[127X[104X
+    [4X[28X#I Assigned the global variables [x0,x1,x2,x3][128X[104X
+    [4X[25Xgap>[125X [27Xp := (x1+x3)^2;[127X[104X
+    [4X[28Xx1^2+2*x1*x3+x3^2[128X[104X
+    [4X[25Xgap>[125X [27XIsSI_poly( p );[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YDefine the ideal [23XI := \langle x_0^2-x_1 x_3,x_0 x_1-x_2 x_3 \rangle \lhd R[123X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XI := SI_ideal([x0^2-x1*x3, x0*x1-x2*x3]);[127X[104X
+    [4X[28X<singular ideal, 2 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I );[127X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx0*x1-x2*x3[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe corresponding matrix [23Xi[123X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xi := SI_matrix( I );[127X[104X
+    [4X[28X<singular matrix, 1x2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( i );[127X[104X
+    [4X[28Xx0^2-x1*x3,x0*x1-x2*x3[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe sum [23XI+I[123X means the sum of ideals:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XJ:=I+I;[127X[104X
+    [4X[28X<singular ideal, 2 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( J );[127X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx0*x1-x2*x3[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YWhereas [23Xi+i[123X means the sum of matrices:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XDisplay( i + i );[127X[104X
+    [4X[28X2*x0^2-2*x1*x3,2*x0*x1-2*x2*x3[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe squared ideal [23XI^2 \lhd R[123X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XI2 := I^2;[127X[104X
+    [4X[28X<singular ideal, 3 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( I2 );[127X[104X
+    [4X[28Xx0^4-2*x0^2*x1*x3+x1^2*x3^2,[128X[104X
+    [4X[28Xx0^3*x1-x0*x1^2*x3-x0^2*x2*x3+x1*x2*x3^2,[128X[104X
+    [4X[28Xx0^2*x1^2-2*x0*x1*x2*x3+x2^2*x3^2[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe  Gröbner  basis  of  the  ideal  [23XI[123X  is  returned as a new different (but
+  mathematically equal) ideal [23XG[123X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XG := SI_std( I );[127X[104X
+    [4X[28X<singular ideal, 3 gens>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( G );[127X[104X
+    [4X[28Xx0*x1-x2*x3,[128X[104X
+    [4X[28Xx0^2-x1*x3,[128X[104X
+    [4X[28Xx1^2*x3-x0*x2*x3[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe syzygies of the generators of [23XG[123X are the columns of the [5XSingular[105X datatype
+  [10Xmodule[110X:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XS := SI_syz( G );[127X[104X
+    [4X[28X<singular module, 2 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( S );[127X[104X
+    [4X[28Xx0, x1*x3,[128X[104X
+    [4X[28X-x1,-x2*x3,[128X[104X
+    [4X[28X-1, -x0[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YTo access the second column of [10XS[110X use:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XS[2];[127X[104X
+    [4X[28X<singular vector, 3 entries>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( S[2] );[127X[104X
+    [4X[28X[x1*x3,-x2*x3,-x0][128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YTo access the first entry of the second column of [10XS[110X use:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XS[2][1];[127X[104X
+    [4X[28Xx1*x3[128X[104X
+    [4X[25Xgap>[125X [27Xp - S[2][1];[127X[104X
+    [4X[28Xx1^2+x1*x3+x3^2[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YTo create a matrix use:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xm := SI_matrix( R, 3, 2, "x0,x3,x1,x2,x3,x0" );[127X[104X
+    [4X[28X<singular matrix, 3x2>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( m );[127X[104X
+    [4X[28Xx0,x3,[128X[104X
+    [4X[28Xx1,x2,[128X[104X
+    [4X[28Xx3,x0[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YTo extract the (2,1)-entry from the matrix use:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xm[[2,1]];[127X[104X
+    [4X[28Xx1[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe sum of the [10Xmodule[110X [10XS[110X and the [10Xmatrix[110X [10Xm[110X is their augmentation:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XS + m;[127X[104X
+    [4X[28X<singular module, 4 vectors in free module of rank 3>[128X[104X
+    [4X[25Xgap>[125X [27XDisplay( S + m );[127X[104X
+    [4X[28Xx0, x1*x3, x0,x3,[128X[104X
+    [4X[28X-x1,-x2*x3,x1,x2,[128X[104X
+    [4X[28X-1, -x0, x3,x0[128X[104X
+  [4X[32X[104X
+  

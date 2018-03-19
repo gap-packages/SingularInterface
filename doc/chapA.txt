@@ -1,0 +1,13 @@
+  
+  [1XA [33X[0;0YImplementation details[133X[101X
+  
+  
+  [1XA.1 [33X[0;0YWrappers[133X[101X
+  
+  [33X[0;0YTODO: Explain how the wrapping system works[133X
+  
+  
+  [1XA.2 [33X[0;0YProxies[133X[101X
+  
+  [33X[0;0YTODO: Explain how proxies works[133X
+  

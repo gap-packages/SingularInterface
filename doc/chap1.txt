@@ -1,0 +1,109 @@
+  
+  [1X1 [33X[0;0YIntroduction[133X[101X
+  
+  
+  [1X1.1 [33X[0;0YWhat is SingularInterface?[133X[101X
+  
+  [33X[0;0YThe   [5XGAP[105X  package  [5XSingularInterface[105X  is  a  highly  efficient  and  robust
+  unidirectional  low-level  interface to [5XSingular[105X [DGPS14]. It is the outcome
+  of an intensive collaboration between core developers of both systems.[133X
+  
+  [33X[0;0YThe   goal   of  this  interface  is  to  map  all  of  [5XSingular[105X’s  powerful
+  functionality  into [5XGAP[105X. To achieve this it automatically wraps [13Xall[113X [5XSingular[105X
+  datatypes  and  exports  [13Xall[113X  of  [5XSingular[105X’s  interface  procedures  to [5XGAP[105X.
+  Furthermore,  all  procedures  of  any  contributed library can be loaded on
+  demand.[133X
+  
+  [33X[0;0YThis  package  is  a  rather [21Xfaithful[121X image of [5XSingular[105X; it does not make an
+  extensive  attempt  for  a  better  integration  of  [5XSingular[105X  into  the [5XGAP[105X
+  ecosystem.  This  is intentionally left to other packages, which are free to
+  realize this in different ways.[133X
+  
+  [33X[0;0YThe  development  of  [5XSingularInterface[105X  has  reached  a  [23X\beta[123X-phase and is
+  already  actively  used  in  some research projects. We hope to attract more
+  users  in  the  near future, whose feedback will be crucial for a successful
+  further development.[133X
+  
+  [33X[0;0YThe   motivation  behind  developing  [5XSingularInterface[105X  is  the  increasing
+  interest  of  various  research  projects  in combining the strength of both
+  systems: [5XGAP[105X users get access to [5XSingular[105X's polynomial arithmetic and highly
+  optimized  Gröbner  basis  engine.  [5XSingular[105X  users  gain a second front end
+  language  for this engine -- in addition to the current [5XSingular[105X language --
+  with  an  advanced  object  model  primarily  designed  for  modeling higher
+  mathematical  structures,  as  well as access to [5XGAP[105X as an expert system for
+  group and representation theory.[133X
+  
+  
+  [1X1.2 [33X[0;0YConventions[133X[101X
+  
+  [33X[0;0YAlmost all functions provided by [5XSingularInterface[105X have a name starting with
+  one of the following prefixes:[133X
+  
+  [30X    [33X[0;6Y[10XSI_[110X: [5XSingular[105X interpreter functions such as [10Xstd[110X are prefixed with [10XSI_[110X,
+        resulting in the [5XGAP[105X name [10XSI_std[110X.[133X
+  
+  [30X    [33X[0;6Y[10XSIL_[110X:  [5XSingular[105X  library  functions such as [10Xgroebner[110X are prefixed with
+        [10XSIL_[110X, resulting in the [5XGAP[105X name [10XSIL_groebner[110X.[133X
+  
+  [30X    [33X[0;6Y[10X_SI_[110X:  Various low-level methods start with the prefix [10X_SI_[110X; these are
+        for internal use and currently undocumented.[133X
+  
+  [30X    [33X[0;6Y[10XIsSI_[110X: These are names of types provided by [5XSingularInterface[105X, such as
+        [10XIsSI_matrix[110X.[133X
+  
+  [33X[0;0YThis  makes  it  relatively  easy  to  discover  all  functions  provided by
+  [5XSingularInterface[105X, namely by using [5XGAP[105X's tab completion feature: Just type a
+  prefix,  such  as  [10XSI_[110X,  then  press  the TAB key twice and [5XGAP[105X displays all
+  matching identifiers.[133X
+  
+  [33X[0;0YOne  notable  exception  to  this  naming  scheme  is  the function [2XSingular[102X
+  ([14X2.1-1[114X).[133X
+  
+  
+  [1X1.3 [33X[0;0YObtaining and installing SingularInterface[133X[101X
+  
+  [33X[0;0YThe    latest    [5XSingularInterface[105X    release   can   be   downloaded   from
+  [7Xhttp://gap-system.github.io/SingularInterface/[107X.[133X
+  
+  [33X[0;0YFor instructions on how to compile the [5XSingularInterface[105X source code, please
+  refer  to  the  [11XINSTALL[111X  file accompanying it. To check that the package has
+  been successfully installed, start [5XGAP[105X and type:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27XLoadPackage( "SingularInterface" );[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  
+  [1X1.4 [33X[0;0YThe noncommutative subsystems Plural and SCA[133X[101X
+  
+  [33X[0;0YThe   noncommutative   extensions   [5XPlural[105X   and   [5XSCA[105X   of  [5XSingular[105X  (aka.
+  noncommutative   subsystems)   decided  to  comply  with  [5XSingular[105X's  column
+  convention  while  implementing  the noncommutative Gröbner basis algorithms
+  for [13Xleft[113X ideals and modules. This is [13Xin[113Xcompatible with matrix multiplication
+  resulting in various annoying side-effects (see, e.g., [2XSI_lift[102X ([14X4.2-6[114X)).[133X
+  
+  [33X[0;0YThese  noncommutative  subsystems should have either used the row convention
+  (violating [5XSingular[105X's established convention) or should have implemented the
+  Gröbner basis algorithms for [13Xright[113X ideals and modules instead (breaking with
+  the  existing  literature  on the subject which usually describes algorithms
+  for left ideals and modules).[133X
+  
+  [33X[0;0Y[5XSingularInterface[105X  makes  no  attempt  to  resolve  this  issue.  Any higher
+  implementation  which needs the noncommutative subsystems will probably need
+  to address this issue.[133X
+  
+  [33X[0;0YFor  example, the [5Xhomalg[105X project [hpa14] completely resolves this dilemma by
+  mimicking  the  row  convention. The details are too technical to be exposed
+  here.  The effect is that both left and right modules are properly supported
+  in  [5Xhomalg[105X,  regardless  of the commutativity of the ring. This is done in a
+  way  which  is  even compatible with base change from a commutative ring (in
+  [5XSingular[105X) to a noncommutative ring extension (in [5XPlural[105X or [5XSCA[105X). The support
+  for  right  modules  depends  on  the  existence  of  an  involution  of the
+  noncommutative ring.[133X
+  
+  
+  [1X1.5 [33X[0;0YTODO[133X[101X
+  
+  [30X    [33X[0;6Yreference Rundbrief article[133X
+  
