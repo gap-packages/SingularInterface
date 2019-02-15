@@ -25,6 +25,7 @@ PackageName := "SingularInterface",
 Subtitle := "A GAP interface to Singular",
 Version := "0.7.2",
 Date    := "01/11/2014", # dd/mm/yyyy format
+License := "GPL-2.0-or-later",
 
 Persons := [
   rec(
@@ -48,7 +49,7 @@ Persons := [
     IsAuthor      := true,
     IsMaintainer  := true,
     Email         := "max.horn@math.uni-giessen.de",
-    WWWHome       := "http://www.quendi.de/math",
+    WWWHome       := "https://www.quendi.de/math",
     PostalAddress := Concatenation(
                        "AG Algebra\n",
                        "Mathematisches Institut\n",
