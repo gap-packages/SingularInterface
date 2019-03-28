@@ -155,4 +155,4 @@ function( arg ) ... end]]></Example>
 
 @Subsection Example
 
-@InsertSystem Rundbrief_Example
+@InsertChunk Rundbrief_Example
