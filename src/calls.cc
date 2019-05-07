@@ -97,6 +97,31 @@ void _SI_ErrorCallback(const char *st)
     }
 }
 
+class TempSetCurrRing {
+    idhdl tmpHdl;
+public:
+    TempSetCurrRing() : tmpHdl(0) {
+        if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
+            // TODO: Perhaps we should be using getSingularIdhdl() here, too?
+            tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
+            assert(tmpHdl);
+            IDRING(tmpHdl) = currRing;
+            currRing->ref++;
+
+            currRingHdl = tmpHdl;
+        }
+    }
+    
+    ~TempSetCurrRing() {
+        if (tmpHdl) {
+            killhdl(tmpHdl, currPack);
+            currRingHdl = 0;
+            tmpHdl = 0;
+        }
+    }
+
+};
+
 ///! Send a string to the Singular interpreter, which is then evaluated.                   
 ///! We append "return();" to the evaluated string so that control returns
 ///! to use once the evaluation is complete.
@@ -112,17 +137,7 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
 
     ResetString(_SI_LastErrorStringGVar);
 
-    idhdl tmpHdl = 0;
-    // TODO: resolve code duplication between Func_SI_EVALUATE and FuncSI_CallProc
-    if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
-        // TODO: Perhaps we should be using getSingularIdhdl() here, too?
-        tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
-        assert(tmpHdl);
-        IDRING(tmpHdl) = currRing;
-        currRing->ref++;
-
-        currRingHdl = tmpHdl;
-    }
+    TempSetCurrRing tmpHdl;
 
     StartPrintCapture();
     myynest = 1;
@@ -131,11 +146,6 @@ Obj Func_SI_EVALUATE(Obj self, Obj st)
     EndPrintCapture();
 
     omFree(ost);
-
-    if (tmpHdl) {
-        killhdl(tmpHdl, currPack);
-        currRingHdl = 0;
-    }
 
     return err ? False : True;
 }
@@ -480,9 +490,7 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     }
 
     ring r = NULL;
-    idhdl tmpHdl = 0;
 
-    int nrargs = (int)LEN_PLIST(args);
     WrapMultiArgs wrap(args, r);
     if (wrap.error)
         ErrorQuit(wrap.error, 0L, 0L);
@@ -490,21 +498,12 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
     if (r)
         rChangeCurrRing(r);
 
+    TempSetCurrRing tmpHdl;
     BOOLEAN bool_ret;
-    // TODO: resolve code duplication between Func_SI_EVALUATE and FuncSI_CallProc
-    if (currRing && (!currRingHdl || IDRING(currRingHdl) != currRing)) {
-        // TODO: Perhaps we should be using getSingularIdhdl() here, too?
-        tmpHdl = enterid(" libsing fake currRingHdl ", 0, RING_CMD, &IDROOT, FALSE, FALSE);
-        assert(tmpHdl);
-        IDRING(tmpHdl) = currRing;
-        currRing->ref++;
-
-        currRingHdl = tmpHdl;
-    }
     iiRETURNEXPR.Init();
 
     StartPrintCapture();
-    bool_ret = iiMake_proc(h, NULL, nrargs ? &wrap.s_arg : NULL);
+    bool_ret = iiMake_proc(h, NULL, LEN_PLIST(args) ? &wrap.s_arg : NULL);
     EndPrintCapture();
 
     inerror = 0;    // reset interpreter error flag
@@ -533,11 +532,6 @@ Obj FuncSI_CallProc(Obj self, Obj name, Obj args)
         retObj = list;
     } else {
         retObj = gapwrap(*ret, r);
-    }
-
-    if (tmpHdl) {
-        killhdl(tmpHdl, currPack);
-        currRingHdl = 0;
     }
 
     return retObj;
