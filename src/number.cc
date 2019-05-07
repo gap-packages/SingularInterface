@@ -63,7 +63,7 @@ number _SI_NUMBER_FROM_GAP(ring r, Obj n)
     if (IS_INTOBJ(n)) {
         Int i = INT_INTOBJ(n);
 #ifdef SYS_IS_64_BIT
-        if (i >= (-1L << 31) && i < (1L << 31))
+        if (i >= -(1L << 31) && i < (1L << 31))
             return n_Init(i, r);
 #else
         return n_Init(i, r);
@@ -143,7 +143,7 @@ number _SI_BIGINT_FROM_GAP(Obj nr)
     number n = NULL;
     if (IS_INTOBJ(nr)) {   // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
-        if (i >= (-1L << 28) && i < (1L << 28))
+        if (i >= -(1L << 28) && i < (1L << 28))
             n = n_Init((int)i, coeffs_BIGINT);
         else
             n = n_Init(i,coeffs_BIGINT);
@@ -168,7 +168,7 @@ int _SI_BIGINT_OR_INT_FROM_GAP(Obj nr, sleftv &obj)
     if (IS_INTOBJ(nr)) {    // a GAP immediate integer
         Int i = INT_INTOBJ(nr);
 #ifdef SYS_IS_64_BIT
-        if (i >= (-1L << 31) && i < (1L << 31)) {
+        if (i >= -(1L << 31) && i < (1L << 31)) {
 #endif
             obj.data = (void *)i;
             obj.rtyp = INT_CMD;
