@@ -56,9 +56,6 @@ maketest.g
 /Makefile.in
 /aclocal.m4
 /cnf/
-/test-suite.log
-/test.sh.log
-/test.sh.trs
 /configure
 /m4/libtool.m4
 /m4/ltoptions.m4
