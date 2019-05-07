@@ -202,9 +202,6 @@ kind of records. internally implemented like lists, but can contain elements of 
 for elements depending on a ring, it stores also the ring
 this takes a pointer to the ring, and increments a reference counter on the ring
 
-== pyobject ==
-black box data in singular for accessing python objects
-
 
 
 -> going back to the start, we also want to wrap gmpint

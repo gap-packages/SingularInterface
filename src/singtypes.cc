@@ -83,8 +83,6 @@ const int GAPtoSingType[] = {
     VECTOR_CMD,
     0, /* USERDEF */
     0, /* USERDEF */
-    0, /* PYOBJECT */
-    0 /* PYOBJECT */
 };
 
 int SingtoGAPType[MAX_TOK];
@@ -136,11 +134,6 @@ const int HasRingTable[] = {
     1, // SINGTYPE_VECTOR_IMM    = 43,
     0, // SINGTYPE_USERDEF       = 44,
     0, // SINGTYPE_USERDEF_IMM   = 45,
-    // TODO (?): cone
-    // TODO (?): fan
-    // TODO (?): polytope
-    0, // SINGTYPE_PYOBJECT      = 46,
-    0  // SINGTYPE_PYOBJECT_IMM  = 47,
     // TODO (?): reference
     // TODO (?): shared
 };
@@ -188,7 +181,6 @@ void InitSingTypesFromKernel()
     ExportAsRecEntry(SINGTYPE_STRING);
     ExportAsRecEntry(SINGTYPE_VECTOR);
     ExportAsRecEntry(SINGTYPE_USERDEF);
-    ExportAsRecEntry(SINGTYPE_PYOBJECT);
     // TODO (?): reference
     // TODO (?): shared
     gvar = GVarName("_SI_TYPENRS");

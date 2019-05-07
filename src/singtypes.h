@@ -72,11 +72,6 @@ enum SingType {
     SINGTYPE_VECTOR_IMM    = 43,
     SINGTYPE_USERDEF       = 44,
     SINGTYPE_USERDEF_IMM   = 45,
-    // TODO (?): cone
-    // TODO (?): fan
-    // TODO (?): polytope
-    SINGTYPE_PYOBJECT      = 46,
-    SINGTYPE_PYOBJECT_IMM  = 47,
     // TODO (?): reference
     // TODO (?): shared
 
