@@ -31,3 +31,10 @@ Therefore I recommend:
 
 As documented, 0*x is equivalent to ZeroSM and thus ZERO in the kernel
           and  x^0 is equivalent to OneSM  and thus ONE_MUT in the kernel
+
+
+
+UPDATE: Max H. now thinks that the best way to go about this is
+to stop caching zero and one inside the "lowlevel" wrapper object.
+Instead, let the high-level wrapper (which can be an attribute storing
+T_COMOBJ) take care of all that.

@@ -139,6 +139,10 @@ static Int InitKernel(StructInitInfo* module)
      */
 
     // The following are OK, see dev/ZEROONECHAOS for details!
+    OurZeroObject = ZeroFuncs[T_SINGULAR];
+    OurOneObject = OneFuncs[T_SINGULAR];
+    OurZeroMutObject = ZeroMutFuncs[T_SINGULAR];
+    OurOneMutObject = OneMutFuncs[T_SINGULAR];
     ZeroFuncs[T_SINGULAR] = ZeroSMSingObj;
     OneMutFuncs[T_SINGULAR] = OneSMSingObj;
     EqFuncs[T_SINGULAR][T_SINGULAR] = EqObject;

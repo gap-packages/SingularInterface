@@ -255,6 +255,11 @@ extern UInt _SI_internalRingRNam;
 Obj UnwrapHighlevelWrapper(Obj obj);
 
 
+extern Obj (*OurZeroObject)(Obj s);
+extern Obj (*OurOneObject)(Obj s);
+extern Obj (*OurZeroMutObject)(Obj s);
+extern Obj (*OurOneMutObject)(Obj s);
+
 
 //////////////// C++ functions to be called from C ////////////////////
 

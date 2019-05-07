@@ -869,10 +869,11 @@ void MakeImmutableSingObj(Obj s)
 }
 
 
-extern "C" Obj ZeroObject(Obj s);
-extern "C" Obj OneObject(Obj s);
-extern "C" Obj ZeroMutObject(Obj s);
-extern "C" Obj OneMutObject(Obj s);
+Obj (*OurZeroObject)(Obj s);
+Obj (*OurOneObject)(Obj s);
+Obj (*OurZeroMutObject)(Obj s);
+Obj (*OurOneMutObject)(Obj s);
+
 
 Obj ZeroSMSingObj(Obj s)
 {
@@ -883,14 +884,14 @@ Obj ZeroSMSingObj(Obj s)
         res = ZERO_SINGOBJ(s);
         if (res != NULL)
             return res;
-        res = ZeroMutObject(s);  // This makes a mutable zero
+        res = OurZeroMutObject(s);  // This makes a mutable zero
         MakeImmutable(res);
         SET_ZERO_SINGOBJ(s, res);
         CHANGED_BAG(s);
         return res;
     }
     if (((gtype + 1) & 1) == 1)    // we are mutable
-        return ZeroMutObject(s);
+        return OurZeroMutObject(s);
     // Here we are immutable:
     if (HasRingTable[gtype]) {
         // Rings are always immutable!
@@ -899,7 +900,7 @@ Obj ZeroSMSingObj(Obj s)
             ErrorQuit("internal error: bad ring reference in ring dependant object", 0L, 0L);
         return ZeroSMSingObj((Obj)r->ext_ref);
     }
-    return ZeroObject(s);
+    return OurZeroObject(s);
 }
 
 Obj OneSMSingObj(Obj s)
@@ -911,14 +912,14 @@ Obj OneSMSingObj(Obj s)
         res = ONE_SINGOBJ(s);
         if (res != NULL)
             return res;
-        res = OneObject(s);   // This is OneMutable and gives us mutable
+        res = OurOneObject(s);   // This is OneMutable and gives us mutable
         MakeImmutable(res);
         SET_ONE_SINGOBJ(s, res);
         CHANGED_BAG(s);
         return res;
     }
     if (((gtype + 1) & 1) == 1)   // we are mutable!
-        return OneObject(s);  // This is OneMutable
+        return OurOneObject(s);  // This is OneMutable
     // Here we are immutable:
     if (HasRingTable[gtype]) {
         // Rings are always immutable!
@@ -927,7 +928,7 @@ Obj OneSMSingObj(Obj s)
             ErrorQuit("internal error: bad ring reference in ring dependant object", 0L, 0L);
         return OneSMSingObj((Obj)r->ext_ref);
     }
-    return OneMutObject(s);
+    return OurOneMutObject(s);
 }
 
 /* this is to test the performance gain, when we avoid the method selection
