@@ -179,10 +179,10 @@ static void AddSingularRingToCleanup(ring r)
     SingularRingsToCleanup[SRTC_nr++] = r;
 }
 
-static TNumCollectFuncBags oldpostGCfunc = NULL;
-// From the GAP kernel, not exported there:
-extern TNumCollectFuncBags BeforeCollectFuncBags;
-extern TNumCollectFuncBags AfterCollectFuncBags;
+// static TNumCollectFuncBags oldpostGCfunc = NULL;
+// // From the GAP kernel, not exported there:
+// extern TNumCollectFuncBags BeforeCollectFuncBags;
+// extern TNumCollectFuncBags AfterCollectFuncBags;
 
 static void SingularRingCleaner(void)
 {
@@ -192,15 +192,16 @@ static void SingularRingCleaner(void)
         // Pr("killed a ring\n", 0L, 0L);
     }
     SRTC_nr = 0;
-    oldpostGCfunc();
+    //oldpostGCfunc();
 }
 
 void InstallPrePostGCFuncs(void)
 {
-    TNumCollectFuncBags oldpreGCfunc = BeforeCollectFuncBags;
-    oldpostGCfunc = AfterCollectFuncBags;
-
-    InitCollectFuncBags(oldpreGCfunc, SingularRingCleaner);
+//     TNumCollectFuncBags oldpreGCfunc = BeforeCollectFuncBags;
+//     oldpostGCfunc = AfterCollectFuncBags;
+// 
+//     InitCollectFuncBags(oldpreGCfunc, SingularRingCleaner);
+    InitCollectFuncBags(0, SingularRingCleaner);
 }
 
 //! Free a given T_SINGULAR object. It is registered using InitFreeFuncBag
