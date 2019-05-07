@@ -19,23 +19,117 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-Read("src/highlevel_mappings_table.g");;
+if not IsBound(SI_OPERATIONS) then
+    Read("src/highlevel_mappings_table.g");
+fi;
 
-IsRingDep := Set([
-    "ideal",
-    "map",
-    "matrix",
-    "module",
-    "number",
-    "poly",
-    "qring",
-    "ring",
-    "vector",
-]);;
+# The following information from grammer.y is one of the things that helped to
+# create the record 'IsRingDep' below.
+#
+# TODO: Note that the data in the section titled "ring dependent cmd" is not
+# yet used; and while it is close to what we auto-deduced, there are subtle
+# differences...
+
+#
+# /* types, part 1 (ring indep.)*/
+# %token <i> GRING_CMD
+# %token <i> BIGINTMAT_CMD
+# %token <i> INTMAT_CMD
+# %token <i> PROC_CMD
+# %token <i> RING_CMD
+#
+# /* valid when ring defined ! */
+# %token <i> BEGIN_RING
+# /* types, part 2 */
+# %token <i> BUCKET_CMD
+# %token <i> IDEAL_CMD
+# %token <i> MAP_CMD
+# %token <i> MATRIX_CMD
+# %token <i> MODUL_CMD
+# %token <i> NUMBER_CMD
+# %token <i> POLY_CMD
+# %token <i> RESOLUTION_CMD
+# %token <i> SMATRIX_CMD
+# %token <i> VECTOR_CMD
+# /* end types */
+#
+# /* ring dependent cmd, with argumnts indep. of a ring*/
+# %token <i> BETTI_CMD
+# %token <i> E_CMD
+# %token <i> FETCH_CMD
+# %token <i> FREEMODULE_CMD
+# %token <i> KEEPRING_CMD
+# %token <i> IMAP_CMD
+# %token <i> KOSZUL_CMD
+# %token <i> MAXID_CMD
+# %token <i> MONOM_CMD
+# %token <i> PAR_CMD
+# %token <i> PREIMAGE_CMD
+# %token <i> VAR_CMD
+#
+# /*system variables in ring block*/
+# %token <i> VALTVARS
+# %token <i> VMAXDEG
+# %token <i> VMAXMULT
+# %token <i> VNOETHER
+# %token <i> VMINPOLY
+#
+# %token <i> END_RING
+# /* end of ring definitions */
+
+
+# the following record maps singular argument "types" (using their names in
+# the Singular interpreter) to a boolean: true if that type implicitly
+# references a ring, and false otherwise
+IsRingDep := rec(
+    # ring dependant
+    ideal := true,
+    map := true,
+    matrix := true,
+    module := true,
+    number := true,
+    poly := true,
+    polyBucket := true,
+    qring := true,
+    resolution := true,
+    ring := true,       # HACK
+    smatrix := true,
+    vector := true,
+
+    cring := true, # ??? CRING_CMD
+
+    # the following are new in Singular 4.2
+    Matrix := true,  # ??? CMATRIX_CMD
+    Number := true,  # ??? CNUMBER_CMD
+    Poly := true,    # ??? CPOLY_CMD
+
+    # not ring dependant
+    bigint := false,
+    bigintmat := false,
+    int := false,
+    intmat := false,
+    intvec := false,
+    LIB := false,
+    link := false,
+    nothing := false,
+    package := false,
+    proc := false,
+    string := false,
+
+    any_type := false,  # can be anything, so we must assume it is something w/o ring
+    def := false,  # ???
+    identifier := false,  # ??? IDHDL  -> interpreter handle
+    list := false,  # ???
+);
+
+
+# a variant of a Singular interpreter op is "ring dependent" if none of its
+# arguments contains a ring reference, but its output does. For these, we need
+# to provide the ring as an explicit argument
 IsRingDepVariant := function(tabrow)
-    return ForAll(tabrow[2], x->not (x in IsRingDep)) and
-           tabrow[3] in IsRingDep;
-end;;
+    return ForAll(tabrow[2], x -> not IsRingDep.(x)) and
+           IsRingDep.(tabrow[3]);
+end;
 
 # The following constructors get installed under different names than
 # everything else ("_SI_op_singular" instead of "SI_op"), since we need to
@@ -51,12 +145,8 @@ singularConstructors := Set([
     "poly",
     "ring",
     "vector",
-]);;
+]);
 
-
-
-doit := function()
-  local needring,s,ops,ops2,op,poss,name,nr,i;
 s := OutputTextFile("lib/highlevel_mappings.g",false);
 PrintTo(s,"# DO NOT EDIT, this file is generated automatically.\n");
 
@@ -114,15 +204,27 @@ for op in ops do
                       "  end );\n\n");
         fi; 
     elif poss[4] <> [] then
-        # variable argument count: we only use _SI_CallFuncM, and rely
-        # on the Singular interpreter (resp. on jjCALL1ARG etc. entries
-        # in table dArithM) to dispatch to the 1/2/3 arg variants as needed.
+        # variable argument count: we only use _SI_CallFuncM, and rely on the
+        # Singular interpreter (resp. on jjCALL1ARG etc. entries in table
+        # dArithM) to dispatch to the 1/2/3 arg variants as needed. The
+        # Singular interpreter usually ensures that by adding suitable entries
+        # into the dArithM array with field proc set to jjCALL1ARG,
+        # jjCALL2ARG, jjCALL3ARG as appropriate.
         
         # For now we just assume that the parameter lists always specify
         # a ring for these commands.
         if needring then
-            #Error("vararg op ", op, " needs ring\n");
             Print("WARNING: vararg op ", op, " needs ring\n");
+
+            Print("  the following methods are NOT ring dependant: ",
+                    Filtered(SI_OPERATIONS[i]{poss[i]}, x -> not IsRingDepVariant(x)),
+                    "\n\n");
+
+            Print("  the following methods are ring dependant: ",
+                    Filtered(SI_OPERATIONS[i]{poss[i]}, IsRingDepVariant),
+                    "\n");
+
+            #Error("vararg op ", op, " needs ring\n");
             continue;
         fi;
         
@@ -144,30 +246,30 @@ for op in ops do
                       "  end );\n\n");
     else
         # op occurs with at least two different fixed argument counts
-        poss := Filtered([1..3], i -> [] <> poss[i]);
         
         PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
-        if 1 in poss then
+        if Length(poss[1]) > 0 then
             PrintTo(s,"    if Length(arg) = 1 then\n",
                       "      return _SI_CallFunc1(0,",nr,",arg[1]);\n",
                       "    fi;\n");
         fi;
-        if 2 in poss then
+        if Length(poss[2]) > 0 then
             PrintTo(s,"    if Length(arg) = 2 then\n",
                       "      return _SI_CallFunc2(0,",nr,",arg[1],arg[2]);\n",
                       "    fi;\n");
         fi;
-        if 3 in poss then
+        if Length(poss[3]) > 0 then
             PrintTo(s,"    if Length(arg) = 3 then\n",
                       "      return _SI_CallFunc3(0,",nr,",arg[1],arg[2],arg[3]);\n",
                       "    fi;\n");
         fi;
-        PrintTo(s,    "    Error(\"incorrect number of arguments\");\n",
-                      "  end );\n\n");
+        PrintTo(s,    "    Error(\"incorrect number of arguments\");\n");
+
+        PrintTo(s,    "  end );\n\n");
     fi;
   fi;
 od;
 
 CloseStream(s);
-end;;
-doit();;
+
+QUIT;

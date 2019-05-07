@@ -79,7 +79,7 @@ src/highlevel_mappings_table.g:	gentableforGAP
 
 lib/highlevel_mappings.g: src/highlevel_mappings_table.g src/gen_highlevel_mappings.g
 	@echo "Generating highlevel mappings..."
-	$(GAPROOT)/bin/gap.sh -A -q -T < src/gen_highlevel_mappings.g
+	$(GAPROOT)/bin/gap.sh -A -q --quitonbreak src/gen_highlevel_mappings.g
 	@echo "Done!"
 
 BUILT_SOURCES = \
