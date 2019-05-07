@@ -43,16 +43,7 @@ static void _SI_GMP_FROM_GAP(Obj in, mpz_t out)
 /// simply calls the GAP function IntFFE().
 static Obj IntFFE(Obj o)
 {
-    // Normally, we would do this:
-    //    return CALL_1ARGS(SI_IntFFE, o);
-    // However, this fails in C++ due to the stricter type checking.
-    // Thus we expand the macro once, and add the appropriate type case.
-    // This should eventually be fixed in GAP.
-    typedef Obj (* ObjFunc1Arg) (Obj self, Obj a);
-    ObjFunc of = HDLR_FUNC(SI_IntFFE, 1);
-    ObjFunc1Arg of1 = (ObjFunc1Arg)of;
-    return of1(SI_IntFFE, o);
-    
+    return CALL_1ARGS(SI_IntFFE, o);
 }
 
 
@@ -206,23 +197,6 @@ Obj _SI_BIGINT_OR_INT_TO_GAP(number n)
         // an immediate integer
         return INTOBJ_INT(SR_TO_INT(n));
     } else {
-        Obj res;
-        Int size = n->z->_mp_size;
-        int sign = size > 0 ? 1 : -1;
-        size = abs(size);
-#ifdef SYS_IS_64_BIT
-        if (size == 1) {
-            if (sign > 0)
-                return ObjInt_UInt(n->z->_mp_d[0]);
-            else
-                return AInvInt(ObjInt_UInt(n->z->_mp_d[0]));
-        }
-#endif
-        if (sign > 0)
-            res = NewBag(T_INTPOS, sizeof(mp_limb_t) * size);
-        else
-            res = NewBag(T_INTNEG, sizeof(mp_limb_t) * size);
-        memcpy(ADDR_INT(res), n->z->_mp_d, sizeof(mp_limb_t) * size);
-        return res;
+        return MakeObjInt((const UInt *)n->z->_mp_d, n->z->_mp_size);
     }
 }

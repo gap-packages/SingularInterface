@@ -178,10 +178,9 @@ PackageDoc := rec(
 ),
 
 Dependencies := rec(
-  GAP := ">=4.7.2",
+  GAP := ">=4.10",
   NeededOtherPackages := [],
   SuggestedOtherPackages := [
-    ["GAPDoc", "1.2"],
     ["AutoDoc", "2014.03.27"],
     ],
   ExternalConditions := ["Singular 4"]
@@ -207,7 +206,7 @@ Keywords := ["Singular", "polynomials", "groebner"],
 AutoDoc := rec(
     TitlePage := rec(
         Copyright := Concatenation(
-                    "&copyright; 2011-2014 by the &SingularInterface; authors<P/>\n\n",
+                    "&copyright; 2011-2019 by the &SingularInterface; authors<P/>\n\n",
                     "The &SingularInterface; package is free software;\n",
                     "you can redistribute it and/or modify it under the terms of the\n",
                     "<URL Text=\"GNU General Public License\">http://www.fsf.org/licenses/gpl.html</URL>\n",

@@ -32,13 +32,6 @@
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 
-// The following should be in rational.h but isn't (as of GAP 4.7.2):
-#ifndef NUM_RAT
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
-#endif
-
-
 
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
