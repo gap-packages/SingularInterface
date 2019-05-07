@@ -23,8 +23,8 @@ SetPackageInfo( rec(
 
 PackageName := "SingularInterface",
 Subtitle := "A GAP interface to Singular",
-Version := "0.7.2",
-Date    := "01/11/2014", # dd/mm/yyyy format
+Version := "0.8",
+Date    := "08/05/2019", # dd/mm/yyyy format
 License := "GPL-2.0-or-later",
 
 Persons := [
@@ -33,15 +33,16 @@ Persons := [
     FirstNames    := "Mohamed",
     IsAuthor      := true,
     IsMaintainer  := true,
-    Email         := "barakat@mathematik.uni-kl.de",
-    WWWHome       := "http://www.mathematik.uni-kl.de/~barakat/",
-    PostalAddress := Concatenation( [
-                       "Department of Mathematics\n",
-                       "University of Kaiserslautern\n",
-                       "67653 Kaiserslautern\n",
-                       "Germany" ] ),
-    Place         := "Kaiserslautern",
-    Institution   := "University of Kaiserslautern"
+    Email         := "mohamed.barakat@uni-siegen.de",
+    WWWHome       := "https://algebra.mathematik.uni-siegen.de/barakat/",
+    PostalAddress := Concatenation(
+                       "Department Mathematik\n",
+                       "Universität Siegen\n",
+                       "Walter-Flex-Straße 3\n",
+                       "57072 Siegen\n",
+                       "Germany" ),
+    Place         := "Siegen",
+    Institution   := "Universität Siegen"
   ),
   rec(
     LastName      := "Horn",
@@ -80,15 +81,6 @@ Persons := [
     FirstNames    := "Oleksandr",
     IsAuthor      := true,
     IsMaintainer  := false,
-    Email         := "http://goo.gl/mcpzY",
-    WWWHome       := "http://www.mathematik.uni-kl.de/~motsak/",
-    PostalAddress := Concatenation( [
-                       "Department of Mathematics\n",
-                       "University of Kaiserslautern\n",
-                       "67653 Kaiserslautern\n",
-                       "Germany" ] ),
-    Place         := "Kaiserslautern",
-    Institution   := "University of Kaiserslautern"
   ),
   rec( 
     LastName      := "Neunhoeffer",
@@ -96,16 +88,9 @@ Persons := [
     IsAuthor      := true,
     IsMaintainer  := false,
     Email         := "max@9hoeffer.de",
-    WWWHome       := "http://www-groups.msc.st-andrews.ac.uk/~neunhoef",
-    PostalAddress := Concatenation( [
-                       "Gustav-Freytag-Straße 40\n",
-                       "50354 Hürth\n",
-                       "Germany" ] ),
-    #Place         := "St Andrews",
-    #Institution   := "University of St Andrews"
   ),
   rec(
-    LastName      := "Schoenemann",
+    LastName      := "Schönemann",
     FirstNames    := "Hans",
     IsAuthor      := true,
     IsMaintainer  := false,
@@ -209,7 +194,7 @@ AutoDoc := rec(
                     "&copyright; 2011-2019 by the &SingularInterface; authors<P/>\n\n",
                     "The &SingularInterface; package is free software;\n",
                     "you can redistribute it and/or modify it under the terms of the\n",
-                    "<URL Text=\"GNU General Public License\">http://www.fsf.org/licenses/gpl.html</URL>\n",
+                    "<URL Text=\"GNU General Public License\">https://www.fsf.org/licenses/gpl.html</URL>\n",
                     "as published by the Free Software Foundation; either version 2 of the License,\n",
                     "or (at your option) any later version.\n"
                 ),

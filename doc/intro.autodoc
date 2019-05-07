@@ -56,7 +56,7 @@ One notable exception to this naming scheme is the function <Ref Func="Singular"
 @Section Obtaining and installing SingularInterface
 
 The latest &SingularInterface; release can be downloaded from
-<URL>http://gap-system.github.io/SingularInterface/</URL>.
+<URL>https://gap-system.github.io/SingularInterface/</URL>.
 <P/>
 
 For instructions on how to compile the &SingularInterface; source code, please refer to the <F>INSTALL</F> file accompanying it.
