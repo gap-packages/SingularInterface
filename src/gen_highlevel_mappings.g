@@ -210,6 +210,29 @@ for op in ops do
         # Singular interpreter usually ensures that by adding suitable entries
         # into the dArithM array with field proc set to jjCALL1ARG,
         # jjCALL2ARG, jjCALL3ARG as appropriate.
+        # One exception to this is the variadic '[' entry. We special case
+        # it here.
+        
+        if op = "[" then
+            PrintTo(s,"BindConstant(\"_",name,"\", ", nr, ");\n");
+            PrintTo(s,"""
+BindGlobal("SI_[",
+  function(arg)
+    if Length(arg) = 0 then
+      Error("incorrect number of arguments");
+    fi;
+    if Length(arg) = 2 then
+      return _SI_CallFunc2(0,_SI_\[,arg[1],arg[2]);
+    fi;
+    if Length(arg) = 3 then
+      return _SI_CallFunc3(0,_SI_\[,arg[1],arg[2],arg[3]);
+    fi;
+    return _SI_CallFuncM(0,_SI_\[,arg);
+  end );
+
+""");
+            continue;
+        fi;
         
         # For now we just assume that the parameter lists always specify
         # a ring for these commands.
