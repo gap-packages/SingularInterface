@@ -21,13 +21,6 @@
 #include "number.h"
 
 
-// The following should be in rational.h but isn't (as of GAP 4.7.2):
-#ifndef NUM_RAT
-#define NUM_RAT(rat)    ADDR_OBJ(rat)[0]
-#define DEN_RAT(rat)    ADDR_OBJ(rat)[1]
-#endif
-
-
 //! \defgroup CxxHelper C++ helpers for converting between GAP and Singular
 //! The following functions are helpers on the C++ level. They
 //! are not exposed to the GAP level. They are mainly used to dig out

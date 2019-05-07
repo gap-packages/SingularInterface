@@ -37,7 +37,7 @@ InstallGlobalFunction( _SI_BindSingularProcs,
   end );
 
 # This is a dirty hack but seems to work:
-MakeReadWriteGVar("SI_LIB");
+MakeReadWriteGlobal("SI_LIB");
 Unbind(SI_LIB);
 BindGlobal("SI_LIB",function(libname)
     local res;

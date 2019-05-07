@@ -244,13 +244,13 @@ void _SI_ObjMarkFunc(Bag o)
     if (HasRingTable[gtype]) {
         ring r = CXXRING_SINGOBJ(o);
         Obj rr = r ? (Obj)r->ext_ref : 0;
-        MARK_BAG(rr);
+        MarkBag(rr);
     } else if (/*  gtype == SINGTYPE_RING ||  */
         gtype == SINGTYPE_RING_IMM ||
         /* gtype == SINGTYPE_QRING ||  */
         gtype == SINGTYPE_QRING_IMM) {
-        MARK_BAG(ZERO_SINGOBJ(o));   // Mark zero
-        MARK_BAG(ONE_SINGOBJ(o));   // Mark one
+        MarkBag(ZERO_SINGOBJ(o));   // Mark zero
+        MarkBag(ONE_SINGOBJ(o));   // Mark one
     }
 }
 
