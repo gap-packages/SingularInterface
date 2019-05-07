@@ -203,73 +203,35 @@ for op in ops do
                       "    return _SI_CallFunc3(0,",nr,",a,b,c);\n",
                       "  end );\n\n");
         fi; 
-    elif poss[4] <> [] then
-        # variable argument count: we only use _SI_CallFuncM, and rely on the
-        # Singular interpreter (resp. on jjCALL1ARG etc. entries in table
-        # dArithM) to dispatch to the 1/2/3 arg variants as needed. The
-        # Singular interpreter usually ensures that by adding suitable entries
-        # into the dArithM array with field proc set to jjCALL1ARG,
-        # jjCALL2ARG, jjCALL3ARG as appropriate.
-        # One exception to this is the variadic '[' entry. We special case
-        # it here.
-        
-        if op = "[" then
-            PrintTo(s,"BindConstant(\"_",name,"\", ", nr, ");\n");
-            PrintTo(s,"""
-BindGlobal("SI_[",
-  function(arg)
-    if Length(arg) = 0 then
-      Error("incorrect number of arguments");
-    fi;
-    if Length(arg) = 2 then
-      return _SI_CallFunc2(0,_SI_\[,arg[1],arg[2]);
-    fi;
-    if Length(arg) = 3 then
-      return _SI_CallFunc3(0,_SI_\[,arg[1],arg[2],arg[3]);
-    fi;
-    return _SI_CallFuncM(0,_SI_\[,arg);
-  end );
-
-""");
-            continue;
-        fi;
+    else
         
         # For now we just assume that the parameter lists always specify
         # a ring for these commands.
         if needring then
-            Print("WARNING: vararg op ", op, " needs ring\n");
+            Print("WARNING: vararg op '", op, "' needs ring\n");
 
-            Print("  the following methods are NOT ring dependant: ",
-                    Filtered(SI_OPERATIONS[i]{poss[i]}, x -> not IsRingDepVariant(x)),
-                    "\n\n");
+            Print("  the following methods are NOT ring dependant:\n");
+            for i in [1..4] do
+                for meth in SI_OPERATIONS[i]{poss[i]} do
+                    if not IsRingDepVariant(meth) then
+                        Print("    ", meth, "\n");
+                    fi;
+                od;
+            od;
 
-            Print("  the following methods are ring dependant: ",
-                    Filtered(SI_OPERATIONS[i]{poss[i]}, IsRingDepVariant),
-                    "\n");
+            Print("  the following methods are ring dependant:\n");
+            for i in [1..4] do
+                for meth in SI_OPERATIONS[i]{poss[i]} do
+                    if IsRingDepVariant(meth) then
+                        Print("    ", meth, "\n");
+                    fi;
+                od;
+            od;
 
             #Error("vararg op ", op, " needs ring\n");
-            continue;
+            #continue;
         fi;
-        
-        poss := Set(SI_OPERATIONS[4]{poss[4]}, x -> x[2]);
-        
-        PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
-        if -1 in poss or (-2 in poss and 0 in poss) then
-            # takes arbitrary number of arguments
-        elif -2 in poss then
-            PrintTo(s,"    if Length(arg) = 0 then\n",
-                      "      Error(\"incorrect number of arguments\");\n",
-                      "    fi;\n");
-        else
-            PrintTo(s,"    if not Length(arg) in ", poss, " then\n",
-                      "      Error(\"incorrect number of arguments\");\n",
-                      "    fi;\n");
-        fi;
-        PrintTo(s,    "    return _SI_CallFuncM(0,",nr,",arg);\n",
-                      "  end );\n\n");
-    else
-        # op occurs with at least two different fixed argument counts
-        
+
         PrintTo(s,    "BindGlobal(\"",name,"\",\n  function(arg)\n");
         if Length(poss[1]) > 0 then
             PrintTo(s,"    if Length(arg) = 1 then\n",
@@ -286,7 +248,24 @@ BindGlobal("SI_[",
                       "      return _SI_CallFunc3(0,",nr,",arg[1],arg[2],arg[3]);\n",
                       "    fi;\n");
         fi;
-        PrintTo(s,    "    Error(\"incorrect number of arguments\");\n");
+
+        if Length(poss[4]) > 0 then
+            poss := Set(SI_OPERATIONS[4]{poss[4]}, x -> x[2]);
+            if -1 in poss or (-2 in poss and 0 in poss) then
+                # takes arbitrary number of arguments
+            elif -2 in poss then
+                PrintTo(s,"    if Length(arg) = 0 then\n",
+                          "      Error(\"incorrect number of arguments\");\n",
+                          "    fi;\n");
+            else
+                PrintTo(s,"    if not Length(arg) in ", poss, " then\n",
+                          "      Error(\"incorrect number of arguments\");\n",
+                          "    fi;\n");
+            fi;
+            PrintTo(s,    "    return _SI_CallFuncM(0,",nr,",arg);\n");
+        else
+            PrintTo(s,    "    Error(\"incorrect number of arguments\");\n");
+        fi;
 
         PrintTo(s,    "  end );\n\n");
     fi;
