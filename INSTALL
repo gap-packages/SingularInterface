@@ -16,7 +16,7 @@ instructions should get you going.
 
 1. Fetch the Singular source code. For your convenience, we provide
    two shell scripts which do this for you. If you want to use
-   Singular 4.0.1, run
+   Singular 4.1.2p1, run
      ./fetchsingular
    If you want the development version run
      ./fetchsingular.dev

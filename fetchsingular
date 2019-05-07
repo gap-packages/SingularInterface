@@ -21,11 +21,11 @@
 #
 
 
-VERSION=4.0.1
-PATCHLEVEL=
+VERSION=4.1.2
+PATCHLEVEL=p1
 TARFILE=singular-$VERSION$PATCHLEVEL.tar.gz
-URL=http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-0-1/$TARFILE
-MD5=c1c2ae10005dfcd699111d1cde63db7d
+URL=http://www.mathematik.uni-kl.de/ftp/pub/Math/Singular/SOURCES/4-1-2/$TARFILE
+MD5=14a2966b652bcb020364c6824cd0de6d
 
 mkdir -p singular
 

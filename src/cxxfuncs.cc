@@ -24,6 +24,8 @@
 #include "matrix.h" // for Func_SI_Matintmat / Func_SI_Matbigintmat
 #include "number.h"
 
+#include <cmath>
+
 #include <coeffs/bigintmat.h>
 #include <coeffs/longrat.h>
 //#include <kernel/syz.h>
@@ -331,7 +333,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
                 ErrorQuit("Second entry of ordering of type '%s' must be a plain list of integers", (Int)nameStr, 0L);
                 return Fail;
             }
-            covered += sqrt(LEN_LIST(spec));
+            covered += std::sqrt(LEN_LIST(spec));
 
         } else if ((namelen == 1 && nameStr[0] == 'a')
                 || (namelen == 2 && tolower(nameStr[0]) == 'w')) {
@@ -380,8 +382,8 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
     }
 
     // Now allocate int lists for the orderings:
-    int *ord = (int *)omalloc(sizeof(int) * (nrords+1));        // array of orderings
-    ord[nrords] = 0;
+    rRingOrder_t *ord = (rRingOrder_t *)omalloc(sizeof(rRingOrder_t) * (nrords+1));   // array of orderings
+    ord[nrords] = ringorder_no;
     int *block0 = (int *)omalloc(sizeof(int) * (nrords+1));     // starting position of blocks
     int *block1 = (int *)omalloc(sizeof(int) * (nrords+1));     // ending position of blocks
     int **wvhdl = (int **)omAlloc0(sizeof(int *) * (nrords+1)); // array of weight vectors
@@ -390,7 +392,7 @@ Obj Func_SI_ring(Obj self, Obj charact, Obj names, Obj orderings)
         Obj tmp = ELM_LIST(orderings, i + 1);
         char *p = omStrDup(CSTR_STRING(ELM_LIST(tmp, 1)));
         ord[i] = rOrderName(p);
-        if (ord[i] == 0) {
+        if (ord[i] == ringorder_no) {
             Pr("Warning: Unknown ordering name: %s, assume \"dp\"",
                (Int) (CSTR_STRING(ELM_LIST(tmp, 1))), 0L);
             ord[i] = rOrderName(omStrDup("dp"));

@@ -22,10 +22,13 @@
 //#define CONVERT_TABLE 1
 
 // bits 0,1 for PLURAL
-#define NO_PLURAL        0
+#define NO_NC            0
 #define ALLOW_PLURAL     1
 #define COMM_PLURAL      2
-#define  PLURAL_MASK     3
+// bit 6: non-commutative letterplace
+#define ALLOW_LP         64
+#define NC_MASK          (3+64)
+#define ALLOW_NC         ALLOW_LP|ALLOW_PLURAL
 
 // bit 2 for RING-CF
 #define ALLOW_RING       4
@@ -34,9 +37,14 @@
 // bit 3 for zerodivisors
 #define NO_ZERODIVISOR   8
 #define ALLOW_ZERODIVISOR  0
+#define ZERODIVISOR_MASK 8
+
+#define ALLOW_ZZ (ALLOW_RING|NO_ZERODIVISOR)
 
 // bit 4 for warning, if used at toplevel
 #define WARN_RING        16
+// bit 5: do no try automatic conversions
+#define NO_CONVERSION    32
 
 /*=============== types =====================*/
 struct _scmdnames

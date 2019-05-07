@@ -121,7 +121,9 @@ for op in ops do
         # For now we just assume that the parameter lists always specify
         # a ring for these commands.
         if needring then
-            Error("vararg op ", op, " needs ring\n");
+            #Error("vararg op ", op, " needs ring\n");
+            Print("WARNING: vararg op ", op, " needs ring\n");
+            continue;
         fi;
         
         poss := Set(SI_OPERATIONS[4]{poss[4]}, x -> x[2]);
