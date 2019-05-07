@@ -47,7 +47,7 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
 /// corresponding Singular object, GAP proxy objects for subobjects
 /// of other Singular objects, or GAP proxy objects for values in
 /// Singular interpreter variables. Note that the resulting Singular
-/// object is *not* copied. Use .copy afterwards if you want to hand
+/// object is *not* copied. Use .copy() afterwards if you want to hand
 /// the result to something destructive.
 ///
 /// Note that if an error occurs, GAP will do a longjmp, so we cannot

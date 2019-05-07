@@ -196,7 +196,7 @@ static Obj gapwrap(sleftv &obj, ring r)
                 res = NEW_SINGOBJ(gtype, obj.CopyD());
             break;
     }
-        
+
     if (obj.flag)
         SET_FLAGS_SINGOBJ(res, obj.flag);
     if (obj.attribute != NULL || obj.e != NULL)
@@ -205,8 +205,10 @@ static Obj gapwrap(sleftv &obj, ring r)
 }
 
 
+// TODO: write comment...
 static std::vector<idhdl> *param_idhdls = 0;
 
+// TODO: write comment...
 static idhdl getSingularIdhdl(int i) {
     assert(i >= 0 && i < 256);
     
@@ -301,7 +303,7 @@ static ring extractRing(Obj ringOrZero)
 
 // The following functions allow access to all functions of the
 // Singular C++ library that the Singular interpreter can call.
-// They do not provide a fast path into the library, because they
+// They do not provide a fast path into the Singular C++ library, because they
 // use some Singular interpreter infrastructure, in particular, all
 // function arguments are wrapped by some Singular interpreter data
 // structure.
