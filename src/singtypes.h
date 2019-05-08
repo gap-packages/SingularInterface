@@ -13,6 +13,8 @@
 /* If you change these numbers, then also adjust the tables GAPtoSingType
  * and HasRingTable in cxxfuncs.cc! */
 enum SingType {
+    //START_ENUM_RANGE(SINGTYPE_FIRSTNUMBER),
+
     SINGTYPE_BIGINT = 2,
     SINGTYPE_BIGINT_IMM = 3,
     SINGTYPE_BIGINTMAT = 4,
@@ -60,7 +62,7 @@ enum SingType {
     // TODO (?): reference
     // TODO (?): shared
 
-    SINGTYPE_LASTNUMBER = 47
+    END_ENUM_RANGE(SINGTYPE_LASTNUMBER),
 };
 
 
