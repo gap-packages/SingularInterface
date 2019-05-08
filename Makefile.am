@@ -99,8 +99,4 @@ CLEANFILES = \
 indent:
 	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc
 
-
-doc:
-	($(GAPROOT)/bin/gap.sh -A makedoc.g)
-
 .PHONY: doc
