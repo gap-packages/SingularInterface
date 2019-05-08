@@ -8,9 +8,10 @@
 #ifndef SINGOBJ_H
 #define SINGOBJ_H
 
+#include "libsing.h"
+
 // Prevent inline code from using tests which are not in libsingular:
 #include <Singular/libsingular.h>
-
 
 void * FOLLOW_SUBOBJ(Obj    proxy,
                      int    pos,
