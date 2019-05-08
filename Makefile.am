@@ -81,8 +81,4 @@ CLEANFILES = \
 	lib/highlevel_mappings.g \
 	src/highlevel_mappings_table.g
 
-
-indent:
-	astyle --options=libsing.astyle src/cxxfuncs.cc src/libsing.cc src/singtypes.cc
-
 .PHONY: doc

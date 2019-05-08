@@ -12,8 +12,11 @@
 #include <Singular/libsingular.h>
 
 
-void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
-                           const char *(&error));
+void * FOLLOW_SUBOBJ(Obj    proxy,
+                     int    pos,
+                     void * current,
+                     int &  currgtype,
+                     const char *(&error));
 
 
 /// This class is a wrapper around a Singular object of any type.
@@ -43,28 +46,32 @@ void *FOLLOW_SUBOBJ(Obj proxy, int pos, void *current, int &currgtype,
 /// in the methods of this object. It is possible that other objects
 /// of the same type need to be told about the error.
 class SingObj {
-public:
-    sleftv obj;
-    const char *error;  //?< If non-NULL, an error has happened.
+  public:
+    sleftv       obj;
+    const char * error;    //?< If non-NULL, an error has happened.
 
-private:
-    /// if this is true we have to destruct the Singular object when this object dies.
+  private:
+    /// if this is true we have to destruct the Singular object when this
+    /// object dies.
     bool needcleanup;
 
-public:
-    SingObj(Obj input, ring &r) {
+  public:
+    SingObj(Obj input, ring & r)
+    {
         init(input, r);
     }
 
     /// Default constructor for empty object
-    SingObj() : error(NULL), needcleanup(false) {
+    SingObj() : error(NULL), needcleanup(false)
+    {
         obj.Init();
     }
 
     // This does the actual work
-    void init(Obj input, ring &r);
+    void init(Obj input, ring & r);
 
-    ~SingObj() {
+    ~SingObj()
+    {
         cleanup();
     }
 
@@ -78,11 +85,12 @@ public:
     /// sleftv if you intend to use the singular object non-destructively.
     /// No automatic copy() is performed, if cleanup was scheduled it
     /// will be done as scheduled later on.
-    leftv nondestructiveuse() {
+    leftv nondestructiveuse()
+    {
         return &obj;
     }
 
-    void cleanup();   ///< Frees object if necesary
+    void cleanup();    ///< Frees object if necesary
 };
 
 #endif

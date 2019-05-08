@@ -7,8 +7,8 @@
 
 #include "libsing.h"
 #include "lowlevel_mappings.h"
-#include "singtypes.h"
 #include "matrix.h"
+#include "singtypes.h"
 
 /******************** The interface to GAP ***************/
 
@@ -17,13 +17,12 @@ static Obj Func_SI_debug(Obj self, Obj obj)
     return NULL;
 }
 
-typedef Obj (* GVarFunc)(/*arguments*/);
+typedef Obj (*GVarFunc)(/*arguments*/);
 
-#define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params) \
-  {#name, nparam, \
-   params, \
-   (GVarFunc)Func##name, \
-   srcfile ":Func" #name }
+#define GVAR_FUNC_TABLE_ENTRY(srcfile, name, nparam, params)                 \
+    {                                                                        \
+#name, nparam, params, (GVarFunc)Func##name, srcfile ":Func" #name   \
+    }
 
 /**
 Details of the functions to make available to GAP.
@@ -31,7 +30,8 @@ This is used in InitKernel() and InitLibrary()
 */
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_debug, 1, "obj"),
-    GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
+    GVAR_FUNC_TABLE_ENTRY(
+        "cxxfuncs.cc", _SI_ring, 3, "characteristic, names, orderings"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SI_Indeterminates, 1, "ring"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", _SI_EVALUATE, 1, "st"),
     GVAR_FUNC_TABLE_ENTRY("cxxfuncs.cc", SingularValueOfVar, 1, "name"),
@@ -56,28 +56,30 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc2, 4, "r, op, a, b"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFunc3, 5, "r, op, a, b, c"),
     GVAR_FUNC_TABLE_ENTRY("calls.cc", _SI_CallFuncM, 3, "r, op, arg"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_SetCurrRing, 1, "r"),
-    GVAR_FUNC_TABLE_ENTRY("calls.cc",  SI_CallProc, 2, "name, args"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", SI_SetCurrRing, 1, "r"),
+    GVAR_FUNC_TABLE_ENTRY("calls.cc", SI_CallProc, 2, "name, args"),
 
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_bigintmat, 1, "m"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_Matbigintmat, 1, "im"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_intmat, 1, "m"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_Matintmat, 1, "im"),
-    GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_matrix_from_els, 3, "nrrows, nrcols, l"),
+    GVAR_FUNC_TABLE_ENTRY(
+        "matrix.cc", _SI_matrix_from_els, 3, "nrrows, nrcols, l"),
     GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_MatElm, 3, "mat, row, col"),
-    GVAR_FUNC_TABLE_ENTRY("matrix.cc", _SI_SetMatElm, 4, "mat, row, col, val"),
+    GVAR_FUNC_TABLE_ENTRY(
+        "matrix.cc", _SI_SetMatElm, 4, "mat, row, col, val"),
 
 #include "lowlevel_mappings_table.h"
 
     { 0 } /* Finish with an empty entry */
 };
 
-Obj _SI_ProxiesType;
+Obj  _SI_ProxiesType;
 UInt _SI_internalRingRNam;
 
 UInt T_SINGULAR = 0;
 
-/** 
+/**
 Stores the GAP object that is the function IntFFE() so that we can
 call it to convert finite field elements to integers.
 */
@@ -87,22 +89,22 @@ Obj SI_IntFFE;
 /**
 The first function to be called when the library is loaded by the kernel.
 **/
-static Int InitKernel(StructInitInfo* module)
+static Int InitKernel(StructInitInfo * module)
 {
     /* init filters and functions                                          */
     Int tnum = RegisterPackageTNUM("singular wrapper object", _SI_TypeObj);
     if (tnum < 0)
-        return -1; // failure
+        return -1;    // failure
     T_SINGULAR = (UInt)tnum;
 
-    InitHdlrFuncsFromTable( GVarFuncs );
+    InitHdlrFuncsFromTable(GVarFuncs);
     InitFreeFuncBag(T_SINGULAR, &_SI_FreeFunc);
     InitMarkFuncBags(T_SINGULAR, &_SI_ObjMarkFunc);
 
     InitSingTypesFromKernel();
 
     InitCopyGVar("_SI_ProxiesType", &_SI_ProxiesType);
-    InitFopyGVar( "IntFFE", &SI_IntFFE );
+    InitFopyGVar("IntFFE", &SI_IntFFE);
 
     /* TODO:
      * PrintObjFuncs fuer T_SINGULAR ist PrintObjObject, OK?
@@ -149,7 +151,7 @@ static Int InitKernel(StructInitInfo* module)
 
 
 // Called after workspace is restored (and also when GAP starts).
-static Int PostRestore(StructInitInfo* module)
+static Int PostRestore(StructInitInfo * module)
 {
     _SI_LastErrorStringGVar = GVarName("_SI_LastErrorString");
     AssGVar(_SI_LastErrorStringGVar, NEW_STRING(0));
@@ -159,8 +161,8 @@ static Int PostRestore(StructInitInfo* module)
     AssGVar(_SI_LastOutputStringGVar, NEW_STRING(0));
     MakeReadOnlyGVar(_SI_LastOutputStringGVar);
 
-    /* Set '_SI_LIBSING_LOADED' as a canary variable, so we can detect (and prevent)
-      attempts to load the C code more than once. */
+    /* Set '_SI_LIBSING_LOADED' as a canary variable, so we can detect (and
+      prevent) attempts to load the C code more than once. */
     UInt gvar = GVarName("_SI_LIBSING_LOADED");
     AssGVar(gvar, NEW_PREC(0));
     MakeReadOnlyGVar(gvar);
@@ -182,7 +184,7 @@ static Int PostRestore(StructInitInfo* module)
 /**
 The second function to be called when the library is loaded by the kernel.
 **/
-static Int InitLibrary(StructInitInfo* module)
+static Int InitLibrary(StructInitInfo * module)
 {
     /* init filters and functions                                          */
     InitGVarFuncsFromTable(GVarFuncs);
@@ -226,4 +228,3 @@ extern "C" StructInitInfo * Init__libsing(void)
 {
     return &module;
 }
-

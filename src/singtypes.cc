@@ -16,8 +16,7 @@
 #include <Singular/lists.h>
 
 
-
-static Obj _SI_Types;    /* A kernel copy of a plain list of types */
+static Obj _SI_Types; /* A kernel copy of a plain list of types */
 
 
 // The following table maps GAP type numbers for singular objects to
@@ -75,52 +74,52 @@ const int GAPtoSingType[] = {
 int SingtoGAPType[MAX_TOK];
 
 const int HasRingTable[] = {
-    0, // NOTUSED
-    0, // NOTUSED
-    0, // SINGTYPE_BIGINT        = 2,
-    0, // SINGTYPE_BIGINT_IMM    = 3,
-    0, // SINGTYPE_BIGINTMAT     = 4,
-    0, // SINGTYPE_BIGINTMAT_IMM = 5,
-    0, // SINGTYPE_DEF           = 6,
-    0, // SINGTYPE_DEF_IMM       = 7,
-    1, // SINGTYPE_IDEAL         = 8,
-    1, // SINGTYPE_IDEAL_IMM     = 9,
-    0, // SINGTYPE_INT           = 10,
-    0, // SINGTYPE_INT_IMM       = 11,
-    0, // SINGTYPE_INTMAT        = 12,
-    0, // SINGTYPE_INTMAT_IMM    = 13,
-    0, // SINGTYPE_INTVEC        = 14,
-    0, // SINGTYPE_INTVEC_IMM    = 15,
-    0, // SINGTYPE_LINK          = 16,
-    0, // SINGTYPE_LINK_IMM      = 17,
-    1, // SINGTYPE_LIST          = 18,
-    1, // SINGTYPE_LIST_IMM      = 19,
-    1, // SINGTYPE_MAP           = 20,
-    1, // SINGTYPE_MAP_IMM       = 21,
-    1, // SINGTYPE_MATRIX        = 22,
-    1, // SINGTYPE_MATRIX_IMM    = 23,
-    1, // SINGTYPE_MODULE        = 24,
-    1, // SINGTYPE_MODULE_IMM    = 25,
-    1, // SINGTYPE_NUMBER        = 26,
-    1, // SINGTYPE_NUMBER_IMM    = 27,
-    0, // SINGTYPE_PACKAGE       = 28,
-    0, // SINGTYPE_PACKAGE_IMM   = 29,
-    1, // SINGTYPE_POLY          = 30,
-    1, // SINGTYPE_POLY_IMM      = 31,
-    0, // SINGTYPE_PROC          = 32,
-    0, // SINGTYPE_PROC_IMM      = 33,
-    0, // SINGTYPE_QRING         = 34,
-    0, // SINGTYPE_QRING_IMM     = 35,
-    1, // SINGTYPE_RESOLUTION    = 36,
-    1, // SINGTYPE_RESOLUTION_IMM= 37,
-    0, // SINGTYPE_RING          = 38,
-    0, // SINGTYPE_RING_IMM      = 39,
-    0, // SINGTYPE_STRING        = 40,
-    0, // SINGTYPE_STRING_IMM    = 41,
-    1, // SINGTYPE_VECTOR        = 42,
-    1, // SINGTYPE_VECTOR_IMM    = 43,
-    0, // SINGTYPE_USERDEF       = 44,
-    0, // SINGTYPE_USERDEF_IMM   = 45,
+    0,    // NOTUSED
+    0,    // NOTUSED
+    0,    // SINGTYPE_BIGINT        = 2,
+    0,    // SINGTYPE_BIGINT_IMM    = 3,
+    0,    // SINGTYPE_BIGINTMAT     = 4,
+    0,    // SINGTYPE_BIGINTMAT_IMM = 5,
+    0,    // SINGTYPE_DEF           = 6,
+    0,    // SINGTYPE_DEF_IMM       = 7,
+    1,    // SINGTYPE_IDEAL         = 8,
+    1,    // SINGTYPE_IDEAL_IMM     = 9,
+    0,    // SINGTYPE_INT           = 10,
+    0,    // SINGTYPE_INT_IMM       = 11,
+    0,    // SINGTYPE_INTMAT        = 12,
+    0,    // SINGTYPE_INTMAT_IMM    = 13,
+    0,    // SINGTYPE_INTVEC        = 14,
+    0,    // SINGTYPE_INTVEC_IMM    = 15,
+    0,    // SINGTYPE_LINK          = 16,
+    0,    // SINGTYPE_LINK_IMM      = 17,
+    1,    // SINGTYPE_LIST          = 18,
+    1,    // SINGTYPE_LIST_IMM      = 19,
+    1,    // SINGTYPE_MAP           = 20,
+    1,    // SINGTYPE_MAP_IMM       = 21,
+    1,    // SINGTYPE_MATRIX        = 22,
+    1,    // SINGTYPE_MATRIX_IMM    = 23,
+    1,    // SINGTYPE_MODULE        = 24,
+    1,    // SINGTYPE_MODULE_IMM    = 25,
+    1,    // SINGTYPE_NUMBER        = 26,
+    1,    // SINGTYPE_NUMBER_IMM    = 27,
+    0,    // SINGTYPE_PACKAGE       = 28,
+    0,    // SINGTYPE_PACKAGE_IMM   = 29,
+    1,    // SINGTYPE_POLY          = 30,
+    1,    // SINGTYPE_POLY_IMM      = 31,
+    0,    // SINGTYPE_PROC          = 32,
+    0,    // SINGTYPE_PROC_IMM      = 33,
+    0,    // SINGTYPE_QRING         = 34,
+    0,    // SINGTYPE_QRING_IMM     = 35,
+    1,    // SINGTYPE_RESOLUTION    = 36,
+    1,    // SINGTYPE_RESOLUTION_IMM= 37,
+    0,    // SINGTYPE_RING          = 38,
+    0,    // SINGTYPE_RING_IMM      = 39,
+    0,    // SINGTYPE_STRING        = 40,
+    0,    // SINGTYPE_STRING_IMM    = 41,
+    1,    // SINGTYPE_VECTOR        = 42,
+    1,    // SINGTYPE_VECTOR_IMM    = 43,
+    0,    // SINGTYPE_USERDEF       = 44,
+    0,    // SINGTYPE_USERDEF_IMM   = 45,
     // TODO (?): reference
     // TODO (?): shared
 };
@@ -142,9 +141,9 @@ void InitSingTypesFromKernel()
 
     tmp = NEW_PREC(SINGTYPE_LASTNUMBER);
 
-#define ExportAsRecEntry(symbol) \
-    AssPRec(tmp, RNamName(#symbol), INTOBJ_INT(symbol)); \
-    AssPRec(tmp, RNamName(#symbol "_IMM"), INTOBJ_INT(symbol ## _IMM))
+#define ExportAsRecEntry(symbol)                                             \
+    AssPRec(tmp, RNamName(#symbol), INTOBJ_INT(symbol));                     \
+    AssPRec(tmp, RNamName(#symbol "_IMM"), INTOBJ_INT(symbol##_IMM))
 
     ExportAsRecEntry(SINGTYPE_BIGINT);
     ExportAsRecEntry(SINGTYPE_BIGINTMAT);
