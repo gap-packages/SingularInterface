@@ -19,6 +19,11 @@
 #include <Singular/ipid.h>
 #include <Singular/lists.h>
 
+// from GAP
+extern "C" {
+  #include "gasman_intern.h"  // for RegisterAfterCollectFuncBags
+}
+
 
 /* We add hooks to the wrapper functions to call a garbage collection
    by GASMAN if more than a threshold of memory is allocated by omalloc  */
@@ -170,11 +175,6 @@ static void AddSingularRingToCleanup(ring r)
     SingularRingsToCleanup[SRTC_nr++] = r;
 }
 
-// static TNumCollectFuncBags oldpostGCfunc = NULL;
-// // From the GAP kernel, not exported there:
-// extern TNumCollectFuncBags BeforeCollectFuncBags;
-// extern TNumCollectFuncBags AfterCollectFuncBags;
-
 static void SingularRingCleaner(void)
 {
     int i;
@@ -183,16 +183,11 @@ static void SingularRingCleaner(void)
         // Pr("killed a ring\n", 0L, 0L);
     }
     SRTC_nr = 0;
-    // oldpostGCfunc();
 }
 
 void InstallPrePostGCFuncs(void)
 {
-    //     TNumCollectFuncBags oldpreGCfunc = BeforeCollectFuncBags;
-    //     oldpostGCfunc = AfterCollectFuncBags;
-    //
-    //     InitCollectFuncBags(oldpreGCfunc, SingularRingCleaner);
-    InitCollectFuncBags(0, SingularRingCleaner);
+    RegisterAfterCollectFuncBags(SingularRingCleaner);
 }
 
 //! Free a given T_SINGULAR object. It is registered using InitFreeFuncBag
