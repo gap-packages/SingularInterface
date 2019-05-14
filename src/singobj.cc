@@ -211,7 +211,7 @@ void SingObj::init(Obj input, ring & r)
     }
 }
 
-leftv SingObj::destructiveuse(ring r)
+leftv LowLevelSingObj::destructiveuse(ring r)
 {
     if (needcleanup) {
         // already was a copy, do nothing except making sure cleanup()

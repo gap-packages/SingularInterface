@@ -342,7 +342,7 @@ GenerateSingularWrapper := function (desc)
 	for i in [1 .. Length(desc.params) ] do
 		type := SINGULAR_types.(GetParamTypeName(i));
 		# Extract the underlying Singular data from the GAP input object
-		PrintCXXLine("SingObj ",CXXObjName(i),"(",CXXArgName(i),", r);");
+		PrintCXXLine("LowLevelSingObj ",CXXObjName(i),"(",CXXArgName(i),", r);");
 		PrintCXXLine("if (",CXXObjName(i),".error) {");
 		indent := indent + 1;
 		    for j in [1..i] do

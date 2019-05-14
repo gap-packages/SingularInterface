@@ -51,7 +51,7 @@ class SingObj {
     sleftv       obj;
     const char * error;    //?< If non-NULL, an error has happened.
 
-  private:
+  protected:
     /// if this is true we have to destruct the Singular object when this
     /// object dies.
     bool needcleanup;
@@ -76,6 +76,13 @@ class SingObj {
         cleanup();
     }
 
+    void cleanup();    ///< Frees object if necesary
+};
+
+class LowLevelSingObj : public SingObj {
+public:
+    LowLevelSingObj(Obj input, ring & r) : SingObj(input, r) {}
+
     /// Call this to get a pointer to the internal obj structure of type
     /// sleftv if you intend to use the Singular object destructively.
     /// In particular it is the caller's responsibility to cleanup the
@@ -91,7 +98,7 @@ class SingObj {
         return &obj;
     }
 
-    void cleanup();    ///< Frees object if necesary
+
 };
 
 #endif
