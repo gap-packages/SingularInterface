@@ -39,11 +39,7 @@ instructions should get you going.
    ./autogen.sh
 
 5. Prepare SingularInterface for compilation, by running
-   ./configure --with-gaproot=GAP_DIR  --with-libSingular=$PWD/singular/dst \
-               CONFIGNAME=default64
-   where you should replace GAP_DIR as above. If you know what
-   you do, you can change your CONFIGNAME (but note that
-   SingularInterface can only be used with 64 bit versions of GAP).
+   ./configure --with-gaproot=GAP_DIR  --with-libSingular=$PWD/singular/dst
 
 6. Compile SingularInterface:
     make
