@@ -1,4 +1,4 @@
-#! @System Rundbrief_Example
+#! @Chunk Rundbrief_Example
 
 LoadPackage( "SingularInterface" );
 
