@@ -8,7 +8,7 @@
 #ifndef LIBSING_H
 #define LIBSING_H
 
-#include "src/compiled.h" // GAP headers
+#include "compiled.h" // GAP headers
 
 #include <assert.h>
 
