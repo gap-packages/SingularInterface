@@ -56,8 +56,8 @@ InstallGlobalFunction( _SI_Negation_fast,
     if IsMutable(a) then return c; 
     else return MakeImmutable(c); fi;
   end );
-InstallOtherMethod(AINV, ["IsSI_Object"], _SI_Negation);
-InstallOtherMethod(AINV, ["IsSI_poly"], _SI_Negation_fast);
+InstallOtherMethod(AdditiveInverseSameMutability, ["IsSI_Object"], _SI_Negation);
+InstallOtherMethod(AdditiveInverseSameMutability, ["IsSI_poly"], _SI_Negation_fast);
 
 
 InstallOtherMethod(\*, ["IsSI_Object","IsSI_Object"], SI_\*);
@@ -157,7 +157,7 @@ InstallOtherMethod(InverseMutable, ["IsSI_poly"], function(pol)
   return SI_\/(1, pol);
 end);
 
-InstallOtherMethod(QUO, ["IsSI_Object", "IsSI_Object"], function(a, b)
+InstallOtherMethod(\/, ["IsSI_Object", "IsSI_Object"], function(a, b)
   return SI_\/(a, b);
 end);
 
