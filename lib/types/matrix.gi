@@ -16,21 +16,10 @@ InstallMethod(Determinant, [IsSI_Object and IsMatrixObj], SI_det);
 InstallOtherMethod(DeterminantMat, [IsSI_Object and IsMatrixObj], SI_det);
 
 #
-# Access via legacy MatrixObj API
+# Access via MatrixObj API
 #
 InstallMethod(MatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt], _SI_MatElm);
-InstallMethod(SetMatElm, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt, IsObject], _SI_SetMatElm);
-
-InstallMethod(Length, [IsSI_Object and IsMatrixObj], SI_ncols);
-
-
-#
-# Access via modern MatrixObj API
-#
-InstallMethod(\[\], [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt], _SI_MatElm);
-InstallMethod(\[\]\:\=, [IsSI_Object and IsMatrixObj, IsPosInt, IsPosInt, IsObject], _SI_SetMatElm);
+InstallMethod(SetMatElm, [IsSI_Object and IsMatrixObj and IsMutable, IsPosInt, IsPosInt, IsObject], _SI_SetMatElm);
 
 InstallMethod(NrCols, [IsSI_Object and IsMatrixObj], SI_ncols);
 InstallMethod(NrRows, [IsSI_Object and IsMatrixObj], SI_nrows);
-
-# TODO: install IsBound method to support  IsBound(mat[i,j]) ???
