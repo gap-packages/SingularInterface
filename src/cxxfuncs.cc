@@ -620,11 +620,7 @@ Obj FuncSingularValueOfVar(Obj self, Obj name)
     case INT_CMD:
         return ObjInt_Int((Int)(IDINT(h)));
     case STRING_CMD:
-        len = (Int)strlen(IDSTRING(h));
-        tmp = NEW_STRING(len);
-        SET_LEN_STRING(tmp, len);
-        memcpy(CHARS_STRING(tmp), IDSTRING(h), len + 1);
-        return tmp;
+        return MakeString(IDSTRING(h));
     case INTVEC_CMD:
         v = IDINTVEC(h);
         len = (Int)v->length();
@@ -663,35 +659,23 @@ Obj FuncSingularValueOfVar(Obj self, Obj name)
 
 Obj Func_SI_SingularProcs(Obj self)
 {
-    Obj   l;
-    Obj   n;
+    Obj   list;
     int   len = 0;
-    UInt  slen;
-    Int   i;
     idhdl x = IDROOT;
     while (x) {
         if (x->typ == PROC_CMD)
             len++;
         x = x->next;
     }
-    l = NEW_PLIST(T_PLIST_DENSE, len);
-    SET_LEN_PLIST(l, 0);
+    list = NEW_PLIST(T_PLIST_DENSE, len);
     x = IDROOT;
-    i = 1;
     while (x) {
         if (x->typ == PROC_CMD) {
-            slen = (UInt)strlen(x->id);
-            n = NEW_STRING(slen);
-            SET_LEN_STRING(n, slen);
-            memcpy(CHARS_STRING(n), x->id, slen + 1);
-            SET_ELM_PLIST(l, i, n);
-            SET_LEN_PLIST(l, i);
-            CHANGED_BAG(l);
-            i++;
+            PushPlist(list, MakeString(x->id));
         }
         x = x->next;
     }
-    return l;
+    return list;
 }
 
 /**
@@ -706,36 +690,23 @@ Obj FuncSI_ToGAP(Obj self, Obj singobj)
     }
     switch (TYPE_SINGOBJ(singobj)) {
     case SINGTYPE_STRING:
-    case SINGTYPE_STRING_IMM: {
-        char * st = (char *)CXX_SINGOBJ(singobj);
-        UInt   len = (UInt)strlen(st);
-        Obj    tmp = NEW_STRING(len);
-        SET_LEN_STRING(tmp, len);
-        memcpy(CHARS_STRING(tmp), st, len + 1);
-        return tmp;
-    }
+    case SINGTYPE_STRING_IMM:
+        return MakeString((char *)CXX_SINGOBJ(singobj));
     case SINGTYPE_INT:
-    case SINGTYPE_INT_IMM: {
-        Int i = (Int)CXX_SINGOBJ(singobj);
-        return INTOBJ_INT(i);
-    }
+    case SINGTYPE_INT_IMM:
+        return INTOBJ_INT((Int)CXX_SINGOBJ(singobj));
     case SINGTYPE_INTMAT:
-    case SINGTYPE_INTMAT_IMM: {
+    case SINGTYPE_INTMAT_IMM:
         return Func_SI_Matintmat(self, singobj);
-    }
     case SINGTYPE_INTVEC:
-    case SINGTYPE_INTVEC_IMM: {
+    case SINGTYPE_INTVEC_IMM:
         return Func_SI_Plistintvec(self, singobj);
-    }
     case SINGTYPE_BIGINT:
-    case SINGTYPE_BIGINT_IMM: {
-        number n = (number)CXX_SINGOBJ(singobj);
-        return _SI_BIGINT_OR_INT_TO_GAP(n);
-    }
+    case SINGTYPE_BIGINT_IMM:
+        return _SI_BIGINT_OR_INT_TO_GAP((number)CXX_SINGOBJ(singobj));
     case SINGTYPE_BIGINTMAT:
-    case SINGTYPE_BIGINTMAT_IMM: {
+    case SINGTYPE_BIGINTMAT_IMM:
         return Func_SI_Matbigintmat(self, singobj);
-    }
     default:
         return Fail;
     }
