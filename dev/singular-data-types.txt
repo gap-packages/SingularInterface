@@ -132,7 +132,7 @@ Maps between rings with different coefficient fields are possible and listed bel
 rectangular matrix of polynomials
 
 like a list, we need proxy objects if the user wants to do random access to say M[i][j].
-A bit easier than list, though, as matrices are homogenous
+A bit easier than list, though, as matrices are homogeneous
 
 
 == module ==
