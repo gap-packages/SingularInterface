@@ -28,6 +28,3 @@ AutoDoc( rec(
                          commands := [ "LoadPackage( \"SingularInterface\" );" ],
                          )
 ));
-
-# Create VERSION file for "make towww"
-PrintTo( "VERSION", GAPInfo.PackageInfoCurrent.Version );

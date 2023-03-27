@@ -9,7 +9,7 @@ dnl ##
 dnl ## Setup autoconf
 dnl ##
 AC_PREREQ([2.68])
-AC_INIT([SingularInterface], m4_esyscmd([tr -d '\n' < VERSION]), [gapsing@mathematik.uni-kl.de])
+AC_INIT([SingularInterface], [package], [gapsing@mathematik.uni-kl.de])
 AC_CONFIG_SRCDIR([src/libsing.h])
 AC_CONFIG_HEADERS([src/pkgconfig.h:cnf/pkgconfig.h.in])
 AC_CONFIG_MACRO_DIR([m4])
