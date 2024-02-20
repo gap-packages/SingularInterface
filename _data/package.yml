@@ -1,5 +1,5 @@
 name: SingularInterface
-version: 0.7.2
+version: "0.7.2"
 date: 2014-11-01
 description: |
     A GAP interface to Singular
@@ -31,7 +31,7 @@ GAP: ">=4.7.2"
 suggested-pkgs:
     - name: "GAPDoc"
       version: "1.2"
-      url: "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
+      url: "https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
     - name: "AutoDoc"
       version: "2014.03.27"
       url: "https://gap-packages.github.io/AutoDoc"
@@ -52,3 +52,31 @@ abstract: |
 status: dev
 doc-html: doc/chap0.html
 doc-pdf: doc/manual.pdf
+keywords: |
+    Singular, polynomials, groebner.
+citeas: |
+    <p class='BibEntry'>
+    [<span class='BibKey'>BHLMNS14</span>]   <b class='BibAuthor'>Barakat, M., Horn, M., Lübeck, F., Motsak, O., Neunhoeffer, M. and Schoenemann, H.</b>,
+     <i class='BibTitle'>SingularInterface, A GAP interface to Singular,
+             Version 0.7.2</i>
+     (<span class='BibYear'>2014</span>)<br />
+    (<span class='BibNote'>GAP package</span>),
+    <span class='BibHowpublished'><a href="http://gap-system.github.io/SingularInterface">http://gap-system.github.io/SingularInterface</a></span>.
+    </p>
+    
+
+bibtex: |
+    @misc{ SingularInterface0.7.2,
+      author =           {Barakat,  M.  and  Horn,  M.  and  L{\"u}beck,  F.  and  Motsak, O. and Neunhoeffer, M. and
+                          Schoenemann, H.},
+      title =            {{SingularInterface}, A GAP interface to Singular, {V}ersion 0.7.2},
+      month =            {Nov},
+      year =             {2014},
+      note =             {GAP package},
+      howpublished =     {\href                                       {http://gap-system.github.io/SingularInterface}
+                          {\texttt{http://gap\texttt{\symbol{45}}system.github.io/}\discretionary
+                          {}{}{}\texttt{SingularInterface}}},
+      keywords =         {Singular; polynomials; groebner},
+      printedkey =       {BHLMNS14}
+    }
+
