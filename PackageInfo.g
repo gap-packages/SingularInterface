@@ -145,7 +145,6 @@ PackageDoc := rec(
   PDFFile   := "doc/manual.pdf",
   SixFile   := "doc/manual.six",
   LongTitle := ~.Subtitle,
-  Autoload  := true
 ),
 
 Dependencies := rec(
@@ -158,13 +157,8 @@ Dependencies := rec(
 ),
 
 AvailabilityTest := function()
-  local path;
-    # test for existence of the compiled binary
-    path := DirectoriesPackagePrograms("SingularInterface");
-    if not "SingularInterface" in SHOW_STAT() and 
-       Filename(path, "SingularInterface.so") = fail then
-      #Info(InfoWarning, 1, "SingularInterface: compiled kernel module not present.");
-      return fail;
+    if not IsKernelExtensionAvailable("SingularInterface") then
+      return false;
     fi;
     return true;
   end,
@@ -189,5 +183,3 @@ AutoDoc := rec(
 
 
 ));
-
-
