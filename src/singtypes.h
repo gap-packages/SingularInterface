@@ -8,7 +8,7 @@
 #ifndef SINGTYPES_H
 #define SINGTYPES_H
 
-#include "compiled.h" // GAP headers
+#include "gap_all.h" // GAP headers
 
 /* If you change these numbers, then also adjust the tables GAPtoSingType
  * and HasRingTable in cxxfuncs.cc! */
