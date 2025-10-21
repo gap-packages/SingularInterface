@@ -200,11 +200,7 @@ for example by Init__Dynamic(). This contains details of the library name,
 and the further initialisation functions to call.
 **/
 static StructInitInfo module = {
-#ifdef STATICMODULE
-    .type = MODULE_STATIC,
-#else
     .type = MODULE_DYNAMIC,
-#endif
     .name = "SingularInterface",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
@@ -212,19 +208,12 @@ static StructInitInfo module = {
 };
 
 
-#ifndef STATICGAP
 /**
 Function called by GAP as soon as the library is dynamically loaded.
 This returns the StructInitInfo data for this library
 **/
 extern "C" StructInitInfo * Init__Dynamic(void);
 extern "C" StructInitInfo * Init__Dynamic(void)
-{
-    return &module;
-}
-#endif
-extern "C" StructInitInfo * Init__libsing(void);
-extern "C" StructInitInfo * Init__libsing(void)
 {
     return &module;
 }
